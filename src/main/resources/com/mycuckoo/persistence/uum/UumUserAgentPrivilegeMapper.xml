@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: UumUserAgentPrivilegeMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:20:37 AM
+	@version 2.0.0
+ -->
+<mapper namespace="com.mycuckoo.persistence.uum.UumUserAgentPrivilegeMapper">
+	<resultMap id="uumUserAgentPrivilege" type="com.mycuckoo.domain.uum.UumUserAgentPrivilege">
+		<id property="userAgentPriId" column="user_agent_pri_id" />
+		<result property="uumUserAgent.agentId" column="agent_id" />
+		<result property="privilegeId" column="privilege_id" />
+		<result property="privilegeType" column="privilege_type" />
+	</resultMap>
+	
+	<sql id="colums">
+		user_agent_pri_id, agent_id, privilege_id, privilege_type
+	</sql>
+
+	<!-- 插入用户代理权限： 1.由数据库生成id并赋值到UumUserAgentPrivilege对象 2.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.UumUserAgentPrivilege">
+		<selectKey keyProperty="userAgentPriId" resultType="long" order="BEFORE">
+			<include refid="table.UUM_USER_AGENT_PRIVILEGE_SEQ"/>
+		</selectKey>
+		insert into <include refid="table.uum_user_agent_privilege"/>
+		(
+			user_agent_pri_id, agent_id, privilege_id, privilege_type
+		)
+		values (
+			#{userAgentPriId}, #{uumUserAgent.agentId}, #{privilegeId}, #{privilegeType}
+		)
+	</insert>
+	
+	<!-- 更新用户代理权限： 1.输入对象参数, 嵌套属性表达式#{uumUserAgent.agentId} -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.UumUserAgentPrivilege">
+		update 
+			<include refid="table.uum_user_agent_privilege"/>
+		set
+			agent_id					= #{uumUserAgent.agentId},
+			privilege_id			= #{privilegeId},
+			privilege_type		= #{privilegeType}
+		where 
+			user_agent_pri_id = #{userAgentPriId}
+	</update>
+	
+	<!-- 删除用户代理权限 -->
+	<delete id="delete" parameterType="long">
+		delete from <include refid="table.uum_user_agent_privilege"/> where user_agent_pri_id = #{id}
+	</delete>
+	
+	<!-- 删除一组用户代理权限 -->
+	<delete id="deleteSome" parameterType="list">
+		delete from 
+			<include refid="table.uum_user_agent_privilege"/> 
+		where 
+			user_agent_pri_id in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</delete>
+	
+	<!-- 删除所有用户代理权限 -->
+	<delete id="deleteAll">
+		delete from <include refid="table.uum_user_agent_privilege"/>
+	</delete>
+	
+	<!-- 判断用户代理权限是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			<include refid="table.uum_user_agent_privilege"/>
+		where 
+			user_agent_pri_id = #{id}
+	</select>
+	
+	<!-- 统计用户代理权限记录 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			<include refid="table.uum_user_agent_privilege"/>
+	</select>
+	
+	<!--
+		获取用户代理权限: 输出直接映射到对象, user_agent_pri_id 列要 as userAgentPriId 以方便映射创建 UumUserAgentPrivilege 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.UumUserAgentPrivilege">
+		select 
+			user_agent_pri_id			as userAgentPriId,
+			agent_id							as "uumUserAgent.agentId", 
+			privilege_id					as privilegeId, 
+			privilege_type				as privilegeType
+		from 
+			<include refid="table.uum_user_agent_privilege"/>
+		where 
+			user_agent_pri_id = #{id}
+	</select>
+
+	<!-- 查询所有用户代理权限, 映射到 UumUserAgentPrivilege-->
+	<select id="findAll" resultMap="uumUserAgentPrivilege">
+		select 
+			*
+		from 
+			<include refid="table.uum_user_agent_privilege"/>
+	</select>
+	
+	<!-- 根据代理ID查询所有权限IDs -->
+	<select id="findPrivilegeIdsByAgentId" parameterType="long" resultType="string">
+		select 
+			privilege_id
+		from 
+			<include refid="table.uum_user_agent_privilege"/>
+		where 
+			agent_id = #{agentId}
+	</select>
+	
+</mapper> 

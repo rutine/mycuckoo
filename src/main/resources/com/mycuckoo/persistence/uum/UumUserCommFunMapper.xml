@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: UumUserCommfunMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:22:41 AM
+	@version 2.0.0
+ -->
+<mapper namespace="com.mycuckoo.persistence.uum.UumUserCommfunMapper">
+	
+	<resultMap id="uumUserCommfun" type="com.mycuckoo.domain.uum.UumUserCommfun">
+		<id property="userId" column="user_id" />
+		<id property="moduleId" column="module_id" />
+	</resultMap>
+	
+	<sql id="colums">
+		user_id, module_id
+	</sql>
+
+	<!-- 插入用户常用功能： 1.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.UumUserCommfun">
+		insert into <include refid="table.uum_user_commfun"/>
+		(
+			user_id, module_id
+		)
+		values (
+			#{userId}, #{moduleId}
+		)
+	</insert>
+	
+	<!-- 更新用户常用功能： 1.输入用map -->
+	<update id="update" parameterType="java.util.Map">
+		update 
+			<include refid="table.uum_user_commfun"/>
+		set
+			user_id						= #{newUserId},
+			module_id					= #{newModuleId}
+		where 
+			user_id = #{oldUserId} 
+		and 
+			module_id = #{oldModuleId}
+	</update>
+	
+	<!--
+		获取用户常用功能: 输出直接映射到对象, user_id 列要 as "uumUserCommfunId.userId" 以方便映射创建 UumUserCommfun 对象并赋值
+	-->
+	<select id="get" 
+			parameterType="com.mycuckoo.domain.uum.UumUserCommfun" 
+			resultType="com.mycuckoo.domain.uum.UumUserCommfun">
+		select 
+			user_id,
+			module_id
+		from 
+			<include refid="table.uum_user_commfun"/>
+		where 
+			user_id = #{userId} 
+		and 
+			module_id = #{moduleId}
+	</select>
+	
+	<!-- 判断用户常用功能是否存在 -->
+	<select id="exists" parameterType="java.util.Map" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			<include refid="table.uum_user_commfun"/>
+		where 
+			user_id = #{userId} 
+		and 
+			module_id = #{moduleId}
+	</select>
+
+	<!-- 返回所有用户常用功能, 映射到 uumUserCommfun-->
+	<select id="findAll" resultMap="uumUserCommfun">
+		select 
+			*
+		from 
+			<include refid="table.uum_user_commfun"/>
+	</select>
+		
+	<!-- 统计用户常用功能记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			<include refid="table.uum_user_commfun"/>
+	</select>
+	
+	<!-- 删除用户常用功能 -->
+	<delete id="delete" parameterType="com.mycuckoo.domain.uum.UumUserCommfun">
+		delete from <include refid="table.uum_user_commfun"/> where user_id = #{userId} and module_id = #{moduleId}
+	</delete>
+	
+	<!-- 删除所有用户常用功能 -->
+	<delete id="deleteAll">
+		delete from <include refid="table.uum_user_commfun"/>
+	</delete>
+	
+	<!-- 根据ID删除用户常用功能 -->
+	<delete id="deleteUserCommFun" parameterType="long">
+		delete from <include refid="table.uum_user_commfun"/> where user_id = #{userId}
+	</delete>
+	
+	<!-- 根据用户ID查询用户常用功能, 映射到 uumUserCommfun-->
+	<select id="findUserCommFunByUserId" parameterType="long" resultMap="uumUserCommfun">
+		select 
+			*
+		from 
+			<include refid="table.uum_user_commfun"/>
+		where 
+			user_id = #{userId}
+	</select>
+	
+</mapper> 

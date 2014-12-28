@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: SysplOperateMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:50:37 AM
+	@version 2.0.0
+ -->
+<mapper namespace="com.mycuckoo.persistence.platform.SysplOperateMapper">
+	<resultMap id="sysplOperate" type="com.mycuckoo.domain.platform.SysplOperate">
+		<id property="operateId" column="operate_id" />
+		<result property="operateName" column="operate_name" />
+		<result property="optImgLink" column="opt_img_link" />
+		<result property="optOrder" column="opt_order" />
+		<result property="optGroup" column="opt_group" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+		<result property="optFunLink" column="opt_fun_link" />
+	</resultMap>
+	
+	<sql id="colums">
+		operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+	</sql>
+
+	<!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysplOperate">
+		<selectKey keyProperty="operateId" resultType="long" order="BEFORE">
+			<include refid="table.SYSPL_OPERATE_SEQ"/>
+		</selectKey>
+		insert into <include refid="table.syspl_operate"/>
+		(
+			operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+		)
+		values (
+			#{operateId}, #{operateName}, #{optImgLink}, #{optOrder}, #{optGroup}, #{memo}, #{status}, #{creator}, #{createDate}, #{optFunLink}
+		)
+	</insert>
+	
+	<!-- 更新操作： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.SysplOperate">
+		update 
+			<include refid="table.syspl_operate"/>
+		set
+			operate_name				= #{operateName},
+			opt_img_link				= #{optImgLink}, 
+			opt_order						= #{optOrder}, 
+			opt_group						= #{optGroup}, 
+			memo								= #{memo}, 
+			status							= #{status}, 
+			creator							= #{creator}, 
+			create_date					= #{createDate},
+			opt_fun_link				= #{optFunLink}
+		where 
+			operate_id = #{operateId}
+	</update>
+	
+	<!-- 删除操作 -->
+	<delete id="delete" parameterType="long">
+		delete from <include refid="table.syspl_operate"/> where operate_id = #{id}
+	</delete>
+	
+	<!-- 删除一组操作 -->
+	<delete id="deleteSome" parameterType="list">
+		delete from 
+			<include refid="table.syspl_operate"/> 
+		where 
+			operate_id in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</delete>
+	
+	<!-- 删除所有操作 -->
+	<delete id="deleteAll">
+		delete from <include refid="table.syspl_operate"/>
+	</delete>
+	
+	<!-- 判断操作是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			<include refid="table.syspl_operate"/>
+		where 
+			operate_id = #{id}
+	</select>
+	
+	<!-- 统计操作记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			<include refid="table.syspl_operate"/>
+	</select>
+	
+	<!--
+		获取操作: 输出直接映射到对象, operate_id 列要 as operateId 以方便映射创建 SysplOperate 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.SysplOperate">
+		select 
+			operate_id						as operateId,
+			operate_name					as operateName, 
+			opt_img_link					as optImgLink, 
+			opt_order							as optOrder, 
+			opt_group							as optGroup, 
+			memo									as memo, 
+			status								as status, 
+			creator								as creator, 
+			create_date						as createDate,
+			opt_fun_link					as optFunLink
+		from 
+			<include refid="table.syspl_operate"/>
+		where 
+			operate_id = #{id}
+	</select>
+
+	<!-- 返回所有操作, 映射到 sysplOperate-->
+	<select id="findAll" resultMap="sysplOperate">
+		select 
+			*
+		from 
+			<include refid="table.syspl_operate"/>
+		where
+			status != 'disable'
+	</select>
+	
+	<!-- 根据模块操作名统计模块操作数量-->
+	<select id="countOperatesByName" parameterType="string" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.syspl_operate"/>
+		where
+			operate_name = #{operateName}
+	</select>
+	
+	<!-- 根据条件分页查询模块操作-->
+	<select id="findOperatesByCon" parameterType="map" resultMap="sysplOperate">
+		select 
+			*
+		from 
+			<include refid="table.syspl_operate"/>
+		<where>
+			<if test="operateName != null">
+				operate_name like #{operateName}
+			</if>
+		</where>
+		order by 
+			operate_id desc
+		<if test="start > -1 and limit > 0">
+			limit #{limit} offset #{start}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计模块操作数-->
+	<select id="countOperatesByCon" parameterType="map" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.syspl_operate"/>
+		<where>
+			<if test="operateName != null">
+				operate_name like #{operateName}
+			</if>
+		</where>
+	</select>
+	
+</mapper> 

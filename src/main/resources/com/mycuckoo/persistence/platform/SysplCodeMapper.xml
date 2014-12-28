@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: SysplCodeMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:32:33 AM
+	@version 2.0.0
+ -->
+<mapper namespace="com.mycuckoo.persistence.platform.SysplCodeMapper">
+	<resultMap id="sysplCode" type="com.mycuckoo.domain.platform.SysplCode">
+		<id property="codeId" column="code_id" />
+		<result property="codeEngName" column="code_eng_name" />
+		<result property="codeName" column="code_name" />
+		<result property="moduleName" column="module_name" />
+		<result property="delimite" column="delimite" />
+		<result property="partNum" column="part_num" />
+		<result property="part1" column="part1" />
+		<result property="part1Con" column="part1_con" />
+		<result property="part2" column="part2" />
+		<result property="part2Con" column="part2_con" />
+		<result property="part3" column="part3" />
+		<result property="part3Con" column="part3_con" />
+		<result property="part4" column="part4" />
+		<result property="part4Con" column="part4_con" />
+		<result property="codeEffect" column="code_effect" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="colums">
+		code_id, code_eng_name, code_name, module_name, delimite, part_num, part1, part1_con, part2, 
+		part2_con, part3, part3_con, part4, part4_con, code_effect, memo, status, creator, create_date
+	</sql>
+
+	<!-- 插入编码： 1.由数据库生成id并赋值到SysplCode对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysplCode">
+		<selectKey keyProperty="codeId" resultType="long" order="BEFORE">
+			<include refid="table.SYSPL_CODE_SEQ"/>
+		</selectKey>
+		insert into <include refid="table.syspl_code"/>
+		(
+			code_id, code_eng_name, code_name, module_name, delimite, part_num, part1, part1_con, part2, 
+			part2_con, part3, part3_con, part4, part4_con, code_effect, memo, status, creator, create_date
+		)
+		values (
+			#{codeId}, #{codeEngName}, #{codeName}, #{moduleName}, #{delimite}, #{partNum}, #{part1}, #{part1Con}, #{part2}, 
+			#{part2Con}, #{part3}, #{part3Con}, #{part4}, #{part4Con}, #{codeEffect}, #{memo}, #{status}, #{creator}, #{createDate}
+		)
+	</insert>
+	
+	<!-- 更新编码： 1.输入对象参数  -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.SysplCode">
+		update 
+			<include refid="table.syspl_code"/>
+		set
+			code_eng_name			= #{codeEngName},
+			code_name					= #{codeName}, 
+			module_name				= #{moduleName}, 
+			delimite					= #{delimite}, 
+			part_num					= #{partNum}, 
+			part1							= #{part1}, 
+			part1_con					= #{part1Con}, 
+			part2							= #{part2}, 
+			part2_con					= #{part2Con}, 
+			part3							= #{part3}, 
+			part3_con					= #{part3Con}, 
+			part4							= #{part4}, 
+			part4_con					= #{part4Con}, 
+			code_effect				= #{codeEffect}, 
+			memo							= #{memo}, 
+			status						= #{status}, 
+			creator						= #{creator}, 
+			create_date				= #{createDate}
+		where 
+			code_id = #{codeId}
+	</update>
+	
+	<!-- 删除编码 -->
+	<delete id="delete" parameterType="long">
+		delete from <include refid="table.syspl_code"/> where code_id = #{id}
+	</delete>
+	
+	<!-- 删除一组编码 -->
+	<delete id="deleteSome" parameterType="list">
+		delete from <include refid="table.syspl_code"/> 
+		where 
+			code_id in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</delete>
+	
+	<!-- 删除所有编码 -->
+	<delete id="deleteAll">
+		delete from <include refid="table.syspl_code"/>
+	</delete>
+	
+	<!-- 判断编码是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			<include refid="table.syspl_code"/>
+		where 
+			code_id = #{id}
+	</select>
+	
+	<!-- 统计编码记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			<include refid="table.syspl_code"/>
+	</select>
+	
+	<!--
+		获取编码: 输出直接映射到对象, affiche_id 列要 as afficheId 以方便映射创建 SysplCode 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.SysplCode">
+		select 
+			code_id							as codeId,
+			code_eng_name				as codeEngName, 
+			code_name						as codeName, 
+			module_name					as moduleName, 
+			delimite						as delimite, 
+			part_num						as partNum, 
+			part1								as part1, 
+			part1_con						as part1Con, 
+			part2								as part2, 
+			part2_con						as part2Con, 
+			part3								as part3, 
+			part3_con						as part3Con, 
+			part4								as part4, 
+			part4_con						as part4Con, 
+			code_effect					as codeEffect, 
+			memo								as memo, 
+			status							as status, 
+			creator							as creator, 
+			create_date					as createDate
+		from 
+			<include refid="table.syspl_code"/>
+		where 
+			code_id = #{id}
+	</select>
+
+	<!-- 查询所有编码, 映射到 SysplCode-->
+	<select id="findAll" resultMap="sysplCode">
+		select 
+			*
+		from 
+			<include refid="table.syspl_code"/>
+	</select>
+	
+	<!-- 根据编码英文名称统计编码是否存在 -->
+	<select id="countCodesByCodeEngName" parameterType="string" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.syspl_code"/>
+		where
+			code_eng_name = #{codeEngName}
+	</select>
+	
+	<!-- 根据条件查询编码 SysplCode-->
+	<select id="findCodesByCon" parameterType="map" resultMap="sysplCode">
+		select 
+			*
+		from 
+			<include refid="table.syspl_code"/>
+		<where>
+			<if test="codeEngName != null">
+				code_eng_name like #{codeEngName}
+			</if>
+			<if test="codeName != null">
+				and code_name like #{codeName}
+			</if>
+			<if test="moduleName != null">
+				and module_name like #{moduleName}
+			</if>
+		</where>
+		order by 
+			code_id desc
+		<if test="start > -1 and limit > 0">
+			limit #{limit} offset #{start}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计编码 -->
+	<select id="countCodesByCon" parameterType="map" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.syspl_code"/>
+		<where>
+			<if test="codeEngName != null">
+				code_eng_name like #{codeEngName}
+			</if>
+			<if test="codeName != null">
+				and code_name like #{codeName}
+			</if>
+			<if test="moduleName != null">
+				and module_name like #{moduleName}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据编码英文名称获取编码 -->
+	<select id="getCodeByCodeEngName" parameterType="string" resultMap="sysplCode">
+		select 
+			*
+		from 
+			<include refid="table.syspl_code"/>
+		where
+			code_eng_name = #{codeEngName}
+	</select>
+</mapper> 

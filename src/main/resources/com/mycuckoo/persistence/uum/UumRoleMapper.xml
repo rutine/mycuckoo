@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: UumRoleMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:14:14 AM
+	@version 2.0.0
+ -->
+<mapper namespace="com.mycuckoo.persistence.uum.UumRoleMapper">
+	<resultMap id="uumRole" type="com.mycuckoo.domain.uum.UumRole">
+		<id property="roleId" column="role_id" />
+		<result property="roleName" column="role_name" />
+		<result property="status" column="status" />
+		<result property="memo" column="memo" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+		<result property="roleLevel" column="role_level" />
+		<!-- <collection property="uumOrgRoleRefs" javaType="com.mycuckoo.domain.uum.UumOrgRoleRefs" resultMap="com.mycuckoo.domain.uum.uumOrgRoleRefs" /> -->
+	</resultMap>
+	
+	<sql id="colums">
+		role_id, role_name, status, memo, creator, create_date, role_level
+	</sql>
+
+	<!-- 插入数据： 1.由数据库生成id并赋值到UumRole对象 2.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.UumRole">
+		<selectKey keyProperty="roleId" resultType="long" order="BEFORE">
+			<include refid="table.UUM_ROLE_SEQ"/>
+		</selectKey>
+		insert into <include refid="table.uum_role"/>
+		(
+			role_id, role_name, status, memo, creator, create_date, role_level
+		)
+		values (
+			#{roleId}, #{roleName}, #{status}, #{memo}, #{creator}, #{createDate}, #{roleLevel}
+		)
+	</insert>
+	
+	<!-- 更新数据： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.UumRole">
+		update 
+			<include refid="table.uum_role"/>
+		set
+			role_name 					= #{roleName},
+			status							= #{status},
+			memo								= #{memo},
+			creator							= #{creator},
+			create_date					= #{createDate},
+			role_level					= #{roleLevel}
+		where 
+			role_id = #{roleId}
+	</update>
+	
+	<!-- 删除数据 -->
+	<delete id="delete" parameterType="long">
+		delete from <include refid="table.uum_role"/> where role_id = #{id}
+	</delete>
+	
+	<!-- 删除一组数据 -->
+	<delete id="deleteSome" parameterType="list">
+		delete from 
+			<include refid="table.uum_role"/> 
+		where 
+			role_id in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	</delete>
+	
+	<!-- 删除所有数据 -->
+	<delete id="deleteAll">
+		delete from <include refid="table.uum_role"/>
+	</delete>
+	
+	<!-- 数据记录是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_id = #{id}
+	</select>
+	
+	<!-- 统计数据记录 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			<include refid="table.uum_role"/>
+	</select>
+	
+	<!-- 获取数据: 输出直接映射到对象 -->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.UumRole">
+		select 
+			role_id						as roleId,
+			role_name					as roleName, 
+			status						as status,
+			memo							as memo,
+			creator						as creator, 
+			create_date				as createDate,
+			role_level				as roleLevel
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_id = #{id}
+	</select>
+
+	<!-- 查询所有数据记录, 映射到'uumRole'-->
+	<select id="findAll" resultMap="uumRole">
+		select 
+			*
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_id != 0
+	</select>
+	
+	<!-- 根据条件查询角色, 映射到'uumRole'-->
+	<select id="findRolesByCon" resultMap="uumRole">
+		select 
+			*
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_id != 0
+		<if test="roleName !=null">
+			and role_name like #{roleName}
+		</if>
+		order by 
+			role_id desc
+		<if test="start > -1 and limit > 0">
+			limit #{limit} offset #{start}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计角色记录-->
+	<select id="countRolesByCon" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_id != 0
+		<if test="roleName !=null">
+			and role_name like #{roleName}
+		</if>
+	</select>
+	
+	<!-- 根据角色名称统计角色记录 -->
+	<select id="countRolesByRoleName" parameterType="string" resultType="int">
+		select 
+			count(*)
+		from 
+			<include refid="table.uum_role"/>
+		where 
+			role_name = #{roleName}
+	</select>
+	
+</mapper> 

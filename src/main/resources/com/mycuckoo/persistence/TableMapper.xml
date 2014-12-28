@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: 映射数据表常用属性统一配置
+	@author rutine
+	@time Sep 23, 2014 9:19:16 AM
+	@version 2.0.0
+ -->
+<mapper namespace="table">
+	
+	<sql id="SYSPL_ACCESSORY_SEQ">select nextval('cuckoo.syspl_accessory_seq')</sql>
+	<sql id="SYSPL_AFFICHE_SEQ">select nextval('cuckoo.syspl_affiche_seq')</sql>
+	<sql id="SYSPL_CODE_SEQ">select nextval('cuckoo.syspl_code_seq')</sql>
+	<sql id="SYSPL_DIC_BIG_TYPE_SEQ">select nextval('cuckoo.syspl_dic_big_type_seq')</sql>
+	<sql id="SYSPL_DIC_SMALL_TYPE_SEQ">select nextval('cuckoo.syspl_dic_small_type_seq')</sql>
+	<sql id="SYSPL_DISTRICT_SEQ">select nextval('cuckoo.syspl_district_seq')</sql>
+	<sql id="SYSPL_MODULE_CODE_SEQ">select nextval('cuckoo.syspl_module_code_seq')</sql>
+	<sql id="SYSPL_MOD_OPT_REF_SEQ">select nextval('cuckoo.syspl_mod_opt_ref_seq')</sql>
+	<sql id="SYSPL_MODULE_MEMU_SEQ">select nextval('cuckoo.syspl_module_memu_seq')</sql>
+	<sql id="SYSPL_OPERATE_SEQ">select nextval('cuckoo.syspl_operate_seq')</sql>
+	<sql id="SYSPL_SCHEDULER_JOB_SEQ">select nextval('cuckoo.syspl_scheduler_job_seq')</sql>
+	<sql id="SYSPL_SYS_OPT_LOG_SEQ">select nextval('cuckoo.syspl_sys_opt_log_seq')</sql>
+	<sql id="SYSPL_SYS_PARAMETER_SEQ">select nextval('cuckoo.syspl_sys_parameter_seq')</sql>
+	
+	<sql id="syspl_accessory">cuckoo.syspl_accessory</sql>
+	<sql id="syspl_affiche">cuckoo.syspl_affiche</sql>
+	<sql id="syspl_code">cuckoo.syspl_code</sql>
+	<sql id="syspl_dic_big_type">cuckoo.syspl_dic_big_type</sql>
+	<sql id="syspl_dic_small_type">cuckoo.syspl_dic_small_type</sql>
+	<sql id="syspl_district">cuckoo.syspl_district</sql>
+	<sql id="syspl_module_code">cuckoo.syspl_module_code</sql>
+	<sql id="syspl_mod_opt_ref">cuckoo.syspl_mod_opt_ref</sql>
+	<sql id="syspl_module_memu">cuckoo.syspl_module_memu</sql>
+	<sql id="syspl_operate">cuckoo.syspl_operate</sql>
+	<sql id="syspl_scheduler_job">cuckoo.syspl_scheduler_job</sql>
+	<sql id="syspl_sys_opt_log">cuckoo.syspl_sys_opt_log</sql>
+	<sql id="syspl_sys_parameter">cuckoo.syspl_sys_parameter</sql>
+
+
+
+
+	<sql id="PORTAL_SEQ">select nextval('cuckoo.portal_seq')</sql>
+	<sql id="UUM_GROUP_SEQ">select nextval('cuckoo.uum_group_seq')</sql>
+	<sql id="UUM_GROUP_MEMBER_SEQ">select nextval('cuckoo.uum_group_member_seq')</sql>
+	<sql id="UUM_ORGAN_SEQ">select nextval('cuckoo.uum_organ_seq')</sql>
+	<sql id="UUM_ORG_ROLE_REF_SEQ">select nextval('cuckoo.uum_org_role_ref_seq')</sql>
+	<sql id="UUM_PRIVILEGE_SEQ">select nextval('cuckoo.uum_privilege_seq')</sql>
+	<sql id="UUM_ROLE_SEQ">select nextval('cuckoo.uum_role_seq')</sql>
+	<sql id="UUM_ROLE_USER_REF_SEQ">select nextval('cuckoo.uum_role_user_ref_seq')</sql>
+	<sql id="UUM_USER_SEQ">select nextval('cuckoo.uum_user_seq')</sql>
+	<sql id="UUM_USER_AGENT_SEQ">select nextval('cuckoo.uum_user_agent_seq')</sql>
+	<sql id="UUM_USER_AGENT_PRIVILEGE_SEQ">select nextval('cuckoo.uum_user_agent_privilege_seq')</sql>
+	
+	<sql id="portal">cuckoo.portal</sql>
+	<sql id="uum_group">cuckoo.uum_group</sql>
+	<sql id="uum_group_member">cuckoo.uum_group_member</sql>
+	<sql id="uum_organ">cuckoo.uum_organ</sql>
+	<sql id="uum_org_role_ref">cuckoo.uum_org_role_ref</sql>
+	<sql id="uum_privilege">cuckoo.uum_privilege</sql>
+	<sql id="uum_role">cuckoo.uum_role</sql>
+	<sql id="uum_role_user_ref">cuckoo.uum_role_user_ref</sql>
+	<sql id="uum_user">cuckoo.uum_user</sql>
+	<sql id="uum_user_agent">cuckoo.uum_user_agent</sql>
+	<sql id="uum_user_agent_privilege">cuckoo.uum_user_agent_privilege</sql>
+	<sql id="uum_user_commfun">cuckoo.uum_user_commfun</sql>
+</mapper> 
