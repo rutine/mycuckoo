@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: GroupMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:32:14 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.group.GroupMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.Group">
+		<id property="groupId" column="group_id" />
+		<result property="groupType" column="group_type" />
+		<result property="groupName" column="group_name" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+		<collection property="groupMembers" column="group_id" 
+				ofType="com.mycuckoo.domain.uum.GroupMember" select="findGroupMembersByGroupId" />
+	</resultMap>
+	
+	<sql id="colums">
+		group_id, group_type, group_name, memo, status, creator, create_date
+	</sql>
+
+	<!-- 插入分组： 1.由数据库生成id并赋值到UumGroup对象 2.输入用对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.Group">
+		<selectKey keyProperty="groupId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_group_seq')
+		</selectKey>
+		insert into cuckoo.uum_group
+		(
+			group_id, group_type, group_name, memo, status, creator, create_date
+		)
+		values (
+			#{groupId}, #{groupType}, #{groupName}, #{memo}, #{status}, #{creator}, #{createDate}
+		)
+	</insert>
+	
+	<!-- 更新分组： 1.输入用对象 -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.Group">
+		update 
+			cuckoo.uum_group
+		set
+			group_type			= #{groupType},
+			group_name			= #{groupName},
+			memo						= #{memo},
+			status					= #{status},
+			creator					= #{creator},
+			create_date			= #{createDate}
+		where 
+			group_id = #{groupId}
+	</update>
+	
+	<!-- 删除分组 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_group where group_id = #{id}
+	</delete>
+	
+	<!--
+		获取分组: 映射到 uumGroup
+	-->
+	<select id="get" parameterType="long" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_group
+		where 
+			group_id = #{id}
+	</select>
+	
+	<!-- 分组是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_group
+		where 
+			group_id = #{id}
+	</select>
+
+	<!-- 根据条件分页查询组信息 -->
+	<select id="findByPage"  parameterType="map" resultMap="baseMap">
+		select
+			*
+		from 
+			cuckoo.uum_group
+		where
+			group_type = #{groupType}
+		<if test="groupName != null and groupName != ''">
+			and group_name like #{groupName}
+		</if>
+		order by group_id desc
+	</select>
+	
+		<!-- 分组记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.uum_group
+	</select>
+	
+	<!-- 根据组名称查询组数量 -->
+	<select id="countByGroupName" parameterType="map" resultType="int">
+		select
+			count(*) 
+		from 
+			cuckoo.uum_group
+		where 
+			group_name = #{groupName}
+		and 
+			group_type = #{groupType}
+	</select>
+	
+	<!-- 根据组ID修改组状态 -->
+	<update id="updateStatus" parameterType="map">
+		update 
+			cuckoo.uum_group
+		set
+			status					= #{status}
+		where 
+			group_id = #{groupId}
+	</update>
+	
+		<!-- 根据组ID查询所有组成员 -->
+	<select id="findGroupMembersByGroupId" resultMap="com.mycuckoo.repository.uum.group.GroupMemberMapper.baseMap">
+		select
+			*
+		from 
+			cuckoo.uum_group_member 
+		where 
+			group_id = #{groupId}
+	</select>
+	
+	<!-- 根据组ID删除组成员 -->
+	<delete id="deleteGroupMembersByGroupId" parameterType="map">
+		delete from cuckoo.uum_group_member 
+		where group_id = #{groupId} and group_type = #{groupType}
+	</delete>
+	
+</mapper> 

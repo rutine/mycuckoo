@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: GroupMemberMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:33:26 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.group.GroupMemberMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.GroupMember">
+		<id property="groupMemberId" column="group_member_id" />
+		<result property="group.groupId" column="group_id" />
+		<result property="groupMemberType" column="group_member_type" /> <!-- 用户角色 -->
+		<result property="memberResourceId" column="member_resource_id" /> <!-- 用户角色ID -->
+	</resultMap>
+	
+	<sql id="colums">
+		group_member_id, group_id, group_member_type, member_resource_id
+	</sql>
+
+	<!-- 插入组员： 1.由数据库生成id并赋值到GroupMember对象 2.输入用对象, 嵌套属性表达式 #{group.groupId} -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.GroupMember">
+		<selectKey keyProperty="groupMemberId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_group_member_seq')
+		</selectKey>
+		insert into cuckoo.uum_group_member
+		(
+			group_member_id, group_id, group_member_type, member_resource_id
+		)
+		values (
+			#{groupMemberId}, #{group.groupId}, #{groupMemberType}, #{memberResourceId}
+		)
+	</insert>
+	
+	<!-- 更新组员： 1.输入用对象, 嵌套属性表达式 #{uumGroup.groupId} -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.GroupMember">
+		update 
+			cuckoo.uum_group_member
+		set
+			group_id								= #{group.groupId},
+			group_member_type				= #{groupMemberType},
+			member_resource_id			= #{memberResourceId}
+		where 
+			group_member_id = #{groupMemberId}
+	</update>
+	
+	<!-- 删除组员 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_group_member where group_member_id = #{id}
+	</delete>
+	
+	<!--
+		获取组员: 输出直接映射到对象, group_member_id 列要 as groupMemberId 以方便映射创建 GroupMember 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.GroupMember">
+		select 
+			group_member_id					as groupMemberId,
+			group_id								as "group.groupId", 
+			group_member_type				as groupMemberType, 
+			member_resource_id			as memberResourceId
+		from 
+			cuckoo.uum_group_member
+		where 
+			group_member_id = #{id}
+	</select>
+	
+	<!-- 组员是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_group_member
+		where 
+			group_member_id = #{id}
+	</select>
+
+	<!-- 查询所有组员, 映射到 baseMap-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_group_member
+	</select>
+	
+	<!-- 组员记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.uum_group_member
+	</select>
+	
+</mapper> 
