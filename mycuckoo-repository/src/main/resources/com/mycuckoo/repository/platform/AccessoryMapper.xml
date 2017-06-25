@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: AccessoryMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:20:23 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.AccessoryMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.Accessory">
+		<id property="accessoryId" column="accessory_id" />
+		<result  property="infoId" column="info_id"  />
+		<result property="accessoryName" column="accessory_name" />
+	</resultMap>
+	
+	<sql id="colums">
+		accessory_id, info_id, accessory_name
+	</sql>
+
+	<!-- 插入附件： 1.由数据库生成id并赋值到Accessory对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.Accessory">
+		<selectKey keyProperty="accessoryId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_accessory_seq')
+		</selectKey>
+		insert into cuckoo.syspl_accessory
+		(
+			accessory_id, info_id, accessory_name
+		)
+		values (
+			#{accessoryId}, #{infoId}, #{accessoryName}
+		)
+	</insert>
+	
+	<!-- 更新附件： 1.输入用对象  -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.Accessory">
+		update 
+			cuckoo.syspl_accessory
+		set
+			info_id							= #{infoId},
+			accessory_name			= #{accessoryName}
+		where 
+			accessory_id = #{accessoryId}
+	</update>
+	
+	<!-- 删除附件 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_accessory where accessory_id = #{id}
+	</delete>
+	
+	<!--
+		获取附件: 输出直接映射到对象, accessory_id 列要 as accessoryId 以方便映射创建 Accessory 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Accessory">
+		select 
+			accessory_id				as accessoryId,
+			info_id							as infoId, 
+			accessory_name			as accessoryName
+		from 
+			cuckoo.syspl_accessory
+		where 
+			accessory_id = #{id}
+	</select>
+	
+	<!-- 判断附件是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			cuckoo.syspl_accessory
+		where 
+			accessory_id = #{id}
+	</select>
+
+	<!-- 返回所有附件, 映射到 baseMap-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_accessory
+	</select>
+	
+	<!-- 统计附件记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			cuckoo.syspl_accessory
+	</select>
+	
+	<!-- 根据公告afficheId查询附件, 映射到 baseMap-->
+	<select id="findByAfficheId" parameterType="long" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_accessory
+		where 
+			info_id = #{id}
+	</select>
+</mapper> 

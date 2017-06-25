@@ -3,6 +3,9 @@ package com.mycuckoo.domain.platform;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * 功能说明: 域对象
  *
@@ -13,7 +16,7 @@ import java.util.Comparator;
 public class DicSmallType implements Serializable {
 
 	private Long smallTypeId;
-	private DicBigType sysplDicBigType;
+	private DicBigType dicBigType;
 	private String smallTypeName;
 	private String smallTypeCode;
 
@@ -27,10 +30,10 @@ public class DicSmallType implements Serializable {
 	}
 
 	/** full constructor */
-	public DicSmallType(Long smallTypeId, DicBigType sysplDicBigType,
+	public DicSmallType(Long smallTypeId, DicBigType dicBigType,
 			String smallTypeName, String smallTypeCode) {
 		this.smallTypeId = smallTypeId;
-		this.sysplDicBigType = sysplDicBigType;
+		this.dicBigType = dicBigType;
 		this.smallTypeName = smallTypeName;
 		this.smallTypeCode = smallTypeCode;
 	}
@@ -43,12 +46,12 @@ public class DicSmallType implements Serializable {
 		this.smallTypeId = smallTypeId;
 	}
 
-	public DicBigType getSysplDicBigType() {
-		return this.sysplDicBigType;
+	public DicBigType getDicBigType() {
+		return this.dicBigType;
 	}
 
-	public void setSysplDicBigType(DicBigType sysplDicBigType) {
-		this.sysplDicBigType = sysplDicBigType;
+	public void setDicBigType(DicBigType dicBigType) {
+		this.dicBigType = dicBigType;
 	}
 
 	public String getSmallTypeName() {
@@ -68,14 +71,14 @@ public class DicSmallType implements Serializable {
 	}
 	
 	public boolean equals(Object obj){
-	   	if(this == obj) return true;
-	   	if(obj == null) return false;
+		if(this == obj) return true;
+		if(obj == null) return false;
  		if(this.getClass() != obj.getClass()) return false;
  		
-		DicSmallType sysplDicSmallType = (DicSmallType)obj;
+		DicSmallType dicSmallType = (DicSmallType)obj;
 		
-		if(sysplDicSmallType.getSmallTypeId() != null && this.smallTypeId != null && 
-			sysplDicSmallType.getSmallTypeId().longValue() == this.smallTypeId.longValue()){
+		if(dicSmallType.getSmallTypeId() != null && this.smallTypeId != null && 
+			dicSmallType.getSmallTypeId().longValue() == this.smallTypeId.longValue()){
 			return true;
 		} else {
 			return false;
@@ -89,18 +92,20 @@ public class DicSmallType implements Serializable {
 		return result;
 	}
 	
-	public DicSmallTypeComp getDicSmallTypeInst(){
+	public DicSmallTypeComp getDicSmallTypeInst() {
 		return new DicSmallTypeComp();
 	}
 	
-	class DicSmallTypeComp implements Comparator {
-		public int compare(Object arg0, Object arg1) {
-			DicSmallType dicSmallType1 = (DicSmallType)arg0;
-			DicSmallType dicSmallType2 = (DicSmallType)arg1;
+	class DicSmallTypeComp implements Comparator<DicSmallType> {
+		public int compare(DicSmallType dicSmallType1, DicSmallType dicSmallType2) {
 			int flag = dicSmallType1.getSmallTypeId().compareTo(dicSmallType2.getSmallTypeId());
 			
 			return flag;
 		}
-		
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 }

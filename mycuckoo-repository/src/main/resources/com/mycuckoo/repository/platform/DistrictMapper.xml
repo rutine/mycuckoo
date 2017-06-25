@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: DistrictMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:38:25 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.DistrictMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.District">
+		<id property="districtId" column="district_id" />
+		<result property="district.districtId" column="dis_parent_id" />
+		<result property="districtName" column="district_name" />
+		<result property="districtCode" column="district_code" />
+		<result property="districtPostal" column="district_postal" />
+		<result property="districtTelcode" column="district_telcode" />
+		<result property="districtLevel" column="district_level" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="colums">
+		district_id, dis_parent_id, district_name, district_code, district_postal, 
+		district_telcode, district_level, memo, status, creator, create_date
+	</sql>
+
+	<!-- 
+		插入地区： 
+		1.由数据库生成id并赋值到DistrictType对象 
+		2.输入对象参数, 嵌套属性表达式#{district.districtId.id} 
+	-->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.District">
+		<selectKey keyProperty="districtId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_district_seq')
+		</selectKey>
+		insert into cuckoo.syspl_district
+		(
+			district_id, dis_parent_id, district_name, district_code, district_postal, 
+			district_telcode, district_level, memo, status, creator, create_date
+		)
+		values (
+			#{districtId}, #{district.districtId}, #{districtName}, #{districtCode}, #{districtPostal}, 
+			#{districtTelcode}, #{districtLevel}, #{memo}, #{status}, #{creator}, #{createDate}
+		)
+	</insert>
+	
+	<!-- 更新地区： 1.输入对象参数, 嵌套属性表达式#{district.districtId.id} -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.District">
+		update 
+			cuckoo.syspl_district
+		set
+			dis_parent_id					= #{district.districtId},
+			district_name					= #{districtName}, 
+			district_code					= #{districtCode}, 
+			district_postal				= #{districtPostal}, 
+			district_telcode			= #{districtTelcode}, 
+			district_level				= #{districtLevel},
+			memo									= #{memo}, 
+			status								= #{status}, 
+			creator								= #{creator}, 
+			create_date						= #{createDate}
+		where district_id = #{districtId}
+	</update>
+	
+	<!-- 删除地区 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_district where district_id = #{id}
+	</delete>
+	
+	<!--
+		获取地区: 输出直接映射到对象, district_id 列要 as districtId 以方便映射创建 District 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.District">
+		select 
+			district_id				as districtId, 
+			dis_parent_id			as "district.districtId",
+			district_name			as districtName, 
+			district_code			as districtCode, 
+			district_postal		as districtPostal,
+			district_telcode	as districtTelcode, 
+			district_level		as districtLevel, 
+			memo							as memo, 
+			status						as status, 
+			creator						as creator,
+			create_date				as createDate
+		from 
+			cuckoo.syspl_district
+		where 
+			district_id = #{id}
+	</select>
+	
+	<!-- 判断地区是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			cuckoo.syspl_district
+		where 
+			district_id = #{id}
+	</select>
+
+	<!-- 根据条件分页查询地区 -->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_district
+		where 
+			district_id != 0
+		<if test="array != null">
+			and district_id in
+			<foreach item="id" collection="array" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="districtName != null">
+			and district_name like #{districtName}
+		</if>
+		<if test="districtLevel != null">
+			and district_level = #{districtLevel}
+		</if>
+		order by 
+			district_id
+	</select>
+	
+		<!-- 统计地区记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_district
+	</select>
+	
+	<!-- 根据父地区ID统计下级地区数 -->
+	<select id="countByUpDistrictId" parameterType="long" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.syspl_district
+		where
+			dis_parent_id = #{parentId}
+	</select>
+	
+	<!-- 判断地区名称是否存在 -->
+	<select id="countByDistrictName" parameterType="string" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.syspl_district
+		where
+			district_name = #{districtName}
+	</select>
+	
+	<!-- 根据父地区查询下级地区, 映射到 baseMap -->
+	<select id="findByUpDistrictId" parameterType="long" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_district
+		where
+			dis_parent_id = #{id}
+	</select>
+	
+	<!-- 根据父地区和过滤条件查询下级地区 -->
+	<select id="findByUpDistrictIdAndFilterIds" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_district
+		where
+			dis_parent_id = #{upDistrictId}
+		and
+			district_id not in
+		<foreach item="id" collection="filterDistrictIds" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		order by 
+			district_id
+	</select>
+</mapper> 

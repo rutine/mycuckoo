@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: DicBigTypeMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:36:48 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.DicBigTypeMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.DicBigType">
+		<id property="bigTypeId" column="big_type_id" />
+		<result property="bigTypeName" column="big_type_name" />
+		<result property="bigTypeCode" column="big_type_code" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="colums">
+		big_type_id, big_type_name, big_type_code, memo, status, creator, create_date
+	</sql>
+
+	<!-- 插入字典大类： 1.由数据库生成id并赋值到DicBigType对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.DicBigType">
+		<selectKey keyProperty="bigTypeId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_dic_big_type_seq')
+		</selectKey>
+		insert into cuckoo.syspl_dic_big_type
+		(
+			big_type_id, big_type_name, big_type_code, memo, status, creator, create_date
+		)
+		values (
+			#{bigTypeId}, #{bigTypeName}, #{bigTypeCode}, #{memo}, #{status}, #{creator}, #{createDate}
+		)
+	</insert>
+	
+	<!-- 更新字典大类： 1.输入对象参数  -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.DicBigType">
+		update 
+			cuckoo.syspl_dic_big_type
+		set
+			big_type_name				= #{bigTypeName},
+			big_type_code				= #{bigTypeCode}, 
+			memo								= #{memo}, 
+			status							= #{status}, 
+			creator							= #{creator}, 
+			create_date					= #{createDate}
+		where 
+			big_type_id = #{bigTypeId}
+	</update>
+	
+	<!-- 删除字典大类 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_dic_big_type where big_type_id = #{id}
+	</delete>
+	
+		<!--
+		获取字典大类: 输出直接映射到对象, big_type_id 列要 as bigTypeId 以方便映射创建 DicBigType 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.DicBigType">
+		select 
+			big_type_id				as bigTypeId, 
+			big_type_name			as bigTypeName,
+			big_type_code			as bigTypeCode, 
+			memo							as memo, 
+			status						as status, 
+			creator						as creator,
+			create_date				as createDate
+		from 
+			cuckoo.syspl_dic_big_type
+		where 
+			big_type_id = #{id}
+	</select>
+	
+	<!-- 判断字典大类是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.syspl_dic_big_type
+		where 
+			big_type_id = #{id}
+	</select>
+	
+	<!-- 根据字典大类名称及代码分页查询字典大类 -->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_dic_big_type
+		<where>
+			<if test="bigTypeName != null">
+				big_type_name like #{bigTypeName}
+			</if>
+			<if test="bigTypeCode != null">
+				and big_type_code like #{bigTypeCode}
+			</if>
+		</where>
+		order by 
+			big_type_id desc
+	</select>
+	
+	<!-- 统计字典大类记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_dic_big_type
+	</select>
+	
+		<!-- 根据字典大类编码统计字典大类数量 -->
+	<select id="countByBigTypeCode" parameterType="string" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.syspl_dic_big_type
+		where
+			big_type_code = #{bigTypeCode}
+	</select>
+	
+	<!-- 根据字典大类ID修改字典大类状态 -->
+	<update id="updateStatus">
+		update
+			cuckoo.syspl_dic_big_type
+		set
+			status = #{status}
+		where
+			big_type_id = #{bigTypeId}
+	</update>
+	
+</mapper> 

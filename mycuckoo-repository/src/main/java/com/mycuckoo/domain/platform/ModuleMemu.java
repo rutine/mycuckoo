@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -233,5 +236,10 @@ public class ModuleMemu implements Serializable, Comparator<ModuleMemu>  {
 
 	public void setModPageType(String modPageType) {
 		this.modPageType = modPageType;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 }

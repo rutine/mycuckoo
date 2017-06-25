@@ -64,7 +64,7 @@ public class PageInterceptor implements Interceptor {
 			StatementHandler delegate = (StatementHandler) FieldUtils.readField(handler, "delegate", true);
 			BoundSql boundSql = delegate.getBoundSql();
 			if (threadLocalPage.totalElements > -1) {
-				logger.info("------> 已经设置了总页数, 不需要再查询总数");
+				logger.debug("------> 已经设置了总页数, 不需要再查询总数");
 			} else {
 				Object parameterObj = boundSql.getParameterObject();
 				MappedStatement mappedStatement = (MappedStatement) FieldUtils.readField(delegate, "mappedStatement", true);
@@ -84,10 +84,10 @@ public class PageInterceptor implements Interceptor {
 		else {
 			Pageable page = findPageObject(invocation.getArgs()[1]);
 			if (page == null) {
-				logger.info("------> 没有分页参数, 不是分页查询");
+				logger.debug("------> 没有分页参数, 不是分页查询");
 				return invocation.proceed();
 			}
-			logger.info("------> 检测到分页参数, 使用分页查询");
+			logger.debug("------> 检测到分页参数, 使用分页查询");
 			
 			// 设置真正的parameterObj
 			invocation.getArgs()[1] = extractRealParameterObject(invocation.getArgs()[1]);

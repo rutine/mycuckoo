@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: DicSmallTypeMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:38:25 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.DicSmallTypeMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.DicSmallType">
+		<id property="smallTypeId" column="small_type_id" />
+		<result property="dicBigType.bigTypeId" column="big_type_id" />
+		<result property="smallTypeName" column="small_type_name" />
+		<result property="smallTypeCode" column="small_type_code" />
+	</resultMap>
+	
+	<sql id="colums">
+		small_type_id, big_type_id, small_type_name, small_type_code
+	</sql>
+
+	<!-- 插入字典小类： 1.由数据库生成id并赋值到SysplDicSmallType对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.DicSmallType">
+		<selectKey keyProperty="smallTypeId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_dic_small_type_seq')
+		</selectKey>
+		insert into cuckoo.syspl_dic_small_type
+		(
+			small_type_id, big_type_id, small_type_name, small_type_code
+		)
+		values (
+			#{smallTypeId}, #{dicBigType.bigTypeId}, #{smallTypeName}, #{smallTypeCode}
+		)
+	</insert>
+	
+	<!-- 更新字典小类： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.DicSmallType">
+		update 
+			cuckoo.syspl_dic_small_type
+		set
+			big_type_id						= #{dicBigType.bigTypeId},
+			small_type_name				= #{smallTypeName}, 
+			small_type_code				= #{smallTypeCode}
+		where 
+			small_type_id = #{smallTypeId}
+	</update>
+	
+	<!-- 删除字典小类 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_dic_small_type where small_type_id = #{id}
+	</delete>
+	
+	<!--
+		获取字典小类: 输出直接映射到对象, big_type_id 列要 as "dicBigType.bigTypeId" 以方便映射创建 DicSmallType 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.DicSmallType">
+		select 
+			small_type_id				as smallTypeId, 
+			big_type_id					as "dicBigType.bigTypeId",
+			small_type_name			as smallTypeName, 
+			small_type_code			as smallTypeCode
+		from 
+			cuckoo.syspl_dic_small_type
+		where 
+			small_type_id = #{id}
+	</select>
+	
+	<!-- 判断字典小类是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.syspl_dic_small_type
+		where 
+			small_type_id = #{id}
+	</select>
+
+	<!-- 返回所有字典小类, 映射到 baseMap-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_dic_small_type
+	</select>
+	
+	<!-- 统计字典小类记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_dic_small_type
+	</select>
+	
+	<!-- 根据大类ID删除小类 -->
+	<delete id="deleteByBigTypeId" parameterType="long">
+		delete from 
+			cuckoo.syspl_dic_small_type 
+		where 
+			big_type_id = #{id}
+	</delete>
+	
+	<!-- 根据大类ID查询小类, 映射到 baseMap-->
+	<select id="findByBigTypeId" parameterType="long" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_dic_small_type
+		where 
+			big_type_id = #{id}
+	</select>
+	
+	<!-- 根据大类代码查询小类, 映射到 baseMap-->
+	<select id="findByBigTypeCode" parameterType="string" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_dic_small_type
+		where 
+			big_type_id in
+		(
+			select 
+				big_type_id 
+			from 
+				cuckoo.syspl_dic_big_type
+			where
+				big_type_code = #{bigTypeCode}
+		)
+	</select>
+	
+</mapper> 

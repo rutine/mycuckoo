@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: ModOptRefMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:38:25 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.ModOptRefMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.ModOptRef">
+		<id property="modOptId" column="mod_opt_id" />
+		<association property="operate"
+			javaType="com.mycuckoo.domain.platform.Operate"
+			resultMap="com.mycuckoo.repository.platform.OperateMapper.baseMap"
+			columnPrefix="opt_"/>
+		<association property="moduleMemu"
+			javaType="com.mycuckoo.domain.platform.ModuleMemu"
+			resultMap="com.mycuckoo.repository.platform.ModuleMemuMapper.baseMap"
+			columnPrefix="modu_"/>
+	</resultMap>
+	
+	<sql id="colums">
+		mod_opt_id, operate_id, module_id
+	</sql>
+
+	<!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModOptRef对象 2.嵌套属性输入#{operate.operateId}-->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.ModOptRef">
+		<selectKey keyProperty="modOptId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_mod_opt_ref_seq')
+		</selectKey>
+		insert into cuckoo.syspl_mod_opt_ref
+		(
+			mod_opt_id, operate_id, module_id
+		)
+		values (
+			#{modOptId}, #{operate.operateId}, #{moduleMemu.moduleId}
+		)
+	</insert>
+	
+	<!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.ModOptRef">
+		update 
+			cuckoo.syspl_mod_opt_ref
+		set
+			operate_id				= #{operate.operateId},
+			module_id					= #{moduleMemu.moduleId}
+		where 
+			mod_opt_id = #{modOptId}
+	</update>
+	
+	<!-- 删除模块操作关系 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_mod_opt_ref where mod_opt_id = #{id}
+	</delete>
+	
+	<!--
+		获取模块操作关系: 输出直接映射到 baseMap
+	-->
+	<select id="get" parameterType="long" resultMap="baseMap">
+		select 
+			t1.mod_opt_id					as mod_opt_id,
+			t1.operate_id					as opt_operate_id,
+			t1.module_id					as modu_module_id,
+			t2.operate_name				as opt_operate_name, 
+			t2.opt_img_link				as opt_opt_img_link, 
+			t2.opt_order					as opt_opt_order, 
+			t2.opt_group					as opt_opt_group, 
+			t2.status							as opt_status, 
+			t2.opt_fun_link				as opt_opt_fun_link,
+			t3.mod_parent_id			as modu_mod_parent_id,
+			t3.mod_name						as modu_mod_name, 
+			t3.mod_en_id					as modu_mod_en_id, 
+			t3.mod_img_cls				as modu_mod_img_cls, 
+			t3.mod_level					as modu_mod_level, 
+			t3.mod_order					as modu_mod_order, 
+			t3.belong_to_sys			as modu_belong_to_sys, 
+			t3.mod_page_type			as modu_mod_page_type,
+			t3.status							as modu_status
+		from 
+			cuckoo.syspl_mod_opt_ref t1
+		left join 
+			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+		left join 
+			cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+		where 
+			mod_opt_id = #{id}
+	</select>
+	
+	<!-- 判断模块操作关系是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.syspl_mod_opt_ref
+		where 
+			mod_opt_id = #{id}
+	</select>
+
+	<!-- 返回所有模块操作关系, 映射到 baseMap-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			t1.mod_opt_id					as mod_opt_id,
+			t1.operate_id					as opt_operate_id,
+			t1.module_id					as modu_module_id,
+			t2.operate_name				as opt_operate_name, 
+			t2.opt_img_link				as opt_opt_img_link, 
+			t2.opt_order					as opt_opt_order, 
+			t2.opt_group					as opt_opt_group, 
+			t2.status							as opt_status, 
+			t2.opt_fun_link				as opt_opt_fun_link,
+			t3.mod_parent_id			as modu_mod_parent_id,
+			t3.mod_name						as modu_mod_name, 
+			t3.mod_en_id					as modu_mod_en_id, 
+			t3.mod_img_cls				as modu_mod_img_cls, 
+			t3.mod_level					as modu_mod_level, 
+			t3.mod_order					as modu_mod_order, 
+			t3.belong_to_sys			as modu_belong_to_sys, 
+			t3.mod_page_type			as modu_mod_page_type,
+			t3.status							as modu_status
+		from 
+			cuckoo.syspl_mod_opt_ref t1
+		left join 
+			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+		left join 
+			cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+	</select>
+	
+		<!-- 统计模块操作关系记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_mod_opt_ref
+	</select>
+	
+	<!-- 根据模块ID删除模块操作关系,级联删除权限 1 -->
+	<delete id="deleteByModuleId" parameterType="long">
+		delete from 
+			cuckoo.syspl_mod_opt_ref
+		where 
+			module_id = #{id}
+	</delete>
+	
+	<!-- 根据操作ID删除模块操作关系,级联删除权限 2 -->
+	<delete id="deleteByOperateId" parameterType="long">
+		delete from 
+			cuckoo.syspl_mod_opt_ref
+		where 
+			operate_id = #{id}
+	</delete>
+	
+	<!-- 根据操作ID查询模块操作关系, 映射到 baseMap-->
+	<select id="findByOperateId" parameterType="long" resultMap="baseMap">
+		select 
+			mod_opt_id					as mod_opt_id,
+			operate_id					as opt_operate_id,
+			module_id						as modu_module_id
+		from 
+			cuckoo.syspl_mod_opt_ref
+		where 
+			operate_id = #{id}
+	</select>
+	
+	<!-- 根据模块ID查询模块操作关系, 映射到 baseMap-->
+	<select id="findByModuleId" parameterType="long" resultMap="baseMap">
+		select 
+			mod_opt_id					as mod_opt_id,
+			operate_id					as opt_operate_id,
+			module_id						as modu_module_id
+		from 
+			cuckoo.syspl_mod_opt_ref
+		where 
+			module_id = #{id}
+	</select>
+	
+	<!-- 根据模块关系表ID查询模块操作关系, 映射到 baseMap-->
+	<select id="findByIds" parameterType="map" resultMap="baseMap">
+		select 
+			t1.mod_opt_id						as mod_opt_id,
+			t1.operate_id						as opt_operate_id,
+			t1.module_id						as modu_module_id,
+			t2.operate_name					as opt_operate_name, 
+			t2.opt_img_link					as opt_opt_img_link, 
+			t2.opt_order						as opt_opt_order, 
+			t2.opt_group						as opt_opt_group, 
+			t2.status								as opt_status, 
+			t2.opt_fun_link					as opt_opt_fun_link,
+			t3.mod_parent_id				as modu_mod_parent_id,
+			t3.mod_name							as modu_mod_name, 
+			t3.mod_en_id						as modu_mod_en_id, 
+			t3.mod_img_cls					as modu_mod_img_cls, 
+			t3.mod_level						as modu_mod_level, 
+			t3.mod_order						as modu_mod_order, 
+			t3.belong_to_sys				as modu_belong_to_sys, 
+			t3.mod_page_type				as modu_mod_page_type,
+			t3.status								as modu_status
+		from 
+			cuckoo.syspl_mod_opt_ref t1
+		left join 
+			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+		left join 
+			cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+		where 
+			t1.mod_opt_id in 
+			<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</select>
+	
+</mapper> 

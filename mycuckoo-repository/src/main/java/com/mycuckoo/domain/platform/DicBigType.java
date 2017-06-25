@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -109,5 +112,10 @@ public class DicBigType implements Serializable {
 	
 	public void setDicSmallTypes(List<DicSmallType> dicSmallTypes) {
 		this.dicSmallTypes = dicSmallTypes;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 }

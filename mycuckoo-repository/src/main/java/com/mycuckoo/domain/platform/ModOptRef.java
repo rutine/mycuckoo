@@ -51,7 +51,7 @@ public class ModOptRef implements Serializable {
 		return this.moduleMemu;
 	}
 
-	public void setSysplModuleMemu(ModuleMemu moduleMemu) {
+	public void setModuleMemu(ModuleMemu moduleMemu) {
 		this.moduleMemu = moduleMemu;
 	}
 

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: SysParameterMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:58:08 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.SysParameterMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysParameter">
+		<id property="paraId" column="para_id" />
+		<result property="paraName" column="para_name" />
+		<result property="paraKeyName" column="para_key_name" />
+		<result property="paraValue" column="para_value" />
+		<result property="paraType" column="para_type" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="colums">
+		para_id, para_name, para_key_name, para_value, para_type, memo, status, creator, create_date
+	</sql>
+
+	<!-- 插入系统参数： 1.由数据库生成id并赋值到SysParameter对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysParameter">
+		<selectKey keyProperty="paraId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_sys_parameter_seq')
+		</selectKey>
+		insert into cuckoo.syspl_sys_parameter
+		(
+			para_id, para_name, para_key_name, para_value, para_type, memo, status, creator, create_date
+		)
+		values (
+			#{paraId}, #{paraName}, #{paraKeyName}, #{paraValue}, #{paraType}, #{memo}, #{status}, #{creator}, #{createDate}
+		)
+	</insert>
+	
+	<!-- 更新系统参数： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.SysParameter">
+		update 
+			cuckoo.syspl_sys_parameter
+		set
+			para_name						= #{paraName},
+			para_key_name				= #{paraKeyName}, 
+			para_value					= #{paraValue}, 
+			para_type						= #{paraType}, 
+			memo								= #{memo}, 
+			status							= #{status},
+			creator							= #{creator}, 
+			create_date					= #{createDate}
+		where 
+			para_id = #{paraId}
+	</update>
+	
+	<!-- 删除系统参数 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_sys_parameter where para_id = #{id}
+	</delete>
+	
+	<!--
+		获取系统参数: 输出直接映射到对象, para_id 列要 as paraId 以方便映射创建 SysParameter 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.SysParameter">
+		select 
+			para_id							as paraId, 
+			para_name						as paraName,
+			para_key_name				as paraKeyName, 
+			para_value					as paraValue, 
+			para_type						as paraType,
+			memo								as memo, 
+			status							as status, 
+			creator							as creator,
+			create_date					as createDate
+		from 
+			cuckoo.syspl_sys_parameter
+		where 
+			para_id = #{id}
+	</select>
+	
+	<!-- 系统参数是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.syspl_sys_parameter
+		where 
+			para_id = #{id}
+	</select>
+
+	<!-- 根据系统参数名称及键值查询系统参数, 映射到 baseMap -->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_sys_parameter
+		<where>
+			<if test="paraName != null">
+				para_name like #{paraName}
+			</if>
+			<if test="paraKeyName != null">
+				and para_key_name like #{paraKeyName}
+			</if>
+		</where>
+		order by 
+			para_id desc
+	</select>
+	
+	<!-- 统计系统参数记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_sys_parameter
+	</select>
+	
+	<!-- 根据参数名称查找系统参数 -->
+	<select id="getByParaName" parameterType="string" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_sys_parameter
+		where
+			para_name = #{paraName}
+	</select>
+	
+</mapper> 

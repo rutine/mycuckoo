@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -18,7 +21,7 @@ public class District implements Serializable {
 	private static final long serialVersionUID = 1000000L;
 
 	private Long districtId;
-	private District sysplDistrict;
+	private District district;
 	private String districtName;
 	private String districtCode;
 	private String districtPostal;
@@ -45,12 +48,12 @@ public class District implements Serializable {
 	}
 
 	/** full constructor */
-	public District(Long districtId, District sysplDistrict,
+	public District(Long districtId, District district,
 			String districtName, String districtCode, String districtPostal,
 			String districtTelcode, String districtLevel, String memo,
 			String status, String creator, Date createDate,  List<District> districts) {
 		this.districtId = districtId;
-		this.sysplDistrict = sysplDistrict;
+		this.district = district;
 		this.districtName = districtName;
 		this.districtCode = districtCode;
 		this.districtPostal = districtPostal;
@@ -71,12 +74,12 @@ public class District implements Serializable {
 		this.districtId = districtId;
 	}
 
-	public District getSysplDistrict() {
-		return this.sysplDistrict;
+	public District getDistrict() {
+		return this.district;
 	}
 
-	public void setSysplDistrict(District sysplDistrict) {
-		this.sysplDistrict = sysplDistrict;
+	public void setDistrict(District district) {
+		this.district = district;
 	}
 
 	public String getDistrictName() {
@@ -196,5 +199,10 @@ public class District implements Serializable {
 		result = 37 * result + (getDistrictId() == null ? 0 : getDistrictId().hashCode());
 
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 }

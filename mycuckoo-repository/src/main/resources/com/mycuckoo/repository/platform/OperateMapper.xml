@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: OperateMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:50:37 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.OperateMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.Operate">
+		<id property="operateId" column="operate_id" />
+		<result property="operateName" column="operate_name" />
+		<result property="optImgLink" column="opt_img_link" />
+		<result property="optOrder" column="opt_order" />
+		<result property="optGroup" column="opt_group" />
+		<result property="memo" column="memo" />
+		<result property="status" column="status" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+		<result property="optFunLink" column="opt_fun_link" />
+	</resultMap>
+	
+	<sql id="colums">
+		operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+	</sql>
+
+	<!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.Operate">
+		<selectKey keyProperty="operateId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_operate_seq')
+		</selectKey>
+		insert into cuckoo.syspl_operate
+		(
+			operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+		)
+		values (
+			#{operateId}, #{operateName}, #{optImgLink}, #{optOrder}, #{optGroup}, #{memo}, #{status}, #{creator}, #{createDate}, #{optFunLink}
+		)
+	</insert>
+	
+	<!-- 更新操作： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.Operate">
+		update 
+			cuckoo.syspl_operate
+		set
+			operate_name				= #{operateName},
+			opt_img_link				= #{optImgLink}, 
+			opt_order						= #{optOrder}, 
+			opt_group						= #{optGroup}, 
+			memo								= #{memo}, 
+			status							= #{status}, 
+			creator							= #{creator}, 
+			create_date					= #{createDate},
+			opt_fun_link				= #{optFunLink}
+		where 
+			operate_id = #{operateId}
+	</update>
+	
+	<!-- 删除操作 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_operate where operate_id = #{id}
+	</delete>
+	
+	<!--
+		获取操作: 输出直接映射到对象, operate_id 列要 as operateId 以方便映射创建 Operate 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Operate">
+		select 
+			operate_id						as operateId,
+			operate_name					as operateName, 
+			opt_img_link					as optImgLink, 
+			opt_order							as optOrder, 
+			opt_group							as optGroup, 
+			memo									as memo, 
+			status								as status, 
+			creator								as creator, 
+			create_date						as createDate,
+			opt_fun_link					as optFunLink
+		from 
+			cuckoo.syspl_operate
+		where 
+			operate_id = #{id}
+	</select>
+	
+	<!-- 判断操作是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.syspl_operate
+		where 
+			operate_id = #{id}
+	</select>
+
+		<!-- 根据条件分页查询模块操作-->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_operate
+		<where>
+			<if test="operateName != null">
+				operate_name like #{operateName}
+			</if>
+		</where>
+		order by 
+			operate_id desc
+	</select>
+	
+		<!-- 统计操作记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.syspl_operate
+	</select>
+	
+	<!-- 根据模块操作名统计模块操作数量-->
+	<select id="countByName" parameterType="string" resultType="int">
+		select 
+			count(*)
+		from 
+			cuckoo.syspl_operate
+		where
+			operate_name = #{operateName}
+	</select>
+	
+</mapper> 

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: AfficheMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 9:27:13 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.AfficheMapper">
+	<!-- 系统公告 -->
+	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.Affiche">
+		<id property="afficheId" column="affiche_id" />
+		<result property="afficheTitle" column="affiche_title" />
+		<result property="afficheInvalidate" column="affiche_invalidate" />
+		<result property="affichePulish" column="affiche_pulish" />
+		<result property="afficheContent" column="affiche_content" />
+	</resultMap>
+	
+	<sql id="colums">
+		affiche_id, affiche_title, affiche_invalidate, affiche_pulish, affiche_content
+	</sql>
+
+	<!-- 插入公告： 1.由数据库生成id并赋值到SysplAffiche对象 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.platform.Affiche">
+		<selectKey keyProperty="afficheId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.syspl_affiche_seq')
+		</selectKey>
+		insert into cuckoo.syspl_affiche
+		(
+			affiche_id, affiche_title, affiche_invalidate, affiche_pulish, affiche_content
+		)
+		values (
+			#{afficheId}, #{afficheTitle}, #{afficheInvalidate}, #{affichePulish}, #{afficheContent}
+		)
+	</insert>
+	
+	<!-- 更新公告： 1.输入对象参数  -->
+	<update id="update" parameterType="com.mycuckoo.domain.platform.Affiche">
+		update 
+			cuckoo.syspl_affiche
+		set
+			affiche_title							= #{afficheTitle},
+			affiche_invalidate				= #{afficheInvalidate}, 
+			affiche_pulish						= #{affichePulish}, 
+			affiche_content						= #{afficheContent}
+		where 
+			affiche_id = #{afficheId}
+	</update>
+	
+	<!-- 删除公告 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.syspl_affiche where affiche_id = #{id}
+	</delete>
+	
+		<!--
+		获取公告: 输出直接映射到对象, affiche_id 列要 as afficheId 以方便映射创建 SysplAffiche 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Affiche">
+		select 
+			affiche_id							as afficheId,
+			affiche_title						as afficheTitle, 
+			affiche_invalidate			as afficheInvalidate, 
+			affiche_pulish					as affichePulish, 
+			affiche_content					as afficheContent
+		from 
+			cuckoo.syspl_affiche
+		where 
+			affiche_id = #{id}
+	</select>
+	
+	<!-- 判断公告是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(*) > 0 
+		from 
+			cuckoo.syspl_affiche
+		where 
+			affiche_id = #{id}
+	</select>
+
+	<!-- 根据条件分页查询公告 -->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_affiche
+		<where>
+			<if test="afficheTitle != null">
+				and affiche_title like #{afficheTitle}
+			</if>
+			<if test="affichePulish != null">
+				and affiche_pulish = #{affichePulish}
+			</if>
+		</where>
+		order by 
+			affiche_id desc
+	</select>
+	
+	<!-- 统计公告记录总数 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			cuckoo.syspl_affiche
+	</select>
+	
+	<!-- 查询有效期内的公告记录 -->
+	<select id="findBeforeValidate" parameterType="date" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.syspl_affiche
+		where 
+			affiche_pulish = 0
+		and 
+			affiche_invalidate >= #{afficheInvalidate}
+	</select>
+</mapper> 
