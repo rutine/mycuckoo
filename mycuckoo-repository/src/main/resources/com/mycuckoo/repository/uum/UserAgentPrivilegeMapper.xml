@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: UserAgentPrivilegeMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:20:37 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.UserAgentPrivilegeMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserAgentPrivilege">
+		<id property="userAgentPriId" column="user_agent_pri_id" />
+		<result property="userAgent.agentId" column="agent_id" />
+		<result property="privilegeId" column="privilege_id" />
+		<result property="privilegeType" column="privilege_type" />
+	</resultMap>
+	
+	<sql id="colums">
+		user_agent_pri_id, agent_id, privilege_id, privilege_type
+	</sql>
+
+	<!-- 插入用户代理权限： 1.由数据库生成id并赋值到UserAgentPrivilege对象 2.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.UserAgentPrivilege">
+		<selectKey keyProperty="userAgentPriId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_user_agent_privilege_seq')
+		</selectKey>
+		insert into cuckoo.uum_user_agent_privilege
+		(
+			user_agent_pri_id, agent_id, privilege_id, privilege_type
+		)
+		values (
+			#{userAgentPriId}, #{userAgent.agentId}, #{privilegeId}, #{privilegeType}
+		)
+	</insert>
+	
+	<!-- 更新用户代理权限： 1.输入对象参数, 嵌套属性表达式#{userAgent.agentId} -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.UserAgentPrivilege">
+		update 
+			cuckoo.uum_user_agent_privilege
+		set
+			agent_id					= #{userAgent.agentId},
+			privilege_id			= #{privilegeId},
+			privilege_type		= #{privilegeType}
+		where 
+			user_agent_pri_id = #{userAgentPriId}
+	</update>
+	
+	<!-- 删除用户代理权限 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_user_agent_privilege where user_agent_pri_id = #{id}
+	</delete>
+	
+		<!--
+		获取用户代理权限: 输出直接映射到对象, user_agent_pri_id 列要 as userAgentPriId 以方便映射创建 UserAgentPrivilege 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.UserAgentPrivilege">
+		select 
+			user_agent_pri_id			as userAgentPriId,
+			agent_id							as "userAgent.agentId", 
+			privilege_id					as privilegeId, 
+			privilege_type				as privilegeType
+		from 
+			cuckoo.uum_user_agent_privilege
+		where 
+			user_agent_pri_id = #{id}
+	</select>
+	
+	<!-- 判断用户代理权限是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_user_agent_privilege
+		where 
+			user_agent_pri_id = #{id}
+	</select>
+
+	<!-- 查询所有用户代理权限, 映射到 UumUserAgentPrivilege-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_user_agent_privilege
+	</select>
+	
+	<!-- 统计用户代理权限记录 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.uum_user_agent_privilege
+	</select>
+	
+	<!-- 根据代理ID查询所有权限IDs -->
+	<select id="findPrivilegeIdsByAgentId" parameterType="long" resultType="string">
+		select 
+			privilege_id
+		from 
+			cuckoo.uum_user_agent_privilege
+		where 
+			agent_id = #{agentId}
+	</select>
+	
+</mapper> 

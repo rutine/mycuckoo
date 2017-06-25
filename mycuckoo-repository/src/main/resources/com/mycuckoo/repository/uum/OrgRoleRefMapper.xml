@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: OrgRoleRefMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:06:48 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.OrgRoleRefMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.OrgRoleRef">
+		<id property="orgRoleId" column="org_role_id" />
+		<association property="role"
+			javaType="com.mycuckoo.domain.uum.Role"
+			resultMap="com.mycuckoo.repository.uum.RoleMapper.baseMap"
+			columnPrefix="role_" />
+		<association property="organ"
+			javaType="com.mycuckoo.domain.uum.Organ"
+			resultMap="com.mycuckoo.repository.uum.OrganMapper.baseMap"
+			columnPrefix="org_" />
+		<!-- <collection property="roleUserRefs" javaType="com.mycuckoo.domain.uum.RoleUserRefs" resultMap="com.mycuckoo.repository.uum.RoleUserRefs" /> -->
+	</resultMap>
+	
+	<sql id="colums">
+		org_role_id, role_id, org_id
+	</sql>
+
+	<!-- 
+		插入数据： 
+		1.由数据库生成id并赋值到对象 
+		2.输入是对象参数 
+	-->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.OrgRoleRef">
+		<selectKey keyProperty="orgRoleId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_org_role_ref_seq')
+		</selectKey>
+		insert into cuckoo.uum_org_role_ref
+		(
+			org_role_id, role_id, org_id
+		)
+		values (
+			#{orgRoleId}, #{role.roleId}, #{organ.orgId}
+		)
+	</insert>
+	
+	<!-- 更新数据： 1.输入是对象参数, 嵌套属性表达式如: #{role.roleId}, #{organ.orgId} -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.OrgRoleRef">
+		update 
+			cuckoo.uum_org_role_ref
+		set
+			role_id							= #{role.roleId},
+			org_id							= #{organ.orgId}
+		where 
+			org_role_id = #{orgRoleId}
+	</update>
+	
+	<!-- 删除数据 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_org_role_ref where org_role_id = #{id}
+	</delete>
+	
+	<!-- 获取数据, 映射到uumOrgRoleRef -->
+	<select id="get" parameterType="long" resultMap="baseMap">
+		select 
+			t1.org_role_id			as org_role_id,
+			t1.role_id					as role_role_id,
+			t1.org_id						as org_org_id,
+			t2.role_name				as role_role_name, 
+			t2.status						as role_status,
+			t2.role_level				as role_role_level,
+			t3.org_simple_name	as org_org_simple_name, 
+			t3.org_full_name		as org_org_full_name,
+			t3.org_code					as org_org_code, 
+			t3.org_type					as org_org_type, 
+			t3.status						as org_status
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_role t2 on  t1.role_id = t2.role_id
+		left join 
+			cuckoo.uum_organ t3 on t1.org_id = t3.org_id
+		where 
+			org_role_id = #{id}
+	</select>
+	
+	<!-- 数据记录是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_org_role_ref
+		where 
+			org_role_id = #{id}
+	</select>
+
+	<!-- 查询数据, 映射到baseMap -->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			org_role_id			as org_role_id,
+			role_id					as role_role_id,
+			org_id					as org_org_id
+		from 
+			cuckoo.uum_org_role_ref
+	</select>
+	
+	<!-- 统计所有数据记录 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.uum_org_role_ref
+	</select>
+	
+	<!-- 根据orgId查询所有角色记录, 映射到baseMap -->
+	<select id="findRolesByOrgId" parameterType="long" resultMap="baseMap">
+		select 
+			t1.org_role_id				as org_role_id,
+			t1.role_id						as role_role_id,
+			t2.role_name					as role_role_name, 
+			t2.status							as role_status,
+			t2.memo								as role_memo,
+			t2.creator						as role_creator, 
+			t2.create_date				as role_create_date,
+			t2.role_level					as role_role_level
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_role t2 on  t1.role_id = t2.role_id
+		where 
+			t1.org_id = #{id}
+		order by 
+			org_role_id desc
+	</select>
+	
+	<!-- 根据roleId查询所有机构记录, 映射到baseMap -->
+	<select id="findOrgansByRoleId" parameterType="long" resultMap="baseMap">
+		select 
+			t1.org_role_id				as org_role_id,
+			t1.org_id							as org_org_id,
+			t2.org_parent					as org_org_parent, 
+			t2.org_simple_name		as org_org_simple_name, 
+			t2.org_full_name			as org_org_full_name,
+			t2.org_code						as org_org_code, 
+			t2.org_address1				as org_org_address1, 
+			t2.org_address2				as org_org_address2, 
+			t2.org_tel1						as org_org_tel1, 
+			t2.org_tel2						as org_org_tel2, 
+			t2.org_begin_date			as org_org_begin_date, 
+			t2.org_type						as org_org_type, 
+			t2.org_fax						as org_org_fax, 
+			t2.org_postal					as org_org_postal, 
+			t2.org_legal					as org_org_legal, 
+			t2.org_tax_no					as org_org_tax_no, 
+			t2.org_reg_no					as org_org_reg_no, 
+			t2.org_belong_dist		as org_org_belong_dist, 
+			t2.status							as org_status,
+			t2.memo								as org_memo,
+			t2.creator						as org_creator, 
+			t2.create_date				as org_create_date
+		from 
+			cuckoo.uum_org_role_ref  t1
+		left join 
+			cuckoo.uum_organ t2 on t1.org_id = t2.org_id
+		where 
+			 t1.role_id = #{id}
+		order by 
+			org_role_id desc
+	</select>
+	
+	<!-- 根据orgId和roleId获取机构角色, 映射到baseMap -->
+	<select id="getByOrgRoleId" parameterType="map" resultMap="baseMap">
+		select 
+			t1.org_role_id				as org_role_id,
+			t1.role_id						as role_role_id,
+			t1.org_id							as org_org_id,
+			t2.org_parent					as org_org_parent, 
+			t2.org_simple_name		as org_org_simple_name, 
+			t2.org_full_name			as org_org_full_name,
+			t2.org_code						as org_org_code, 
+			t2.org_begin_date			as org_org_begin_date, 
+			t2.org_belong_dist		as org_org_belong_dist, 
+			t2.status							as org_status,
+			t2.creator						as org_creator,
+			t3.role_name					as role_role_name, 
+			t3.status							as role_status,
+			t3.role_level					as role_role_level
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_organ  t2 on t1.org_id = t2.org_id
+		left join 
+			cuckoo.uum_role t3 on  t1.role_id = t3.role_id
+		where 
+			 t1.role_id = #{roleId}
+		and
+			t1.org_id = #{orgId}
+	</select>
+	
+	<!-- 根据orgId和roleName查询所有角色记录, 映射到baseMap -->
+	<select id="findRolesByPage" parameterType="map" resultMap="baseMap">
+		select 
+			t1.org_role_id				as org_role_id,
+			t1.role_id						as role_role_id,
+			t2.role_name					as role_role_name, 
+			t2.status							as role_status,
+			t2.memo								as role_memo,
+			t2.creator						as role_creator, 
+			t2.create_date				as role_create_date,
+			t2.role_level					as role_role_level
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_role t2 on t1.role_id = t2.role_id
+		where 
+			t1.org_id = #{orgId}
+		<if test="roleName != null">
+			and t2.role_name like #{roleName}
+		</if>
+		order by 
+			org_role_id desc
+	</select>
+	
+	<!-- 根据角色ID查询所有机构角色关系ID -->
+	<select id="findOrgRoleIdsByRoleId" resultType="long">
+		select 
+			org_role_id	as		"orgRoleId"
+		from 
+			cuckoo.uum_org_role_ref
+		where 
+			role_id = #{roleId}
+	</select>
+	
+	<!-- 根据机构ID统计角色数量 -->
+	<select id="countByOrgId" parameterType="long" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_role t2 on t1.role_id = t2.role_id
+		where 
+			t1.org_id = #{orgId}
+	</select>
+	
+	<!-- 根据角色ID删除机构角色关系记录，为停用角色所用 -->
+	<delete id="deleteByRoleId" parameterType="long">
+		delete from cuckoo.uum_org_role_ref where role_id = #{roleId}
+	</delete>
+	
+	<!--根据多个机构角色ID查询机构角色记录 -->
+	<select id="findByOrgRoleIds" resultMap="baseMap">
+		select 
+			t1.org_role_id			as org_role_id,
+			t1.role_id					as role_role_id,
+			t1.org_id						as org_org_id,
+			t2.role_name				as role_role_name, 
+			t2.status						as role_status,
+			t2.role_level				as role_role_level,
+			t3.org_simple_name	as org_org_simple_name, 
+			t3.org_full_name		as org_org_full_name,
+			t3.org_code					as org_org_code, 
+			t3.org_type					as org_org_type, 
+			t3.status						as org_status
+		from 
+			cuckoo.uum_org_role_ref t1
+		left join 
+			cuckoo.uum_role t2 on  t1.role_id = t2.role_id
+		left join 
+			cuckoo.uum_organ t3 on t1.org_id = t3.org_id
+		where 
+			org_role_id in 
+			<foreach collection="array" item="orgRoleId" open="(" separator="," close=")">
+				#{orgRoleId}
+			</foreach>
+	</select>
+	
+</mapper> 

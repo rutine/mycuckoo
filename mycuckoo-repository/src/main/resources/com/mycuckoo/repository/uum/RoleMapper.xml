@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: RoleMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:14:14 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.RoleMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.Role">
+		<id property="roleId" column="role_id" />
+		<result property="roleName" column="role_name" />
+		<result property="status" column="status" />
+		<result property="memo" column="memo" />
+		<result property="creator" column="creator" />
+		<result property="createDate" column="create_date" />
+		<result property="roleLevel" column="role_level" />
+		<!-- <collection property="orgRoleRefs" javaType="com.mycuckoo.domain.uum.OrgRoleRefs" resultMap="com.mycuckoo.repository.uum.OrgRoleRefs.baseMap" /> -->
+	</resultMap>
+	
+	<sql id="colums">
+		role_id, role_name, status, memo, creator, create_date, role_level
+	</sql>
+
+	<!-- 插入数据： 1.由数据库生成id并赋值到UumRole对象 2.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.Role">
+		<selectKey keyProperty="roleId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_role_seq')
+		</selectKey>
+		insert into cuckoo.uum_role
+		(
+			role_id, role_name, status, memo, creator, create_date, role_level
+		)
+		values (
+			#{roleId}, #{roleName}, #{status}, #{memo}, #{creator}, #{createDate}, #{roleLevel}
+		)
+	</insert>
+	
+	<!-- 更新数据： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.Role">
+		update cuckoo.uum_role
+		set
+			role_name 					= #{roleName},
+			status							= #{status},
+			memo								= #{memo},
+			role_level					= #{roleLevel}
+		where 
+			role_id = #{roleId}
+	</update>
+	
+	<!-- 删除数据 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_role where role_id = #{id}
+	</delete>
+	
+	<!-- 获取数据: 输出直接映射到对象 -->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.Role">
+		select 
+			role_id						as roleId,
+			role_name					as roleName, 
+			status						as status,
+			memo							as memo,
+			creator						as creator, 
+			create_date				as createDate,
+			role_level				as roleLevel
+		from 
+			cuckoo.uum_role
+		where 
+			role_id = #{id}
+	</select>
+	
+		<!-- 数据记录是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_role
+		where 
+			role_id = #{id}
+	</select>
+	
+	<!-- 根据条件查询角色, 映射到'role'-->
+	<select id="findByPage" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_role
+		where 
+			role_id != 0
+		<if test="roleName !=null">
+			and role_name like #{roleName}
+		</if>
+		order by 
+			role_id desc
+	</select>
+	
+	<!-- 统计数据记录 -->
+	<select id="count" resultType="long">
+		select
+			count(*) 
+		from 
+			cuckoo.uum_role
+	</select>
+	
+	<!-- 根据角色名称统计角色记录 -->
+	<select id="countByRoleName" parameterType="string" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.uum_role
+		where 
+			role_name = #{roleName}
+	</select>
+	
+</mapper> 

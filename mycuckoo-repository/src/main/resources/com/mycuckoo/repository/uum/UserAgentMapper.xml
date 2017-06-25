@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	说明: UserAgentMapper映射文件
+	
+	@author rutine
+	@time Sep 23, 2014 10:19:12 AM
+	@version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.uum.UserAgentMapper">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserAgent">
+		<id property="agentId" column="agent_id" />
+		<result property="userId" column="user_id" />
+		<result property="orgRoleId" column="org_role_id" />
+		<result property="agentUserId" column="agent_user_id" />
+		<result property="beginDate" column="begin_date" />
+		<result property="endDate" column="end_date" />
+		<result property="reason" column="reason" />
+	</resultMap>
+	
+	<sql id="colums">
+		agent_id, user_id, org_role_id, agent_user_id, begin_date, end_date, reason
+	</sql>
+
+	<!-- 插入用户代理： 1.由数据库生成id并赋值到UumUserAgent对象 2.输入对象参数 -->
+	<insert id="save" parameterType="com.mycuckoo.domain.uum.UserAgent">
+		<selectKey keyProperty="agentId" resultType="long" order="BEFORE">
+			select nextval('cuckoo.uum_user_agent_seq')
+		</selectKey>
+		insert into cuckoo.uum_user_agent
+		(
+			agent_id, user_id, org_role_id, agent_user_id, begin_date, end_date, reason
+		)
+		values (
+			#{agentId}, #{userId}, #{orgRoleId}, #{agentUserId}, #{beginDate}, #{endDate}, #{reason}
+		)
+	</insert>
+	
+	<!-- 更新用户代理： 1.输入对象参数 -->
+	<update id="update" parameterType="com.mycuckoo.domain.uum.UserAgent">
+		update 
+			cuckoo.uum_user_agent
+		set
+			user_id						= #{userId},
+			org_role_id				= #{orgRoleId},
+			agent_user_id			= #{agentUserId},
+			begin_date				= #{beginDate},
+			end_date					= #{endDate},
+			reason						= #{reason}
+		where 
+			agent_id = #{agentId}
+	</update>
+	
+	<!-- 删除用户代理 -->
+	<delete id="delete" parameterType="long">
+		delete from cuckoo.uum_user_agent where agent_id = #{id}
+	</delete>
+	
+	<!--
+		获取用户代理: 输出直接映射到对象, agent_id 列要 as agentId 以方便映射创建 UserAgent 对象并赋值
+	-->
+	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.UserAgent">
+		select 
+			agent_id					as agentId,
+			user_id						as userId, 
+			org_role_id				as orgRoleId, 
+			agent_user_id			as agentUserId,
+			begin_date				as beginDate, 
+			end_date					as endDate, 
+			reason						as reason
+		from 
+			cuckoo.uum_user_agent
+		where 
+			agent_id = #{id}
+	</select>
+	
+	<!-- 用户代理是否存在 -->
+	<select id="exists" parameterType="long" resultType="boolean">
+		select
+			count(1) > 0 
+		from 
+			cuckoo.uum_user_agent
+		where 
+			agent_id = #{id}
+	</select>
+	
+	<!-- 根据用户编号查询用户代理记录, 演示: 1.输入用map传入多个参数 2.输出直接映射对象 -->
+	<select id="findByPage" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_user_agent
+		where 
+			user_id = #{userId}
+		order by 
+			agent_id desc
+	</select>
+	
+	<!-- 统计用户代理记录 -->
+	<select id="count" resultType="long">
+		select
+			count(1) 
+		from 
+			cuckoo.uum_user_agent
+	</select>
+	
+	<!-- 根据用户ID和代理ID统计代理记录 -->
+	<select id="countByUserIdAndAgentUserId" parameterType="map" resultType="int">
+		select 
+			count(1)
+		from 
+			cuckoo.uum_user_agent
+		where 
+			user_id = #{userId}
+		and 
+			agent_user_id = #{agentUserId}
+	</select>
+	
+	<!-- 根据代理用户ID查询有效期内的代理记录 -->
+	<select id="findByAgentUserId" parameterType="map" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_user_agent
+		where 
+			agent_user_id = #{agentUserId}
+		and 
+			begin_date &lt; #{now}
+		and 
+			end_date &gt; #{now}
+	</select>
+	
+	<!-- 根据机构角色IDs查询代理记录 -->
+	<select id="findByOwnerId" resultMap="baseMap">
+		select 
+			*
+		from 
+			cuckoo.uum_user_agent
+		where 
+			org_role_id in 
+			<foreach collection="array" item="ownerId" open="(" separator="," close=")">
+				#{ownerId}
+			</foreach>
+	</select>
+	
+</mapper> 
+

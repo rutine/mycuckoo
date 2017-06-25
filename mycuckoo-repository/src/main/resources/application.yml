@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    name: cuckoo
+    #type: com.alibaba.druid.pool.DruidDataSource
+    type: org.apache.commons.dbcp2.BasicDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/cuckoo
+    username: postgres
+    password: 123456
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
