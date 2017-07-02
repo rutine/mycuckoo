@@ -11,14 +11,14 @@ public class Common {
 	//web.xml web根目录名称
 	public final static String WEB_APP_ROOT_KEY = "mycuckoo.root";
 	
-	//一级菜单
-	public final static String FIRST = "first";
-	//二级菜单
-	public final static String SECOND = "second";
-	//三级菜单
-	public final static String THIRD = "third";
-	//四级菜单操作
-	public final static String FOURTH = "fourth";
+//	//一级菜单
+//	public final static String FIRST = "first";
+//	//二级菜单
+//	public final static String SECOND = "second";
+//	//三级菜单
+//	public final static String THIRD = "third";
+//	//四级菜单操作
+//	public final static String FOURTH = "fourth";
 	//机构名称 ID
 	public final static String ORGAN_NAME = "organName";
 	public final static String ORGAN_ID = "organId";
