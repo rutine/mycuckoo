@@ -35,17 +35,18 @@ public class Common {
 	public final static String AGENT_ID = "agentId";
 	
 	//日志功能设置
-	public final static String LOG_LEVEL_WITHOD = "0";
-	public final static String LOG_LEVEL_FIRST = "1";
-	public final static String LOG_LEVEL_SECOND = "2";
-	public final static String LOG_LEVEL_THIRD = "3";
-	public final static String SAVE_OPT = "保存";
-	public final static String MODIFY_OPT = "修改";
-	public final static String DELETE_OPT = "删除";
-	public final static String USER_LOGIN = "用户登录";
 	public final static String SPLIT = ";";
-	public final static String ENABLE = "enable";
-	public final static String DISABLE = "disable";
+//	public final static String LOG_LEVEL_WITHOD = "0";
+//	public final static String LOG_LEVEL_FIRST = "1";
+//	public final static String LOG_LEVEL_SECOND = "2";
+//	public final static String LOG_LEVEL_THIRD = "3";
+//	public final static String SAVE_OPT = "保存";
+//	public final static String MODIFY_OPT = "修改";
+//	public final static String DELETE_OPT = "删除";
+//	public final static String USER_LOGIN = "用户登录";
+//	public final static String ENABLE = "enable";
+//	public final static String DISABLE = "disable";
+	
 	//角色切换类型
 	public final static String LOGIN = "login";
 	public final static String IN_SYSTEM = "insystem";
@@ -76,10 +77,10 @@ public class Common {
 	//创建系统文件路径
 	public final static String MYCUCKOO_SYSTEM_FILE_DIR = "mycuckoo_system_file_dir";
 	//系统配置文件
-	public final static String SYS_CONFIGFILE_XML = "SystemConfig.xml";
-	public final static String TOMCAT = "tomcat";
-	public final static String WEBSPHERE = "websphere";
-	public final static String WEBLOGIC = "weblogic";
+//	public final static String SYS_CONFIGFILE_XML = "SystemConfig.xml";
+//	public final static String TOMCAT = "tomcat";
+//	public final static String WEBSPHERE = "websphere";
+//	public final static String WEBLOGIC = "weblogic";
 	public final static String COMMON_FUN = "commonFun";//常用功能
 	public final static String AGENT_LOGIN = "agentLogin";//代理登录
 	public final static String NORMAL_LOGIN = "normalLogin";//正常登录
