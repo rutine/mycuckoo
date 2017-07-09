@@ -37,10 +37,10 @@ public class ModuleMemuMapperTest extends AbstractTransactionalJUnit4SpringConte
 	}
 
 	@Test
-	public void testCountByUpModuleId() {
-		long count = mapper.countByUpModuleId(2L);
+	public void testCountByParentId() {
+		long count = mapper.countByParentId(2L);
 		
-		logger.info("------> countByUpModuleId: {}", count);
+		logger.info("------> countByParentId: {}", count);
 	}
 
 	@Test
@@ -51,11 +51,11 @@ public class ModuleMemuMapperTest extends AbstractTransactionalJUnit4SpringConte
 	}
 
 	@Test
-	public void testFindByUpModuleIdAndFilterModuleIds() {
-		List<ModuleMemu> list = mapper.findByUpModuleIdAndFilterModuleIds(6, new long[]{0L, 3L});
+	public void testFindByParentIdAndFilterModuleIds() {
+		List<ModuleMemu> list = mapper.findByParentIdAndFilterModuleIds(6, new long[]{0L, 3L});
 
 		for(ModuleMemu entity : list) {
-			logger.info("------> findByUpModuleIdAndFilterModuleIds: {}", entity);
+			logger.info("------> findByParentIdAndFilterModuleIds: {}", entity);
 		}
 	}
 
@@ -70,7 +70,6 @@ public class ModuleMemuMapperTest extends AbstractTransactionalJUnit4SpringConte
 		moduleMemu.setBelongToSys("用户");
 		moduleMemu.setCreateDate(Calendar.getInstance().getTime());
 		moduleMemu.setCreator("rutine");
-		moduleMemu.setIsLeaf(true);
 		moduleMemu.setMemo("测试");
 		moduleMemu.setModEnId("en10001");
 		moduleMemu.setModImgCls("no-resource");
@@ -91,7 +90,6 @@ public class ModuleMemuMapperTest extends AbstractTransactionalJUnit4SpringConte
 		moduleMemu.setBelongToSys("用户");
 		moduleMemu.setCreateDate(Calendar.getInstance().getTime());
 		moduleMemu.setCreator("rutine");
-		moduleMemu.setIsLeaf(true);
 		moduleMemu.setMemo("测试");
 		moduleMemu.setModEnId("en10001");
 		moduleMemu.setModImgCls("no-resource");

@@ -13,20 +13,24 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
+import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.DistrictMapper;
 import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.platform.DistrictVo;
 
 /**
  * 功能说明: 地区业务类
@@ -51,7 +55,7 @@ public class DistrictService {
 	@Transactional(readOnly=false)
 	public boolean disEnable(long districtId, String disEnableFlag) throws ApplicationException {
 		if(DISABLE.equals(disEnableFlag)) {
-			int count = districtMapper.countByUpDistrictId(districtId);
+			int count = districtMapper.countByParentId(districtId);
 			if(count > 0) { //有下级地区
 				return false;
 			} else {
@@ -79,21 +83,23 @@ public class DistrictService {
 		return false;
 	}
 
-	public List<District> findAll() {
+	public List<DistrictVo> findAll() {
 		Page<District> page = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
-		if(page.getContent() != null) {
-			for(District district : page.getContent()) {
-				district.setUpDistrictId(district.getDistrict().getDistrictId());
-			}
+		List<DistrictVo> vos = Lists.newArrayList();
+		for(District district : page.getContent()) {
+			DistrictVo vo = new DistrictVo();
+			BeanUtils.copyProperties(district, vo);
+			vos.add(vo);
 		}
 		
-		return page.getContent();
+		return vos;
 	}
 
-	public Page<District> findByPage(Map<String, Object> params, Pageable page) {
+	public Page<DistrictVo> findByPage(Map<String, Object> params, Pageable page) {
 		long treeId = (Long) params.get("treeId");
 		String districtName = (String) params.get("districtName");
 		String districtLevel = (String) params.get("districtLevel");
+		
 		logger.debug("start={} limit={} treeId={} districtName={} districtLevel={}", 
 				page.getOffset(), page.getPageSize(), treeId, districtName, districtLevel);
 		
@@ -101,8 +107,7 @@ public class DistrictService {
 		if(treeId >= 0) {
 			List<District> list = findChildNodeList(treeId, 0); // 过滤出所有下级
 			for (District district : list) {
-				Long districtId = district.getDistrictId();
-				idList.add(districtId); // 所有下级地区ID
+				idList.add(district.getDistrictId()); // 所有下级地区ID
 			}
 			if (idList.isEmpty()) {
 				idList.add(-1l);
@@ -110,31 +115,43 @@ public class DistrictService {
 		}
 		
 		params.put("array", idList.toArray(new Long[idList.size()]));
-		Page<District> distPage = districtMapper.findByPage(params, page);
+		Page<District> entityPage = districtMapper.findByPage(params, page);
 		List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
-		for(District district : distPage.getContent()) {
-			String districtLevell = district.getDistrictLevel();
+		
+		List<DistrictVo> vos = Lists.newArrayList();
+		for(District entity : entityPage.getContent()) {			
+			String districtLevell = entity.getDistrictLevel();
 			for (DicSmallType dicSmallType : dicSmallTypeList) {
 				if (districtLevell.equalsIgnoreCase(dicSmallType.getSmallTypeCode())) {
-					district.setDistrictLevel(dicSmallType.getSmallTypeName());
+					entity.setDistrictLevel(dicSmallType.getSmallTypeName());
 					break;
 				}
 			}
-			district.setUpDistrictName(district.getDistrict().getDistrictName()); //上级地区名称
+			
+			DistrictVo vo = new DistrictVo();
+			BeanUtils.copyProperties(entity, vo);
+			vo.setParentName(get(entity.getParentId()).getDistrictName());//上级地区名称
+			vos.add(vo);
 		}
 		
-		return distPage;
+		return new PageImpl<>(vos, 
+				new PageRequest(entityPage.getNumber(), entityPage.getSize()), 
+				entityPage.getTotalElements());
 	}
 
-	public District get(Long districtId) {
+	public DistrictVo get(Long districtId) {
 		logger.debug("will find district id is {}", districtId);
 		
-		return districtMapper.get(districtId);
+		District district = districtMapper.get(districtId);
+		DistrictVo vo = new DistrictVo();
+		BeanUtils.copyProperties(district, vo);
+		
+		return vo;
 	}
 
 	public List<TreeVo> findNextLevelChildNodes(long districtId, long filterdistrictId) {
 		List<District> list = districtMapper
-				.findByUpDistrictIdAndFilterIds(districtId, new long[] { 0L, filterdistrictId });
+				.findByParentIdAndFilterIds(districtId, new long[] { 0L, filterdistrictId });
 		List<TreeVo> treeVoList = new ArrayList<TreeVo>();
 		if(list != null) {
 			for(District district : list) {
@@ -213,9 +230,6 @@ public class DistrictService {
 			filterList.add(districtOld);
 			page.getContent().removeAll(filterList);
 			filterList = page.getContent();
-			for (District mod : filterList) {
-				mod.setUpDistrictId(mod.getDistrict().getDistrictId());
-			}
 		}
 		
 		return filterList;
@@ -253,7 +267,7 @@ public class DistrictService {
 	private List<District> getSubList(List<District> listAll, long districtId) {
 		List<District> newList = new ArrayList<District>();
 		for(District district : listAll) {
-			if(district.getDistrict().getDistrictId() == districtId) 
+			if(district.getParentId() == districtId) 
 			newList.add(district);
 		}
 		

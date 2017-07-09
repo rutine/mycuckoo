@@ -23,14 +23,17 @@
 	<sql id="colums">
 		big_type_id, big_type_name, big_type_code, memo, status, creator, create_date
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_dic_big_type
+	</sql>
 
 	<!-- 插入字典大类： 1.由数据库生成id并赋值到DicBigType对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.DicBigType">
 		<selectKey keyProperty="bigTypeId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_dic_big_type_seq')
 		</selectKey>
-		insert into cuckoo.syspl_dic_big_type
-		(
+		insert into <include refid="table" /> (
 			big_type_id, big_type_name, big_type_code, memo, status, creator, create_date
 		)
 		values (
@@ -41,37 +44,30 @@
 	<!-- 更新字典大类： 1.输入对象参数  -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.DicBigType">
 		update 
-			cuckoo.syspl_dic_big_type
-		set
-			big_type_name				= #{bigTypeName},
-			big_type_code				= #{bigTypeCode}, 
-			memo								= #{memo}, 
-			status							= #{status}, 
-			creator							= #{creator}, 
-			create_date					= #{createDate}
+			<include refid="table" />
+		<set>
+			<if test="bigTypeCode != null">big_type_code = #{bigTypeCode}, </if>
+			<if test="bigTypeName != null">big_type_name = #{bigTypeName}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			big_type_id = #{bigTypeId}
 	</update>
 	
 	<!-- 删除字典大类 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_dic_big_type where big_type_id = #{id}
+		delete from <include refid="table" /> where big_type_id = #{id}
 	</delete>
 	
 		<!--
-		获取字典大类: 输出直接映射到对象, big_type_id 列要 as bigTypeId 以方便映射创建 DicBigType 对象并赋值
+		获取字典大类: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.DicBigType">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			big_type_id				as bigTypeId, 
-			big_type_name			as bigTypeName,
-			big_type_code			as bigTypeCode, 
-			memo							as memo, 
-			status						as status, 
-			creator						as creator,
-			create_date				as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 		where 
 			big_type_id = #{id}
 	</select>
@@ -81,7 +77,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 		where 
 			big_type_id = #{id}
 	</select>
@@ -89,9 +85,9 @@
 	<!-- 根据字典大类名称及代码分页查询字典大类 -->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 		<where>
 			<if test="bigTypeName != null">
 				big_type_name like #{bigTypeName}
@@ -109,7 +105,7 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 	</select>
 	
 		<!-- 根据字典大类编码统计字典大类数量 -->
@@ -117,7 +113,7 @@
 		select 
 			count(1)
 		from 
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 		where
 			big_type_code = #{bigTypeCode}
 	</select>
@@ -125,7 +121,7 @@
 	<!-- 根据字典大类ID修改字典大类状态 -->
 	<update id="updateStatus">
 		update
-			cuckoo.syspl_dic_big_type
+			<include refid="table" />
 		set
 			status = #{status}
 		where

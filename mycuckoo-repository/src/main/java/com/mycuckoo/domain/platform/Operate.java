@@ -2,12 +2,9 @@ package com.mycuckoo.domain.platform;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -28,7 +25,7 @@ public class Operate implements Serializable {
 	private String creator; //创建人
 	private Date createDate; //创建时间
 	private String optFunLink; //模块操作功能链接
-	private List<ModOptRef> modOptRefs = Lists.newArrayList();
+//	private List<ModOptRef> modOptRefs = Lists.newArrayList();
 
 	/** default constructor */
 	public Operate() {
@@ -43,8 +40,7 @@ public class Operate implements Serializable {
 	/** full constructor */
 	public Operate(Long operateId, String operateName, String optImgLink,
 			Integer optOrder, Integer optGroup, String memo, String status,
-			String creator, Date createDate, String optFunLink,
-			List<ModOptRef> modOptRefs) {
+			String creator, Date createDate, String optFunLink) {
 		this.operateId = operateId;
 		this.operateName = operateName;
 		this.optImgLink = optImgLink;
@@ -55,7 +51,6 @@ public class Operate implements Serializable {
 		this.creator = creator;
 		this.createDate = createDate;
 		this.optFunLink = optFunLink;
-		this.modOptRefs = modOptRefs;
 	}
 
 	public Long getOperateId() {
@@ -128,14 +123,6 @@ public class Operate implements Serializable {
 
 	public void setOptFunLink(String optFunLink) {
 		this.optFunLink = optFunLink;
-	}
-//	@JSON(serialize=false)
-	public List<ModOptRef> getModOptRefs() {
-		return this.modOptRefs;
-	}
-	
-	public void setModOptRefs(List<ModOptRef> modOptRefs) {
-		this.modOptRefs = modOptRefs;
 	}
 
 	public Date getCreateDate() {

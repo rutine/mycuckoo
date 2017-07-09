@@ -19,14 +19,17 @@
 	<sql id="colums">
 		accessory_id, info_id, accessory_name
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_accessory
+	</sql>
 
 	<!-- 插入附件： 1.由数据库生成id并赋值到Accessory对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.Accessory">
 		<selectKey keyProperty="accessoryId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_accessory_seq')
 		</selectKey>
-		insert into cuckoo.syspl_accessory
-		(
+		insert into <include refid="table" /> (
 			accessory_id, info_id, accessory_name
 		)
 		values (
@@ -36,30 +39,28 @@
 	
 	<!-- 更新附件： 1.输入用对象  -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.Accessory">
-		update 
-			cuckoo.syspl_accessory
-		set
-			info_id							= #{infoId},
-			accessory_name			= #{accessoryName}
+		update <include refid="table" />
+		<set>
+			<if test="infoId != null">info_id = #{infoId}, </if>
+			<if test="accessoryName != null">accessory_name = #{accessoryName}, </if>
+		</set>
 		where 
 			accessory_id = #{accessoryId}
 	</update>
 	
 	<!-- 删除附件 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_accessory where accessory_id = #{id}
+		delete from <include refid="table" /> where accessory_id = #{id}
 	</delete>
 	
 	<!--
-		获取附件: 输出直接映射到对象, accessory_id 列要 as accessoryId 以方便映射创建 Accessory 对象并赋值
+		获取附件: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Accessory">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			accessory_id				as accessoryId,
-			info_id							as infoId, 
-			accessory_name			as accessoryName
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_accessory
+			<include refid="table" />
 		where 
 			accessory_id = #{id}
 	</select>
@@ -67,9 +68,9 @@
 	<!-- 判断附件是否存在 -->
 	<select id="exists" parameterType="long" resultType="boolean">
 		select
-			count(*) > 0 
+			count(1) > 0 
 		from 
-			cuckoo.syspl_accessory
+			<include refid="table" />
 		where 
 			accessory_id = #{id}
 	</select>
@@ -77,25 +78,22 @@
 	<!-- 返回所有附件, 映射到 baseMap-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_accessory
+			<include refid="table" />
 	</select>
 	
 	<!-- 统计附件记录总数 -->
 	<select id="count" resultType="long">
-		select
-			count(*) 
-		from 
-			cuckoo.syspl_accessory
+		select count(1) from <include refid="table" />
 	</select>
 	
 	<!-- 根据公告afficheId查询附件, 映射到 baseMap-->
 	<select id="findByAfficheId" parameterType="long" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_accessory
+			<include refid="table" />
 		where 
 			info_id = #{id}
 	</select>

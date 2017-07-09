@@ -25,14 +25,17 @@
 	<sql id="colums">
 		mod_opt_id, operate_id, module_id
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_mod_opt_ref
+	</sql>
 
 	<!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModOptRef对象 2.嵌套属性输入#{operate.operateId}-->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.ModOptRef">
 		<selectKey keyProperty="modOptId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_mod_opt_ref_seq')
 		</selectKey>
-		insert into cuckoo.syspl_mod_opt_ref
-		(
+		insert into <include refid="table" /> (
 			mod_opt_id, operate_id, module_id
 		)
 		values (
@@ -43,7 +46,7 @@
 	<!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.ModOptRef">
 		update 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		set
 			operate_id				= #{operate.operateId},
 			module_id					= #{moduleMemu.moduleId}
@@ -53,7 +56,7 @@
 	
 	<!-- 删除模块操作关系 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_mod_opt_ref where mod_opt_id = #{id}
+		delete from <include refid="table" /> where mod_opt_id = #{id}
 	</delete>
 	
 	<!--
@@ -80,7 +83,7 @@
 			t3.mod_page_type			as modu_mod_page_type,
 			t3.status							as modu_status
 		from 
-			cuckoo.syspl_mod_opt_ref t1
+			<include refid="table" /> t1
 		left join 
 			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
 		left join 
@@ -94,7 +97,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		where 
 			mod_opt_id = #{id}
 	</select>
@@ -121,7 +124,7 @@
 			t3.mod_page_type			as modu_mod_page_type,
 			t3.status							as modu_status
 		from 
-			cuckoo.syspl_mod_opt_ref t1
+			<include refid="table" /> t1
 		left join 
 			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
 		left join 
@@ -133,13 +136,13 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据模块ID删除模块操作关系,级联删除权限 1 -->
 	<delete id="deleteByModuleId" parameterType="long">
 		delete from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		where 
 			module_id = #{id}
 	</delete>
@@ -147,7 +150,7 @@
 	<!-- 根据操作ID删除模块操作关系,级联删除权限 2 -->
 	<delete id="deleteByOperateId" parameterType="long">
 		delete from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		where 
 			operate_id = #{id}
 	</delete>
@@ -159,7 +162,7 @@
 			operate_id					as opt_operate_id,
 			module_id						as modu_module_id
 		from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		where 
 			operate_id = #{id}
 	</select>
@@ -171,7 +174,7 @@
 			operate_id					as opt_operate_id,
 			module_id						as modu_module_id
 		from 
-			cuckoo.syspl_mod_opt_ref
+			<include refid="table" />
 		where 
 			module_id = #{id}
 	</select>
@@ -198,7 +201,7 @@
 			t3.mod_page_type				as modu_mod_page_type,
 			t3.status								as modu_status
 		from 
-			cuckoo.syspl_mod_opt_ref t1
+			<include refid="table" /> t1
 		left join 
 			cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
 		left join 

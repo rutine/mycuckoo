@@ -19,10 +19,10 @@ public interface ModuleMemuMapper extends Repository<ModuleMemu, Long> {
 	/**
 	 * 根据父模块<code>ID</code>统计下级模块数
 	 * 
-	 * @param moduleId 模块ID
+	 * @param parentId 模块ID
 	 * @return
 	 */
-	int countByUpModuleId(long moduleId);
+	int countByParentId(long parentId);
 
 	/**
 	 * 判断模块名称是否存在
@@ -35,11 +35,13 @@ public interface ModuleMemuMapper extends Repository<ModuleMemu, Long> {
 	/**
 	 * 根据模块ID查询下级模块
 	 * 
-	 * @param moduleId
+	 * @param parentId
 	 * @param filterModuleId
 	 * @return
 	 */
-	List<ModuleMemu> findByUpModuleIdAndFilterModuleIds(@Param("moduleId") long moduleId, @Param("filterModuleIds") long[] filterModuleIds);
+	List<ModuleMemu> findByParentIdAndFilterModuleIds(
+			@Param("parentId") long parentId, 
+			@Param("filterModuleIds") long[] filterModuleIds);
 
 	/**
 	 * 修改行权限

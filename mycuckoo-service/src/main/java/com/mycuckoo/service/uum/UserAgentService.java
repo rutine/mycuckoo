@@ -40,6 +40,7 @@ import com.mycuckoo.repository.uum.UserAgentPrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 用户代理业务类
@@ -132,7 +133,7 @@ public class UserAgentService {
 			}
 		}
 		
-		List<ModuleMemu> assignedModMenuList = privilegeService.filterModOpt(privilegeList, true).getModuleMenu();
+		List<ModuleMemuVo> assignedModMenuList = privilegeService.filterModOpt(privilegeList, true).getModuleMenu();
 		
 		List<TreeVo> treeVoList = new ArrayList<TreeVo>();
 		if (assignedModMenuList != null && assignedModMenuList.size() > 0) {

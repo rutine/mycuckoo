@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.uum.RoleUserRef;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserAgent;
@@ -19,6 +18,7 @@ import com.mycuckoo.service.uum.UserCommFunService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 用户常用业务类
@@ -41,6 +41,7 @@ public class UumServiceFacade {
 	private UserCommFunService userCommFunService;
 	@Autowired
 	private UserAgentService userAgentService;
+	
 
 	public void deletePrivilegeByModOptId(String[] modOptRefIds) {
 		this.privilegeService.deletePrivilegeByModOptId(modOptRefIds);
@@ -93,7 +94,7 @@ public class UumServiceFacade {
 		return privilegeService.existsSpecialPrivilegeByUserId(userId);
 	}
 
-	public List<TreeVoExtend> convertToTree(List<ModuleMemu> moduleMemuList) {
-		return privilegeService.convertToTree(moduleMemuList);
+	public List<TreeVoExtend> convertToTree(List<ModuleMemuVo> vos) {
+		return privilegeService.convertToTree(vos);
 	}
 }

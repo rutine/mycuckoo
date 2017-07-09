@@ -36,14 +36,17 @@
 		code_id, code_eng_name, code_name, module_name, delimite, part_num, part1, part1_con, part2, 
 		part2_con, part3, part3_con, part4, part4_con, code_effect, memo, status, creator, create_date
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_code
+	</sql>
 
 	<!-- 插入编码： 1.由数据库生成id并赋值到SysplCode对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.Code">
 		<selectKey keyProperty="codeId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_code_seq')
 		</selectKey>
-		insert into cuckoo.syspl_code
-		(
+		insert into <include refid="table" /> (
 			code_id, code_eng_name, code_name, module_name, delimite, part_num, part1, part1_con, part2, 
 			part2_con, part3, part3_con, part4, part4_con, code_effect, memo, status, creator, create_date
 		)
@@ -56,61 +59,42 @@
 	<!-- 更新编码： 1.输入对象参数  -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.Code">
 		update 
-			cuckoo.syspl_code
-		set
-			code_eng_name			= #{codeEngName},
-			code_name					= #{codeName}, 
-			module_name				= #{moduleName}, 
-			delimite					= #{delimite}, 
-			part_num					= #{partNum}, 
-			part1							= #{part1}, 
-			part1_con					= #{part1Con}, 
-			part2							= #{part2}, 
-			part2_con					= #{part2Con}, 
-			part3							= #{part3}, 
-			part3_con					= #{part3Con}, 
-			part4							= #{part4}, 
-			part4_con					= #{part4Con}, 
-			code_effect				= #{codeEffect}, 
-			memo							= #{memo}, 
-			status						= #{status}, 
-			creator						= #{creator}, 
-			create_date				= #{createDate}
+			<include refid="table" />
+		<set>
+			<if test="codeEngName != null">code_eng_name = #{codeEngName}, </if>
+			<if test="codeName != null">code_name = #{codeName}, </if>
+			<if test="moduleName != null">module_name = #{moduleName}, </if>
+			<if test="delimite != null">delimite = #{delimite}, </if>
+			<if test="partNum != null">part_num = #{partNum}, </if>
+			<if test="part1 != null">part1 = #{part1}, </if>
+			<if test="part1Con != null">part1_con = #{part1Con}, </if>
+			<if test="part2 != null">part2 = #{part2}, </if>
+			<if test="part2Con != null">part2_con = #{part2Con}, </if>
+			<if test="part3 != null">part3 = #{part3}, </if>
+			<if test="part3Con != null">part3_con = #{part3Con}, </if>
+			<if test="part4 != null">part4 = #{part4}, </if>
+			<if test="part4Con != null">part4_con = #{part4Con}, </if>
+			<if test="codeEffect != null">code_effect = #{codeEffect}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			code_id = #{codeId}
 	</update>
 	
 	<!-- 删除编码 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_code where code_id = #{id}
+		delete from <include refid="table" /> where code_id = #{id}
 	</delete>
 	
 	<!--
-		获取编码: 输出直接映射到对象, affiche_id 列要 as afficheId 以方便映射创建 Code 对象并赋值
+		获取编码: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Code">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			code_id							as codeId,
-			code_eng_name				as codeEngName, 
-			code_name						as codeName, 
-			module_name					as moduleName, 
-			delimite						as delimite, 
-			part_num						as partNum, 
-			part1								as part1, 
-			part1_con						as part1Con, 
-			part2								as part2, 
-			part2_con						as part2Con, 
-			part3								as part3, 
-			part3_con						as part3Con, 
-			part4								as part4, 
-			part4_con						as part4Con, 
-			code_effect					as codeEffect, 
-			memo								as memo, 
-			status							as status, 
-			creator							as creator, 
-			create_date					as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 		where 
 			code_id = #{id}
 	</select>
@@ -120,7 +104,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 		where 
 			code_id = #{id}
 	</select>
@@ -128,9 +112,9 @@
 	<!-- 根据条件查询编码 Code-->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 		<where>
 			<if test="codeEngName != null">
 				and code_eng_name like #{codeEngName}
@@ -151,7 +135,7 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 	</select>
 	
 		<!-- 根据编码英文名称统计编码是否存在 -->
@@ -159,7 +143,7 @@
 		select 
 			count(1)
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 		where
 			code_eng_name = #{codeEngName}
 	</select>
@@ -167,9 +151,9 @@
 	<!-- 根据编码英文名称获取编码 -->
 	<select id="getByCodeEngName" parameterType="string" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_code
+			<include refid="table" />
 		where
 			code_eng_name = #{codeEngName}
 	</select>

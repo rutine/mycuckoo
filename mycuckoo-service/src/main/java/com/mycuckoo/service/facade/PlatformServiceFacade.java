@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.platform.ModOptRef;
-import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.service.platform.DistrictService;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.service.platform.SystemParameterService;
 import com.mycuckoo.vo.HierarchyModuleVo;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 系统平台对外的公共业务类
@@ -36,7 +36,7 @@ public class PlatformServiceFacade {
 //	private CodeService codeService;
 	
 
-	public HierarchyModuleVo filterModule(List<ModuleMemu> list) {
+	public HierarchyModuleVo filterModule(List<ModuleMemuVo> list) {
 		return moduleService.filterModule(list);
 	}
 
@@ -44,8 +44,12 @@ public class PlatformServiceFacade {
 		return moduleService.findAllModOptRefs();
 	}
 
-	public List<ModuleMemu> findAllModule() {
+	public List<ModuleMemuVo> findAllModule() {
 		return moduleService.findAll();
+	}
+	
+	public ModuleMemuVo getModule(Long moduleId) {
+		return moduleService.get(moduleId);
 	}
 
 	public District getDistrict(Long districtId) {

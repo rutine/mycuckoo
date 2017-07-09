@@ -3,7 +3,7 @@ package com.mycuckoo.vo;
 import java.util.List;
 import java.util.Map;
 
-import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 四级层级菜单模块
@@ -13,43 +13,43 @@ import com.mycuckoo.domain.platform.ModuleMemu;
  * @version 3.0.0
  */
 public class HierarchyModuleVo {
-	private List<ModuleMemu> first;
-	private Map<String, List<ModuleMemu>> second;
-	private Map<String, List<ModuleMemu>> third;
-	private Map<Long, List<ModuleMemu>> fourth;
+	private List<ModuleMemuVo> first;
+	private Map<String, List<ModuleMemuVo>> second;
+	private Map<String, List<ModuleMemuVo>> third;
+	private Map<Long, List<ModuleMemuVo>> fourth;
 	private String row;
 	
 	public HierarchyModuleVo(
-			List<ModuleMemu> first, 
-			Map<String, List<ModuleMemu>> second, 
-			Map<String, List<ModuleMemu>> third) {
+			List<ModuleMemuVo> first, 
+			Map<String, List<ModuleMemuVo>> second, 
+			Map<String, List<ModuleMemuVo>> third) {
 		this.first = first;
 		this.second = second;
 		this.third = third;
 	}
 	
-	public List<ModuleMemu> getFirst() {
+	public List<ModuleMemuVo> getFirst() {
 		return first;
 	}
-	public void setFirst(List<ModuleMemu> first) {
+	public void setFirst(List<ModuleMemuVo> first) {
 		this.first = first;
 	}
-	public Map<String, List<ModuleMemu>> getSecond() {
+	public Map<String, List<ModuleMemuVo>> getSecond() {
 		return second;
 	}
-	public void setSecond(Map<String, List<ModuleMemu>> second) {
+	public void setSecond(Map<String, List<ModuleMemuVo>> second) {
 		this.second = second;
 	}
-	public Map<String, List<ModuleMemu>> getThird() {
+	public Map<String, List<ModuleMemuVo>> getThird() {
 		return third;
 	}
-	public void setThird(Map<String, List<ModuleMemu>> third) {
+	public void setThird(Map<String, List<ModuleMemuVo>> third) {
 		this.third = third;
 	}
-	public Map<Long, List<ModuleMemu>> getFourth() {
+	public Map<Long, List<ModuleMemuVo>> getFourth() {
 		return fourth;
 	}
-	public void setFourth(Map<Long, List<ModuleMemu>> fourth) {
+	public void setFourth(Map<Long, List<ModuleMemuVo>> fourth) {
 		this.fourth = fourth;
 	}
 	public String getRow() {

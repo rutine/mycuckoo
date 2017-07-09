@@ -26,10 +26,10 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
 	
 
 	@Test
-	public void testCountByUpDistrictId() {
-		long count = mapper.countByUpDistrictId(8l);
+	public void testCountByParentId() {
+		long count = mapper.countByParentId(8l);
 		
-		logger.info("------> countByUpDistrictId: {}", count);
+		logger.info("------> countByParentId: {}", count);
 	}
 
 	@Test
@@ -40,22 +40,22 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
 	}
 
 	@Test
-	public void testFindByUpDistrictId() {
-		List<District> list = mapper.findByUpDistrictId(0L);
+	public void testFindByParentId() {
+		List<District> list = mapper.findByParentId(0L);
 		
 		Assert.assertTrue(list.size() > 0);
 		
 		for(District entity : list) {
-			logger.info("------> findByUpDistrictId: {}", entity);
+			logger.info("------> findByParentId: {}", entity);
 		}
 	}
 
 	@Test
-	public void testFindByUpDistrictIdAndFilterIds() {
-		List<District> list = mapper.findByUpDistrictIdAndFilterIds(7l, new long[] {0L, 9L});
+	public void testFindByParentIdAndFilterIds() {
+		List<District> list = mapper.findByParentIdAndFilterIds(7l, new long[] {0L, 9L});
 		
 		for(District entity : list) {
-			logger.info("------> findByUpDistrictIdAndFilterIds: {}", entity);
+			logger.info("------> findByParentIdAndFilterIds: {}", entity);
 		}
 	}
 

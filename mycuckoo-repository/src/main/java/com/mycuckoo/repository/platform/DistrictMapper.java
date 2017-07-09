@@ -19,10 +19,10 @@ public interface DistrictMapper extends Repository<District, Long> {
 	/**
 	 * 根据地区ID统计下级地区数
 	 * 
-	 * @param upDistrictId 父地区ID
+	 * @param parentId 父地区ID
 	 * @return 下级数量
 	 */
-	int countByUpDistrictId(long upDistrictId);
+	int countByParentId(long parentId);
 
 	/**
 	 * 根据地区名称判断地区是否存在
@@ -36,10 +36,10 @@ public interface DistrictMapper extends Repository<District, Long> {
 	 * 
 	 * 根据地区ID查询下级地区
 	 * 
-	 * @param upDistrictId 父级ID
+	 * @param parentId 父级ID
 	 * @return 下级地区
 	 */
-	List<District> findByUpDistrictId(Long upDistrictId);
+	List<District> findByParentId(Long parentId);
 
 	/**
 	 * 根据地区ID和过滤条件查询下级地区
@@ -48,5 +48,5 @@ public interface DistrictMapper extends Repository<District, Long> {
 	 * @param filterDistrictId 过滤id,当修改时将本ID过滤掉
 	 * @return
 	 */
-	List<District> findByUpDistrictIdAndFilterIds(@Param("upDistrictId") long upDistrictId, @Param("filterDistrictIds") long[] filterDistrictIds);
+	List<District> findByParentIdAndFilterIds(@Param("parentId") long parentId, @Param("filterDistrictIds") long[] filterDistrictIds);
 }

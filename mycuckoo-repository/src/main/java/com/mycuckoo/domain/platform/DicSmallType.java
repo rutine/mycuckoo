@@ -16,7 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class DicSmallType implements Serializable {
 
 	private Long smallTypeId;
-	private DicBigType dicBigType;
+	private Long bigTypeId;
 	private String smallTypeName;
 	private String smallTypeCode;
 
@@ -30,10 +30,10 @@ public class DicSmallType implements Serializable {
 	}
 
 	/** full constructor */
-	public DicSmallType(Long smallTypeId, DicBigType dicBigType,
+	public DicSmallType(Long smallTypeId, Long bigTypeId,
 			String smallTypeName, String smallTypeCode) {
 		this.smallTypeId = smallTypeId;
-		this.dicBigType = dicBigType;
+		this.bigTypeId = bigTypeId;
 		this.smallTypeName = smallTypeName;
 		this.smallTypeCode = smallTypeCode;
 	}
@@ -46,12 +46,12 @@ public class DicSmallType implements Serializable {
 		this.smallTypeId = smallTypeId;
 	}
 
-	public DicBigType getDicBigType() {
-		return this.dicBigType;
+	public Long getBigTypeId() {
+		return bigTypeId;
 	}
 
-	public void setDicBigType(DicBigType dicBigType) {
-		this.dicBigType = dicBigType;
+	public void setBigTypeId(Long bigTypeId) {
+		this.bigTypeId = bigTypeId;
 	}
 
 	public String getSmallTypeName() {

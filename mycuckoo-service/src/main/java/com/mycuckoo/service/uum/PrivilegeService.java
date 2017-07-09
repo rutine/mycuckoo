@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +46,12 @@ import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.ModuleOperationVo;
 import com.mycuckoo.vo.SystemConfigBean;
 import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 权限业务类
@@ -104,27 +107,30 @@ public class PrivilegeService {
 	}
 
 	public ModuleOperationVo filterModOpt(List<ModOptRef> modOptRefList, boolean isTreeFlag) {
-		Map<Long, List<ModuleMemu>> modOptMap = Maps.newHashMap(); // 四级模块操作
-		List<ModuleMemu> moduleMemuList = Lists.newArrayList(); // 模块菜单list
+		Map<Long, List<ModuleMemuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
+		List<ModuleMemuVo> moduleMemuList = Lists.newArrayList(); // 模块菜单list
 		
 		for(ModOptRef modOptRef : modOptRefList) {
 			ModuleMemu moduleMemu3 = modOptRef.getModuleMemu(); // 第三级菜单
+			ModuleMemuVo vo3 = new ModuleMemuVo();
+			BeanUtils.copyProperties(moduleMemu3, vo3);
+			
 			Operate operate = modOptRef.getOperate();
 			// 操作按钮
-			ModuleMemu moduleMemuOpt = new ModuleMemu();
+			ModuleMemuVo moduleMemuOpt = new ModuleMemuVo();
 			moduleMemuOpt.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
 			moduleMemuOpt.setModName(operate.getOperateName());
 			moduleMemuOpt.setModImgCls(operate.getOptImgLink());
 			moduleMemuOpt.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
 			moduleMemuOpt.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-			moduleMemuOpt.setUpModId(moduleMemu3.getModuleId()); // 将第三级菜单设置为操作
+			moduleMemuOpt.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
 			moduleMemuOpt.setIsLeaf(true);
 			if(isTreeFlag) { // 如果为树则加入模块list
 				moduleMemuList.add(moduleMemuOpt);
 			} else { // 不为树则维护操作按钮map
-				Long modEnId = moduleMemu3.getModuleId(); // 模块英文id, 作为操作列表map的key值
+				Long modEnId = vo3.getModuleId(); // 模块英文id, 作为操作列表map的key值
 				if(modOptMap.containsKey(modEnId)) {
-					List<ModuleMemu> modOptList = modOptMap.get(modEnId);
+					List<ModuleMemuVo> modOptList = modOptMap.get(modEnId);
 					// 根据操作顺序进行排序
 					int listIndex = 0; // 元素索引
 					boolean orderBol = true; //是否插入指定索引元素
@@ -142,24 +148,21 @@ public class PrivilegeService {
 						modOptList.add(moduleMemuOpt); // 加到操作list中
 					}
 				} else {
-					List<ModuleMemu> modOptList = new ArrayList<ModuleMemu>(); // 操作list
+					List<ModuleMemuVo> modOptList = Lists.newArrayList(); // 操作list
 					modOptList.add(moduleMemuOpt); // 加到操作list中
 					modOptMap.put(modEnId, modOptList);
 				}
 			}
 			
 			// 如果包含相应菜单项则加入相应模块菜单
-			if(!moduleMemuList.contains(moduleMemu3)) {
-				moduleMemuList.add(moduleMemu3);
-				ModuleMemu moduleMemu2 = moduleMemu3.getModuleMemu(); // 第二级菜单
-				moduleMemu3.setUpModId(moduleMemu2.getModuleId()); // 设置上级菜单
-				if(!moduleMemuList.contains(moduleMemu2)) {
-					moduleMemuList.add(moduleMemu2);
-					ModuleMemu moduleMemu1 = moduleMemu2.getModuleMemu();
-					moduleMemu2.setUpModId(moduleMemu1.getModuleId());
-					if(!moduleMemuList.contains(moduleMemu1)) {
-						moduleMemuList.add(moduleMemu1);
-						moduleMemu1.setUpModId(moduleMemu1.getModuleMemu().getModuleId());
+			if(!moduleMemuList.contains(vo3)) {
+				moduleMemuList.add(vo3);
+				ModuleMemuVo vo2 = new ModuleMemuVo(vo3.getParentId()); // 第二级菜单
+				if(!moduleMemuList.contains(vo2)) {
+					moduleMemuList.add(platformServiceFacade.getModule(vo2.getModuleId()));
+					ModuleMemuVo vo1 = new ModuleMemuVo(vo2.getParentId()); // 第一级菜单
+					if(!moduleMemuList.contains(vo1)) {
+						moduleMemuList.add(platformServiceFacade.getModule(vo1.getModuleId()));
 					}
 				}
 			}
@@ -187,7 +190,7 @@ public class PrivilegeService {
 		return resourceId;
 	}
 
-	public Map findSelectAUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
+	public AssignVo<TreeVoExtend> findSelectAUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
 		// 查找已经分配的权限
 		Long[] roleIds = new Long[] { ownerId };
 		String[] ownerTypes = new String[] { ownerType };
@@ -214,15 +217,14 @@ public class PrivilegeService {
 		// 未分配的权限
 		List<ModOptRef> unassignedModOptList = allModOptList;
 		//将操作转化成列表数据
-		List<ModuleMemu> assignedModMenuList = this.filterModOpt(assignedModOptList, true).getModuleMenu();
-		List<ModuleMemu>  unassignedModMenuList = this.filterModOpt(unassignedModOptList, true).getModuleMenu();
-		//将已分配和未分配的模块操作放入map
-		Map moduleMemuMap = Maps.newHashMap();
-		moduleMemuMap.put("assignedModOpts", convertToTree(assignedModMenuList));
-		moduleMemuMap.put("unassignedModOpts", convertToTree(unassignedModMenuList));
-		moduleMemuMap.put(PRIVILEGE_SCOPE, privilegeScope);
+		List<ModuleMemuVo> assignedModMenuList = this.filterModOpt(assignedModOptList, true).getModuleMenu();
+		List<ModuleMemuVo>  unassignedModMenuList = this.filterModOpt(unassignedModOptList, true).getModuleMenu();
 		
-		return moduleMemuMap;
+		//将已分配和未分配的模块操作放入
+		return new AssignVo<>(
+				convertToTree(assignedModMenuList), 
+				convertToTree(unassignedModMenuList), 
+				privilegeScope);
 	}
 
 	public Map findSelectRowPrivilegeByUserId(long userId) {
@@ -276,27 +278,30 @@ public class PrivilegeService {
 	}
 
 	public HierarchyModuleVo findUserPrivilegesForAdminLogin() {
-		List<ModuleMemu> allModuleMemus = platformServiceFacade.findAllModule();// 所有模块菜单
+		List<ModuleMemuVo> allModuleMemus = platformServiceFacade.findAllModule();// 所有模块菜单
 		List<ModOptRef> modOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
 		HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMemus); // 过滤模块 
 		
-		Map<Long, List<ModuleMemu>> modOptMap = Maps.newHashMap(); // 四级模块操作
+		Map<Long, List<ModuleMemuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
 		for (ModOptRef modOptRef : modOptRefList) {
 			ModuleMemu moduleMemu = modOptRef.getModuleMemu(); // 所属模块
 			Operate operate = modOptRef.getOperate(); // 具体操作
+			ModuleMemuVo vo = new ModuleMemuVo();
+			BeanUtils.copyProperties(moduleMemu, vo);
+			
 			// 操作按钮
-			ModuleMemu moduleMemuOpt = new ModuleMemu();
+			ModuleMemuVo moduleMemuOpt = new ModuleMemuVo();
 			moduleMemuOpt.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
 			moduleMemuOpt.setModName(operate.getOperateName());
 			moduleMemuOpt.setModImgCls(operate.getOptImgLink());
 			moduleMemuOpt.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
 			moduleMemuOpt.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-			moduleMemuOpt.setUpModId(moduleMemu.getModuleId()); // 将第三级菜单设置为操作
+			moduleMemuOpt.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
 			moduleMemuOpt.setIsLeaf(true);
 			
-			Long modEnId = moduleMemu.getModuleId(); // 模块英文id,作为操作列表map的key值
+			Long modEnId = vo.getModuleId(); // 模块英文id,作为操作列表map的key值
 			if (modOptMap.containsKey(modEnId)) {
-				List<ModuleMemu> modOptList = modOptMap.get(modEnId);
+				List<ModuleMemuVo> modOptList = modOptMap.get(modEnId);
 				// 根据操作顺序进行排序
 				int listIndex = 0; // 元素索引
 				boolean orderBol = true; // 是否插入指定索引元素
@@ -314,7 +319,7 @@ public class PrivilegeService {
 					modOptList.add(moduleMemuOpt);// 加到操作list中
 				}
 			} else {
-				List<ModuleMemu> modOptList = Lists.newArrayList();// 操作list
+				List<ModuleMemuVo> modOptList = Lists.newArrayList();// 操作list
 				modOptList.add(moduleMemuOpt);// 加到操作list中
 				modOptMap.put(modEnId, modOptList);// 设置map
 			}
@@ -338,8 +343,8 @@ public class PrivilegeService {
 		
 		// 过滤所有的模块操作
 		ModuleOperationVo moduleOperationVo = this.filterModOpt(modOptRefList, false);
-		List<ModuleMemu> moduleMemuList = moduleOperationVo.getModuleMenu();
-		Map<Long, List<ModuleMemu>> modOptMap = moduleOperationVo.getModuleOperate();
+		List<ModuleMemuVo> moduleMemuList = moduleOperationVo.getModuleMenu();
+		Map<Long, List<ModuleMemuVo>> modOptMap = moduleOperationVo.getModuleOperate();
 		// 1,2,3级菜单分类
 		HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(moduleMemuList);
 		hierarchyModuleVo.setFourth(modOptMap);
@@ -471,8 +476,8 @@ public class PrivilegeService {
 		
 		// 过滤所有的模块操作
 		ModuleOperationVo moduleOperationVo = this.filterModOpt(modOptRefList, false);
-		List<ModuleMemu> moduleMemuList = moduleOperationVo.getModuleMenu();
-		Map<Long, List<ModuleMemu>> modOptMap = moduleOperationVo.getModuleOperate();
+		List<ModuleMemuVo> moduleMemuList = moduleOperationVo.getModuleMenu();
+		Map<Long, List<ModuleMemuVo>> modOptMap = moduleOperationVo.getModuleOperate();
 		
 		// 1,2,3 级菜单分类
 		HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(moduleMemuList);
@@ -559,7 +564,6 @@ public class PrivilegeService {
 			privilegeMapper.save(privilege);
 		} else {
 			if(modOptIds != null) {
-				List<Privilege> uumPrivilegeList = new ArrayList<Privilege>();
 				for (String modOptId : modOptIds) {
 					if (isNullOrEmpty(modOptId)) continue;
 					Privilege privilege = new Privilege();
@@ -579,15 +583,15 @@ public class PrivilegeService {
 		}
 	}
 	
-	public List<TreeVoExtend> convertToTree(List<ModuleMemu> moduleMemuList) {
+	public List<TreeVoExtend> convertToTree(List<ModuleMemuVo> vos) {
 		List<TreeVoExtend> treeList = new ArrayList<TreeVoExtend>();
-		for(ModuleMemu moduleMemu : moduleMemuList) {
+		for(ModuleMemuVo vo : vos) {
 			TreeVoExtend tree = new TreeVoExtend();
-			tree.setId(moduleMemu.getModuleId().toString());
-			tree.setParentId(moduleMemu.getUpModId().toString());
-			tree.setText(moduleMemu.getModName());
-			tree.setIconSkin(moduleMemu.getModImgCls());
-			if (!moduleMemu.getIsLeaf()) {
+			tree.setId(vo.getModuleId().toString());
+			tree.setParentId(vo.getParentId().toString());
+			tree.setText(vo.getModName());
+			tree.setIconSkin(vo.getModImgCls());
+			if (!vo.getIsLeaf()) {
 				// 模块菜单级别为3是叶子
 				tree.setIsParent(true);
 //				tree.setNocheck(true);

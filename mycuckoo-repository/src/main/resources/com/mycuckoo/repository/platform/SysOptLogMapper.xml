@@ -28,13 +28,17 @@
 		opt_id, opt_mod_name, opt_name, opt_content, opt_business_id, 
 		opt_time, opt_pc_name, opt_pc_ip, opt_user_name, opt_user_role, opt_user_ogan
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_sys_opt_log
+	</sql>
 
 	<!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysOptLog">
 		<selectKey keyProperty="optId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_sys_opt_log_seq')
 		</selectKey>
-		insert into cuckoo.syspl_sys_opt_log
+		insert into <include refid="table" />
 		(
 			opt_id, opt_mod_name, opt_name, opt_content, opt_business_id, 
 			opt_time, opt_pc_name, opt_pc_ip, opt_user_name, opt_user_role, opt_user_ogan
@@ -48,45 +52,36 @@
 	<!-- 更新系统操作日志： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.SysOptLog">
 		update 
-			cuckoo.syspl_sys_opt_log
-		set
-			opt_mod_name				= #{optModName},
-			opt_name						= #{optName}, 
-			opt_content					= #{optContent}, 
-			opt_business_id			= #{optBusinessId}, 
-			opt_time						= #{optTime}, 
-			opt_pc_name					= #{optPcName},
-			opt_pc_ip						= #{optPcIp}, 
-			opt_user_name				= #{optUserName}, 
-			opt_user_role				= #{optUserRole}, 
-			opt_user_ogan				= #{optUserOgan}
+			<include refid="table" />
+		<set>
+			<if test="optModName != null">opt_mod_name = #{optModName}, </if>
+			<if test="optName != null">opt_name = #{optName}, </if>
+			<if test="optContent != null">opt_content = #{optContent}, </if>
+			<if test="optBusinessId != null">opt_business_id = #{optBusinessId}, </if>
+			<if test="optTime != null">opt_time = #{optTime}, </if>
+			<if test="optPcName != null">opt_pc_name = #{optPcName}, </if>
+			<if test="optPcIp != null">opt_pc_ip = #{optPcIp}, </if>
+			<if test="optUserName != null">opt_user_name = #{optUserName}, </if>
+			<if test="optUserRole != null">opt_user_role = #{optUserRole}, </if>
+			<if test="optUserOgan != null">opt_user_ogan = #{optUserOgan}, </if>
+		</set>
 		where 
 			opt_id = #{optId}
 	</update>
 	
 	<!-- 删除系统操作日志 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_sys_opt_log where opt_id = #{id}
+		delete from <include refid="table" /> where opt_id = #{id}
 	</delete>
 	
 	<!--
-		获取系统操作日志: 输出直接映射到对象, opt_id 列要 as optId 以方便映射创建 SysOptLog 对象并赋值
+		获取系统操作日志: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.SysOptLog">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			opt_id							as optId, 
-			opt_mod_name				as optModName,
-			opt_name						as optName, 
-			opt_content					as optContent, 
-			opt_business_id			as optBusinessId,
-			opt_time						as optTime, 
-			opt_pc_name					as optPcName, 
-			opt_pc_ip						as optPcIp, 
-			opt_user_name				as optUserName, 
-			opt_user_role				as optUserRole,
-			opt_user_ogan				as optUserOgan
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 		where 
 			opt_id = #{id}
 	</select>
@@ -96,7 +91,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 		where 
 			opt_id = #{id}
 	</select>
@@ -104,9 +99,9 @@
 	<!-- 分页查找系统操作日志, 映射到 baseMap -->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 		<where>
 			<if test="optModName != null">
 				opt_mod_name like #{optModName}
@@ -139,13 +134,13 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 	</select>
 	
 	<!-- 删除日志 -->
 	<delete id="deleteLogger" parameterType="date">
 		delete from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 		where
 			opt_time &lt;= #{optTime}
 	</delete>
@@ -155,7 +150,7 @@
 		select 
 			opt_content
 		from 
-			cuckoo.syspl_sys_opt_log
+			<include refid="table" />
 		where
 			opt_id = #{id}
 	</select>

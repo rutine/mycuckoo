@@ -26,13 +26,17 @@
 	<sql id="colums">
 		operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_operate
+	</sql>
 
 	<!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.Operate">
 		<selectKey keyProperty="operateId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_operate_seq')
 		</selectKey>
-		insert into cuckoo.syspl_operate
+		insert into <include refid="table" />
 		(
 			operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
 		)
@@ -44,43 +48,33 @@
 	<!-- 更新操作： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.Operate">
 		update 
-			cuckoo.syspl_operate
-		set
-			operate_name				= #{operateName},
-			opt_img_link				= #{optImgLink}, 
-			opt_order						= #{optOrder}, 
-			opt_group						= #{optGroup}, 
-			memo								= #{memo}, 
-			status							= #{status}, 
-			creator							= #{creator}, 
-			create_date					= #{createDate},
-			opt_fun_link				= #{optFunLink}
+			<include refid="table" />
+		<set>
+			<if test="operateName != null">operate_name = #{operateName}, </if>
+			<if test="optImgLink != null">opt_img_link = #{optImgLink}, </if>
+			<if test="optOrder != null">opt_order = #{optOrder}, </if>
+			<if test="optGroup != null">opt_group = #{optGroup}, </if>
+			<if test="optFunLink != null">opt_fun_link = #{optFunLink}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			operate_id = #{operateId}
 	</update>
 	
 	<!-- 删除操作 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_operate where operate_id = #{id}
+		delete from <include refid="table" /> where operate_id = #{id}
 	</delete>
 	
 	<!--
-		获取操作: 输出直接映射到对象, operate_id 列要 as operateId 以方便映射创建 Operate 对象并赋值
+		获取操作: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.Operate">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			operate_id						as operateId,
-			operate_name					as operateName, 
-			opt_img_link					as optImgLink, 
-			opt_order							as optOrder, 
-			opt_group							as optGroup, 
-			memo									as memo, 
-			status								as status, 
-			creator								as creator, 
-			create_date						as createDate,
-			opt_fun_link					as optFunLink
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_operate
+			<include refid="table" />
 		where 
 			operate_id = #{id}
 	</select>
@@ -90,7 +84,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_operate
+			<include refid="table" />
 		where 
 			operate_id = #{id}
 	</select>
@@ -98,9 +92,9 @@
 		<!-- 根据条件分页查询模块操作-->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_operate
+			<include refid="table" />
 		<where>
 			<if test="operateName != null">
 				operate_name like #{operateName}
@@ -115,15 +109,15 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_operate
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据模块操作名统计模块操作数量-->
 	<select id="countByName" parameterType="string" resultType="int">
 		select 
-			count(*)
+			count(1)
 		from 
-			cuckoo.syspl_operate
+			<include refid="table" />
 		where
 			operate_name = #{operateName}
 	</select>

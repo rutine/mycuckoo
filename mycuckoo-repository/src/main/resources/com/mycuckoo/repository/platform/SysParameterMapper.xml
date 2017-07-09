@@ -25,13 +25,17 @@
 	<sql id="colums">
 		para_id, para_name, para_key_name, para_value, para_type, memo, status, creator, create_date
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_sys_parameter
+	</sql>
 
 	<!-- 插入系统参数： 1.由数据库生成id并赋值到SysParameter对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysParameter">
 		<selectKey keyProperty="paraId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_sys_parameter_seq')
 		</selectKey>
-		insert into cuckoo.syspl_sys_parameter
+		insert into <include refid="table" />
 		(
 			para_id, para_name, para_key_name, para_value, para_type, memo, status, creator, create_date
 		)
@@ -43,41 +47,32 @@
 	<!-- 更新系统参数： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.SysParameter">
 		update 
-			cuckoo.syspl_sys_parameter
-		set
-			para_name						= #{paraName},
-			para_key_name				= #{paraKeyName}, 
-			para_value					= #{paraValue}, 
-			para_type						= #{paraType}, 
-			memo								= #{memo}, 
-			status							= #{status},
-			creator							= #{creator}, 
-			create_date					= #{createDate}
+			<include refid="table" />
+		<set>
+			<if test="paraName != null">para_name = #{paraName}, </if>
+			<if test="paraKeyName != null">para_key_name = #{paraKeyName}, </if>
+			<if test="paraValue != null">para_value = #{paraValue}, </if>
+			<if test="paraType != null">para_type = #{paraType}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			para_id = #{paraId}
 	</update>
 	
 	<!-- 删除系统参数 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_sys_parameter where para_id = #{id}
+		delete from <include refid="table" /> where para_id = #{id}
 	</delete>
 	
 	<!--
-		获取系统参数: 输出直接映射到对象, para_id 列要 as paraId 以方便映射创建 SysParameter 对象并赋值
+		获取系统参数: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.SysParameter">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			para_id							as paraId, 
-			para_name						as paraName,
-			para_key_name				as paraKeyName, 
-			para_value					as paraValue, 
-			para_type						as paraType,
-			memo								as memo, 
-			status							as status, 
-			creator							as creator,
-			create_date					as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_sys_parameter
+			<include refid="table" />
 		where 
 			para_id = #{id}
 	</select>
@@ -87,7 +82,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_sys_parameter
+			<include refid="table" />
 		where 
 			para_id = #{id}
 	</select>
@@ -95,9 +90,9 @@
 	<!-- 根据系统参数名称及键值查询系统参数, 映射到 baseMap -->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_sys_parameter
+			<include refid="table" />
 		<where>
 			<if test="paraName != null">
 				para_name like #{paraName}
@@ -115,15 +110,15 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_sys_parameter
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据参数名称查找系统参数 -->
 	<select id="getByParaName" parameterType="string" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_sys_parameter
+			<include refid="table" />
 		where
 			para_name = #{paraName}
 	</select>

@@ -12,7 +12,7 @@
 <mapper namespace="com.mycuckoo.repository.platform.ModuleMemuMapper">
 	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.ModuleMemu">
 		<id property="moduleId" column="module_id" />
-		<result property="moduleMemu.moduleId" column="mod_parent_id" />
+		<result property="parentId" column="mod_parent_id" />
 		<result property="modName" column="mod_name" />
 		<result property="modEnId" column="mod_en_id" />
 		<result property="modImgCls" column="mod_img_cls" />
@@ -30,69 +30,59 @@
 		module_id, mod_parent_id, mod_name, mod_en_id, mod_img_cls, mod_level, 
 		mod_order, belong_to_sys, mod_page_type, memo, status, creator, create_date
 	</sql>
+	
+	<sql id="table">
+		cuckoo.syspl_module_memu
+	</sql>
 
-	<!-- 插入模块菜单： 1.由数据库生成id并赋值到 ModuleMemu对象 2.嵌套属性输入#{moduleMemu.moduleId} -->
+	<!-- 插入模块菜单： 1.由数据库生成id并赋值到 ModuleMemu对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.platform.ModuleMemu">
 		<selectKey keyProperty="moduleId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.syspl_module_memu_seq')
 		</selectKey>
-		insert into cuckoo.syspl_module_memu
-		(
+		insert into <include refid="table" /> (
 			module_id, mod_parent_id, mod_name, mod_en_id, mod_img_cls, mod_level, 
 			mod_order, belong_to_sys, mod_page_type, memo, status, creator, create_date
 		)
 		values (
-			#{moduleId}, #{moduleMemu.moduleId}, #{modName}, #{modEnId}, #{modImgCls}, #{modLevel}, 
+			#{moduleId}, #{parentId}, #{modName}, #{modEnId}, #{modImgCls}, #{modLevel}, 
 			#{modOrder}, #{belongToSys}, #{modPageType}, #{memo}, #{status}, #{creator}, #{createDate}
 		)
 	</insert>
 	
-	<!-- 更新模块菜单： 1.输入对象参数 2.嵌套属性输入#{moduleMemu.moduleId} -->
+	<!-- 更新模块菜单： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.platform.ModuleMemu">
 		update 
-			cuckoo.syspl_module_memu
-		set
-			mod_parent_id				= #{moduleMemu.moduleId},
-			mod_name						= #{modName}, 
-			mod_en_id						= #{modEnId}, 
-			mod_img_cls					= #{modImgCls}, 
-			mod_level						= #{modLevel}, 
-			mod_order						= #{modOrder}, 
-			belong_to_sys				= #{belongToSys}, 
-			mod_page_type				= #{modPageType}, 
-			memo								= #{memo}, 
-			status							= #{status}, 
-			creator							= #{creator}, 
-			create_date					= #{createDate}
+			<include refid="table" />
+		<set>
+			<if test="parentId != null">mod_parent_id = #{parentId}, </if>
+			<if test="modName != null">mod_name = #{modName}, </if>
+			<if test="modEnId != null">mod_en_id = #{modEnId}, </if>
+			<if test="modImgCls != null">mod_img_cls = #{modImgCls}, </if>
+			<if test="modLevel != null">mod_level = #{modLevel}, </if>
+			<if test="modOrder != null">mod_order = #{modOrder}, </if>
+			<if test="belongToSys != null">belong_to_sys = #{belongToSys}, </if>
+			<if test="modPageType != null">mod_page_type = #{modPageType}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			module_id = #{moduleId}
 	</update>
 	
 	<!-- 删除模块菜单 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.syspl_module_memu where module_id = #{id}
+		delete from <include refid="table" /> where module_id = #{id}
 	</delete>
 	
 		<!--
-		获取模块菜单: 输出直接映射到对象, module_id 列要 as moduleId 以方便映射创建 ModuleMemu 对象并赋值
+		获取模块菜单: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.platform.ModuleMemu">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			module_id						as moduleId,
-			mod_parent_id				as "moduleMemu.moduleId", 
-			mod_name						as modName, 
-			mod_en_id						as modEnId, 
-			mod_img_cls					as modImgCls, 
-			mod_level						as modLevel, 
-			mod_order						as modOrder, 
-			belong_to_sys				as belongToSys, 
-			mod_page_type				as modPageType, 
-			memo								as memo, 
-			status							as status, 
-			creator							as creator, 
-			create_date					as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
 			module_id = #{id}
 	</select>
@@ -102,7 +92,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
 			module_id = #{id}
 	</select>
@@ -110,9 +100,9 @@
 	<!-- 根据条件查询模块 -->
 	<select id="findByPage" parameterType="map" resultMap ="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
 			module_id != 0
 		<if test="modName != null">
@@ -136,15 +126,15 @@
 		select
 			count(1) 
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据父级模块ID统计下级模块数 -->
-	<select id="countByUpModuleId" parameterType="long" resultType="int">
+	<select id="countByParentId" parameterType="long" resultType="int">
 		select 
 			count(1)
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
 			mod_parent_id = #{parentId}
 	</select>
@@ -154,19 +144,19 @@
 		select 
 			count(1)
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
 			mod_name = #{modName}
 	</select>
 	
 	<!-- 根据父模块ID查询下级模块 -->
-	<select id="findByUpModuleIdAndFilterModuleIds" parameterType="map" resultMap ="baseMap">
+	<select id="findByParentIdAndFilterModuleIds" parameterType="map" resultMap ="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		where 
-			mod_parent_id = #{moduleId}
+			mod_parent_id = #{parentId}
 		and 
 			module_id not in
 			<foreach item="id" collection="filterModuleIds" open="(" separator="," close=")">
@@ -177,7 +167,7 @@
 	<!-- 修改模块记录 -->
 	<update id="updateRowPrivilege">
 		update 
-			cuckoo.syspl_module_memu
+			<include refid="table" />
 		set 
 			privilege_level = #{privilegeLevel}
 		where 

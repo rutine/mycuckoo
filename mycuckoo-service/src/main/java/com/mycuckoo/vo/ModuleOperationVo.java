@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 模块菜单和模块操作列表
@@ -15,28 +15,28 @@ import com.mycuckoo.domain.platform.ModuleMemu;
  * @version 3.0.0
  */
 public class ModuleOperationVo {
-	private List<ModuleMemu> moduleMenu = Lists.newArrayList(); // 模块菜单list
-	private Map<Long, List<ModuleMemu>> moduleOperate = Maps.newHashMap(); // 四级模块操作
+	private List<ModuleMemuVo> moduleMenu = Lists.newArrayList(); // 模块菜单list
+	private Map<Long, List<ModuleMemuVo>> moduleOperate = Maps.newHashMap(); // 四级模块操作
 	
 	public ModuleOperationVo() {
 		
 	}
 	
-	public ModuleOperationVo(List<ModuleMemu> moduleMenu, Map<Long, List<ModuleMemu>> moduleOperate) {
+	public ModuleOperationVo(List<ModuleMemuVo> moduleMenu, Map<Long, List<ModuleMemuVo>> moduleOperate) {
 		this.moduleMenu = moduleMenu;
 		this.moduleOperate = moduleOperate;
 	}
 	
-	public List<ModuleMemu> getModuleMenu() {
+	public List<ModuleMemuVo> getModuleMenu() {
 		return moduleMenu;
 	}
-	public void setModuleMenu(List<ModuleMemu> moduleMenu) {
+	public void setModuleMenu(List<ModuleMemuVo> moduleMenu) {
 		this.moduleMenu = moduleMenu;
 	}
-	public Map<Long, List<ModuleMemu>> getModuleOperate() {
+	public Map<Long, List<ModuleMemuVo>> getModuleOperate() {
 		return moduleOperate;
 	}
-	public void setModuleOperate(Map<Long, List<ModuleMemu>> moduleOperate) {
+	public void setModuleOperate(Map<Long, List<ModuleMemuVo>> moduleOperate) {
 		this.moduleOperate = moduleOperate;
 	}
 }

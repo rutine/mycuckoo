@@ -10,7 +10,6 @@ import static com.mycuckoo.common.utils.CommonUtils.getResourcePath;
 import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +17,12 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.ModuleLevelEnum;
@@ -32,13 +33,16 @@ import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
+import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModuleMemuMapper;
-import com.mycuckoo.vo.AssignOperationVo;
+import com.mycuckoo.service.facade.UumServiceFacade;
+import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 系统模块业务类
@@ -62,8 +66,8 @@ public class ModuleService {
 	private SystemOptLogService sysOptLogService;
 	@Autowired
 	private OperateService operateService;
-//	@Autowired
-//	private UumCommonService uumCommonService;
+	@Autowired
+	private UumServiceFacade uumServiceFacade;
 	
 	
 
@@ -78,9 +82,8 @@ public class ModuleService {
 			modOptRefIdList.add(modOptId.toString());
 		}
 		
-		// TODO
 		// 删除模块时自动删除权限下的模块
-//		uumCommonService.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+		uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
 		modOptRefMapper.deleteByOperateId(operateId);
 		
 		String optContent = "根据操作ID删除模块操作关系,级联删除权限";
@@ -101,9 +104,8 @@ public class ModuleService {
 			modOptRefIdList.add(modOptId.toString());
 		}
 		
-		//TODO
 		// 删除模块时自动删除权限下的模块
-//		uumCommonService.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+		uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
 		// 删除模块时自动删除模块下的操作
 		modOptRefMapper.deleteByModuleId(moduleId); 
 		moduleMemuMapper.delete(moduleId);
@@ -114,7 +116,7 @@ public class ModuleService {
 	@Transactional(readOnly=false)
 	public boolean disEnable(long moduleId, String disableFlag) throws ApplicationException {
 		if(DISABLE.equals(disableFlag)) {
-			int count = moduleMemuMapper.countByUpModuleId(moduleId);
+			int count = moduleMemuMapper.countByParentId(moduleId);
 			if(count > 0) { // 有下级菜单
 				return false;
 			} else {
@@ -128,9 +130,8 @@ public class ModuleService {
 					modOptRefIdList.add(modOptId.toString());
 				}
 				
-				//TODO
 				// 删除模块时自动删除权限下的模块
-//				uumCommonService.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+				uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
 				// 停用第三级模块时将自动删除模块下的操作
 				modOptRefMapper.deleteByModuleId(moduleId); 
 				moduleMemuMapper.update(moduleMemu);
@@ -148,38 +149,38 @@ public class ModuleService {
 		}
 	}
 
-	public HierarchyModuleVo filterModule(List<ModuleMemu> list) {
-		List<ModuleMemu> firstList = new ArrayList<ModuleMemu>();
-		List<ModuleMemu> secondList = new ArrayList<ModuleMemu>();
-		List<ModuleMemu> thirdList = new ArrayList<ModuleMemu>();
+	public HierarchyModuleVo filterModule(List<ModuleMemuVo> list) {
+		List<ModuleMemuVo> firstList = Lists.newArrayList();
+		List<ModuleMemuVo> secondList = Lists.newArrayList();
+		List<ModuleMemuVo> thirdList = Lists.newArrayList();
 		
 		// 过滤分类一级、二级、三级菜单
-		for(ModuleMemu module : list) {
-			switch (ModuleLevelEnum.value(module.getModLevel())) {
+		for(ModuleMemuVo vo : list) {
+			switch (ModuleLevelEnum.value(vo.getModLevel())) {
 			case ONE:
-				sortModule(firstList, module);
+				sortModule(firstList, vo);
 				break;
 			case TWO:
-				secondList.add(module);
+				secondList.add(vo);
 				break;
 			case THREE:
-				thirdList.add(module);
+				thirdList.add(vo);
 				break;
 			}
 		}
 		
-		Map<String, List<ModuleMemu>> secondMap = new HashMap<String, List<ModuleMemu>>(); // 第二级
-		Map<String, List<ModuleMemu>> thirdMap = new HashMap<String, List<ModuleMemu>>();	 // 第三级
+		Map<String, List<ModuleMemuVo>> secondMap = Maps.newHashMap(); // 第二级
+		Map<String, List<ModuleMemuVo>> thirdMap = Maps.newHashMap();	 // 第三级
 		
 		// 分类一级包含的二级菜单, 二级包含的三级菜单
-		for(ModuleMemu firstMod : firstList) { // 1
-			List<ModuleMemu> firstModChildren = new ArrayList<ModuleMemu>();
-			for(ModuleMemu secondMod : secondList) { // 2
-				if(secondMod.getUpModId() == firstMod.getModuleId()) {
+		for(ModuleMemuVo firstMod : firstList) { // 1
+			List<ModuleMemuVo> firstModChildren = Lists.newArrayList();
+			for(ModuleMemuVo secondMod : secondList) { // 2
+				if(secondMod.getParentId() == firstMod.getModuleId()) {
 					sortModule(firstModChildren, secondMod);
-					List<ModuleMemu> secondModChildren = new ArrayList<ModuleMemu>();
-					for(ModuleMemu thirdMod : thirdList) { // 3
-						if(thirdMod.getUpModId() == secondMod.getModuleId()) {
+					List<ModuleMemuVo> secondModChildren = Lists.newArrayList();
+					for(ModuleMemuVo thirdMod : thirdList) { // 3
+						if(thirdMod.getParentId() == secondMod.getModuleId()) {
 							sortModule(secondModChildren, thirdMod);
 						}
 					}
@@ -192,14 +193,17 @@ public class ModuleService {
 		return new HierarchyModuleVo(firstList, secondMap, thirdMap);
 	}
 
-	public List<ModuleMemu> findAll() {
+	public List<ModuleMemuVo> findAll() {
 		Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
 		List<ModuleMemu> list = moduleMemuMapper.findByPage(null, pageRequest).getContent();
-		for(ModuleMemu mod : list) {
-			mod.setUpModId(mod.getModuleMemu().getModuleId()); // 上级模块ID
-		}
+		List<ModuleMemuVo> vos = Lists.newArrayList();
+		list.forEach(moduleMemu -> {
+			ModuleMemuVo vo = new ModuleMemuVo();
+			BeanUtils.copyProperties(moduleMemu, vo);
+			vos.add(vo);
+		});
 		
-		return list;
+		return vos;
 	}
 
 	public List<ModOptRef> findAllModOptRefs() {
@@ -207,13 +211,13 @@ public class ModuleService {
 		return modOptRefMapper.findByPage(null, pageRequest).getContent();
 	}
 
-	public AssignOperationVo findAssignedAUnAssignedOperatesByModuleId(long moduleId) {
+	public AssignVo<Operate> findAssignedAUnAssignedOperatesByModuleId(long moduleId) {
 		List<Operate> allOperateList = operateService.findAll(); // 所有操作
 		List<Operate> assignedOperateList = findAssignedOperatesByModuleId(moduleId); // 已经分配的操作
 		allOperateList.removeAll(assignedOperateList); // 删除已经分配
 		List<Operate> unassignedOperateList = allOperateList; // 未分配的操作
 	
-		return new AssignOperationVo(assignedOperateList, unassignedOperateList);
+		return new AssignVo<>(assignedOperateList, unassignedOperateList);
 	}
 
 	/**
@@ -222,42 +226,42 @@ public class ModuleService {
 	public List<Operate> findAssignedOperatesByModuleId(long moduleId) {
 		List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId);
 		List<Operate> operationList = new ArrayList<Operate>();
-		if(modOptRefList != null) {
-			for(ModOptRef modOptRef : modOptRefList) {
-				operationList.add(operateService.get(modOptRef.getOperate().getOperateId()));
-			}
+		for(ModOptRef modOptRef : modOptRefList) {
+			operationList.add(operateService.get(modOptRef.getOperate().getOperateId()));
 		}
 		
 		return operationList;
 	}
 
-	public List<ModuleMemu> findChildNodeList(long moduleId, int flag) {
+	public List<ModuleMemuVo> findChildNodeList(long moduleId, int flag) {
 		Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-		List<ModuleMemu> filterList = new ArrayList<ModuleMemu>();
 		List<ModuleMemu> listAll = moduleMemuMapper.findByPage(null, pageRequest).getContent();
-		List<ModuleMemu> listAllTemp = new ArrayList<ModuleMemu>();
+		
+		List<ModuleMemu> filterList = Lists.newArrayList();
+		List<ModuleMemu> listAllTemp = Lists.newArrayList();
 		listAllTemp.addAll(listAll);
+		
 		//删除根元素
-		ModuleMemu moduleMemu = new ModuleMemu();
-		moduleMemu.setModuleId(0L);
+		ModuleMemu moduleMemu = new ModuleMemu(0L);
 		listAllTemp.remove(moduleMemu);
 		//过滤出所有下级元素
 		filterList = getFilterList(filterList, listAllTemp, moduleId);	
-		if(flag == 1){
+		if(flag == 1) {
 			//本元素
-			ModuleMemu moduleMemuOld = new ModuleMemu();
-			moduleMemuOld.setModuleId(moduleId);
+			ModuleMemu moduleMemuOld = new ModuleMemu(moduleId);
 			filterList.add(moduleMemuOld);
 			listAll.removeAll(filterList);
 			filterList = listAll;
-			if(filterList != null && filterList.size()>0){
-				for(ModuleMemu mod : filterList){
-					mod.setUpModId(mod.getModuleMemu().getModuleId());
-				}
-			}
 		}
 		
-		return filterList;
+		List<ModuleMemuVo> vos = Lists.newArrayList();
+		filterList.forEach(module -> {
+			ModuleMemuVo vo = new ModuleMemuVo();
+			BeanUtils.copyProperties(moduleMemu, vo);
+			vos.add(vo);
+		});
+		
+		return vos;
 	}
 
 	public List<ModOptRef> findModOptRefsByModOptRefIds(Long[] modOptRefIds) {
@@ -268,29 +272,44 @@ public class ModuleService {
 		return modOptRefMapper.findByIds(modOptRefIds);
 	}
 
-	public Page<ModuleMemu> findModulesByCon(long treeId, String modName, String modEnId, Pageable page) {
+	public Page<ModuleMemuVo> findByPage(long treeId, String modName, String modEnId, Pageable page) {
 		logger.debug("start={} limit={} treeId={} modName={} modEnId={}", 
 				page.getOffset(), page.getPageSize(), treeId, modName, modEnId);
 		
 		List<Long> idList = new ArrayList<Long>();
 		if(treeId > 0) {
-			List<ModuleMemu> list = findChildNodeList(treeId, 0); // 过滤出所有下级
-			for(ModuleMemu moduleMemu : list) {
-				idList.add(moduleMemu.getModuleId()); // 所有下级模块ID
+			List<ModuleMemuVo> list = findChildNodeList(treeId, 0); // 过滤出所有下级
+			for(ModuleMemuVo vo : list) {
+				idList.add(vo.getModuleId()); // 所有下级模块ID
 			}
 		}
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("array", idList.toArray(new Long[idList.size()]));
 		params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
 		params.put("modEnId", isNullOrEmpty(modEnId) ? null : "%" + modEnId + "%");
+		Page<ModuleMemu> entityPage = moduleMemuMapper.findByPage(params, page);
 		
-		return moduleMemuMapper.findByPage(params, page);
+		List<ModuleMemuVo> vos = Lists.newArrayList();
+		for(ModuleMemu entity : entityPage.getContent()) {					
+			ModuleMemuVo vo = new ModuleMemuVo();
+			BeanUtils.copyProperties(entity, vo);
+			vos.add(vo);
+		}
+		
+		return new PageImpl<>(
+				vos, 
+				new PageRequest(entityPage.getNumber(), entityPage.getSize()), 
+				entityPage.getTotalElements());
 	}
 
-	public ModuleMemu get(Long moduleId) {
+	public ModuleMemuVo get(Long moduleId) {
 		logger.debug("will find module id is {}", moduleId);
 		
-		return moduleMemuMapper.get(moduleId);
+		ModuleMemu entity = moduleMemuMapper.get(moduleId);
+		ModuleMemuVo vo = new ModuleMemuVo();
+		BeanUtils.copyProperties(entity, vo);
+		
+		return vo;
 	}
 
 	public boolean existsByModuleName(String moduleName) {
@@ -304,8 +323,8 @@ public class ModuleService {
 		return false;
 	}
 
-	public List<TreeVo> findByUpModuleIdAndFilterModuleId(long moduleId, long filterModuleId) {
-		List<ModuleMemu> list = moduleMemuMapper.findByUpModuleIdAndFilterModuleIds(moduleId, new long[]{0L, filterModuleId});
+	public List<TreeVo> findByParentIdAndFilterModuleIds(long moduleId, long filterModuleId) {
+		List<ModuleMemu> list = moduleMemuMapper.findByParentIdAndFilterModuleIds(moduleId, new long[]{0L, filterModuleId});
 		List<TreeVo> treeVoList = new ArrayList<TreeVo>();
 		if (list != null && list.size() > 0) {
 			for (ModuleMemu mod : list) {
@@ -391,8 +410,7 @@ public class ModuleService {
 				Long modOptId = modOptRef.getModOptId();
 				modOptRefIdList.add(modOptId.toString());
 			}
-			//TODO
-//			uumCommonService.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+			uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
 			
 			// 删除权限操作 modOptRefList 模块操作关系
 			saveModuleOptRefSingle(moduleId, operateIdList); // 保存新分配的模块操作关系
@@ -428,11 +446,11 @@ public class ModuleService {
 	 * @author rutine
 	 * @time Oct 11, 2012 8:58:30 PM
 	 */
-	private void sortModule(List<ModuleMemu> moduleList, ModuleMemu moduleMemu) {
+	private void sortModule(List<ModuleMemuVo> moduleList, ModuleMemuVo moduleMemu) {
 		// 根据操作顺序进行排序
 		int index = 0; // 元素索引
 		boolean isAppend = true; // 是否追加元素
-		for (ModuleMemu mod : moduleList) {
+		for (ModuleMemuVo mod : moduleList) {
 			int listModOrder = mod.getModOrder(); // 已经有的操作顺序
 			int currModOrder = moduleMemu.getModOrder(); // 当前操作顺序
 			if (listModOrder > currModOrder) {
@@ -481,7 +499,7 @@ public class ModuleService {
 	private List<ModuleMemu> getSubList(List<ModuleMemu> listAll, long moduleId) {
 		List<ModuleMemu> newList = new ArrayList<ModuleMemu>();
 		for (ModuleMemu module : listAll) {
-			if (module.getModuleMemu().getModuleId() == moduleId) {
+			if (module.getParentId() == moduleId) {
 				newList.add(module);
 			}
 		}

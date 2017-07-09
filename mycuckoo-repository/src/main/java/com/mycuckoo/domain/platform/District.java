@@ -2,12 +2,9 @@ package com.mycuckoo.domain.platform;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -17,11 +14,10 @@ import com.google.common.collect.Lists;
  * @version 3.0.0
  */
 public class District implements Serializable {
-	
 	private static final long serialVersionUID = 1000000L;
 
 	private Long districtId;
-	private District district;
+	private Long parentId;
 	private String districtName;
 	private String districtCode;
 	private String districtPostal;
@@ -31,11 +27,6 @@ public class District implements Serializable {
 	private String status;
 	private String creator;
 	private Date createDate;
-	private List<District> districts = Lists.newArrayList();
-
-	
-	private Long upDistrictId;
-	private String upDistrictName;
 	
 	/** default constructor */
 	public District() {
@@ -48,12 +39,12 @@ public class District implements Serializable {
 	}
 
 	/** full constructor */
-	public District(Long districtId, District district,
+	public District(Long districtId, Long parentId,
 			String districtName, String districtCode, String districtPostal,
 			String districtTelcode, String districtLevel, String memo,
-			String status, String creator, Date createDate,  List<District> districts) {
+			String status, String creator, Date createDate) {
 		this.districtId = districtId;
-		this.district = district;
+		this.parentId = parentId;
 		this.districtName = districtName;
 		this.districtCode = districtCode;
 		this.districtPostal = districtPostal;
@@ -63,7 +54,6 @@ public class District implements Serializable {
 		this.status = status;
 		this.creator = creator;
 		this.createDate = createDate;
-		this.districts = districts;
 	}
 
 	public Long getDistrictId() {
@@ -74,12 +64,12 @@ public class District implements Serializable {
 		this.districtId = districtId;
 	}
 
-	public District getDistrict() {
-		return this.district;
+	public Long getParentId() {
+		return parentId;
 	}
 
-	public void setDistrict(District district) {
-		this.district = district;
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 
 	public String getDistrictName() {
@@ -154,31 +144,7 @@ public class District implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public  List<District> getDistricts() {
-		return this.districts;
-	}
 
-	public void setDistricts( List<District> districts) {
-		this.districts = districts;
-	}
-	
-	public Long getUpDistrictId() {
-		return upDistrictId;
-	}
-
-	public void setUpDistrictId(Long upDistrictId) {
-		this.upDistrictId = upDistrictId;
-	}
-
-	public String getUpDistrictName() {
-		return upDistrictName;
-	}
-
-	public void setUpDistrictName(String upDistrictName) {
-		this.upDistrictName = upDistrictName;
-	}
-
-	
 	public boolean equals(Object obj ){
 			if(this == obj) return true;
 			if(obj == null) return false;
