@@ -81,9 +81,8 @@ public class CodeService {
 
 	public boolean existByCodeEngName(String codeEngName) {
 		int count = codeMapper.countByCodeEngName(codeEngName);
-		if(count > 0) return true;
 		
-		return false;
+		return count > 0;
 	}
 
 	public Code get(Long codeId) {
@@ -161,7 +160,7 @@ public class CodeService {
 			newCode = part1Con + delimite + part2Con + delimite + part3Con + delimite + part4Con;
 			break;
 		}
-		logger.info("newCode is : " + newCode);
+		logger.info("newCode is : {}", newCode);
 	
 //		if ("".equals(currentCode)) {
 //			ModuleCode newModuleCode = new ModuleCode();

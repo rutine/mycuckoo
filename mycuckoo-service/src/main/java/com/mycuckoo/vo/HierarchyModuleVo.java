@@ -16,6 +16,8 @@ public class HierarchyModuleVo {
 	private List<ModuleMemu> first;
 	private Map<String, List<ModuleMemu>> second;
 	private Map<String, List<ModuleMemu>> third;
+	private Map<Long, List<ModuleMemu>> fourth;
+	private String row;
 	
 	public HierarchyModuleVo(
 			List<ModuleMemu> first, 
@@ -43,5 +45,17 @@ public class HierarchyModuleVo {
 	}
 	public void setThird(Map<String, List<ModuleMemu>> third) {
 		this.third = third;
+	}
+	public Map<Long, List<ModuleMemu>> getFourth() {
+		return fourth;
+	}
+	public void setFourth(Map<Long, List<ModuleMemu>> fourth) {
+		this.fourth = fourth;
+	}
+	public String getRow() {
+		return row;
+	}
+	public void setRow(String row) {
+		this.row = row;
 	}
 }

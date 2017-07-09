@@ -53,9 +53,9 @@ public class SchedulerHandle {
 		SchedulerHandle handler = SchedulerHandle.getInstance();
 		List<SchedulerJob> jobList = new ArrayList<SchedulerJob>();
 		SchedulerJob job = new SchedulerJob();
-		job.setJobName("jobtest");
+		job.setJobName("testJob");
 		job.setTriggerType(SchedulerHandle.SIMPLE);
-		job.setJobClassDescript("com.mycuckoo.service.platform.job.JobTest");
+		job.setJobClassDescript("com.mycuckoo.service.platform.job.TestJob");
 		job.setRepeatTime(10);
 		job.setSplitTime(5000L);
 		job.setStartTime(new Date());
@@ -70,21 +70,21 @@ public class SchedulerHandle {
 					handler.startScheduler(true);
 				} else if ("stopScheduler".equals(command)) {
 					handler.stopScheduler();
-				} else if ("jobtest".equals(command)) {
-					boolean bol = handler.existsJobTask("jobtest");
+				} else if ("testJob".equals(command)) {
+					boolean bol = handler.existsJobTask("testJob");
 					System.out.println("jobtest wether exist " + bol);
 				} else if ("startJob".equals(command)) {
 					SchedulerJob job2 = new SchedulerJob();
-					job2.setJobName("jobtest2");
+					job2.setJobName("testJob2");
 					job2.setTriggerType(SchedulerHandle.CRON);
-					job2.setJobClassDescript("com.mycuckoo.service.platform.job.JobTest");
+					job2.setJobClassDescript("com.mycuckoo.service.platform.job.TestJob");
 					job2.setRepeatTime(10);
 					job2.setSplitTime(5000L);
 					job2.setStartTime(new Date());
 					job2.setTimeExpress("0/3 * * * * ?");
 					handler.startJob(job2);
 				} else if ("stopJob".equals(command)) {
-					handler.stopJob("jobtest2");
+					handler.stopJob("testJob2");
 				}
 			}
 		} catch (Exception e) {

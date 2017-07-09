@@ -1,6 +1,5 @@
 package com.mycuckoo.repository.uum.group;
 
-import static com.mycuckoo.common.constant.Common.ROLE_GROUP;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.common.constant.GroupTypeEnum;
 import com.mycuckoo.domain.uum.Group;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -28,7 +28,7 @@ public class GroupMapperTest extends AbstractTransactionalJUnit4SpringContextTes
 
 	@Test
 	public void testCountByGroupName() {
-		long count = mapper.countByGroupName("a", ROLE_GROUP);
+		long count = mapper.countByGroupName("a", GroupTypeEnum.ROLE_GROUP.value());
 		
 		logger.info("------> countByGroupName: {}", count);
 	}
@@ -92,7 +92,7 @@ public class GroupMapperTest extends AbstractTransactionalJUnit4SpringContextTes
 	public void testFindByPage() {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("groupName", "%组%");
-		params.put("groupType", ROLE_GROUP);
+		params.put("groupType", GroupTypeEnum.ROLE_GROUP.value());
 		Page<Group> page = mapper.findByPage(null, new PageRequest(0, 5));
 		
 		for(Group entity : page.getContent()) {

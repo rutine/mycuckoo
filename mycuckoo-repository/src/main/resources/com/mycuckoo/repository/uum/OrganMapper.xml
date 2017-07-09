@@ -155,6 +155,7 @@
 			*
 		from 
 			cuckoo.uum_organ
+		<include refid="whereStatement"/>
 		order by 
 			org_parent, org_id
 	</select>
@@ -198,12 +199,23 @@
 			org_parent = #{orgId}
 		and
 			org_id not in (0
-		<if test="filterOrgId != null">
-			, #{filterOrgId}
-		</if>
+				<if test="filterOrgId != null">, #{filterOrgId}</if>
 			)
 		order by 
 			org_parent, org_id
+	</select>
+	
+	<!-- 根据机构IDs查询机构记录 -->
+	<select id="findByOrgIds" resultMap="baseMap">
+		select 
+			org_id, org_simple_name
+		from 
+			cuckoo.uum_organ
+		where 
+			org_id in
+			<foreach collection="array" item="orgId" open="(" separator="," close=")">
+				#{orgId}
+			</foreach>
 	</select>
 	
 	<!-- 分页查询和数量统计条件声明 -->
@@ -222,29 +234,5 @@
 			</if>
 		</where>
 	</sql>
-	
-	<!-- 根据条件分页查询机构 -->
-	<select id="findByPage2" parameterType="map" resultMap="baseMap">
-		select 
-			*
-		from 
-			cuckoo.uum_organ
-			<include refid="whereStatement"/>
-		order by 
-			org_id desc
-	</select>
-	
-	<!-- 根据机构IDs查询机构记录 -->
-	<select id="findByOrgIds" resultMap="baseMap">
-		select 
-			org_id, org_simple_name
-		from 
-			cuckoo.uum_organ
-		where 
-			org_id in
-			<foreach collection="array" item="orgId" open="(" separator="," close=")">
-				#{orgId}
-			</foreach>
-	</select>
 	
 </mapper> 

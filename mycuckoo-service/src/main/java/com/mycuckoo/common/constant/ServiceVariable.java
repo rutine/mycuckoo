@@ -25,8 +25,6 @@ public class ServiceVariable extends Common {
 	
 	public final static String ENABLE = "enable";
 	public final static String DISABLE = "disable";
-//	public final static String ENABLE_DIS = "启用";
-//	public final static String DISABLE_DIS = "停用";
 	public final static String Y = "Y";//默认角色
 	public final static String N = "N";//否
 //	//系统配置 管理员增加 删除

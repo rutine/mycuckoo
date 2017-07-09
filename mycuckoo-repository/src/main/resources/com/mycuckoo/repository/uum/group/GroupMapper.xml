@@ -19,7 +19,7 @@
 		<result property="creator" column="creator" />
 		<result property="createDate" column="create_date" />
 		<collection property="groupMembers" column="group_id" 
-				ofType="com.mycuckoo.domain.uum.GroupMember" select="findGroupMembersByGroupId" />
+				ofType="com.mycuckoo.domain.uum.GroupMember" select="com.mycuckoo.repository.uum.group.GroupMemberMapper.findByGroupId" />
 	</resultMap>
 	
 	<sql id="colums">
@@ -125,21 +125,5 @@
 		where 
 			group_id = #{groupId}
 	</update>
-	
-		<!-- 根据组ID查询所有组成员 -->
-	<select id="findGroupMembersByGroupId" resultMap="com.mycuckoo.repository.uum.group.GroupMemberMapper.baseMap">
-		select
-			*
-		from 
-			cuckoo.uum_group_member 
-		where 
-			group_id = #{groupId}
-	</select>
-	
-	<!-- 根据组ID删除组成员 -->
-	<delete id="deleteGroupMembersByGroupId" parameterType="map">
-		delete from cuckoo.uum_group_member 
-		where group_id = #{groupId} and group_type = #{groupType}
-	</delete>
 	
 </mapper> 

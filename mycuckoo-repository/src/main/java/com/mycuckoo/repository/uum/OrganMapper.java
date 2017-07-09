@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.mycuckoo.domain.uum.Organ;
-import com.mycuckoo.repository.Page;
-import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.Repository;
 
 /**
@@ -51,21 +49,6 @@ public interface OrganMapper extends Repository<Organ, Long> {
 	 * @return
 	 */
 	List<Organ> findByUpOrgIdAFilter(@Param("orgId") Long orgId, @Param("filterOrgId") Long filterOrgId);
-
-	/**
-	 * 根据条件分页查询机构记录
-	 * 
-	 * @param orgIds 机构ID数组
-	 * @param orgCode 机构代码 like '%param%'
-	 * @param orgName 机构名称 like '%param%'
-	 * @param page 分页
-	 * @return
-	 */
-	Page<Organ> findByPage2(
-			@Param("orgIds") Long[] orgIds, 
-			@Param("orgCode") String orgCode,
-			@Param("simpleName") String simpleName, 
-			Pageable page);
 
 	/**
 	 * 根据机构IDs查询机构记录

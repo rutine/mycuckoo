@@ -17,7 +17,8 @@ public enum OptNameEnum {
 	STOP_SCHEDULER("停止调度器"),
 	START_JOB("启动job"),
 	STOP_JOB("停止job"),
-	USER_LOGIN("用户登录");
+	USER_LOGIN("用户登录"),
+	RESET_PWD("重置密码");
 
 	
 	private String name;

@@ -30,13 +30,4 @@ public interface GroupMapper extends Repository<Group, Long> {
 	 * @param status
 	 */
 	void updateStatus(@Param("groupId") Long groupId, @Param("status") String status);
-	
-	/**
-	 * 根据组ID删除组成员
-	 *
-	 * @param groupId
-	 * @param groupType
-	 */
-	void deleteGroupMembersByGroupId(@Param("groupId") Long groupId, @Param("groupType") String groupType);
-
 }

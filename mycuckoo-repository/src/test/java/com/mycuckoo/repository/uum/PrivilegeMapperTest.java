@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import com.mycuckoo.common.constant.Common;
+import com.mycuckoo.common.constant.PrivilegeScopeEnum;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -26,7 +27,7 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 	@Test
 	public void testFindByOwnIdAndPrivilegeType() {
 		List<Privilege> list = (List<Privilege>) privilegeMapper.findByOwnIdAndPrivilegeType(new Long[]{0L, 1L, 2L, 8L, 9L, 10L}, 
-					new String[]{Common.OWNER_TYPE_ROL, Common.OWNER_TYPE_USR}, new String[]{Common.PRIVILEGE_SCOPE_ALL});
+					new String[]{Common.OWNER_TYPE_ROL, Common.OWNER_TYPE_USR}, new String[]{PrivilegeScopeEnum.ALL.value()});
 			
 		logger.info("------> findByOwnIdAndPrivilegeType: {}", list);
 	}

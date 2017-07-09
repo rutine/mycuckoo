@@ -1,0 +1,65 @@
+package com.mycuckoo.service.facade;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.mycuckoo.domain.platform.District;
+import com.mycuckoo.domain.platform.ModOptRef;
+import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.domain.platform.SysParameter;
+import com.mycuckoo.service.platform.DistrictService;
+import com.mycuckoo.service.platform.ModuleService;
+import com.mycuckoo.service.platform.SystemParameterService;
+import com.mycuckoo.vo.HierarchyModuleVo;
+
+/**
+ * 功能说明: 系统平台对外的公共业务类
+ *
+ * @author rutine
+ * @time Sep 25, 2014 10:10:12 AM
+ * @version 3.0.0
+ */
+@Service
+@Transactional(readOnly=true)
+public class PlatformServiceFacade {
+
+	@Autowired
+	private ModuleService moduleService;
+	@Autowired
+	private SystemParameterService systemParameterService;
+//	private DictionaryService dictionaryService;
+	@Autowired
+	private DistrictService districtService;
+//	private CodeService codeService;
+	
+
+	public HierarchyModuleVo filterModule(List<ModuleMemu> list) {
+		return moduleService.filterModule(list);
+	}
+
+	public List<ModOptRef> findAllModOptRefs() {
+		return moduleService.findAllModOptRefs();
+	}
+
+	public List<ModuleMemu> findAllModule() {
+		return moduleService.findAll();
+	}
+
+	public District getDistrict(Long districtId) {
+		return districtService.get(districtId);
+	}
+
+	public List<ModOptRef> findModOptRefByModOptRefIds(List<Long> modOptRefIdList) {
+		return moduleService.findModOptRefsByModOptRefIds(modOptRefIdList.toArray(new Long[modOptRefIdList.size()]));
+	}
+
+	public String findSystemParaByParaName(String paraName) {
+		SysParameter sysplSysParameter = systemParameterService.getByParaName(paraName);
+		
+		return sysplSysParameter == null ? "" : sysplSysParameter.getParaValue();
+	}
+
+}

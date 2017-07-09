@@ -255,6 +255,12 @@
 		update 
 				cuckoo.uum_user
 		set
+		<if test="userCode != null">
+			user_code = #{userCode}
+		</if> 
+		<if test="userName != null">
+			user_name = #{userName}
+		</if> 
 		<if test="belongOrganId != null">
 			user_belongto_org = #{belongOrganId}
 		</if> 

@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
  * @time Sep 25, 2014 10:35:31 AM
  * @version 3.0.0
  */
-public class JobTest implements Job {
-	private static Logger logger = LoggerFactory.getLogger(JobTest.class);
+public class TestJob implements Job {
+	private static Logger logger = LoggerFactory.getLogger(TestJob.class);
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
