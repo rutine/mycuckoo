@@ -22,18 +22,21 @@
 	<sql id="colums">
 		privilege_id, resource_id, owner_id, owner_type, privilege_scope, privilege_type
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_privilege
+	</sql>
 
 	<!-- 
 		插入数据： 
-		1.由数据库生成id并赋值到 UumPrivilege对象 
+		1.由数据库生成id并赋值到Privilege对象 
 		2.输入对象参数 
 	-->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.Privilege">
 		<selectKey keyProperty="privilegeId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_privilege_seq')
 		</selectKey>
-		insert into cuckoo.uum_privilege
-		(
+		insert into <include refid="table" /> (
 			privilege_id, resource_id, owner_id, owner_type, privilege_scope, privilege_type
 		)
 		values (
@@ -44,35 +47,31 @@
 	<!-- 更新数据： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.Privilege">
 		update 
-			cuckoo.uum_privilege
-		set
-			resource_id				= #{resourceId},
-			owner_id					= #{ownerId},
-			owner_type				= #{ownerType},
-			privilege_scope		= #{privilegeScope},
-			privilege_type		= #{privilegeType}
+			<include refid="table" />
+		<set>
+			<if test="resourceId != null">resource_id = #{resourceId}, </if>
+			<if test="ownerId != null">owner_id = #{ownerId}, </if>
+			<if test="ownerType != null">owner_type = #{ownerType}, </if>
+			<if test="privilegeScope != null">privilege_scope = #{privilegeScope}, </if>
+			<if test="privilegeType != null">privilege_type = #{privilegeType}, </if>
+		</set>
 		where 
 			privilege_id = #{privilegeId}
 	</update>
 	
 	<!-- 删除数据 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_privilege where privilege_id = #{id}
+		delete from <include refid="table" /> where privilege_id = #{id}
 	</delete>
 	
 	<!--
-		获取数据: 输出直接映射到对象, privilege_id 列要 as privilegeId 以方便映射创建 Privilege 对象并赋值
+		获取数据: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.Privilege">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			privilege_id			as privilegeId,
-			resource_id				as resourceId, 
-			owner_id					as ownerId, 
-			owner_type				as ownerType,
-			privilege_scope		as privilegeScope, 
-			privilege_type		as privilegeType
+			<include refid="colums" />
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 		where 
 			privilege_id = #{id}
 	</select>
@@ -82,7 +81,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 		where 
 			privilege_id = #{id}
 	</select>
@@ -90,25 +89,25 @@
 	<!-- 查询所有数据, 映射到 Privilege-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 	</select>
 	
 	<!-- 统计所有数据记录 -->
 	<select id="count" resultType="long">
 		select
-			count(*) 
+			count(1) 
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据资源拥有者ID，拥有者类型和权限类型查询权限记录 1.输入map对象-->
 	<select id="findByOwnIdAndPrivilegeType" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 		<where>
 			<if test="ownerIds !=null"> owner_id in
 				<foreach collection="ownerIds" item="ownerId" open="(" separator="," close=")">
@@ -133,7 +132,7 @@
 		select 
 			count(1)
 		from 
-			cuckoo.uum_privilege
+			<include refid="table" />
 		where 
 			owner_id = #{userId}
 		and 
@@ -142,7 +141,7 @@
 	
 	<!-- 根据条件删除权限 -->
 	<delete id="deleteByOwnerIdAndOwnerType" parameterType="map">
-		delete from cuckoo.uum_privilege
+		delete from <include refid="table" />
 		<where>
 			<if test="ownerId != null">
 				owner_id = #{ownerId}
@@ -155,7 +154,7 @@
 	
 	<!-- 根据条件删除权限 -->
 	<delete id="deleteByOwnerIdAndPrivilegeType" parameterType="map">
-		delete from cuckoo.uum_privilege 
+		delete from <include refid="table" /> 
 		<where>
 			<if test="ownerId != null">
 				owner_id = #{ownerId}
@@ -171,7 +170,7 @@
 	
 	<!-- 根据条件删除权限 -->
 	<delete id="deleteRowPrivilegeByOrgId" parameterType="map">
-		delete from cuckoo.uum_privilege 
+		delete from <include refid="table" /> 
 		<where>
 			<if test="resourceId != null">
 				and resource_id = #{resourceId}
@@ -188,7 +187,7 @@
 	<!-- 删除模块操作关系时同时也删除模块操作权限 -->
 	<delete id="deleteByModOptId" parameterType="map">
 		delete from 
-			cuckoo.uum_privilege 
+			<include refid="table" /> 
 		where
 			resource_id in 
 			<foreach collection="modOptRefIds" item="modOptRefId" open="(" separator="," close=")">

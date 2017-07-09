@@ -2,11 +2,8 @@ package com.mycuckoo.domain.uum;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -18,7 +15,7 @@ import com.google.common.collect.Lists;
 public class User implements Serializable {
 	
 	private Long userId; //用户ID
-	private Organ organ;
+	private Long userBelongtoOrg;
 	private String userCode; //用户号
 	private String userNamePy;
 	private String userName; //用户名
@@ -40,13 +37,6 @@ public class User implements Serializable {
 	private String creator; //创建人
 	private Date createDate; //创建时间
 	private String userAddress; //家庭住址
-	private List<RoleUserRef> roleUserRefs = Lists.newArrayList();
-	
-	// 其他用途
-	private Long orgRoleId;
-	private String roleName;
-	private String orgName;
-	private Long belongOrganId;
 	
 	/** default constructor */
 	public User() {
@@ -59,15 +49,15 @@ public class User implements Serializable {
 	}
 
 	/** full constructor */
-	public User(Long userId, Organ organ, String userCode,
+	public User(Long userId, Long userBelongtoOrg, String userCode,
 			String userName, String userPassword, String userGender,
 			String userPosition, String userPhotoUrl, String userQq,
 			String userMsn, String userMobile, String userMobile2,
 			String userOfficeTel, String userFamilyTel, String userEmail,
 			Date userAvidate, String userIsAgent, String memo, String status,
-			String creator, Date createDate, List<RoleUserRef> roleUserRefs) {
+			String creator, Date createDate) {
 		this.userId = userId;
-		this.organ = organ;
+		this.userBelongtoOrg = userBelongtoOrg;
 		this.userCode = userCode;
 		this.userName = userName;
 		this.userPassword = userPassword;
@@ -87,7 +77,6 @@ public class User implements Serializable {
 		this.status = status;
 		this.creator = creator;
 		this.createDate = createDate;
-		this.roleUserRefs = roleUserRefs;
 	}
 	
 	public Long getUserId() {
@@ -98,12 +87,12 @@ public class User implements Serializable {
 		this.userId = userId;
 	}
 
-	public Organ getOrgan() {
-		return this.organ;
+	public Long getUserBelongtoOrg() {
+		return userBelongtoOrg;
 	}
 
-	public void setOrgan(Organ organ) {
-		this.organ = organ;
+	public void setUserBelongtoOrg(Long userBelongtoOrg) {
+		this.userBelongtoOrg = userBelongtoOrg;
 	}
 
 	public String getUserCode() {
@@ -257,14 +246,6 @@ public class User implements Serializable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-//	@JSON(serialize=false)
-	public List<RoleUserRef> getRoleUserRefs() {
-		return this.roleUserRefs;
-	}
-
-	public void setRoleUserRefs(List<RoleUserRef> roleUserRefs) {
-		this.roleUserRefs = roleUserRefs;
-	}
 
 	public String getUserAddress() {
 		return userAddress;
@@ -282,37 +263,6 @@ public class User implements Serializable {
 		this.userNamePy = userNamePy;
 	}
 	
-	public Long getOrgRoleId() {
-		return orgRoleId;
-	}
-
-	public void setOrgRoleId(Long orgRoleId) {
-		this.orgRoleId = orgRoleId;
-	}
-
-	public String getRoleName() {
-		return roleName;
-	}
-
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-	public String getOrgName() {
-		return orgName;
-	}
-
-	public void setOrgName(String orgName) {
-		this.orgName = orgName;
-	}
-
-	public Long getBelongOrganId() {
-		return belongOrganId;
-	}
-
-	public void setBelongOrganId(Long belongOrganId) {
-		this.belongOrganId = belongOrganId;
-	}
 
 	@Override
 	public boolean equals(Object obj){

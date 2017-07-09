@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mycuckoo.domain.uum.RoleUserRef;
 import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.domain.uum.UserAgent;
 import com.mycuckoo.domain.uum.UserCommfun;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.uum.PrivilegeService;
@@ -19,6 +17,8 @@ import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.UserAgentVo;
 
 /**
  * 功能说明: 用户常用业务类
@@ -57,11 +57,11 @@ public class UumServiceFacade {
 		return this.userAgentService.findPrivilegeIdsByAgentId(agentId);
 	}
 
-	public List<RoleUserRef> findRoleUsersByUserId(long userId) {
+	public List<RoleUserRefVo> findRoleUsersByUserId(long userId) {
 		return roleUserService.findByUserId(userId);
 	}
 
-	public List<UserAgent> findUserAgentsByAgentUserId(long userId) {
+	public List<UserAgentVo> findUserAgentsByAgentUserId(long userId) {
 		return userAgentService.findByAgentUserId(userId);
 	}
 

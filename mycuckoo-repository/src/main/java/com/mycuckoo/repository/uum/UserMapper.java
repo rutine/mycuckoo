@@ -73,13 +73,6 @@ public interface UserMapper extends Repository<User, Long> {
 	User getByUserCodeAndPwd(@Param("userCode") String userCode, @Param("password") String password);
 
 	/**
-	 * <p>根据userId更新不为空的属性信息</p>
-	 * 
-	 * @param user
-	 */
-	void updateByProps(User user);
-
-	/**
 	 * <p>根据用户名模糊查询用户信息</p>
 	 * 
 	 * @param userName

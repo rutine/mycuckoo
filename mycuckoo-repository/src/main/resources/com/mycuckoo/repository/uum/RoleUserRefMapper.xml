@@ -58,15 +58,13 @@
 		delete from cuckoo.uum_role_user_ref where org_role_user_id = #{id}
 	</delete>
 	
-	<!--
-		获取角色用户关系: 输出直接映射到对象, org_role_user_id 列要 as orgRoleUserId 以方便映射 org_role_id as orgRoleRef.orgRoleId 创建 orgRoleRef 对象并赋值
-	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.RoleUserRef">
+	<!-- 获取角色用户关系: 输出直接映射到对象 -->
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			org_role_user_id		as orgRoleUserId,
-			org_role_id					as "orgRoleRef.orgRoleId",
-			user_id							as "user.userId",
-			is_default					as isDefault
+			org_role_user_id,
+			org_role_id,
+			user_id,
+			is_default
 		from 
 			cuckoo.uum_role_user_ref
 		where 
@@ -84,12 +82,12 @@
 	</select>
 
 	<!-- 查询所有角色用户关系, 输出直接映射到对象 -->
-	<select id="findByPage" resultType="com.mycuckoo.domain.uum.RoleUserRef">
+	<select id="findByPage" resultMap="baseMap">
 		select 
-			org_role_user_id		as orgRoleUserId,
-			org_role_id					as "orgRoleRef.orgRoleId",
-			user_id							as "user.userId",
-			is_default					as isDefault
+			org_role_user_id,
+			org_role_id,
+			user_id,
+			is_default
 		from 
 			cuckoo.uum_role_user_ref
 	</select>

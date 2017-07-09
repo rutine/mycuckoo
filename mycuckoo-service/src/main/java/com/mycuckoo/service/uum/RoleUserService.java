@@ -6,8 +6,10 @@ import static com.mycuckoo.common.constant.ServiceVariable.Y;
 
 import java.util.List;
 
+import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.uum.RoleUserRefMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.vo.uum.RoleUserRefVo;
 
 /**
  * 功能说明: 角色用户业务类
@@ -57,29 +60,48 @@ public class RoleUserService {
 		roleUserRefMapper.deleteByUserId(userId);
 	}
 
-	public RoleUserRef findByUserIdAndOrgRoleId(long userId, long orgRoleId) {
-		return roleUserRefMapper.findByUserIdAndOrgRoleId(userId, orgRoleId);
+	public RoleUserRefVo findByUserIdAndOrgRoleId(long userId, long orgRoleId) {
+		RoleUserRef entity = roleUserRefMapper.findByUserIdAndOrgRoleId(userId, orgRoleId);
+		RoleUserRefVo vo = new RoleUserRefVo();
+		BeanUtils.copyProperties(entity, vo);
+		
+		return vo;
 	}
 
-	public List<RoleUserRef> findByUserId(long userId) {
+	public List<RoleUserRefVo> findByUserId(long userId) {
 		List<RoleUserRef> roleUserRefList = roleUserRefMapper.findByUserId(userId);
+		
+		List<RoleUserRefVo> vos = Lists.newArrayList();
 		for(RoleUserRef roleUserRef : roleUserRefList) {
 			OrgRoleRef orgRoleRef = roleUserRef.getOrgRoleRef(); //机构角色关系
 			Organ organ = orgRoleRef.getOrgan();
 			Role role = orgRoleRef.getRole();
 			
-			roleUserRef.setOrgRoleId(orgRoleRef.getOrgRoleId());
-			roleUserRef.setOrganId(organ.getOrgId());
-			roleUserRef.setOrganName(organ.getOrgSimpleName());
-			roleUserRef.setRoleId(role.getRoleId());
-			roleUserRef.setRoleName(role.getRoleName());
+			RoleUserRefVo vo = new RoleUserRefVo();
+			BeanUtils.copyProperties(roleUserRef, vo);
+			
+			vo.setOrgRoleId(orgRoleRef.getOrgRoleId());
+			vo.setOrganId(organ.getOrgId());
+			vo.setOrganName(organ.getOrgSimpleName());
+			vo.setRoleId(role.getRoleId());
+			vo.setRoleName(role.getRoleName());
+			vos.add(vo);
 		}
 		
-		return roleUserRefList;
+		return vos;
 	}
 	
-	public List<RoleUserRef> findByOrgRoleId(Long orgId, Long roleId) {
-		return roleUserRefMapper.findByOrgRoleId(orgId, roleId);
+	public List<RoleUserRefVo> findByOrgRoleId(Long orgId, Long roleId) {
+		List<RoleUserRef> list = roleUserRefMapper.findByOrgRoleId(orgId, roleId);
+		
+		List<RoleUserRefVo> vos = Lists.newArrayList();
+		list.forEach(entity -> {
+			RoleUserRefVo vo = new RoleUserRefVo();
+			BeanUtils.copyProperties(entity, vo);
+			vos.add(vo);
+		});
+		
+		return vos;
 	}
 
 	public void save(long userId, List<Long> orgRoleIds, long defaultOrgRoleId) 

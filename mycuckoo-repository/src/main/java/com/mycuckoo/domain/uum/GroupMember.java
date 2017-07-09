@@ -9,10 +9,10 @@ import java.util.Comparator;
  * @time Sep 23, 2014 10:41:50 AM
  * @version 3.0.0
  */
-public class GroupMember  implements java.io.Serializable {
+public class GroupMember implements java.io.Serializable {
 
 	private Long groupMemberId;
-	private Group group;
+	private Long groupId;
 	private String groupMemberType;
 	private Long memberResourceId;
 	
@@ -29,10 +29,10 @@ public class GroupMember  implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public GroupMember(Long groupMemberId, Group group,
+	public GroupMember(Long groupMemberId, Long group,
 			String groupMemberType, Long memberResourceId) {
 		this.groupMemberId = groupMemberId;
-		this.group = group;
+		this.groupId = groupId;
 		this.groupMemberType = groupMemberType;
 		this.memberResourceId = memberResourceId;
 	}
@@ -45,12 +45,12 @@ public class GroupMember  implements java.io.Serializable {
 		this.groupMemberId = groupMemberId;
 	}
 
-	public Group getGroup() {
-		return this.group;
+	public Long getGroupId() {
+		return groupId;
 	}
 
-	public void setUumGroup(Group group) {
-		this.group = group;
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 
 	public String getGroupMemberType() {
@@ -90,9 +90,9 @@ public class GroupMember  implements java.io.Serializable {
 		if(this == obj) return true;		 // (1) same object?
 		if (obj == null) return false;
 		if(getClass() != obj.getClass()) return false;
-		GroupMember uumGroupMember = (GroupMember)obj;
-		if(groupMemberId != null && uumGroupMember.getGroupMemberId() != null && 
-			groupMemberId.longValue() == uumGroupMember.getGroupMemberId().longValue())
+		GroupMember groupMember = (GroupMember)obj;
+		if(groupMemberId != null && groupMember.getGroupMemberId() != null && 
+			groupMemberId.longValue() == groupMember.getGroupMemberId().longValue())
 			return true;
 		return false;
 	}

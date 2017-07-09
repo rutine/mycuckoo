@@ -26,17 +26,17 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
 	private OrganMapper organMapper;
 
 	@Test
-	public void testFindByUpOrgId() {
-		List<Organ> list = organMapper.findByUpOrgId(0L);
+	public void testFindByParentId() {
+		List<Organ> list = organMapper.findByParentId(0L);
 		
-		logger.info("------> findByUpOrgId: {}", list);
+		logger.info("------> findByParentId: {}", list);
 	}
 
 	@Test
-	public void testCountByUpOrgId() {
-		int count = organMapper.countByUpOrgId(12L);
+	public void testCountByParentId() {
+		int count = organMapper.countByParentId(12L);
 		
-		logger.info("------> countByUpOrgId: {}", count);
+		logger.info("------> countByParentId: {}", count);
 	}
 
 	@Test
@@ -47,10 +47,10 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
 	}
 
 	@Test
-	public void testFindByUpOrgIdAFilter() {
-		List<Organ> list = (List<Organ>) organMapper.findByUpOrgIdAFilter(1L, 3L);
+	public void testFindByParentIdAFilter() {
+		List<Organ> list = (List<Organ>) organMapper.findByParentIdAFilter(1L, 3L);
 		
-		logger.info("------> findByUpOrgIdAFilter: {}", list);
+		logger.info("------> findByParentIdAFilter: {}", list);
 	}
 
 	@Test

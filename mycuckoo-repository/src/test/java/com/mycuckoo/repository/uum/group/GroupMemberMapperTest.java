@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import com.mycuckoo.domain.uum.Group;
 import com.mycuckoo.domain.uum.GroupMember;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -25,7 +24,7 @@ public class GroupMemberMapperTest extends AbstractTransactionalJUnit4SpringCont
 	public void testSave() {
 		GroupMember groupMember = new GroupMember();
 		groupMember.setGroupMemberType("角色");
-		groupMember.setUumGroup(new Group(1L, "enable"));
+		groupMember.setGroupId(1L);
 
 		mapper.save(groupMember);
 
@@ -36,7 +35,7 @@ public class GroupMemberMapperTest extends AbstractTransactionalJUnit4SpringCont
 	public void testUpdate() {
 		GroupMember groupMember = new GroupMember();
 		groupMember.setGroupMemberType("角色");
-		groupMember.setUumGroup(new Group(1L, "enable"));
+		groupMember.setGroupId(1L);
 		groupMember.setGroupMemberId(1L);
 
 		int row = mapper.update(groupMember);

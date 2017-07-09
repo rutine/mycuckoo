@@ -10,8 +10,9 @@
 	@version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.uum.UserMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.User">
+	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserExtend">
 		<id property="userId" column="user_id" />
+		<result property="userBelongtoOrg" column="user_belongto_org" />
 		<result property="userCode" column="user_code" />
 		<result property="userNamePy" column="user_name_py" />
 		<result property="userName" column="user_name" />
@@ -33,13 +34,10 @@
 		<result property="status" column="status" />
 		<result property="creator" column="creator" />
 		<result property="createDate" column="create_date" />
-		<result property="organ.orgId" column="user_belongto_org" />
 		<!-- 其他用途 -->
 		<result property="orgRoleId" column="org_role_id" />
 		<result property="roleName" column="role_name" />
 		<result property="orgName" column="org_simple_name" />
-		<!-- <association property="organ" javaType="com.mycuckoo.domain.uum.Organ" resultMap="com.mycuckoo.repository.uum.OrganMapper.baseMap" /> -->
-		<!-- <collection property="roleUserRefs" javaType="com.mycuckoo.domain.uum.RoleUserRef" resultMap="com.mycuckoo.repository.uum.RoleUserRefMapper.baseMap" /> -->
 	</resultMap>
 	
 	<sql id="colums">
@@ -49,15 +47,17 @@
 		user_address, user_email, user_avidate, user_is_agent, memo, 
 		status, creator, create_date
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_user
+	</sql>
 
 	<!-- 插入用户： 1.由数据库生成id并赋值到user对象 2.输入用对象, 嵌套属性表达式#{department.id} -->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.User">
 		<selectKey keyProperty="userId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_user_seq')
 		</selectKey>
-		insert into 
-			cuckoo.uum_user
-		(
+		insert into <include refid="table" /> (
 			user_id, user_belongto_org, user_code, user_name_py, user_name, 
 			user_password, user_gender, user_position, user_photo_url, user_qq, 
 			user_msn, user_mobile, user_mobile2, user_office_tel, user_family_tel, 
@@ -65,7 +65,7 @@
 			status, creator, create_date
 		)
 		values (
-			#{userId}, #{organ.orgId}, #{userCode}, #{userNamePy}, #{userName}, 
+			#{userId}, #{ouserBelongtoOrg}, #{userCode}, #{userNamePy}, #{userName}, 
 			#{userPassword}, #{userGender}, #{userPosition}, #{userPhotoUrl}, #{userQq}, 
 			#{userMsn}, #{userMobile}, #{userMobile2}, #{userOfficeTel}, #{userFamilyTel}, 
 			#{userAddress}, #{userEmail}, #{userAvidate}, #{userIsAgent}, #{memo}, 
@@ -73,72 +73,49 @@
 		)
 	</insert>
 	
-	<!-- 更新用户： 1.输入用对象, 嵌套属性表达式#{department.id} -->
+	<!-- 更新用户： 1.输入用对象 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.User">
 		update 
-			cuckoo.uum_user
-		set
-			user_belongto_org		= #{organ.orgId},
-			user_code						= #{userCode},
-			user_name_py				= #{userNamePy},
-			user_name						= #{userName},
-			user_password				= #{userPassword},
-			user_gender					= #{userGender},
-			user_position				= #{userPosition},
-			user_photo_url			= #{userPhotoUrl},
-			user_qq							= #{userQq},
-			user_msn						= #{userMsn},
-			user_mobile					= #{userMobile},
-			user_mobile2				= #{userMobile2},
-			user_office_tel			= #{userOfficeTel},
-			user_family_tel			= #{userFamilyTel},
-			user_address				= #{userAddress},
-			user_email					= #{userEmail},
-			user_avidate				= #{userAvidate},
-			user_is_agent				= #{userIsAgent},
-			memo								= #{memo},
-			status							= #{status},
-			creator							= #{creator},
-			create_date					= #{createDate}
+			<include refid="table" />
+		<set>
+			<if test="userBelongtoOrg != null">user_belongto_org = #{userBelongtoOrg}, </if>
+			<if test="userCode != null">user_code = #{userCode}, </if>
+			<if test="userNamePy != null">user_name_py = #{userNamePy}, </if>
+			<if test="userName != null">user_name = #{userName}, </if>
+			<if test="userPassword != null">user_password = #{userPassword}, </if>
+			<if test="userGender != null">user_gender = #{userGender}, </if>
+			<if test="userPosition != null">user_position = #{userPosition}, </if>
+			<if test="userPhotoUrl != null">user_photo_url = #{userPhotoUrl}, </if>
+			<if test="userQq != null">user_qq = #{userQq}, </if>
+			<if test="userMsn != null">user_msn = #{userMsn}, </if>
+			<if test="userMobile != null">user_mobile = #{userMobile}, </if>
+			<if test="userMobile2 != null">user_mobile2 = #{userMobile2}, </if>
+			<if test="userOfficeTel != null">user_office_tel = #{userOfficeTel}, </if>
+			<if test="userFamilyTel != null">user_family_tel = #{userFamilyTel}, </if>
+			<if test="userAddress != null">user_address = #{userAddress}, </if>
+			<if test="userEmail != null">user_email = #{userEmail}, </if>
+			<if test="userAvidate != null">user_avidate = #{userAvidate}, </if>
+			<if test="userIsAgent != null">user_is_agent = #{userIsAgent}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			user_id = #{userId}
 	</update>
 	
 	<!-- 删除单个用户 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_user where user_id = #{userId}
+		delete from <include refid="table" /> where user_id = #{userId}
 	</delete>
 	
 	<!--
-		获取用户: 输出直接映射到对象, "user_code" 列要 "as userCode" 以方便映射 "user_belongto_org as organ.orgId" 创建 UumOrgan 对象并赋值
+		获取用户: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.User">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			user_id						as userId,
-			user_belongto_org	as "organ.orgId", 
-			user_code					as userCode, 
-			user_name_py			as userNamePy,
-			user_name					as userName, 
-			user_password			as userPassword, 
-			user_gender				as userGender, 
-			user_position			as userPosition, 
-			user_photo_url		as userPhotoUrl, 
-			user_qq						as userQq, 
-			user_msn					as userMsn, 
-			user_mobile				as userMobile, 
-			user_mobile2			as userMobile2, 
-			user_office_tel		as userOfficeTel, 
-			user_family_tel		as userFamilyTel, 
-			user_address			as userAddress, 
-			user_email				as userEmail, 
-			user_avidate			as userAvidate, 
-			user_is_agent			as userIsAgent, 
-			memo							as memo, 
-			status						as status, 
-			creator						as creator, 
-			create_date				as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where 
 			user_id=#{id}
 	</select>
@@ -148,7 +125,7 @@
 		select
 			count(user_id) > 0
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where 
 			user_id=#{id}
 	</select>
@@ -156,9 +133,9 @@
 	<!-- 返回所有用户,映射到'uumUser'-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 	</select>
 	
 	<!-- 统计用户记录总数 -->
@@ -166,7 +143,7 @@
 		select
 			count(1) 
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 	</select>
 	
 	<!-- 以所属机构ID查询用户, 演示: 1.输出直接映射对象 -->
@@ -174,7 +151,7 @@
 		select 
 			<include refid="colums"/>
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where
 			user_belongto_org = #{id}
 	</select>
@@ -184,7 +161,7 @@
 		select 
 			t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
 		from 
-			cuckoo.uum_user t1
+			<include refid="table" /> t1
 		left join 
 			cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id 
 		left join 
@@ -206,7 +183,7 @@
 		select 
 			t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
 		from 
-			cuckoo.uum_user t1
+			<include refid="table" /> t1
 		left join 
 			cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id 
 		left join 
@@ -234,7 +211,7 @@
 		select
 			count(1) > 0
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where 
 			user_code = #{user_code}
 	</select>
@@ -244,34 +221,11 @@
 		select 
 			<include refid="colums"/>
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where
 			user_code = #{userCode}
 		<if test="userPassword != null and userPassword != ''">and user_password = #{userPassword}</if>
 	</select>
-	
-	<!-- 更新用户信息 1.输入用对象 -->
-	<update id="updateByProps" parameterType="com.mycuckoo.domain.uum.User">
-		update 
-				cuckoo.uum_user
-		set
-		<if test="userCode != null">
-			user_code = #{userCode}
-		</if> 
-		<if test="userName != null">
-			user_name = #{userName}
-		</if> 
-		<if test="belongOrganId != null">
-			user_belongto_org = #{belongOrganId}
-		</if> 
-		<if test="userPassword != null">
-			user_password 	= #{userPassword}
-		</if> 
-		<if test="userPhotoUrl != null">
-			user_photo_url 	= #{userPhotoUrl}
-		</if> 
-		where user_id = #{userId}
-	</update>
 	
 	<!-- 根据拼音代码查询用户信息 -->
 	<select id="findByUserNamePy" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
@@ -279,7 +233,7 @@
 			user_id as "userId",
 			user_name as "userName"
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		where 
 			user_name_py like #{userNamePy}
 		and
@@ -292,7 +246,7 @@
 			user_id as "userId",
 			user_name as "userName"
 		from 
-			cuckoo.uum_user
+			<include refid="table" />
 		<where>
 			user_id in
 			<foreach collection="array" item="userId" open="(" separator="," close=")">

@@ -1,12 +1,9 @@
 package com.mycuckoo.domain.uum;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -24,7 +21,6 @@ public class Role implements java.io.Serializable {
 	private String creator;	//创建人
 	private Date createDate;	//创建时间
 	private Short roleLevel;	//角色级别
-	private List<OrgRoleRef> orgRoleRefs = Lists.newArrayList();
 
 	/** default constructor */
 	public Role() {
@@ -90,15 +86,6 @@ public class Role implements java.io.Serializable {
 
 	public void setRoleLevel(Short roleLevel) {
 		this.roleLevel = roleLevel;
-	}
-	
-//	@JSON(serialize= false)
-	public List<OrgRoleRef> getOrgRoleRefs() {
-		return this.orgRoleRefs;
-	}
-
-	public void setOrgRoleRefs(List<OrgRoleRef> orgRoleRefs) {
-		this.orgRoleRefs = orgRoleRefs;
 	}
 	
 	@Override

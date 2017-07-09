@@ -23,14 +23,17 @@
 	<sql id="colums">
 		agent_id, user_id, org_role_id, agent_user_id, begin_date, end_date, reason
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_user_agent
+	</sql>
 
-	<!-- 插入用户代理： 1.由数据库生成id并赋值到UumUserAgent对象 2.输入对象参数 -->
+	<!-- 插入用户代理： 1.由数据库生成id并赋值到UserAgent对象 2.输入对象参数 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.UserAgent">
 		<selectKey keyProperty="agentId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_user_agent_seq')
 		</selectKey>
-		insert into cuckoo.uum_user_agent
-		(
+		insert into <include refid="table" /> (
 			agent_id, user_id, org_role_id, agent_user_id, begin_date, end_date, reason
 		)
 		values (
@@ -41,37 +44,32 @@
 	<!-- 更新用户代理： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.UserAgent">
 		update 
-			cuckoo.uum_user_agent
-		set
-			user_id						= #{userId},
-			org_role_id				= #{orgRoleId},
-			agent_user_id			= #{agentUserId},
-			begin_date				= #{beginDate},
-			end_date					= #{endDate},
-			reason						= #{reason}
+			<include refid="table" />
+		<set>
+			<if test="userId != null">user_id = #{userId}, </if>
+			<if test="orgRoleId != null">org_role_id = #{orgRoleId}, </if>
+			<if test="agentUserId != null">agent_user_id = #{agentUserId}, </if>
+			<if test="beginDate != null">begin_date = #{beginDate}, </if>
+			<if test="endDate != null">end_date = #{endDate}, </if>
+			<if test="reason != null">reason = #{reason}, </if>
+		</set>
 		where 
 			agent_id = #{agentId}
 	</update>
 	
 	<!-- 删除用户代理 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_user_agent where agent_id = #{id}
+		delete from <include refid="table" /> where agent_id = #{id}
 	</delete>
 	
 	<!--
-		获取用户代理: 输出直接映射到对象, agent_id 列要 as agentId 以方便映射创建 UserAgent 对象并赋值
+		获取用户代理: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.UserAgent">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			agent_id					as agentId,
-			user_id						as userId, 
-			org_role_id				as orgRoleId, 
-			agent_user_id			as agentUserId,
-			begin_date				as beginDate, 
-			end_date					as endDate, 
-			reason						as reason
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			agent_id = #{id}
 	</select>
@@ -81,7 +79,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			agent_id = #{id}
 	</select>
@@ -89,9 +87,9 @@
 	<!-- 根据用户编号查询用户代理记录, 演示: 1.输入用map传入多个参数 2.输出直接映射对象 -->
 	<select id="findByPage" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			user_id = #{userId}
 		order by 
@@ -103,7 +101,7 @@
 		select
 			count(1) 
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据用户ID和代理ID统计代理记录 -->
@@ -111,7 +109,7 @@
 		select 
 			count(1)
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			user_id = #{userId}
 		and 
@@ -121,9 +119,9 @@
 	<!-- 根据代理用户ID查询有效期内的代理记录 -->
 	<select id="findByAgentUserId" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			agent_user_id = #{agentUserId}
 		and 
@@ -135,9 +133,9 @@
 	<!-- 根据机构角色IDs查询代理记录 -->
 	<select id="findByOwnerId" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_user_agent
+			<include refid="table" />
 		where 
 			org_role_id in 
 			<foreach collection="array" item="ownerId" open="(" separator="," close=")">

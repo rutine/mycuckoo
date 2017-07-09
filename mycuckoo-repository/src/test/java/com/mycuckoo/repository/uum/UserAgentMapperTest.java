@@ -55,7 +55,6 @@ public class UserAgentMapperTest extends AbstractTransactionalJUnit4SpringContex
 		userAgent.setAgentUserId(8L);
 		userAgent.setBeginDate(Calendar.getInstance().getTime());
 		userAgent.setUserId(5L);
-		userAgent.setOrganId(8L);
 		userAgent.setReason("测试");
 
 		mapper.save(userAgent);
@@ -69,7 +68,6 @@ public class UserAgentMapperTest extends AbstractTransactionalJUnit4SpringContex
 		userAgent.setAgentUserId(8L);
 		userAgent.setBeginDate(Calendar.getInstance().getTime());
 		userAgent.setUserId(5L);
-		userAgent.setOrganId(8L);
 		userAgent.setReason("测试");
 		userAgent.setAgentId(4L);
 

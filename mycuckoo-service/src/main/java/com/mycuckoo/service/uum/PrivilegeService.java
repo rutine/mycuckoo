@@ -39,9 +39,7 @@ import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Privilege;
-import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
@@ -52,6 +50,8 @@ import com.mycuckoo.vo.ModuleOperationVo;
 import com.mycuckoo.vo.SystemConfigBean;
 import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.uum.OrganVo;
+import com.mycuckoo.vo.uum.UserVo;
 
 /**
  * 功能说明: 权限业务类
@@ -102,7 +102,7 @@ public class PrivilegeService {
 				PrivilegeScopeEnum.ORGAN.value());
 	}
 
-	public List<User> findUsersByUserName(String userName) {
+	public List<UserVo> findUsersByUserName(String userName) {
 		return userService.findByUserName(userName);
 	}
 
@@ -614,13 +614,13 @@ public class PrivilegeService {
 	 * @time Oct 21, 2012 4:37:53 PM
 	 */
 	private String getPrivilegeOrganChildren(long organId) {
-		List<Organ> organList = organService.findChildNodes(organId, 0);
+		List<OrganVo> vos = organService.findChildNodes(organId, 0);
 		StringBuffer orgSb = new StringBuffer();
-		for (Organ uumOrgan : organList) {
+		for (OrganVo vo : vos) {
 			if (orgSb.length() > 0) {
-			orgSb.append(",").append(uumOrgan.getOrgId());
+			orgSb.append(",").append(vo.getOrgId());
 			} else {
-			orgSb.append(uumOrgan.getOrgId());
+			orgSb.append(vo.getOrgId());
 			}
 		}
 		

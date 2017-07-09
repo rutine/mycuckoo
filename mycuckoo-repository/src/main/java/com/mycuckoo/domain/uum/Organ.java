@@ -1,12 +1,9 @@
 package com.mycuckoo.domain.uum;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -18,7 +15,7 @@ import com.google.common.collect.Lists;
 public class Organ implements java.io.Serializable {
 
 	private Long orgId; 			// 主键
-	private Organ organ; 			// 上一级
+	private Long parentId; 			// 上一级
 	private String orgSimpleName; 	// 机构简称
 	private String orgFullName; 	// 机构全称
 	private String orgCode; 		// 机构代码
@@ -38,17 +35,18 @@ public class Organ implements java.io.Serializable {
 	private String memo; 			// 备注
 	private String creator; 		// 创建人
 	private Date createDate; 		// 创建时间
-	private List<OrgRoleRef> orgRoleRefs = Lists.newArrayList(); // 
-	private List<User> users =  Lists.newArrayList(); // 
-	private List<Organ> organs = Lists.newArrayList(); // 
 	
-	
-	private Long upOrgId;				//上级机构ID
-	private String upOrgName; 			//上级机构
-	private boolean isLeaf;
-	private String dataIconCls;
-	
-	private String orgBelongDistName;	// 所属地区
+//	private List<OrgRoleRef> orgRoleRefs = Lists.newArrayList(); // 
+//	private List<User> users =  Lists.newArrayList(); // 
+//	private List<Organ> organs = Lists.newArrayList(); // 
+//	
+//	
+//	private Long upOrgId;				//上级机构ID
+//	private String upOrgName; 			//上级机构
+//	private boolean isLeaf;
+//	private String dataIconCls;
+//	
+//	private String orgBelongDistName;	// 所属地区
 	
 	/** default constructor */
 	public Organ() {
@@ -61,15 +59,15 @@ public class Organ implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Organ(Long orgId, Organ organ, String orgSimpleName,
+	public Organ(Long orgId, Long parentId, String orgSimpleName,
 			String orgFullName, String orgCode, String orgAddress1,
 			String orgAddress2, String orgTel1, String orgTel2,
 			Date orgBeginDate, String orgType, String orgFax, String orgPostal,
 			String orgLegal, String orgTaxNo, String orgRegNo,
 			Long orgBelongDist, String status, String memo, String creator,
-			Date createDate, List<OrgRoleRef> orgRoleRefs, List<User> users, List<Organ> organs) {
+			Date createDate) {
 		this.orgId = orgId;
-		this.organ = organ;
+		this.parentId = parentId;
 		this.orgSimpleName = orgSimpleName;
 		this.orgFullName = orgFullName;
 		this.orgCode = orgCode;
@@ -89,9 +87,6 @@ public class Organ implements java.io.Serializable {
 		this.memo = memo;
 		this.creator = creator;
 		this.createDate = createDate;
-		this.orgRoleRefs = orgRoleRefs;
-		this.users = users;
-		this.organs = organs;
 	}
 
 	public Long getOrgId() {
@@ -102,12 +97,12 @@ public class Organ implements java.io.Serializable {
 		this.orgId = orgId;
 	}
 
-	public Organ getOrgan() {
-		return this.organ;
+	public Long getParentId() {
+		return parentId;
 	}
 
-	public void setOrgan(Organ organ) {
-		this.organ = organ;
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 
 	public String getOrgSimpleName() {
@@ -260,69 +255,6 @@ public class Organ implements java.io.Serializable {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
-	}
-//	@JSON(serialize=false)
-	public List<OrgRoleRef> getOrgRoleRefs() {
-		return this.orgRoleRefs;
-	}
-
-	public void setOrgRoleRefs(List<OrgRoleRef> orgRoleRefs) {
-		this.orgRoleRefs = orgRoleRefs;
-	}
-	public List<User> getUsers() {
-		return this.users;
-	}
-
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-	public List<Organ> getOrgans() {
-		return this.organs;
-	}
-
-	public void setOrgans(List<Organ> organs) {
-		this.organs = organs;
-	}
-
-	
-	public Long getUpOrgId() {
-		return upOrgId;
-	}
-
-	public void setUpOrgId(Long upOrgId) {
-		this.upOrgId = upOrgId;
-	}
-
-	public String getUpOrgName() {
-		return upOrgName;
-	}
-
-	public void setUpOrgName(String upOrgName) {
-		this.upOrgName = upOrgName;
-	}
-
-	public boolean isLeaf() {
-		return isLeaf;
-	}
-
-	public void setLeaf(boolean isLeaf) {
-		this.isLeaf = isLeaf;
-	}
-
-	public String getDataIconCls() {
-		return dataIconCls;
-	}
-
-	public void setDataIconCls(String dataIconCls) {
-		this.dataIconCls = dataIconCls;
-	}
-
-	public String getOrgBelongDistName() {
-		return orgBelongDistName;
-	}
-
-	public void setOrgBelongDistName(String orgBelongDistName) {
-		this.orgBelongDistName = orgBelongDistName;
 	}
 
 	@Override

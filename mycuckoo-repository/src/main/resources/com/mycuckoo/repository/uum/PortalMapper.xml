@@ -28,14 +28,17 @@
 		portal_id, portal_userid, portlet1, portlet2, portlet3, 
 		portlet4, portlet5, portlet6, portlet7, portlet8, portlet9
 	</sql>
+	
+	<sql id="table">
+		cuckoo.portal
+	</sql>
 
 	<!-- 插入门户： 1.由数据库生成id并赋值到Portal对象 2.输入用对象 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.Portal">
 		<selectKey keyProperty="portalId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.portal_seq')
 		</selectKey>
-		insert into cuckoo.portal
-		(
+		insert into <include refid="table" /> (
 			portal_id, portal_userid, portlet1, portlet2, portlet3, 
 			portlet4, portlet5, portlet6, portlet7, portlet8, portlet9
 		)
@@ -48,25 +51,26 @@
 	<!-- 更新门户： 1.输入用对象 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.Portal">
 		update 
-			cuckoo.portal
-		set
-			portal_userid		= #{portalUserid},
-			portlet1				= #{portlet1},
-			portlet2				= #{portlet2},
-			portlet3				= #{portlet3},
-			portlet4				= #{portlet4},
-			portlet5				= #{portlet5},
-			portlet6				= #{portlet6},
-			portlet7				= #{portlet7},
-			portlet8				= #{portlet8},
-			portlet9				= #{portlet9}
+			<include refid="table" />
+		<set>
+			<if test="portalUserid != null">portal_userid = #{portalUserid}, </if>
+			<if test="portlet1 != null">portlet1 = #{portlet1}, </if>
+			<if test="portlet2 != null">portlet2 = #{portlet2}, </if>
+			<if test="portlet3 != null">portlet3 = #{portlet3}, </if>
+			<if test="portlet4 != null">portlet4 = #{portlet4}, </if>
+			<if test="portlet5 != null">portlet5 = #{portlet5}, </if>
+			<if test="portlet6 != null">portlet6 = #{portlet6}, </if>
+			<if test="portlet7 != null">portlet7 = #{portlet7}, </if>
+			<if test="portlet8 != null">portlet8 = #{portlet8}, </if>
+			<if test="portlet9 != null">portlet9 = #{portlet9}, </if>
+		</set>
 		where 
 			portal_id = #{portalId}
 	</update>
 	
 	<!-- 删除门户 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.portal where portal_id = #{id}
+		delete from <include refid="table" /> where portal_id = #{id}
 	</delete>
 	
 	<!-- 门户是否存在 -->
@@ -74,7 +78,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.portal
+			<include refid="table" />
 		where 
 			portal_id = #{id}
 	</select>
@@ -84,27 +88,17 @@
 		select
 			count(1) 
 		from 
-			cuckoo.portal
+			<include refid="table" />
 	</select>
 	
 	<!--
-		获取门户: 输出直接映射到对象, portal_id 列要 as portalId 以方便映射创建 Portal 对象并赋值
+		获取门户: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.Portal">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			portal_id					as portalId,
-			portal_userid			as portalUserid, 
-			portlet1					as portlet1, 
-			portlet2					as portlet2,
-			portlet3					as portlet3, 
-			portlet4					as portlet4, 
-			portlet5					as portlet5, 
-			portlet6					as portlet6, 
-			portlet7					as portlet7, 
-			portlet8					as portlet8, 
-			portlet9					as portlet9
+			<include refid="colums" />
 		from 
-			cuckoo.portal
+			<include refid="table" />
 		where 
 			portal_id = #{id}
 	</select>
@@ -112,9 +106,9 @@
 	<!-- 查询所有门户, 映射到portal-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.portal
+			<include refid="table" />
 	</select>
 	
 </mapper> 

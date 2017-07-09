@@ -1,11 +1,7 @@
 package com.mycuckoo.domain.uum;
 
-import java.util.List;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -19,7 +15,6 @@ public class OrgRoleRef implements java.io.Serializable {
 	private Long orgRoleId;
 	private Role role;
 	private Organ organ;
-	private List<RoleUserRef> roleUserRefs = Lists.newArrayList();
 
 	/** default constructor */
 	public OrgRoleRef() {
@@ -31,11 +26,10 @@ public class OrgRoleRef implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public OrgRoleRef(Long orgRoleId, Role role, Organ organ, List<RoleUserRef> roleUserRefs) {
+	public OrgRoleRef(Long orgRoleId, Role role, Organ organ) {
 		this.orgRoleId = orgRoleId;
 		this.role = role;
 		this.organ = organ;
-		this.roleUserRefs = roleUserRefs;
 	}
 
 	public Long getOrgRoleId() {
@@ -61,14 +55,7 @@ public class OrgRoleRef implements java.io.Serializable {
 	public void setOrgan(Organ organ) {
 		this.organ = organ;
 	}
-	
-	public List<RoleUserRef> getRoleUserRefs() {
-		return this.roleUserRefs;
-	}
 
-	public void setUumRoleUserRefs(List<RoleUserRef> roleUserRefs) {
-		this.roleUserRefs = roleUserRefs;
-	}
 
 	@Override
 	public String toString() {

@@ -12,6 +12,7 @@
 <mapper namespace="com.mycuckoo.repository.uum.OrganMapper">
 	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.Organ">
 		<id property="orgId" column="org_id" />
+		<result property="parentId" column="org_parent" />
 		<result property="orgSimpleName" column="org_simple_name" />
 		<result property="orgFullName" column="org_full_name" />
 		<result property="orgCode" column="org_code" />
@@ -31,9 +32,6 @@
 		<result property="memo" column="memo" />
 		<result property="creator" column="creator" />
 		<result property="createDate" column="create_date" />
-		<result property="organ.orgId" column="org_parent" />
-		<!-- <association property="organ" javaType="com.mycuckoo.domain.uum.Organ" resultMap="com.mycuckoo.repository.uum.OrganMapper.baseMap" /> -->
-		<!-- <collection property="orgRoleRefs" javaType="com.mycuckoo.domain.uum.OrgRoleRef" resultMap="com.mycuckoo.repository.uum.OrgRoleRefMapper.baseMap" />  -->
 	</resultMap>
 	
 	<sql id="colums">
@@ -42,17 +40,20 @@
 		org_type, org_fax, org_postal, org_legal, org_tax_no, 
 		org_reg_no, org_belong_dist, status, memo, creator, createDate
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_organ
+	</sql>
 
 	<!-- 
 		插入数据： 
-		1.由数据库生成id并赋值到对象 
-		2.输入是对象参数, 嵌套属性表达式如: #{organ.orgId} 
+		1.由数据库生成id并赋值到对象
 	-->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.Organ">
 		<selectKey keyProperty="orgId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_organ_seq')
 		</selectKey>
-		insert into cuckoo.uum_organ
+		insert into <include refid="table" />
 		(
 			org_id, org_parent, org_simple_name, org_full_name, org_code, 
 			org_address1, org_address2, org_tel1, org_tel2, org_begin_date, 
@@ -60,73 +61,54 @@
 			org_reg_no, org_belong_dist, status, memo, creator, create_date
 		)
 		values (
-			#{orgId}, #{organ.orgId}, #{orgSimpleName}, #{orgFullName}, #{orgCode}, 
+			#{orgId}, #{parentId}, #{orgSimpleName}, #{orgFullName}, #{orgCode}, 
 			#{orgAddress1}, #{orgAddress2}, #{orgTel1}, #{orgTel2}, #{orgBeginDate}, 
 			#{orgType}, #{orgFax}, #{orgPostal}, #{orgLegal}, #{orgTaxNo}, 
 			#{orgRegNo}, #{orgBelongDist}, #{status}, #{memo}, #{creator}, #{createDate}
 		)
 	</insert>
 	
-	<!-- 更新数据： 1.输入是对象参数, 嵌套属性表达式如: #{organ.orgId} -->
+	<!-- 更新数据： 1.输入是对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.Organ">
 		update 
-			cuckoo.uum_organ
-		set
-			org_parent					= #{organ.orgId},
-			org_simple_name			= #{orgSimpleName},
-			org_full_name				= #{orgFullName},
-			org_code						= #{orgCode},
-			org_address1				= #{orgAddress1},
-			org_address2				= #{orgAddress2},
-			org_tel1						= #{orgTel1},
-			org_tel2						= #{orgTel2},
-			org_begin_date			= #{orgBeginDate},
-			org_type						= #{orgType},
-			org_fax							= #{orgFax},
-			org_postal					= #{orgPostal},
-			org_legal						= #{orgLegal},
-			org_tax_no					= #{orgTaxNo},
-			org_reg_no					= #{orgRegNo},
-			org_belong_dist			= #{orgBelongDist},
-			status							= #{status},
-			memo								= #{memo}
+			<include refid="table" />
+		<set>
+			<if test="parentId != null">org_parent = #{parentId}, </if>
+			<if test="orgSimpleName != null">org_simple_name = #{orgSimpleName}, </if>
+			<if test="orgFullName != null">org_full_name = #{orgFullName}, </if>
+			<if test="orgCode != null">org_code = #{orgCode}, </if>
+			<if test="orgAddress1 != null">org_address1 = #{orgAddress1}, </if>
+			<if test="orgAddress2 != null">org_address2 = #{orgAddress2}, </if>
+			<if test="orgTel1 != null">org_tel1 = #{orgTel1}, </if>
+			<if test="orgTel2 != null">org_tel2 = #{orgTel2}, </if>
+			<if test="orgBeginDate != null">org_begin_date = #{orgBeginDate}, </if>
+			<if test="orgType != null">org_type = #{orgType}, </if>
+			<if test="orgFax != null">org_fax = #{orgFax}, </if>
+			<if test="orgPostal != null">org_postal = #{orgPostal}, </if>
+			<if test="orgLegal != null">org_legal = #{orgLegal}, </if>
+			<if test="orgTaxNo != null">org_tax_no = #{orgTaxNo}, </if>
+			<if test="orgRegNo != null">org_reg_no = #{orgRegNo}, </if>
+			<if test="orgBelongDist != null">org_belong_dist = #{orgBelongDist}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			org_id = #{orgId}
 	</update>
 	
 	<!-- 删除数据 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_organ where org_id = #{id}
+		delete from <include refid="table" /> where org_id = #{id}
 	</delete>
 	
 	<!--
-		获取数据: 输出直接映射到对象, org_code 列要 as orgCode 以方便映射, org_parent as "organ.orgId" 创建 Organ 对象并赋值
+		获取数据: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.Organ">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			org_id						as orgId,
-			org_parent				as "organ.orgId", 
-			org_simple_name		as orgSimpleName, 
-			org_full_name			as orgFullName,
-			org_code					as orgCode, 
-			org_address1			as orgAddress1, 
-			org_address2			as orgAddress2, 
-			org_tel1					as orgTel1, 
-			org_tel2					as orgTel2, 
-			org_begin_date		as orgBeginDate, 
-			org_type					as orgType, 
-			org_fax						as orgFax, 
-			org_postal				as orgPostal, 
-			org_legal					as orgLegal, 
-			org_tax_no				as orgTaxNo, 
-			org_reg_no				as orgRegNo, 
-			org_belong_dist		as orgBelongDist, 
-			status						as status,
-			memo							as memo,
-			creator						as creator, 
-			create_date				as createDate
+			<include refid="colums" />
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where 
 			org_id = #{id}
 	</select>
@@ -136,7 +118,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where 
 			org_id = #{id}
 	</select>
@@ -146,36 +128,36 @@
 		select
 			count(1) 
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 	</select>
 
 	<!-- 查询数据, 映射到resultMap-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		<include refid="whereStatement"/>
 		order by 
 			org_parent, org_id
 	</select>
 	
 	<!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
-	<select id="findByUpOrgId" parameterType="long" resultMap="baseMap">
+	<select id="findByParentId" parameterType="long" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where
 			org_parent = #{id}
 	</select>
 	
 	<!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
-	<select id="countByUpOrgId" parameterType="long" resultType="int">
+	<select id="countByParentId" parameterType="long" resultType="int">
 		select 
 			count(1)
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where
 			org_parent = #{id}
 	</select>
@@ -184,17 +166,17 @@
 		select 
 			count(1)
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where
 			org_simple_name like #{simpleName}
 	</select>
 	
 	<!-- 根据机构ID和过滤ID查询直接下级机构 -->
-	<select id="findByUpOrgIdAFilter" parameterType="map" resultMap="baseMap">
+	<select id="findByParentIdAFilter" parameterType="map" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where
 			org_parent = #{orgId}
 		and
@@ -210,7 +192,7 @@
 		select 
 			org_id, org_simple_name
 		from 
-			cuckoo.uum_organ
+			<include refid="table" />
 		where 
 			org_id in
 			<foreach collection="array" item="orgId" open="(" separator="," close=")">

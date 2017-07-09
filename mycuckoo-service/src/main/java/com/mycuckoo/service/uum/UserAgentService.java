@@ -13,10 +13,12 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.ModuleLevelEnum;
@@ -27,12 +29,12 @@ import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Role;
-import com.mycuckoo.domain.uum.RoleUserRef;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserAgent;
 import com.mycuckoo.domain.uum.UserAgentPrivilege;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
+import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.UserAgentMapper;
@@ -41,6 +43,8 @@ import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.TreeVo;
 import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.UserAgentVo;
 
 /**
  * 功能说明: 用户代理业务类
@@ -58,6 +62,7 @@ public class UserAgentService {
 	private UserAgentMapper userAgentMapper;
 	@Autowired
 	private UserAgentPrivilegeMapper userAgentPrivilegeMapper;
+	
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -154,46 +159,58 @@ public class UserAgentService {
 		return treeVoList;
 	}
 
-	public List<UserAgent> findByAgentUserId(long agentUserId) {
+	public List<UserAgentVo> findByAgentUserId(long agentUserId) {
 		List<UserAgent> userAgentList = userAgentMapper.findByAgentUserId(agentUserId, 
 				Calendar.getInstance().getTime());
 		
+		List<UserAgentVo> vos = Lists.newArrayList();
 		for(UserAgent userAgent : userAgentList) {
+			UserAgentVo vo = new UserAgentVo();
+			BeanUtils.copyProperties(userAgent, vo);
+			
 			long userId = userAgent.getUserId(); // 被代理用户ID
 			long orgRoleId = userAgent.getOrgRoleId(); // 被代理用户机构角色ID
 			
-			RoleUserRef uumRoleUserRef = roleUserService.findByUserIdAndOrgRoleId(userId, orgRoleId);
+			RoleUserRefVo roleUserRef = roleUserService.findByUserIdAndOrgRoleId(userId, orgRoleId);
 			User user = userService.getUserByUserId(userId);
-			userAgent.setUserId(user.getUserId());
-			userAgent.setUserCode(user.getUserCode());
-			userAgent.setUserName(user.getUserName());
-			userAgent.setUserPhotoUrl(user.getUserPhotoUrl());
+			vo.setUserId(user.getUserId());
+			vo.setUserCode(user.getUserCode());
+			vo.setUserName(user.getUserName());
+			vo.setUserPhotoUrl(user.getUserPhotoUrl());
 			
-			OrgRoleRef orgRoleRef = uumRoleUserRef.getOrgRoleRef();
+			OrgRoleRef orgRoleRef = roleUserRef.getOrgRoleRef();
 			Role uumRole = orgRoleRef.getRole();
-			userAgent.setRoleId(uumRole.getRoleId());
-			userAgent.setRoleName(uumRole.getRoleName());
+			vo.setRoleId(uumRole.getRoleId());
+			vo.setRoleName(uumRole.getRoleName());
 			
 			Organ organ = orgRoleRef.getOrgan();
-			userAgent.setOrganId(organ.getOrgId());
-			userAgent.setOrganName(organ.getOrgSimpleName());
+			vo.setOrganId(organ.getOrgId());
+			vo.setOrganName(organ.getOrgSimpleName());
+			
+			vos.add(vo);
 		}
 	
 		
-		return userAgentList;
+		return vos;
 	}
 
-	public Page<UserAgent> findUserAgentByCon(long userId, Pageable page) {
+	public Page<UserAgentVo> findUserAgentByCon(long userId, Pageable page) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("userId", userId);
 		Page<UserAgent> page2 = userAgentMapper.findByPage(params, page);
+		
+		List<UserAgentVo> vos = Lists.newArrayList();
 		for(UserAgent userAgent : page2.getContent()) {
+			UserAgentVo vo = new UserAgentVo();
+			BeanUtils.copyProperties(userAgent, vo);
+			
 			Long agentUserId = userAgent.getAgentUserId();
 			User user = userService.getUserByUserId(agentUserId);
-			userAgent.setUserName(user.getUserName());
+			vo.setUserName(user.getUserName());
+			vos.add(vo);
 		}
 		
-		return page2;
+		return new PageImpl<>(vos, page, page2.getTotalElements());
 	}
 
 	public boolean existsAgentUser(long userId, long userAgentId) {
@@ -247,16 +264,5 @@ public class UserAgentService {
 		
 		sysOptLogService.saveLog(logLevel, opt, USER_AGENT, 
 				optContent.toString(), userAgent.getAgentId() + "");
-	}
-	/**
-	 * 根据代理ID查询用户代理 
-	 *
-	 * @param AgentId 代理ID
-	 * @return UserAgent 用户代理对象
-	 * @author rutine
-	 * @time Oct 20, 2012 8:05:30 AM
-	 */
-	private UserAgent findByAgentId(Long AgentId) {
-		return userAgentMapper.get(AgentId);
 	}
 }

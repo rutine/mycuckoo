@@ -19,11 +19,14 @@
 	<sql id="colums">
 		user_id, module_id
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_user_commfun
+	</sql>
 
 	<!-- 插入用户常用功能： 1.输入对象参数 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.UserCommfun">
-		insert into cuckoo.uum_user_commfun
-		(
+		insert into <include refid="table" /> (
 			user_id, module_id
 		)
 		values (
@@ -34,7 +37,7 @@
 	<!-- 更新用户常用功能： 1.输入用map -->
 	<update id="update" parameterType="java.util.Map">
 		update 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 		set
 			user_id						= #{newUserCommfun.userId},
 			module_id					= #{newUserCommfun.moduleId}
@@ -46,19 +49,20 @@
 	
 		<!-- 删除用户常用功能 -->
 	<delete id="delete" parameterType="com.mycuckoo.domain.uum.UserCommfun">
-		delete from cuckoo.uum_user_commfun where user_id = #{userId} and module_id = #{moduleId}
+		delete from <include refid="table" /> where user_id = #{userId} and module_id = #{moduleId}
 	</delete>
 	
 	<!--
-		获取用户常用功能: 输出直接映射到对象, user_id 列要 as "userCommfunId.userId" 以方便映射创建 UserCommfun 对象并赋值
+		获取用户常用功能: 输出直接映射到对象
 	-->
-	<select id="get" parameterType="com.mycuckoo.domain.uum.UserCommfun" 
-			resultType="com.mycuckoo.domain.uum.UserCommfun">
+	<select id="get" 
+			parameterType="com.mycuckoo.domain.uum.UserCommfun" 
+			resultMap="baseMap">
 		select 
 			user_id,
 			module_id
 		from 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 		where 
 			user_id = #{userId} 
 		and 
@@ -70,7 +74,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 		where 
 			user_id = #{userId} 
 		and 
@@ -82,7 +86,7 @@
 		select 
 			*
 		from 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 	</select>
 		
 	<!-- 统计用户常用功能记录总数 -->
@@ -90,12 +94,12 @@
 		select
 			count(1) 
 		from 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据ID删除用户常用功能 -->
 	<delete id="deleteByUserId" parameterType="long">
-		delete from cuckoo.uum_user_commfun where user_id = #{userId}
+		delete from <include refid="table" /> where user_id = #{userId}
 	</delete>
 	
 	<!-- 根据用户ID查询用户常用功能, 映射到 baseMap-->
@@ -103,7 +107,7 @@
 		select 
 			*
 		from 
-			cuckoo.uum_user_commfun
+			<include refid="table" />
 		where 
 			user_id = #{userId}
 	</select>

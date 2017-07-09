@@ -20,7 +20,6 @@
 			javaType="com.mycuckoo.domain.uum.Organ"
 			resultMap="com.mycuckoo.repository.uum.OrganMapper.baseMap"
 			columnPrefix="org_" />
-		<!-- <collection property="roleUserRefs" javaType="com.mycuckoo.domain.uum.RoleUserRefs" resultMap="com.mycuckoo.repository.uum.RoleUserRefs" /> -->
 	</resultMap>
 	
 	<sql id="colums">
@@ -36,8 +35,7 @@
 		<selectKey keyProperty="orgRoleId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_org_role_ref_seq')
 		</selectKey>
-		insert into cuckoo.uum_org_role_ref
-		(
+		insert into cuckoo.uum_org_role_ref (
 			org_role_id, role_id, org_id
 		)
 		values (

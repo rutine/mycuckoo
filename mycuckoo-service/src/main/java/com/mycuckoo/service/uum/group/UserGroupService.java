@@ -5,7 +5,6 @@ import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
 import static com.mycuckoo.common.constant.ServiceVariable.ENABLE;
 import static com.mycuckoo.common.constant.ServiceVariable.USER_GROUP_MGR;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,16 +13,17 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.GroupTypeEnum;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.uum.Group;
 import com.mycuckoo.domain.uum.GroupMember;
-import com.mycuckoo.domain.uum.RoleUserRef;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
@@ -33,6 +33,8 @@ import com.mycuckoo.repository.uum.group.GroupMemberMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.service.uum.RoleUserService;
 import com.mycuckoo.service.uum.UserService;
+import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.UserVo;
 
 /**
  * 功能说明: 用户组业务类
@@ -78,24 +80,24 @@ public class UserGroupService {
 		}
 	}
 
-	public List<User> findUsersByOrgRolId(long organId, long roleId) throws ApplicationException {
+	public List<UserVo> findUsersByOrgRolId(long organId, long roleId) throws ApplicationException {
 		if(organId != -1 && roleId == -1) {
-			List<User> userList = userService.findByOrgId(organId);
-			return userList;
+			return userService.findByOrgId(organId);
 		} else {
-			Iterator<RoleUserRef> iterator = roleUserService.findByOrgRoleId(organId, roleId).iterator();
-			List<User> userList = new ArrayList<User>();
-			while (iterator.hasNext()) {
-				RoleUserRef uumRoleUserRef = (RoleUserRef) iterator.next();
-				userList.add(uumRoleUserRef.getUser());
-			}
+			List<RoleUserRefVo> refVos = roleUserService.findByOrgRoleId(organId, roleId);
+			List<UserVo> vos = Lists.newArrayList();
+			refVos.forEach(refVo -> {
+				UserVo vo = new UserVo();
+				BeanUtils.copyProperties(refVo.getUser(), vo);
+				vos.add(vo);
+			});
 			
-			return userList;
+			return vos;
 		}
 	}
 
 	public Page<Group> findByPage(String groupName,  Pageable page) {
-		List<User> uumUserList = userService.findAll();
+		List<UserVo> userVos = userService.findAll();
 		
 		Map<String, Object> params = new HashMap<String, Object>(4);
 		params.put("groupType", GroupTypeEnum.USER_GROUP.value());
@@ -111,9 +113,9 @@ public class UserGroupService {
 				GroupMember groupMember = (GroupMember) iterator.next();
 				long memberResourceId = groupMember.getMemberResourceId();
 				User newUser = null;
-				for (User uumUser : uumUserList) {
-					if (uumUser.getUserId().longValue() == memberResourceId) {
-						newUser = uumUser;
+				for (User user : userVos) {
+					if (user.getUserId().longValue() == memberResourceId) {
+						newUser = user;
 						break;
 					}
 				}
@@ -129,7 +131,7 @@ public class UserGroupService {
 	}
 
 	public Group getUserGroupByGroupId(long groupId) {
-		List<User> uumUserList = userService.findAll();
+		List<UserVo> userVos = userService.findAll();
 		Group group = groupMapper.get(groupId);
 		List<GroupMember> groupMemberList = group.getGroupMembers();
 		Iterator<GroupMember> iterator = groupMemberList.iterator();
@@ -137,9 +139,9 @@ public class UserGroupService {
 				GroupMember groupMember = (GroupMember) iterator.next();
 				long memberResourceId = groupMember.getMemberResourceId();
 				User newUser = null;
-				for (User uumUser : uumUserList) {
-					if (uumUser.getUserId().longValue() == memberResourceId) {
-						newUser = uumUser;
+				for (User user : userVos) {
+					if (user.getUserId().longValue() == memberResourceId) {
+						newUser = user;
 						break;
 					}
 				}

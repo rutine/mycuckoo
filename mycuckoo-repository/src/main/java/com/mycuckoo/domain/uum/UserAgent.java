@@ -2,11 +2,8 @@ package com.mycuckoo.domain.uum;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.google.common.collect.Lists;
 
 /**
  * 功能说明: 域对象
@@ -16,26 +13,15 @@ import com.google.common.collect.Lists;
  * @version 3.0.0
  */
 public class UserAgent implements Serializable {
-
 	private static final long serialVersionUID = 1000000L;
 	
-	
 	private Long agentId; // 代理id
-	private Long userId; // 被代理用户id
-	private Long agentUserId; // 代理用户id
+	private Long userId; // 代理用户id
+	private Long agentUserId; // 被代理用户id
 	private Long orgRoleId; // 被代理机构角色id
 	private Date beginDate; // 代理开始时间
 	private Date endDate; // 代理结束时间
 	private String reason; // 代理理由
-	private List userAgentPrivileges = Lists.newArrayList();
-	
-	private String userPhotoUrl;
-	private String userName;
-	private String userCode;
-	private String organName;
-	private String roleName;
-	private Long organId;
-	private Long roleId;
 
 	/** default constructor */
 	public UserAgent() {
@@ -57,9 +43,9 @@ public class UserAgent implements Serializable {
 		this.endDate = endDate;
 		this.reason = reason;
 	}
-
+	
 	public Long getAgentId() {
-		return this.agentId;
+		return agentId;
 	}
 
 	public void setAgentId(Long agentId) {
@@ -67,7 +53,7 @@ public class UserAgent implements Serializable {
 	}
 
 	public Long getUserId() {
-		return this.userId;
+		return userId;
 	}
 
 	public void setUserId(Long userId) {
@@ -75,59 +61,11 @@ public class UserAgent implements Serializable {
 	}
 
 	public Long getAgentUserId() {
-		return this.agentUserId;
+		return agentUserId;
 	}
 
 	public void setAgentUserId(Long agentUserId) {
 		this.agentUserId = agentUserId;
-	}
-
-	public Date getBeginDate() {
-		return this.beginDate;
-	}
-
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
-	}
-
-	public Date getEndDate() {
-		return this.endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
-	public String getReason() {
-		return this.reason;
-	}
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-
-	public String getUserPhotoUrl() {
-		return userPhotoUrl;
-	}
-
-	public void setUserPhotoUrl(String userPhotoUrl) {
-		this.userPhotoUrl = userPhotoUrl;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getUserCode() {
-		return userCode;
-	}
-
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
 	}
 
 	public Long getOrgRoleId() {
@@ -138,45 +76,30 @@ public class UserAgent implements Serializable {
 		this.orgRoleId = orgRoleId;
 	}
 
-	public String getOrganName() {
-		return organName;
+	public Date getBeginDate() {
+		return beginDate;
 	}
 
-	public void setOrganName(String organName) {
-		this.organName = organName;
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
 	}
 
-	public String getRoleName() {
-		return roleName;
+	public Date getEndDate() {
+		return endDate;
 	}
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
-	public Long getOrganId() {
-		return organId;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setOrganId(Long organId) {
-		this.organId = organId;
-	}
-
-	public Long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	
-	public List getUserAgentPrivileges() {
-		return userAgentPrivileges;
-	}
-
-	public void setUserAgentPrivileges(List userAgentPrivileges) {
-		this.userAgentPrivileges = userAgentPrivileges;
-	}
 
 	@Override
 	public String toString() {

@@ -7,7 +7,6 @@ import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
 import static com.mycuckoo.common.constant.ServiceVariable.ENABLE;
 import static com.mycuckoo.common.constant.ServiceVariable.GENERAL_GROUP_MGR;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.GroupTypeEnum;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
@@ -35,6 +35,7 @@ import com.mycuckoo.repository.uum.group.GroupMemberMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.service.uum.UserService;
+import com.mycuckoo.vo.uum.UserVo;
 
 /**
  * 功能说明: 组管理一般业务类
@@ -83,29 +84,29 @@ public class GeneralGroupService {
 		}
 	}
 
-	public List<User> findGeneralByOrgRolId(long organId, long roleId, String memberType) 
+	public List<UserVo> findGeneralByOrgRolId(long organId, long roleId, String memberType) 
 			throws ApplicationException {
 		
-		List<User>  list = new ArrayList<User>();
+		List<UserVo> vos = Lists.newArrayList();
 		if(USER.equals(memberType)) {
-			list = userGroupService.findUsersByOrgRolId(organId, roleId);
+			vos = userGroupService.findUsersByOrgRolId(organId, roleId);
 		} else {
 			List<Role> roleList = roleGroupService.findRolesByOrgId(organId);
 			// 将roleId转换成userId
 			if (roleList != null) {
-				for (Role uumRole : roleList) {
-					User uumUser = new User();
-					uumUser.setUserId(uumRole.getRoleId());
-					uumUser.setUserName(uumRole.getRoleName());
-					list.add(uumUser);
+				for (Role role : roleList) {
+					UserVo vo = new UserVo();
+					vo.setUserId(role.getRoleId());
+					vo.setUserName(role.getRoleName());
+					vos.add(vo);
 				}
 			}
 		}
-		return list;
+		return vos;
 	}
 
 	public Page<Group> findByPage(String groupName, Pageable page) {
-		List<User> userList = userService.findAll();
+		List<UserVo> userList = userService.findAll();
 		List<Role> roleList = roleService.findAll();
 		
 		Map<String, Object> params = new HashMap<String, Object>(4);
@@ -121,7 +122,7 @@ public class GeneralGroupService {
 				long memberResourceId = groupMember.getMemberResourceId();
 				if (USER.equals(groupMember.getGroupMemberType())) { // 如果是用户
 					User newUser = null;
-					for (User user : userList) {
+					for (UserVo user : userList) {
 						if (user.getUserId().longValue() == memberResourceId) {
 							newUser = user;  break;
 						}
@@ -147,7 +148,7 @@ public class GeneralGroupService {
 	}
 	
 	public Group getGeneralGroupByGroupId(long groupId) {
-		List<User> userList = userService.findAll();
+		List<UserVo> userList = userService.findAll();
 		List<Role> roleList = roleService.findAll();
 		Group group = groupMapper.get(groupId);
 		List<GroupMember> groupMemberList = group.getGroupMembers();
@@ -157,7 +158,7 @@ public class GeneralGroupService {
 				long memberResourceId = groupMember.getMemberResourceId();
 				if (USER.equals(groupMember.getGroupMemberType())) { // 如果是用户
 					User newUser = null;
-					for (User user : userList) {
+					for (UserVo user : userList) {
 						if (user.getUserId().longValue() == memberResourceId) {
 							newUser = user;  break;
 						}

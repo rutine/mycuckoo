@@ -18,19 +18,22 @@
 		<result property="creator" column="creator" />
 		<result property="createDate" column="create_date" />
 		<result property="roleLevel" column="role_level" />
-		<!-- <collection property="orgRoleRefs" javaType="com.mycuckoo.domain.uum.OrgRoleRefs" resultMap="com.mycuckoo.repository.uum.OrgRoleRefs.baseMap" /> -->
 	</resultMap>
 	
 	<sql id="colums">
 		role_id, role_name, status, memo, creator, create_date, role_level
 	</sql>
+	
+	<sql id="table">
+		cuckoo.uum_role
+	</sql>
 
-	<!-- 插入数据： 1.由数据库生成id并赋值到UumRole对象 2.输入对象参数 -->
+	<!-- 插入数据： 1.由数据库生成id并赋值到Role对象 2.输入对象参数 -->
 	<insert id="save" parameterType="com.mycuckoo.domain.uum.Role">
 		<selectKey keyProperty="roleId" resultType="long" order="BEFORE">
 			select nextval('cuckoo.uum_role_seq')
 		</selectKey>
-		insert into cuckoo.uum_role
+		insert into <include refid="table" />
 		(
 			role_id, role_name, status, memo, creator, create_date, role_level
 		)
@@ -41,33 +44,28 @@
 	
 	<!-- 更新数据： 1.输入对象参数 -->
 	<update id="update" parameterType="com.mycuckoo.domain.uum.Role">
-		update cuckoo.uum_role
-		set
-			role_name 					= #{roleName},
-			status							= #{status},
-			memo								= #{memo},
-			role_level					= #{roleLevel}
+		update <include refid="table" />
+		<set>
+			<if test="roleName != null">role_name = #{roleName}, </if>
+			<if test="roleLevel != null">role_level = #{roleLevel}, </if>
+			<if test="memo != null">memo = #{memo}, </if>
+			<if test="status != null">status = #{status}, </if>
+		</set>
 		where 
 			role_id = #{roleId}
 	</update>
 	
 	<!-- 删除数据 -->
 	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_role where role_id = #{id}
+		delete from <include refid="table" /> where role_id = #{id}
 	</delete>
 	
 	<!-- 获取数据: 输出直接映射到对象 -->
-	<select id="get" parameterType="long" resultType="com.mycuckoo.domain.uum.Role">
+	<select id="get" parameterType="long" resultMap="baseMap">
 		select 
-			role_id						as roleId,
-			role_name					as roleName, 
-			status						as status,
-			memo							as memo,
-			creator						as creator, 
-			create_date				as createDate,
-			role_level				as roleLevel
+			<include refid="colums" />
 		from 
-			cuckoo.uum_role
+			<include refid="table" />
 		where 
 			role_id = #{id}
 	</select>
@@ -77,7 +75,7 @@
 		select
 			count(1) > 0 
 		from 
-			cuckoo.uum_role
+			<include refid="table" />
 		where 
 			role_id = #{id}
 	</select>
@@ -85,9 +83,9 @@
 	<!-- 根据条件查询角色, 映射到'role'-->
 	<select id="findByPage" resultMap="baseMap">
 		select 
-			*
+			<include refid="colums" />
 		from 
-			cuckoo.uum_role
+			<include refid="table" />
 		where 
 			role_id != 0
 		<if test="roleName !=null">
@@ -100,9 +98,9 @@
 	<!-- 统计数据记录 -->
 	<select id="count" resultType="long">
 		select
-			count(*) 
+			count(1) 
 		from 
-			cuckoo.uum_role
+			<include refid="table" />
 	</select>
 	
 	<!-- 根据角色名称统计角色记录 -->
@@ -110,7 +108,7 @@
 		select 
 			count(1)
 		from 
-			cuckoo.uum_role
+			<include refid="table" />
 		where 
 			role_name = #{roleName}
 	</select>

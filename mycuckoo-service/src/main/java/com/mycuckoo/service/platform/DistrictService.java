@@ -134,9 +134,7 @@ public class DistrictService {
 			vos.add(vo);
 		}
 		
-		return new PageImpl<>(vos, 
-				new PageRequest(entityPage.getNumber(), entityPage.getSize()), 
-				entityPage.getTotalElements());
+		return new PageImpl<>(vos, page, entityPage.getTotalElements());
 	}
 
 	public DistrictVo get(Long districtId) {
