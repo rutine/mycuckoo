@@ -1,4 +1,4 @@
-package com.mycuckoo.vo;
+package com.mycuckoo.web.vo;
 
 /**
  * 功能说明:

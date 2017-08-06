@@ -3,11 +3,13 @@ package com.mycuckoo.common.utils;
 import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.dom4j.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.vo.SystemConfigBean;
@@ -51,12 +53,21 @@ public class SystemConfigXmlParse {
 	
 	public void loadSystemConfigDoc() {
 		try {
-			String fileName = getClusterResourcePath(SYS_CONFIG_FILE_XML);
-			File systemConfigFile = new File(fileName);
+//			String fileName = getClusterResourcePath(SYS_CONFIG_FILE_XML);
+//			File systemConfigFile = new File(fileName);
+			
+			String fileName = SYS_CONFIG_FILE_XML;
+			File systemConfigFile = null;
+			try {
+				systemConfigFile = new ClassPathResource(SYS_CONFIG_FILE_XML).getFile();
+			} catch (IOException e) {
+				logger.info("加载class系统配置文件错误", e);
+			}
 			
 			if (!systemConfigFile.exists()) {
 				throw new ApplicationException("对不起，文件" + fileName + "找不到.");
 			}
+			fileName = systemConfigFile.getAbsolutePath();
 			logger.info("系统配置文件 ---> {}", fileName);
 			
 			long sysConfigMod = systemConfigFile.lastModified();
@@ -111,7 +122,7 @@ public class SystemConfigXmlParse {
 				logger.info("SystemConfig.xml reload success !");
 			}
 		} catch (ApplicationException e) {
-			e.printStackTrace();
+			logger.info("加载系统配置文件错误", e);
 		}
 	}
 

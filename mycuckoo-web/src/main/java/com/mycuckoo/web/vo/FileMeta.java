@@ -1,4 +1,4 @@
-package com.mycuckoo.vo;
+package com.mycuckoo.web.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

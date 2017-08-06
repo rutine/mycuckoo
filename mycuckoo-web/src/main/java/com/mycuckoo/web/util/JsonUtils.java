@@ -1,4 +1,4 @@
-package com.mycuckoo.common.utils;
+package com.mycuckoo.web.util;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

@@ -33,7 +33,7 @@ import com.mycuckoo.repository.platform.AfficheMapper;
 @Service
 @Transactional(readOnly=true)
 public class AfficheService {
-	@Value("${mycuckoo.documentUrl}")
+	@Value("${mycuckoo.affiche.documentUrl}")
 	private String documentPath;
 	
 	@Autowired

@@ -17,6 +17,7 @@ public class HierarchyModuleVo {
 	private Map<String, List<ModuleMemuVo>> second;
 	private Map<String, List<ModuleMemuVo>> third;
 	private Map<Long, List<ModuleMemuVo>> fourth;
+	private List<ModuleMemuVo> commonFun;
 	private String row;
 	
 	public HierarchyModuleVo(
@@ -51,6 +52,12 @@ public class HierarchyModuleVo {
 	}
 	public void setFourth(Map<Long, List<ModuleMemuVo>> fourth) {
 		this.fourth = fourth;
+	}
+	public List<ModuleMemuVo> getCommonFun() {
+		return commonFun;
+	}
+	public void setCommonFun(List<ModuleMemuVo> commonFun) {
+		this.commonFun = commonFun;
 	}
 	public String getRow() {
 		return row;

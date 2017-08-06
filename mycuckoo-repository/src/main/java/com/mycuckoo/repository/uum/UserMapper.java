@@ -66,11 +66,12 @@ public interface UserMapper extends Repository<User, Long> {
 	 * 
 	 * <p>根据用户号和用户密码获取用户信息</p>
 	 * 
-	 * @param userCode 用户号
-	 * @param password 用户密码
+	 * @param userCode     用户号
+	 * @param userPassword 用户密码
 	 * @return 用户
 	 */
-	User getByUserCodeAndPwd(@Param("userCode") String userCode, @Param("password") String password);
+	User getByUserCodeAndPwd(@Param("userCode") String userCode, 
+			@Param("userPassword") String userPassword);
 
 	/**
 	 * <p>根据用户名模糊查询用户信息</p>
