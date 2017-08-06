@@ -218,6 +218,9 @@ public class UserService {
 		if(isNullOrEmpty(userCode) || isNullOrEmpty(userCode)) return null;
 		try {
 			User user = userMapper.getByUserCodeAndPwd(userCode, password);
+			if(user == null) {
+				return null;
+			}
 			UserVo vo = new UserVo();
 			BeanUtils.copyProperties(user, vo);
 			return vo;

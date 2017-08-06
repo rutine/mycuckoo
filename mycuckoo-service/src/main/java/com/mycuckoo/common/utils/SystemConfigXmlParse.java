@@ -1,7 +1,5 @@
 package com.mycuckoo.common.utils;
 
-import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.vo.SystemConfigBean;
 
 /**
@@ -121,7 +120,7 @@ public class SystemConfigXmlParse {
 				
 				logger.info("SystemConfig.xml reload success !");
 			}
-		} catch (ApplicationException e) {
+		} catch (SystemException e) {
 			logger.info("加载系统配置文件错误", e);
 		}
 	}

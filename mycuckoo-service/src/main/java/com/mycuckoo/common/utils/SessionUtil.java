@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 
 import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.exception.SystemException;
 
 /**
@@ -39,7 +40,11 @@ public final class SessionUtil {
 	
 	
 	public static void setRequest(HttpServletRequest request) {
-		localRequest.set(request);
+		if(request == null) {
+			localRequest.remove();
+		} else {
+			localRequest.set(request);
+		}
 	}
 	
 	private static HttpSession getSession() {
@@ -57,7 +62,7 @@ public final class SessionUtil {
 		HttpServletRequest request = localRequest.get();
 		if(request == null) {
 			logger.error("request is null.");
-			throw new SystemException("request is null.");
+			throw new ApplicationException("request is null.");
 		}
 		
 		String ipAddr = request.getRemoteAddr();

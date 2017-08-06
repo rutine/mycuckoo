@@ -11,40 +11,34 @@ import static com.mycuckoo.common.constant.Common.USER_ID;
 import static com.mycuckoo.common.constant.Common.USER_NAME;
 import static com.mycuckoo.common.constant.Common.USER_PHOTO_URL;
 import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.LoginRoleVo;
-import com.mycuckoo.vo.platform.ModuleMemuVo;
 import com.mycuckoo.vo.uum.RoleUserRefVo;
 import com.mycuckoo.vo.uum.UserAgentVo;
 import com.mycuckoo.web.util.JsonUtils;
@@ -71,7 +65,7 @@ public class LoginController {
 	
 	
 	/**
-	 * 功能说明 : 预登录 代理 多角色
+	 * 功能说明 : 登录系统第一阶段 代理 多角色
 	 *
 	 * @param userCode
 	 * @param password
@@ -80,81 +74,14 @@ public class LoginController {
 	 * @author rutine
 	 * @time Nov 21, 2012 8:00:26 PM
 	 */
-	@RequestMapping(value="/login/preLogin", method=RequestMethod.POST)
-	public AjaxResponse<?> preLogin(
+	@RequestMapping(value="/login/step/first", method=RequestMethod.POST)
+	public AjaxResponse<?> stepFirst(
 			@RequestParam String userCode, 
 			@RequestParam String password,
 			HttpSession session) {
 		
 		logger.debug("userCode --> " + userCode);
 		logger.debug("password --> " + password);
-		
-		LoginRoleVo roleVo = null;
-		try {
-			User user = null;
-			boolean isAdmin = loginService.isAdmin(userCode);
-			// 管理员
-			if(isAdmin) {
-				user = loginService.getUserByUserCodePwd(userCode, "");
-			} else {
-				user = loginService.getUserByUserCodePwd(userCode, password);
-			}
-			
-			if(user == null) {
-				return AjaxResponse.create(1, "用户不存在");
-			} else if(DISABLE.equals(user.getStatus())) {
-				return AjaxResponse.create(3, "用户用户已被停用");
-			} else if (user.getUserAvidate() == null || (new Date()).after(user.getUserAvidate())) {
-				return AjaxResponse.create(4, "用户过期");
-			}
-			
-			roleVo = loginService.preLogin(user);
-			if(!isAdmin) {
-				List<RoleUserRefVo> roles = roleVo.getRoles();
-				int len = roles.size();
-				Iterator<RoleUserRefVo> it = roles.iterator();
-				while (it.hasNext()) {
-					RoleUserRefVo vo = it.next();
-					if(vo.getOrgRoleId() == 0) {
-						if(len == 1) {
-							return AjaxResponse.create(2, "用户为无角色用户没有使用权限");
-						}
-						it.remove();
-					}
-				}
-			
-				if(roles.isEmpty()) {
-					return AjaxResponse.create(2, "用户没有权限");
-				}
-			}
-		} catch (ApplicationException e) {
-			logger.error("预登陆错误!", e);
-		}
-		
-		logger.debug("json --> " + JsonUtils.toJson(roleVo));
-		session.setAttribute("loginRoles", roleVo);
-		
-		return AjaxResponse.create(roleVo);
-	}
-	
-	/**
-	 * 功能说明 : 登录系统第一阶段, 设置用户会话信息
-	 *
-	 * @param roleInfoJson
-	 * @param agentInfoJson
-	 * @param session
-	 * @return
-	 * @author rutine
-	 * @time Nov 21, 2012 8:00:41 PM
-	 */
-	@RequestMapping(value="/login/loginSysFirstDo", method=RequestMethod.POST)
-	public AjaxResponse<?> loginSysFirstDo(
-			RoleUserRefVo role,
-			UserAgentVo agent,
-			HttpSession session) {
-		
-		logger.debug("role --> {}", JsonUtils.toJson(role));
-		logger.debug("JsonUtils --> {}", JsonUtils.toJson(agent));
 		
 		/*
 		 * 1. 验证用户是否存在 并得到用户对象
@@ -163,37 +90,92 @@ public class LoginController {
 		 * 4. 用户有效期是否已到
 		 * 5. 存在并已经登录则踢出
 		 * 6. 获得系统定义的角色切换方式，如果用户拥有多个角色则提示用户选择角色
+		 */
+		LoginRoleVo roleVo = null;
+		User user = null;
+		boolean isAdmin = loginService.isAdmin(userCode);
+		// 管理员
+		if(isAdmin) {
+			user = loginService.getUserByUserCodePwd(userCode, "");
+		} else {
+			user = loginService.getUserByUserCodePwd(userCode, password);
+		}
+		
+		if(user == null) {
+			throw new ApplicationException(1, "用户不存在");
+		} else if(!isAdmin && DISABLE.equals(user.getStatus())) {
+			throw new ApplicationException(3, "用户用户已被停用");
+		} else if (!isAdmin && (user.getUserAvidate() == null || (new Date()).after(user.getUserAvidate()))) {
+			throw new ApplicationException(4, "用户过期");
+		}
+		
+		roleVo = loginService.preLogin(user);
+		if(!isAdmin) {
+			List<RoleUserRefVo> roles = roleVo.getRoles();
+			int len = roles.size();
+			Iterator<RoleUserRefVo> it = roles.iterator();
+			while (it.hasNext()) {
+				RoleUserRefVo vo = it.next();
+				if(vo.getOrgRoleId() == 0) {
+					if(len == 1) {
+						throw new ApplicationException(4, "用户为无角色用户没有使用权限");
+					}
+					it.remove();
+				}
+			}
+		
+			if(roles.isEmpty()) {
+				throw new ApplicationException(2, "用户没有权限");
+			}
+		}
+		
+		logger.debug("json --> " + JsonUtils.toJson(roleVo));
+		session.setAttribute(USER_CODE, userCode);
+		session.setAttribute("loginRoles", roleVo);
+		
+		return AjaxResponse.create(roleVo);
+	}
+	
+	/**
+	 * 功能说明 : 登录系统第二阶段, 设置用户会话信息
+	 *
+	 * @param loginVo
+	 * @param session
+	 * @return
+	 * @author rutine
+	 * @time Nov 21, 2012 8:00:41 PM
+	 */
+	@RequestMapping(value="/login/step/second", method=RequestMethod.POST)
+	public AjaxResponse<?> stepSecond(
+			@RequestBody LoginVo loginVo,
+			HttpSession session) {
+		
+		RoleUserRefVo role = loginVo.getRole();
+		UserAgentVo agent = loginVo.getAgent();
+		logger.debug("role --> {}", JsonUtils.toJson(role));
+		logger.debug("agent --> {}", JsonUtils.toJson(agent));
+		
+		/*
 		 * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
 		 */
 		Long userId = null;
-		String userCode = null;
+		String userCode = (String) session.getAttribute(USER_CODE);
 		String userName = null;
 		String userPhotoUrl = null;
-		try {
-			if(role != null) {
-				userId = role.getUser().getUserId();
-				userCode = role.getUser().getUserCode();
-				userName = role.getUser().getUserName();
-				userPhotoUrl = role.getUser().getUserPhotoUrl();
-			}
-			if(agent != null) { // 有代理
-				BeanUtils.copyProperties( agent, role);
-				userId =  agent.getUserId();
-				userCode =  agent.getUserCode();
-				userName =  agent.getUserName() + "(" + userName + "D)";
-				userPhotoUrl =  agent.getUserPhotoUrl();
-				session.setAttribute(AGENT_ID,  agent.getAgentId()); // 用户代理主键ID
-			} else {
-				session.removeAttribute(AGENT_ID); // 清除用户代理主键ID
-			}
-		} catch (SystemException e) {
-			logger.error("login occur error. ", e);
-			
-			return AjaxResponse.create(500, e.toString());
-		} catch (Exception e) {
-			logger.error("login occur error. ", e);
-			
-			return AjaxResponse.create(500, e.toString());
+		if(role != null) {
+			userId = role.getUser().getUserId();
+			userName = role.getUser().getUserName();
+			userPhotoUrl = role.getUser().getUserPhotoUrl();
+		}
+		if(agent != null) { // 有代理
+			BeanUtils.copyProperties( agent, role);
+			userId =  agent.getUserId();
+			userCode =  agent.getUserCode();
+			userName =  agent.getUserName() + "(" + userName + "D)";
+			userPhotoUrl =  agent.getUserPhotoUrl();
+			session.setAttribute(AGENT_ID,  agent.getAgentId()); // 用户代理主键ID
+		} else {
+			session.removeAttribute(AGENT_ID); // 清除用户代理主键ID
 		}
 		
 		/*
@@ -225,23 +207,14 @@ public class LoginController {
 	}
 	
 	/**
-	 * 功能说明 : 登录系统第二阶段, 加载用户菜单
+	 * 功能说明 : 登录系统第三阶段, 加载用户菜单
 	 *
 	 * @return
 	 * @author rutine
 	 * @time Nov 21, 2012 8:01:00 PM
 	 */
-	@RequestMapping(value="/login/loginSysSecondDo", method=RequestMethod.POST)
-	public String loginSysSecondDo(HttpServletRequest request, HttpSession session, Model model) {
-		Object obj = request.getAttribute("refresh-page");
-		boolean refresh = (obj == null ? true : BooleanUtils.toBoolean(obj.toString()));
-		
-	   logger.debug("---------------------------- refresh page {} ----------------------------------", refresh);
-		
-		if(refresh) {
-			return "index";
-		}
-		
+	@RequestMapping(value="/login/step/third", method=RequestMethod.POST)
+	public AjaxResponse<?> stepThird(HttpServletRequest request, HttpSession session) {	
 		/*
 		 *  8  得到用户自定义的页面布局模板 -- viewportfactory implement
 		 *  9  通过配置XML获得管理员用户，管理员则不需要权限过滤
@@ -250,80 +223,36 @@ public class LoginController {
 		 * 12 常用功能
 		 * 13 portal?
 		 */
-		try {
-			Long userId = (Long) session.getAttribute(USER_ID);
-			Long roleId = (Long) session.getAttribute(ROLE_ID);
-			Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
-			Long organId = (Long) session.getAttribute(ORGAN_ID);
-			String userCode = (String) session.getAttribute(USER_CODE);
-			Long agentId = (Long) session.getAttribute(AGENT_ID);
-	
-			// 加载用户菜单
-			HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode, agentId);
-			List<ModuleMemuVo> firstList = moduleVo.getFirst(); // 第一级
-			Map<String, List<ModuleMemuVo>> secondMap = moduleVo.getSecond(); // 第二级
-			Map<String, List<ModuleMemuVo>> thirdMap = moduleVo.getThird(); // 第三级
-			Map<Long, List<ModuleMemuVo>> fourthMap = moduleVo.getFourth(); // 第四级
-			List<ModuleMemuVo> assignUumUserCommfunList = moduleVo.getCommonFun();
-			String userRowPrivilege = moduleVo.getRow();
-			
-			logger.info("user row privilege : 【{}】", userRowPrivilege);
-			
-			session.setAttribute("firstList", firstList);
-			session.setAttribute("secondMap", secondMap);
-			session.setAttribute("thirdMap", thirdMap);
-			session.setAttribute("fourthMap", fourthMap);
-			session.setAttribute("assignUumUserCommfunList", assignUumUserCommfunList);
-			
-//			// 记录登录日志
-			StringBuilder optContent = new StringBuilder();
-			optContent.append(session.getAttribute(ORGAN_NAME) + "-")
-				.append(session.getAttribute(ROLE_NAME) + "-")
-				.append(session.getAttribute(USER_NAME));
-			
-			loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN, 
-					OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
-		} catch (ApplicationException e) {
-			logger.error("login occur error. ", e);
-			
-			model.addAttribute("failMSG", e.toString());
-		} catch (SystemException e) {
-			logger.error("login occur error. ", e);
-			
-			model.addAttribute("failMSG", e.toString());
-		}
+		Long userId = (Long) session.getAttribute(USER_ID);
+		Long roleId = (Long) session.getAttribute(ROLE_ID);
+		Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
+		Long organId = (Long) session.getAttribute(ORGAN_ID);
+		String userCode = (String) session.getAttribute(USER_CODE);
+		Long agentId = (Long) session.getAttribute(AGENT_ID);
+
+		// 加载用户菜单
+		HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode, agentId);
+		logger.info("user row privilege : 【{}】", moduleVo.getRow());
 		
-		return "index";
-	}
-	
-	@RequestMapping(value="/login/loginForward", method=RequestMethod.GET)
-	public String loginForward(
-			@RequestParam String multiRole, 
-			@RequestParam String userCode,
-			RedirectAttributes redirectAttributes) {
+		session.setAttribute("module", moduleVo);
 		
-		logger.info("多角色用户: " + (isNullOrEmpty(multiRole) ? "否" : "是") + ", usrCode: " + userCode);
+		// 记录登录日志
+		StringBuilder optContent = new StringBuilder();
+		optContent.append(session.getAttribute(ORGAN_NAME) + "-")
+			.append(session.getAttribute(ROLE_NAME) + "-")
+			.append(session.getAttribute(USER_NAME));
 		
-		redirectAttributes.addFlashAttribute("refresh-page", false);
+		loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN, 
+				OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
 		
-		return "redirect:/" + userCode + "/index";
-	}
-	
-	@RequestMapping(value={"/{usr}/index"}, method=RequestMethod.GET)
-	public String index(@PathVariable String usr, HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if(session == null || session.getAttribute(USER_ID) == null) { // session过期, 要求重新登录
-			return "redirect:/login";
-		}
-		
-		return "forward:/login/loginSysSecondDo";
+		return AjaxResponse.create(moduleVo);
 	}
 	
 	@RequestMapping(value="/login/logout")
-	public String logout(HttpSession session) {
+	public AjaxResponse<String> logout(HttpSession session) {
 		session.invalidate();
 		
-		return "redirect:/login";
+		return AjaxResponse.create("成功退出登录");
 	}
 	
 	
@@ -338,5 +267,22 @@ public class LoginController {
 		logger.debug("sessionid : " + cookie);
 		
 		return "default";
+	}
+	
+	public static class LoginVo {
+		private RoleUserRefVo role;
+		private UserAgentVo agent;
+		public RoleUserRefVo getRole() {
+			return role;
+		}
+		public void setRole(RoleUserRefVo role) {
+			this.role = role;
+		}
+		public UserAgentVo getAgent() {
+			return agent;
+		}
+		public void setAgent(UserAgentVo agent) {
+			this.agent = agent;
+		}
 	}
 }

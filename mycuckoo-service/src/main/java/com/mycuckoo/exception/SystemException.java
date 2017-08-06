@@ -8,7 +8,7 @@ package com.mycuckoo.exception;
  * @version 2.0.0
  */
 @SuppressWarnings("serial")
-public class SystemException extends RuntimeException {
+public class SystemException extends Exception {
 
 	public SystemException() {
 		super();

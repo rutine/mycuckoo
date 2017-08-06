@@ -16,6 +16,7 @@ import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.common.utils.XmlOptUtils;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.vo.SystemConfigBean;
 
 /**
@@ -37,7 +38,7 @@ public class SystemConfigService {
 	}
 
 	public void setSystemConfigInfo(SystemConfigBean systemConfigBean, 
-			String userAddDelFlag) throws ApplicationException {
+			String userAddDelFlag) throws SystemException {
 		
 		String fileName = getClusterResourcePath(SystemConfigXmlParse.getInstance().getSysConfigFileXml());
 		String loggerLevel = systemConfigBean.getLoggerLevel();

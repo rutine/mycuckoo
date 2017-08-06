@@ -52,7 +52,7 @@ public class XmlOptUtils {
 			str = out.toString("UTF-8");
 		} catch (Exception e) {
 			logger.error("doc2String occur error : ", e);
-			throw new SystemException("doc2String occur error : ", e);
+			throw new ApplicationException("doc2String occur error : ", e);
 		}
 		return str;
 	}
@@ -71,7 +71,7 @@ public class XmlOptUtils {
 			doc = DocumentHelper.parseText(str);
 		} catch (Exception e) {
 			logger.error("string2Doc occur error : ", e);
-			throw new SystemException("string2Doc occur error : ", e);
+			throw new ApplicationException("string2Doc occur error : ", e);
 		}
 		return doc;
 	}
@@ -86,7 +86,7 @@ public class XmlOptUtils {
 	 * @author rutine
 	 * @time Oct 3, 2012 11:14:43 AM
 	 */
-	public static Document loadXMLFile(String fileName) throws ApplicationException {
+	public static Document loadXMLFile(String fileName) throws SystemException {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
 		File file = new File(fileName);
@@ -114,7 +114,7 @@ public class XmlOptUtils {
 	 * @author rutine
 	 * @time Oct 3, 2012 11:32:33 AM
 	 */
-	public static boolean doc2XMLFile(Document document, String fileName) throws ApplicationException {
+	public static boolean doc2XMLFile(Document document, String fileName) throws SystemException {
 		boolean flag = true;
 		/* 将document中的内容写入文件中 */
 		OutputFormat format =  OutputFormat.createPrettyPrint();
@@ -224,7 +224,7 @@ public class XmlOptUtils {
 		Document doc = null;
 		try {
 			doc = loadXMLFile(filePath);
-		} catch (ApplicationException e) {
+		} catch (SystemException e) {
 			e.printStackTrace();
 		}
 		

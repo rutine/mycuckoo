@@ -32,6 +32,7 @@ import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
@@ -347,7 +348,7 @@ public class ModuleService {
 	}
 
 	@Transactional(readOnly=false)
-	public void updateLabel(String xmlFile, List<String[]> moduleLabelList) throws ApplicationException {
+	public void updateLabel(String xmlFile, List<String[]> moduleLabelList) throws SystemException {
 		Document document = XmlOptUtils.loadXMLFile(getResourcePath() + xmlFile);
 		Element moduleEl = (Element) document.selectSingleNode("/module");
 		Element fieldNamesEl = (Element) document.selectSingleNode("/module/fieldNames");
