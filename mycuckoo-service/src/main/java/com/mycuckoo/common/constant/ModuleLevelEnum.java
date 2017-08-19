@@ -25,7 +25,7 @@ public enum ModuleLevelEnum {
 	public static ModuleLevelEnum value(String level) {
 		ModuleLevelEnum[] levels = ModuleLevelEnum.values();
 		for(ModuleLevelEnum levelEnum : levels) {
-			if(levelEnum.value().equals(level)) {
+			if(levelEnum.value().toString().equals(level)) {
 				return levelEnum;
 			}
 		}

@@ -223,12 +223,19 @@ public class LoginController {
 		 * 12 常用功能
 		 * 13 portal?
 		 */
-		Long userId = (Long) session.getAttribute(USER_ID);
-		Long roleId = (Long) session.getAttribute(ROLE_ID);
-		Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
-		Long organId = (Long) session.getAttribute(ORGAN_ID);
-		String userCode = (String) session.getAttribute(USER_CODE);
-		Long agentId = (Long) session.getAttribute(AGENT_ID);
+//		Long userId = (Long) session.getAttribute(USER_ID);
+//		Long roleId = (Long) session.getAttribute(ROLE_ID);
+//		Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
+//		Long organId = (Long) session.getAttribute(ORGAN_ID);
+//		String userCode = (String) session.getAttribute(USER_CODE);
+//		Long agentId = (Long) session.getAttribute(AGENT_ID);
+		
+		Long userId = 0L;
+		Long roleId = 1L;
+		Long organRoleId = 1L;
+		Long organId = 0L;
+		String userCode = "admin";
+		Long agentId = null;
 
 		// 加载用户菜单
 		HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode, agentId);
@@ -242,8 +249,8 @@ public class LoginController {
 			.append(session.getAttribute(ROLE_NAME) + "-")
 			.append(session.getAttribute(USER_NAME));
 		
-		loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN, 
-				OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
+//		loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN, 
+//				OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
 		
 		return AjaxResponse.create(moduleVo);
 	}

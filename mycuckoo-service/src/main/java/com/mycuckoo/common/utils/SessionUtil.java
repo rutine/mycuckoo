@@ -41,9 +41,11 @@ public final class SessionUtil {
 	
 	public static void setRequest(HttpServletRequest request) {
 		if(request == null) {
+			logger.debug("清理请求对象: {}", localRequest.get());
 			localRequest.remove();
 		} else {
 			localRequest.set(request);
+			logger.debug("缓存请求对象: {}", localRequest.get());
 		}
 	}
 	

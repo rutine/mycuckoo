@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,12 +19,19 @@ import com.mycuckoo.web.vo.AjaxResponse;
 
 public class LoginInteceptor implements HandlerInterceptor {
 	private static Logger logger = LoggerFactory.getLogger(LoginInteceptor.class);
+	private static PathMatcher matcher = new AntPathMatcher();
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
+		SessionUtil.setRequest((HttpServletRequest) request);
+		
+		String uri = request.getRequestURI();
+		if(matcher.match("/login/**", uri)) {
+			return true;
+		}
+			
 		HttpSession session = request.getSession(false);
-		SessionUtil.setRequest(request);
 		if(session == null || SessionUtil.getUserCode() == null) {
 			logger.info("未登录被拦截");
 			

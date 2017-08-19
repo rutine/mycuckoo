@@ -1,12 +1,20 @@
 package com.mycuckoo.web.config;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -15,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.web.util.JsonUtils;
@@ -60,12 +69,38 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		};
 	}
 	
+//	@Bean
+//	public FilterRegistrationBean indexFilterRegistration() {
+//		FilterRegistrationBean registration = new FilterRegistrationBean(new Filter() {
+//			@Override
+//			public void init(FilterConfig config) throws ServletException {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+//					throws IOException, ServletException {
+//				logger.debug("缓存请求{}", request);
+//				SessionUtil.setRequest((HttpServletRequest) request);
+//			}
+//
+//			@Override
+//			public void destroy() {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		
+//		return registration;
+//	}
+	
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new LoginInteceptor())
-			.addPathPatterns("/**")
-			.excludePathPatterns("/login");
+			.addPathPatterns("/**");
+//			.excludePathPatterns("/login/**");
 	}
 
 	@Override
