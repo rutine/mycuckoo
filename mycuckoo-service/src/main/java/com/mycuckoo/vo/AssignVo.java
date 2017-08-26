@@ -10,32 +10,36 @@ import java.util.List;
  * @version 3.0.0
  */
 public class AssignVo<O> {
-	private List<O> assigneds;
-	private List<O> unassigneds;
+	private List<O> assign;
+	private List<O> unassign;
 	private String privilegeScope;
 	
-	public AssignVo(List<O> assigneds, List<O> unassigneds) {
-		this(assigneds, unassigneds, null);
+	public AssignVo(List<O> assign, List<O> unassign) {
+		this(assign, unassign, null);
 	}
 	
-	public AssignVo(List<O> assigneds, List<O> unassigneds, String privilegeScope) {
-		this.assigneds = assigneds;
-		this.unassigneds = unassigneds;
+	public AssignVo(List<O> assign, List<O> unassign, String privilegeScope) {
+		this.assign = assign;
+		this.unassign = unassign;
 		this.privilegeScope = privilegeScope;
 	}
 
-	public List<O> getAssigneds() {
-		return assigneds;
+	public List<O> getAssign() {
+		return assign;
 	}
-	public void setAssigneds(List<O> assigneds) {
-		this.assigneds = assigneds;
+
+	public void setAssign(List<O> assign) {
+		this.assign = assign;
 	}
-	public List<O> getUnassigneds() {
-		return unassigneds;
+
+	public List<O> getUnassign() {
+		return unassign;
 	}
-	public void setUnassigneds(List<O> unassigneds) {
-		this.unassigneds = unassigneds;
+
+	public void setUnassign(List<O> unassign) {
+		this.unassign = unassign;
 	}
+
 	public String getPrivilegeScope() {
 		return privilegeScope;
 	}

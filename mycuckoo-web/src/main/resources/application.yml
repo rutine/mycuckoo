@@ -23,4 +23,5 @@ spring:
 mycuckoo:
   affiche:
     documentUrl: mycuckoo/documents/
-    picUrl: mycuckoo/images/
+    imageUrl: mycuckoo/images/
+  imageUrl: mycuckoo/images/

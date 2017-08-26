@@ -1,39 +1,5 @@
 package com.mycuckoo.web.login;
 
-import static com.mycuckoo.common.constant.Common.AGENT_ID;
-import static com.mycuckoo.common.constant.Common.ORGAN_ID;
-import static com.mycuckoo.common.constant.Common.ORGAN_NAME;
-import static com.mycuckoo.common.constant.Common.ORGAN_ROLE_ID;
-import static com.mycuckoo.common.constant.Common.ROLE_ID;
-import static com.mycuckoo.common.constant.Common.ROLE_NAME;
-import static com.mycuckoo.common.constant.Common.USER_CODE;
-import static com.mycuckoo.common.constant.Common.USER_ID;
-import static com.mycuckoo.common.constant.Common.USER_NAME;
-import static com.mycuckoo.common.constant.Common.USER_PHOTO_URL;
-import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.login.LoginService;
@@ -43,6 +9,21 @@ import com.mycuckoo.vo.uum.RoleUserRefVo;
 import com.mycuckoo.vo.uum.UserAgentVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.mycuckoo.common.constant.Common.*;
+import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
 
 /**
  * 功能说明: 登陆系统Controller
@@ -223,19 +204,12 @@ public class LoginController {
 		 * 12 常用功能
 		 * 13 portal?
 		 */
-//		Long userId = (Long) session.getAttribute(USER_ID);
-//		Long roleId = (Long) session.getAttribute(ROLE_ID);
-//		Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
-//		Long organId = (Long) session.getAttribute(ORGAN_ID);
-//		String userCode = (String) session.getAttribute(USER_CODE);
-//		Long agentId = (Long) session.getAttribute(AGENT_ID);
-		
-		Long userId = 0L;
-		Long roleId = 1L;
-		Long organRoleId = 1L;
-		Long organId = 0L;
-		String userCode = "admin";
-		Long agentId = null;
+		Long userId = (Long) session.getAttribute(USER_ID);
+		Long roleId = (Long) session.getAttribute(ROLE_ID);
+		Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
+		Long organId = (Long) session.getAttribute(ORGAN_ID);
+		String userCode = (String) session.getAttribute(USER_CODE);
+		Long agentId = (Long) session.getAttribute(AGENT_ID);
 
 		// 加载用户菜单
 		HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode, agentId);

@@ -28,7 +28,7 @@ import com.mycuckoo.repository.platform.AccessoryMapper;
 @Transactional(readOnly=true)
 public class AccessoryService {
 	
-	@Value("${mycuckoo.affiche.picUrl}")
+	@Value("${mycuckoo.affiche.imageUrl}")
 	private String afficheAttachmentPath;
 	
 	@Autowired
