@@ -40,7 +40,7 @@ public interface UserMapper extends Repository<User, Long> {
 	 * 
 	 * <p>根据条件分页查询用户</p>
 	 * 
-	 * @param treeId 树节点, 如: 1-0
+	 * @param orgRoleId 树节点, 如: 1-0
 	 * @param orgIds 机构ids
 	 * @param userCode 用户代码 like '%keyword%'
 	 * @param userName 用户名称 like '%keyword%'
@@ -48,7 +48,7 @@ public interface UserMapper extends Repository<User, Long> {
 	 * @return
 	 */
 	Page<User> findByPage2(
-			@Param("orgRoleId") String treeId, 
+			@Param("orgRoleId") Long orgRoleId,
 			@Param("orgIds") Long[] orgIds, 
 			@Param("userCode") String userCode, 
 			@Param("userName") String userName, Pageable page);

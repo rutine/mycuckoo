@@ -44,7 +44,7 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 	@Test
 	public void testFindByPage2() {
 		Page<User> page = mapper.findByPage2(
-				"1-1", 
+				null,
 				Arrays.array(0l, 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l), 
 				"ad", "管理", new PageRequest(0, 10));
 		

@@ -156,10 +156,10 @@ public class UserService {
 		}
 		
 		List<OrgRoleRef> orgRoleList = roleOrganService.findRolesByOrgId(orgId);
-		List<TreeVoExtend> orgList = organService.findNextLevelChildNodesWithCheckbox(orgId, 0);
+		List<TreeVo> orgList = organService.findNextLevelChildNodes(orgId, 0);
 		
-		for(TreeVoExtend treeVoExt : orgList) {
-			treeVoExt.setNocheck(true); // 机构无checkbox
+		for(TreeVo treeVoExt : orgList) {
+//			treeVoExt.setNocheck(true); // 机构无checkbox
 			treeVoExt.setId(treeVoExt.getId() + "_1"); 
 		}
 		
@@ -182,15 +182,31 @@ public class UserService {
 	}
 
 	public Page<UserVo> findByPage(String treeId, String userName, String userCode, Pageable page) {
-		List<Long> orgIdList = new ArrayList<Long>();
+		Long orgId = null;
+		Long flag = 0L;
 		if(!isNullOrEmpty(treeId) && treeId.length() >= 3) {
-			int orgId = Integer.parseInt(treeId.substring(0, treeId.indexOf("_")));
-			List<OrganVo> organVos = organService.findChildNodes(orgId, 0);
-			for(OrganVo vo : organVos) {
-				orgIdList.add(vo.getOrgId());
-			}
+			orgId = Long.parseLong(treeId.substring(0, treeId.indexOf("_")));
+			flag = Long.parseLong(treeId.substring(treeId.indexOf("_") + 1));
 		}
-		Page<User> page2 = userMapper.findByPage2(treeId, orgIdList.toArray(new Long[orgIdList.size()]), userCode, userName, page);
+
+		Page<User> page2 = null;
+		if (flag == 0) { // 根据用户代码和用户名称模糊、分页查询用户记录
+			page2 = userMapper.findByPage2(null, null, userCode, userName, page);
+		} else if (flag == 1) { // 分页查询属于机构ids的用户记录
+			List<OrganVo> organVos = organService.findChildNodes(orgId, 0);
+
+			Long[] orgIds = new Long[organVos.size()];
+			int i = 0;
+			for(OrganVo vo : organVos) {
+				orgIds[i++] = vo.getOrgId();
+			}
+			orgIds = orgIds.length > 0 ? orgIds : null;
+
+			page2 = userMapper.findByPage2(null, orgIds, userCode, userName, page);
+		} else { // 分页查询属于某个角色id的用户记录
+			page2 = userMapper.findByPage2(orgId, null, userCode, userName, page);
+		}
+
 		
 		List<UserVo> vos = Lists.newArrayList();
 		page2.getContent().forEach(entity -> {
@@ -287,7 +303,7 @@ public class UserService {
 //		
 //		return map;
 	
-		Page<User> page2 = userMapper.findByPage2("", null, userCode, userName, page);
+		Page<User> page2 = userMapper.findByPage2(null, null, userCode, userName, page);
 		List<UserVo> vos = Lists.newArrayList();
 		SystemConfigXmlParse.getInstance();
 		List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();

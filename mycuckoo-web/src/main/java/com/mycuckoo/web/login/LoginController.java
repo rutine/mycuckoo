@@ -1,5 +1,7 @@
 package com.mycuckoo.web.login;
 
+import com.mycuckoo.common.constant.LogLevelEnum;
+import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.login.LoginService;
@@ -223,8 +225,8 @@ public class LoginController {
 			.append(session.getAttribute(ROLE_NAME) + "-")
 			.append(session.getAttribute(USER_NAME));
 		
-//		loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN, 
-//				OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
+		loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN,
+				OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
 		
 		return AjaxResponse.create(moduleVo);
 	}

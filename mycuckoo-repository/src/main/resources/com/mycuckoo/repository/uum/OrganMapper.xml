@@ -38,7 +38,7 @@
 		org_id, org_parent, org_simple_name, org_full_name, org_code, 
 		org_address1, org_address2, org_tel1, org_tel2, org_begin_date, 
 		org_type, org_fax, org_postal, org_legal, org_tax_no, 
-		org_reg_no, org_belong_dist, status, memo, creator, createDate
+		org_reg_no, org_belong_dist, status, memo, creator, create_date
 	</sql>
 	
 	<sql id="table">
@@ -178,7 +178,7 @@
 		from 
 			<include refid="table" />
 		where
-			org_parent = #{orgId}
+			org_parent = #{parentId}
 		and
 			org_id not in (0
 				<if test="filterOrgId != null">, #{filterOrgId}</if>

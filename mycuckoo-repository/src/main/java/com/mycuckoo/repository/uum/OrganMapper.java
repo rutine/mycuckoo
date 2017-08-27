@@ -28,7 +28,7 @@ public interface OrganMapper extends Repository<Organ, Long> {
 	/**
 	 * 统计所有下级机构数量
 	 * 
-	 * @param upOrgId 父级机构ID
+	 * @param parentId 父级机构ID
 	 * @return
 	 */
 	int countByParentId(Long parentId);

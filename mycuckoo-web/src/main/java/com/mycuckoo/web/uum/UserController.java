@@ -63,7 +63,7 @@ public class UserController {
 
 
 
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public AjaxResponse<Page<UserVo>> list(
 			@RequestParam(value = "treeId", defaultValue = "-1") String treeId,
 			@RequestParam(value = "userCode", defaultValue = "") String userCode,
@@ -71,6 +71,7 @@ public class UserController {
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
+		System.out.println(3);
 		Page<UserVo> page = userService.findByPage(treeId, userName,
 				userCode, new PageRequest(pageNo - 1, pageSize));
 
@@ -194,7 +195,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Dec 1, 2012 1:45:37 PM
 	 */
-	@RequestMapping(value = "/getChildNodes", method = RequestMethod.GET)
+	@RequestMapping(value = "/get/child/nodes", method = RequestMethod.GET)
 	public AjaxResponse<List<? extends TreeVo>> getChildNodes(
 			@RequestParam(value = "treeId", defaultValue = "0_1") String treeId,
 			@RequestParam(value = "isCheckbox", defaultValue = "0") String isCheckbox) {
