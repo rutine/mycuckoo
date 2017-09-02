@@ -17,12 +17,14 @@ import com.mycuckoo.vo.uum.RoleUserRefVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +73,8 @@ public class UserController {
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
-		System.out.println(3);
+		userCode = StringUtils.isBlank(userCode) ? null : "%" + userCode + "%";
+		userName = StringUtils.isBlank(userName) ? null : "%" + userName + "%";
 		Page<UserVo> page = userService.findByPage(treeId, userName,
 				userCode, new PageRequest(pageNo - 1, pageSize));
 
@@ -122,9 +125,23 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 6, 2013 8:26:57 PM
 	 */
-	@RequestMapping(value = "/createForm", method = RequestMethod.POST)
-	public AjaxResponse<String> postForm(UserVo user) {
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	public AjaxResponse<String> postCreate(@RequestBody  UserVo user) {
 		logger.debug(JsonUtils.toJson(user));
+
+		Assert.hasText(user.getUserCode(), "用户编码必填");
+		Assert.isTrue(user.getUserCode().length() <= 10
+				|| StringUtils.isAlphanumeric(user.getUserCode()),
+				"用户编码长度最大10的字符或数字");
+		Assert.isTrue(StringUtils.isNumeric(user.getUserMobile()), "必须有效电话号");
+		Assert.isTrue(StringUtils.isNumeric(user.getUserMobile2()), "必须有效电话号");
+		Assert.isTrue(StringUtils.isNumeric(user.getUserFamilyTel()), "必须有效电话号");
+		Assert.isTrue(StringUtils.isNumeric(user.getUserOfficeTel()), "必须有效电话号");
+		Assert.notNull(user.getUserAvidate(), "用户有效期不能为空");
+		Assert.hasText(user.getRoleName(), "角色不能为空");
+		Assert.notNull(user.getOrgRoleId(), "角色不能为空");
+		Assert.notNull(user.getUserBelongtoOrg(), "角色不能为空");
+
 
 		user.setCreator(SessionUtil.getUserCode());
 		user.setCreateDate(new Date());
@@ -222,7 +239,7 @@ public class UserController {
 		return AjaxResponse.create(user);
 	}
 
-	@RequestMapping(value = "/viewForm", method = RequestMethod.GET)
+	@RequestMapping(value = "/view", method = RequestMethod.GET)
 	public AjaxResponse<User> getViewForm(@RequestParam long id) {
 		User user = userService.getUserByUserId(id);
 

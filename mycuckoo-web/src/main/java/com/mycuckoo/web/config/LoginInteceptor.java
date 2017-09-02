@@ -27,7 +27,7 @@ public class LoginInteceptor implements HandlerInterceptor {
 		SessionUtil.setRequest((HttpServletRequest) request);
 		
 		String uri = request.getRequestURI();
-		if(matcher.match("/login/**", uri)) {
+		if(matcher.match("/login/step/first", uri)) {
 			return true;
 		}
 			
@@ -37,7 +37,10 @@ public class LoginInteceptor implements HandlerInterceptor {
 			
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json; charset=UTF-8");
-			response.setHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Origin", "http://localhost:3111");
+			response.addHeader("Access-Control-Allow-Methods", "GET, POST");
+			response.addHeader("Access-Control-Allow-Credentials", "true");
+			response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
 			PrintWriter writer = response.getWriter();
 			writer.write(JsonUtils.toJson(AjaxResponse.create(405, "未登录")));
 			writer.flush();

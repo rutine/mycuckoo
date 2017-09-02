@@ -37,6 +37,14 @@ public class GlobalControllerExceptionHandler {
 		return AjaxResponse.create(500, ex.getMessage());
 	}
 
+	@ExceptionHandler(value = {IllegalArgumentException.class})
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public AjaxResponse<String> illegalArgumentException(SystemException ex) {
+		logger.info("全局异常处理", ex);
+
+		return AjaxResponse.create(500, ex.getMessage());
+	}
+
 
 	@ExceptionHandler(value = {Exception.class})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

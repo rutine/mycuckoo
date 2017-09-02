@@ -307,7 +307,8 @@ public class OrganService {
 	private List<Organ> getSubList(List<Organ> listAll, long organId) {
 		List<Organ> newList = Lists.newArrayList();
 		for(Organ organ : listAll) {
-			if(organ.getParentId() == organId) {
+			if(organ.getParentId() != null
+					&& organ.getParentId() == organId) {
 				newList.add(organ);
 			}
 		}
