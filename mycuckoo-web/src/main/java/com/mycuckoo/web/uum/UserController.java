@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -100,19 +99,18 @@ public class UserController {
 	 * 功能说明 : 查询用户的所有角色
 	 * 
 	 * @param id 用户id
-	 * @param model
 	 *
 	 * @author rutine
 	 * @time Oct 13, 2013 4:53:00 PM
 	 */
-	@RequestMapping(value = "/queryUserRolePrivilegeList", method = RequestMethod.POST)
-	public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id, Model model) {
-		List<RoleUserRefVo> roleUserRefList = roleUserService.findByUserId(id);
-		List<? extends TreeVo> orgRoleList = this.getChildNodes("0_1", "Y").getData();
+	@RequestMapping(value = "/list/role/privilege", method = RequestMethod.GET)
+	public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id) {
+		List<RoleUserRefVo> roleUserRefs = roleUserService.findByUserId(id);
+		List<? extends TreeVo> orgRoles = this.getChildNodes("0_1", "Y").getData();
 
 		Map<String, Object> map = Maps.newHashMap();
-		map.put("orgRoleList", orgRoleList);
-		map.put("roleUserRefList", roleUserRefList);
+		map.put("orgRoles", orgRoles);
+		map.put("roleUserRefs", roleUserRefs);
 
 		return AjaxResponse.create(map);
 	}
@@ -224,23 +222,16 @@ public class UserController {
 		return AjaxResponse.create(asyncTreeList);
 	}
 
-	@RequestMapping(value = "/updateForm", method = RequestMethod.POST)
-	public AjaxResponse<String> postUpdateForm(@ModelAttribute("preload") UserVo user) {
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	public AjaxResponse<String> postUpdate(@RequestBody UserVo user) {
 		user.setUserNamePy(user.getUserName());
 		userService.update(user);
 
 		return AjaxResponse.create("修改用户成功");
 	}
 
-	@RequestMapping(value = "/updateForm", method = RequestMethod.GET)
-	public AjaxResponse<User> getUpdateForm(@RequestParam long id) {
-		User user = userService.getUserByUserId(id);
-
-		return AjaxResponse.create(user);
-	}
-
 	@RequestMapping(value = "/view", method = RequestMethod.GET)
-	public AjaxResponse<User> getViewForm(@RequestParam long id) {
+	public AjaxResponse<User> getView(@RequestParam long id) {
 		User user = userService.getUserByUserId(id);
 
 		return AjaxResponse.create(user);
@@ -278,7 +269,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 9:17:05 PM
 	 */
-	@RequestMapping(value = "/saveRolePrivilege", method = RequestMethod.POST)
+	@RequestMapping(value = "/save/role/privilege", method = RequestMethod.GET)
 	public AjaxResponse<String> saveRolePrivilege(
 			@RequestParam long id,
 			@RequestParam long defaultRoleId,
@@ -320,7 +311,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 4:48:55 PM
 	 */
-	@RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
+	@RequestMapping(value = "/reset/password", method = RequestMethod.GET)
 	public AjaxResponse<String> resetPwd(
 			@RequestParam long id,
 			@RequestParam String userName) {

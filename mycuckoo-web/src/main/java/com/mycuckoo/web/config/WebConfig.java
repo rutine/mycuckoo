@@ -25,7 +25,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 			.addMapping("/**")
 			.allowedOrigins("*")
 			.allowedHeaders("*")
-			.allowedMethods("POST", "GET")
+			.allowedMethods("POST", "PUT", "GET")
 			.allowCredentials(true);
 	}
 }

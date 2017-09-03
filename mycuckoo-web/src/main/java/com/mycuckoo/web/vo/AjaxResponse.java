@@ -9,7 +9,7 @@ package com.mycuckoo.web.vo;
  */
 public class AjaxResponse<R> {
 	private int code;
-	private String msg;
+	private String message;
 	private R data;
 	
 	public static <R> AjaxResponse<R> create(R data) {
@@ -18,10 +18,10 @@ public class AjaxResponse<R> {
 		return response;
 	}
 	
-	public static <R> AjaxResponse<R> create(int code, String msg) {
+	public static <R> AjaxResponse<R> create(int code, String message) {
 		AjaxResponse<R> response = new AjaxResponse<>();
 		response.setCode(code);
-		response.setMsg(msg);
+		response.setMessage(message);
 		return response;
 	}
 	
@@ -31,12 +31,15 @@ public class AjaxResponse<R> {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public String getMsg() {
-		return msg;
+
+	public String getMessage() {
+		return message;
 	}
-	public void setMsg(String msg) {
-		this.msg = msg;
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
+
 	public R getData() {
 		return data;
 	}

@@ -38,7 +38,7 @@ public class LoginInteceptor implements HandlerInterceptor {
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json; charset=UTF-8");
 			response.addHeader("Access-Control-Allow-Origin", "http://localhost:3111");
-			response.addHeader("Access-Control-Allow-Methods", "GET, POST");
+			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT");
 			response.addHeader("Access-Control-Allow-Credentials", "true");
 			response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
 			PrintWriter writer = response.getWriter();
