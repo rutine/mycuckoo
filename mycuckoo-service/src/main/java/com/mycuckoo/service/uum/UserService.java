@@ -59,7 +59,7 @@ public class UserService {
 	@Autowired
 	private OrganService organService;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private PrivilegeService privilegeService;
 	@Autowired

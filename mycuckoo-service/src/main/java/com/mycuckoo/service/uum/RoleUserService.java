@@ -41,7 +41,7 @@ public class RoleUserService {
 	@Autowired
 	private RoleUserRefMapper roleUserRefMapper;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private UserService userService;
 	@Autowired

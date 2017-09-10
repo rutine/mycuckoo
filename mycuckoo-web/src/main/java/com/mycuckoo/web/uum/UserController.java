@@ -64,7 +64,7 @@ public class UserController {
 
 
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@GetMapping(value = "/list")
 	public AjaxResponse<Page<UserVo>> list(
 			@RequestParam(value = "treeId", defaultValue = "-1") String treeId,
 			@RequestParam(value = "userCode", defaultValue = "") String userCode,
@@ -88,7 +88,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 1:05:30 PM
 	 */
-	@RequestMapping(value = "/list/user/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/list/user/privilege")
 	public AjaxResponse<AssignVo<TreeVoExtend>> listUserPrivilege(@RequestParam long id) {
 		AssignVo<TreeVoExtend> vo = privilegeService.findSelectAUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
 
@@ -103,7 +103,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 4:53:00 PM
 	 */
-	@RequestMapping(value = "/list/role/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/list/role/privilege")
 	public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id) {
 		List<RoleUserRefVo> roleUserRefs = roleUserService.findByUserId(id);
 		List<? extends TreeVo> orgRoles = this.getChildNodes("0_1", "Y").getData();
@@ -123,7 +123,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 3:03:59 PM
 	 */
-	@RequestMapping(value = "/list/row/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/list/row/privilege")
 	public AjaxResponse<UserRowPrivilegeVo> listRowPrivilege(@RequestParam long id) {
 		UserRowPrivilegeVo vo = privilegeService.findSelectRowPrivilegeByUserId(id);
 
@@ -138,8 +138,8 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 6, 2013 8:26:57 PM
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AjaxResponse<String> postCreate(@RequestBody  UserVo user) {
+	@PutMapping(value = "/create")
+	public AjaxResponse<String> putCreate(@RequestBody  UserVo user) {
 		logger.debug(JsonUtils.toJson(user));
 
 		Assert.hasText(user.getUserCode(), "用户编码必填");
@@ -174,7 +174,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 6, 2013 9:16:06 PM
 	 */
-	@RequestMapping(value = "/disEnable", method = RequestMethod.GET)
+	@GetMapping(value = "/disEnable")
 	public AjaxResponse<String> disEnable(
 			@RequestParam long id,
 			@RequestParam String disEnableFlag) {
@@ -192,7 +192,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 3:07:34 PM
 	 */
-	@RequestMapping(value = "query/users", method = RequestMethod.GET)
+	@GetMapping(value = "query/users")
 	public AjaxResponse<List<UserVo>> queryUsersByUserName(@RequestParam(defaultValue = "") String userName) {
 		List<UserVo> vos =  privilegeService.findUsersByUserName(userName);
 
@@ -207,7 +207,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Dec 1, 2012 1:45:37 PM
 	 */
-	@RequestMapping(value = "/get/child/nodes", method = RequestMethod.GET)
+	@GetMapping(value = "/get/child/nodes")
 	public AjaxResponse<List<? extends TreeVo>> getChildNodes(
 			@RequestParam(value = "treeId", defaultValue = "orgId_1") String treeId,
 			@RequestParam(value = "isCheckbox", defaultValue = "0") String isCheckbox) {
@@ -219,15 +219,15 @@ public class UserController {
 		return AjaxResponse.create(asyncTreeList);
 	}
 
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public AjaxResponse<String> postUpdate(@RequestBody UserVo user) {
+	@PutMapping(value = "/update")
+	public AjaxResponse<String> putUpdate(@RequestBody UserVo user) {
 		user.setUserNamePy(FirstLetter.getFirstLetters(user.getUserName()));
 		userService.update(user);
 
 		return AjaxResponse.create("修改用户成功");
 	}
 
-	@RequestMapping(value = "/view", method = RequestMethod.GET)
+	@GetMapping(value = "/view")
 	public AjaxResponse<User> getView(@RequestParam long id) {
 		User user = userService.getUserByUserId(id);
 
@@ -245,7 +245,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 2:13:42 PM
 	 */
-	@RequestMapping(value = "/save/operation/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/save/operation/privilege")
 	public AjaxResponse<String> saveOperationPrivilege(@RequestParam long id,
                                        @RequestParam String privilegeScope,
                                        @RequestParam Set<String> operationIds) {
@@ -266,7 +266,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 9:17:05 PM
 	 */
-	@RequestMapping(value = "/save/role/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/save/role/privilege")
 	public AjaxResponse<String> saveRolePrivilege(
 			@RequestParam long id,
 			@RequestParam long defaultRoleId,
@@ -288,7 +288,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 4:25:02 PM
 	 */
-	@RequestMapping(value = "/save/row/privilege", method = RequestMethod.GET)
+	@GetMapping(value = "/save/row/privilege")
 	public AjaxResponse<String> saveRowPrivilege(
 			@RequestParam long id,
 			@RequestParam String rowPrivilege,
@@ -308,7 +308,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 4:48:55 PM
 	 */
-	@RequestMapping(value = "/reset/password", method = RequestMethod.GET)
+	@GetMapping(value = "/reset/password")
 	public AjaxResponse<String> resetPwd(
 			@RequestParam long id,
 			@RequestParam String userName) {
@@ -331,7 +331,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Nov 6, 2014 9:13:20 PM
 	 */
-	@RequestMapping(value = "updateUserInfo", method = RequestMethod.POST)
+	@PostMapping(value = "updateUserInfo")
 	public AjaxResponse<String> updateUserInfo(
 			@RequestParam(value = "userPassword") String password,
 			@RequestParam(value = "userNewPassword") String newPassword,
@@ -355,7 +355,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Nov 1, 2014 8:28:55 AM
 	 */
-	@RequestMapping(value = "/upload/photo", method = RequestMethod.POST)
+	@PostMapping(value = "/upload/photo")
 	public AjaxResponse<String> postUploadPhoto(MultipartHttpServletRequest request) {
 		MultipartFile file = request.getFile("file");
 		if(file != null && !file.isEmpty()) {

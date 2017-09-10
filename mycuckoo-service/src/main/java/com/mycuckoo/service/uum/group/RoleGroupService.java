@@ -30,7 +30,7 @@ import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.group.GroupMapper;
 import com.mycuckoo.repository.uum.group.GroupMemberMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.service.uum.RoleOrganService;
+import com.mycuckoo.service.uum.OrganRoleService;
 import com.mycuckoo.service.uum.RoleService;
 
 /**
@@ -53,7 +53,7 @@ public class RoleGroupService {
 	@Autowired
 	private RoleService roleService;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private SystemOptLogService sysOptLogService;
 

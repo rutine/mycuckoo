@@ -42,7 +42,7 @@ public class RoleService {
 	@Autowired
 	private RoleMapper roleMapper;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private PrivilegeService privilegeService;
 	@Autowired

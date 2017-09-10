@@ -70,7 +70,7 @@ public class UserAgentService {
 	@Autowired
 	private RoleUserService roleUserService;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private SystemOptLogService sysOptLogService;
 	@Autowired

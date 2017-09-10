@@ -52,7 +52,7 @@ public class OrganService {
 	@Autowired
 	private OrganMapper organMapper;
 	@Autowired
-	private RoleOrganService roleOrganService;
+	private OrganRoleService roleOrganService;
 	@Autowired
 	private PrivilegeService privilegeService;
 	@Autowired
