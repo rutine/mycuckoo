@@ -74,14 +74,6 @@ public interface UserMapper extends Repository<User, Long> {
 			@Param("userPassword") String userPassword);
 
 	/**
-	 * <p>根据用户名模糊查询用户信息</p>
-	 * 
-	 * @param userName
-	 * @return
-	 */
-	List<User> findByUserName(String userName);
-
-	/**
 	 * <p>根据拼音代码查询用户信息, 返回值只有用户id和用户名称</p>
 	 * 
 	 * <pre>

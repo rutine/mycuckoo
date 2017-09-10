@@ -95,7 +95,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户所属的机构id, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 机构id
 	 * @author rutine
 	 * @time Nov 1, 2014 1:24:53 PM
@@ -107,7 +106,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户所属的机构名称, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 机构名称
 	 * @author rutine
 	 * @time Nov 1, 2014 1:27:53 PM
@@ -119,7 +117,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户所属的机构角色id, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 机构角色id
 	 * @author rutine
 	 * @time Nov 1, 2014 1:30:06 PM
@@ -131,7 +128,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户所属的角色id, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 角色id
 	 * @author rutine
 	 * @time Nov 1, 2014 1:32:22 PM
@@ -143,7 +139,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户所属的角色名称, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return
 	 * @author rutine
 	 * @time Nov 1, 2014 1:33:19 PM
@@ -155,7 +150,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户id, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 用户id
 	 * @author rutine
 	 * @time Nov 1, 2014 1:35:39 PM
@@ -167,7 +161,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户编码, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 用户编码
 	 * @author rutine
 	 * @time Nov 1, 2014 1:36:38 PM
@@ -179,7 +172,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户名称, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 用户名称
 	 * @author rutine
 	 * @time Nov 1, 2014 1:37:30 PM
@@ -191,7 +183,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户头像, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return 用户头像
 	 * @author rutine
 	 * @time Nov 1, 2014 1:38:39 PM
@@ -203,7 +194,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户一级菜单, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return
 	 * @author rutine
 	 * @time Nov 2, 2014 12:11:23 PM
@@ -215,7 +205,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户二级菜单, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return
 	 * @author rutine
 	 * @time Nov 2, 2014 12:13:21 PM
@@ -227,7 +216,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户三级菜单, 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return
 	 * @author rutine
 	 * @time Nov 2, 2014 12:13:53 PM
@@ -239,7 +227,6 @@ public final class SessionUtil {
 	/**
 	 * 功能说明 : 获取用户四级菜单(操作按钮), 此值登录后存入会话
 	 * 
-	 * @param session
 	 * @return
 	 * @author rutine
 	 * @time Nov 4, 2014 8:36:48 PM

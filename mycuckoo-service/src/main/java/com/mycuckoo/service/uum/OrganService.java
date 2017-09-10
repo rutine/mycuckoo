@@ -230,7 +230,7 @@ public class OrganService {
 	}
 
 	public List<Organ> findByOrgIds(Long[] orgIds) {
-		if(orgIds == null || orgIds.length == 0) return null;
+		if(orgIds == null || orgIds.length == 0) return Lists.newArrayList();
 		
 		return organMapper.findByOrgIds(orgIds);
 	}

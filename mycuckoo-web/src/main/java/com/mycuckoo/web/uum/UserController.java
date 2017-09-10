@@ -1,9 +1,12 @@
 package com.mycuckoo.web.uum;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.utils.CommonUtils;
+import com.mycuckoo.common.utils.FirstLetter;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
@@ -14,6 +17,7 @@ import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.TreeVo;
 import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -22,16 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.mycuckoo.common.constant.Common.*;
@@ -88,7 +88,7 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 13, 2013 1:05:30 PM
 	 */
-	@RequestMapping(value = "/queryUserPrivilegeList", method = RequestMethod.POST)
+	@RequestMapping(value = "/list/user/privilege", method = RequestMethod.GET)
 	public AjaxResponse<AssignVo<TreeVoExtend>> listUserPrivilege(@RequestParam long id) {
 		AssignVo<TreeVoExtend> vo = privilegeService.findSelectAUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
 
@@ -113,6 +113,21 @@ public class UserController {
 		map.put("roleUserRefs", roleUserRefs);
 
 		return AjaxResponse.create(map);
+	}
+
+	/**
+	 * 功能说明 : 根据用户ID 已分配行权限
+	 *
+	 * @param id
+	 * @return
+	 * @author rutine
+	 * @time Oct 20, 2013 3:03:59 PM
+	 */
+	@RequestMapping(value = "/list/row/privilege", method = RequestMethod.GET)
+	public AjaxResponse<UserRowPrivilegeVo> listRowPrivilege(@RequestParam long id) {
+		UserRowPrivilegeVo vo = privilegeService.findSelectRowPrivilegeByUserId(id);
+
+		return AjaxResponse.create(vo);
 	}
 
 	/**
@@ -177,29 +192,11 @@ public class UserController {
 	 * @author rutine
 	 * @time Oct 20, 2013 3:07:34 PM
 	 */
-	@RequestMapping(value = "queryUsersByUserName", method = RequestMethod.GET)
+	@RequestMapping(value = "query/users", method = RequestMethod.GET)
 	public AjaxResponse<List<UserVo>> queryUsersByUserName(@RequestParam(defaultValue = "") String userName) {
 		List<UserVo> vos =  privilegeService.findUsersByUserName(userName);
 
 		return AjaxResponse.create(vos);
-	}
-
-	/**
-	 * 功能说明 : 根据用户ID 已分配行权限
-	 * 
-	 * @param id
-	 * @return
-	 * @author rutine
-	 * @time Oct 20, 2013 3:03:59 PM
-	 */
-	@RequestMapping(value = "/getSelectRowPrivilege", method = RequestMethod.GET)
-	public AjaxResponse<Map<String, Object>> getSelectRowPrivilege(@RequestParam long id) {
-		Map map = privilegeService.findSelectRowPrivilegeByUserId(id);
-		Map<String, Object> newMap = new HashMap<String, Object>();
-		newMap.put("rowList", map.get(USER));
-		newMap.put("rowPrivilege", map.get(PRIVILEGE_SCOPE));
-
-		return AjaxResponse.create(newMap);
 	}
 
 	/**
@@ -212,7 +209,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/get/child/nodes", method = RequestMethod.GET)
 	public AjaxResponse<List<? extends TreeVo>> getChildNodes(
-			@RequestParam(value = "treeId", defaultValue = "0_1") String treeId,
+			@RequestParam(value = "treeId", defaultValue = "orgId_1") String treeId,
 			@RequestParam(value = "isCheckbox", defaultValue = "0") String isCheckbox) {
 
 		List<? extends TreeVo> asyncTreeList = userService.findNextLevelChildNodes(treeId, isCheckbox);
@@ -224,7 +221,7 @@ public class UserController {
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public AjaxResponse<String> postUpdate(@RequestBody UserVo user) {
-		user.setUserNamePy(user.getUserName());
+		user.setUserNamePy(FirstLetter.getFirstLetters(user.getUserName()));
 		userService.update(user);
 
 		return AjaxResponse.create("修改用户成功");
@@ -242,18 +239,18 @@ public class UserController {
 	 * 
 	 * @param id 用户id
 	 * @param privilegeScope 权限范围
-	 * @param optIdList 模块id集合
+	 * @param operationIds 模块id集合
 	 *
 	 * @return json消息
 	 * @author rutine
 	 * @time Oct 13, 2013 2:13:42 PM
 	 */
-	@RequestMapping(value = "/saveOptPrivilege", method = RequestMethod.POST)
-	public AjaxResponse<String> saveOptPrivilege(@RequestParam long id,
+	@RequestMapping(value = "/save/operation/privilege", method = RequestMethod.GET)
+	public AjaxResponse<String> saveOperationPrivilege(@RequestParam long id,
                                        @RequestParam String privilegeScope,
-                                       @RequestParam Set<String> optIdList) {
+                                       @RequestParam Set<String> operationIds) {
 
-		List<String> list = new ArrayList<String>(optIdList);
+		List<String> list = Lists.newArrayList(operationIds);
 		privilegeService.save(list, id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_USR, privilegeScope);
 
 		return AjaxResponse.create("为用户分配操作权限成功");
@@ -264,7 +261,7 @@ public class UserController {
 	 * 
 	 * @param id 用户id
 	 * @param defaultRoleId 默认角色id
-	 * @param roleIdList 角色id集合
+	 * @param roleIds 角色id集合
 	 *
 	 * @author rutine
 	 * @time Oct 13, 2013 9:17:05 PM
@@ -273,9 +270,9 @@ public class UserController {
 	public AjaxResponse<String> saveRolePrivilege(
 			@RequestParam long id,
 			@RequestParam long defaultRoleId,
-			@RequestParam Set<Long> roleIdList) {
+			@RequestParam Set<Long> roleIds) {
 
-		List<Long> list = new ArrayList<Long>(roleIdList);
+		List<Long> list = new ArrayList<>(roleIds);
 		roleUserService.save2(id, list, defaultRoleId);
 
 		return AjaxResponse.create("为用户分配角色成功");
@@ -286,18 +283,18 @@ public class UserController {
 	 * 
 	 * @param id
 	 * @param rowPrivilege
-	 * @param roleIdList
+	 * @param rowIds
 	 *
 	 * @author rutine
 	 * @time Oct 20, 2013 4:25:02 PM
 	 */
-	@RequestMapping(value = "/saveRowPrivilege", method = RequestMethod.POST)
+	@RequestMapping(value = "/save/row/privilege", method = RequestMethod.GET)
 	public AjaxResponse<String> saveRowPrivilege(
 			@RequestParam long id,
 			@RequestParam String rowPrivilege,
-			@RequestParam Set<String> roleIdList) {
+			@RequestParam Set<String> rowIds) {
 
-		List<String> list = new ArrayList<>(roleIdList);
+		List<String> list = new ArrayList<>(rowIds);
 		privilegeService.save(list, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_USR, rowPrivilege);
 
 		return AjaxResponse.create("为用户分配行权限成功");
@@ -340,20 +337,13 @@ public class UserController {
 			@RequestParam(value = "userNewPassword") String newPassword,
 			@RequestParam(value = "userConfirmPassword") String confirmPassword) {
 		
-		
-		if(!newPassword.equals(confirmPassword)) {
-			return AjaxResponse.create(500, "两次输入的新密码不一致");
-		} else {
-			Long userId = SessionUtil.getUserId();
-			password = CommonUtils.encrypt(password);
-			User user = userService.getUserByUserId(userId);
-			if(password.equals(user.getUserPassword())) {
-				user.setUserPassword(CommonUtils.encrypt(newPassword));
-				userService.updateUserInfo(user);
-			} else {
-				return AjaxResponse.create(500, "密码错误");
-			}
-		}
+		Assert.state(newPassword.equals(confirmPassword), "两次输入的新密码不一致");
+		password = CommonUtils.encrypt(password);
+		User user = userService.getUserByUserId(SessionUtil.getUserId());
+		Assert.state(!password.equals(user.getUserPassword()), "密码错误");
+
+		user.setUserPassword(CommonUtils.encrypt(newPassword));
+		userService.updateUserInfo(user);
 		
 		return AjaxResponse.create("修改成功");
 	}
@@ -383,29 +373,10 @@ public class UserController {
 				userService.updateUserPhotoUrl(photoUrl, userId);
 				request.getSession().setAttribute(USER_PHOTO_URL, photoUrl);
 			} catch (IOException e) {
-				logger.error("上传头像失败！");
-
-				AjaxResponse.create(500, "上传头像失败!");
+				throw new ApplicationException("上传头像失败", e);
 			}
 		}
 		
 		return AjaxResponse.create("上传头像成功");
-	}
-
-
-	/**
-	 * 设置自定义属性转换器
-	 * 
-	 * @param request the current request
-	 * @param binder the data binder
-	 */
-	@InitBinder
-	public void InitBinder(HttpServletRequest request, ServletRequestDataBinder binder) {
-		// 不要删除下行注释! 将来"yyyy-MM-dd"将配置到properties文件中
-		// SimpleDateFormat dateFormat = new SimpleDateFormat(getText("date.format", request.getLocale()));
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		dateFormat.setLenient(false);
-
-		binder.registerCustomEditor(Date.class, null, new CustomDateEditor(dateFormat, true));
 	}
 }

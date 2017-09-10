@@ -1,25 +1,5 @@
 package com.mycuckoo.service.uum;
 
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_USR;
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
-import static com.mycuckoo.common.constant.ServiceVariable.ENABLE;
-import static com.mycuckoo.common.constant.ServiceVariable.ROLE_CSS;
-import static com.mycuckoo.common.constant.ServiceVariable.USER_MGR;
-import static com.mycuckoo.common.constant.ServiceVariable.Y;
-import static com.mycuckoo.common.utils.CommonUtils.encrypt;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
@@ -40,6 +20,22 @@ import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.uum.OrganVo;
 import com.mycuckoo.vo.uum.RoleUserRefVo;
 import com.mycuckoo.vo.uum.UserVo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mycuckoo.common.constant.Common.OWNER_TYPE_USR;
+import static com.mycuckoo.common.constant.Common.SPLIT;
+import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.common.utils.CommonUtils.encrypt;
+import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 用户业务类
@@ -132,7 +128,8 @@ public class UserService {
 	}
 
 	public List<UserVo> findByUserName(String userName) {
-		List<User> list =  userMapper.findByUserName(userName);
+		userName = "%" + userName + "%";
+		List<User> list =  userMapper.findByCodeAndName(null, userName);
 		
 		List<UserVo> vos = Lists.newArrayList();
 		list.forEach(entity -> {
@@ -149,18 +146,23 @@ public class UserService {
 	}
 
 	public List<? extends TreeVo> findNextLevelChildNodes(String treeId, String isCheckbox) {
-		int temp = treeId.indexOf("_");
+		int index = treeId.indexOf("_");
 		int orgId = 0;
-		if(temp > 0) {
-			orgId = Integer.parseInt(treeId.substring(0, temp));
+		if(index != -1) {
+			orgId = Integer.parseInt(treeId.substring(index + 1));
 		}
 		
 		List<OrgRoleRef> orgRoleList = roleOrganService.findRolesByOrgId(orgId);
 		List<TreeVo> orgList = organService.findNextLevelChildNodes(orgId, 0);
-		
-		for(TreeVo treeVoExt : orgList) {
-//			treeVoExt.setNocheck(true); // 机构无checkbox
-			treeVoExt.setId(treeVoExt.getId() + "_1"); 
+		List<TreeVoExtend> vos = Lists.newArrayList();
+
+		for(TreeVo treeVo : orgList) {
+			TreeVoExtend treeVoExt = new TreeVoExtend();
+			BeanUtils.copyProperties(treeVo, treeVoExt);
+			// 机构无checkbox
+			treeVoExt.setNocheck(true);
+			treeVoExt.setId("orgId_" + treeVoExt.getId());
+			vos.add(treeVoExt);
 		}
 		
 		for(OrgRoleRef orgRoleRef : orgRoleList) {
@@ -171,40 +173,39 @@ public class UserService {
 				treeVoExt.setNocheck(true);
 				treeVoExt.setIconSkin(ROLE_CSS);
 			} 
-			treeVoExt.setId(orgRoleRef.getOrgRoleId() + "_2");
+			treeVoExt.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
 			treeVoExt.setText(role.getRoleName());
 			treeVoExt.setLeaf(true);
-			
-			orgList.add(treeVoExt);
+			vos.add(treeVoExt);
 		}
 		
-		return orgList;
+		return vos;
 	}
 
 	public Page<UserVo> findByPage(String treeId, String userName, String userCode, Pageable page) {
-		Long orgId = null;
-		Long flag = 0L;
-		if(!isNullOrEmpty(treeId) && treeId.length() >= 3) {
-			orgId = Long.parseLong(treeId.substring(0, treeId.indexOf("_")));
-			flag = Long.parseLong(treeId.substring(treeId.indexOf("_") + 1));
+		Long orgRoleId = null;
+		String flag = null;
+		if(!isNullOrEmpty(treeId) && treeId.indexOf("_") != -1) {
+			int index = treeId.indexOf("_");
+			orgRoleId = Long.parseLong(treeId.substring(index + 1));
+			flag = treeId.substring(0, index);
 		}
 
 		Page<User> page2 = null;
-		if (flag == 0) { // 根据用户代码和用户名称模糊、分页查询用户记录
+		if (flag == null) { // 根据用户代码和用户名称模糊、分页查询用户记录
 			page2 = userMapper.findByPage2(null, null, userCode, userName, page);
-		} else if (flag == 1) { // 分页查询属于机构ids的用户记录
-			List<OrganVo> organVos = organService.findChildNodes(orgId, 0);
+		} else if (StringUtils.equals(flag, "orgId")) { // 分页查询属于机构ids的用户记录
+			List<OrganVo> organVos = organService.findChildNodes(orgRoleId, 0);
 
-			Long[] orgIds = new Long[organVos.size()];
-			int i = 0;
+			List<Long> orgIds = Lists.newArrayList();
 			for(OrganVo vo : organVos) {
-				orgIds[i++] = vo.getOrgId();
+				orgIds.add(vo.getOrgId());
 			}
-			orgIds = orgIds.length > 0 ? orgIds : null;
+			Long[] arr = orgIds.isEmpty() ? null : orgIds.toArray(new Long[] {});
 
-			page2 = userMapper.findByPage2(null, orgIds, userCode, userName, page);
+			page2 = userMapper.findByPage2(null, arr, userCode, userName, page);
 		} else { // 分页查询属于某个角色id的用户记录
-			page2 = userMapper.findByPage2(orgId, null, userCode, userName, page);
+			page2 = userMapper.findByPage2(orgRoleId, null, userCode, userName, page);
 		}
 
 		
@@ -230,21 +231,17 @@ public class UserService {
 		return vos;
 	}
 
-	public UserVo getUserByUserCodeAndPwd(String userCode, String password) throws ApplicationException {
+	public UserVo getUserByUserCodeAndPwd(String userCode, String password) {
 		if(isNullOrEmpty(userCode) || isNullOrEmpty(userCode)) return null;
-		try {
-			User user = userMapper.getByUserCodeAndPwd(userCode, password);
-			if(user == null) {
-				return null;
-			}
-			UserVo vo = new UserVo();
-			BeanUtils.copyProperties(user, vo);
-			return vo;
-		} catch(Exception e) {
-			logger.error("用户编码重复错误!", e);
-			
-			throw new ApplicationException("用户编码已存在错误!");
+
+		User user = userMapper.getByUserCodeAndPwd(userCode, password);
+		if(user == null) {
+			throw new ApplicationException("用户不存在错误!");
 		}
+		UserVo vo = new UserVo();
+		BeanUtils.copyProperties(user, vo);
+
+		return vo;
 	}
 
 	public UserVo getUserByUserId(long userId) {
@@ -368,7 +365,7 @@ public class UserService {
 		userMapper.update(user2); // 保存用户
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional
 	public void updateUserPhotoUrl(String photoUrl, long userId) throws ApplicationException {
 		User user = new User();
 		user.setUserId(userId);
@@ -376,7 +373,7 @@ public class UserService {
 		userMapper.update(user);
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional
 	public void resetPwdByUserId(String userDefaultPwd, String userName, long userId) 
 			throws ApplicationException {
 		

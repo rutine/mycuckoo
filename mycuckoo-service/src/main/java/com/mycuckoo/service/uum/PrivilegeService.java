@@ -1,34 +1,5 @@
 package com.mycuckoo.service.uum;
 
-import static com.mycuckoo.common.constant.Common.ORGAN_ID;
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_ARR;
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_ROL;
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_USR;
-import static com.mycuckoo.common.constant.Common.PRIVILEGE_SCOPE;
-import static com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ARR;
-import static com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_OPT;
-import static com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ROW;
-import static com.mycuckoo.common.constant.Common.ROLE_ID;
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.Common.USER;
-import static com.mycuckoo.common.constant.Common.USER_ID;
-import static com.mycuckoo.common.constant.ServiceVariable.MOD_ASSIGN_OPT;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
@@ -39,19 +10,30 @@ import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMemu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.uum.OrgRoleRef;
+import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.ModuleOperationVo;
-import com.mycuckoo.vo.SystemConfigBean;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.*;
 import com.mycuckoo.vo.platform.ModuleMemuVo;
 import com.mycuckoo.vo.uum.OrganVo;
+import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+import static com.mycuckoo.common.constant.Common.*;
+import static com.mycuckoo.common.constant.ServiceVariable.MOD_ASSIGN_OPT;
+import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 权限业务类
@@ -109,14 +91,14 @@ public class PrivilegeService {
 	public ModuleOperationVo filterModOpt(List<ModOptRef> modOptRefList, boolean isTreeFlag) {
 		Map<Long, List<ModuleMemuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
 		List<ModuleMemuVo> moduleMemuList = Lists.newArrayList(); // 模块菜单list
-		
+
 		for(ModOptRef modOptRef : modOptRefList) {
 			ModuleMemu moduleMemu3 = modOptRef.getModuleMemu(); // 第三级菜单
 			ModuleMemuVo vo3 = new ModuleMemuVo();
 			BeanUtils.copyProperties(moduleMemu3, vo3);
-			
-			Operate operate = modOptRef.getOperate();
+
 			// 操作按钮
+			Operate operate = modOptRef.getOperate();
 			ModuleMemuVo moduleMemuOpt = new ModuleMemuVo();
 			moduleMemuOpt.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
 			moduleMemuOpt.setModName(operate.getOperateName());
@@ -159,7 +141,8 @@ public class PrivilegeService {
 				moduleMemuList.add(vo3);
 				ModuleMemuVo vo2 = new ModuleMemuVo(vo3.getParentId()); // 第二级菜单
 				if(!moduleMemuList.contains(vo2)) {
-					moduleMemuList.add(platformServiceFacade.getModule(vo2.getModuleId()));
+					vo2 = platformServiceFacade.getModule(vo2.getModuleId());
+					moduleMemuList.add(vo2);
 					ModuleMemuVo vo1 = new ModuleMemuVo(vo2.getParentId()); // 第一级菜单
 					if(!moduleMemuList.contains(vo1)) {
 						moduleMemuList.add(platformServiceFacade.getModule(vo1.getModuleId()));
@@ -213,9 +196,10 @@ public class PrivilegeService {
 		List<ModOptRef> assignedModOptList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
 		// 查找所有模块操作关系
 		List<ModOptRef> allModOptList = platformServiceFacade.findAllModOptRefs();
-		allModOptList.removeAll(assignedModOptList);
+		List<ModOptRef> allModOptList2 = Lists.newArrayList(allModOptList);
+		allModOptList2.removeAll(assignedModOptList);
 		// 未分配的权限
-		List<ModOptRef> unassignedModOptList = allModOptList;
+		List<ModOptRef> unassignedModOptList = allModOptList2;
 		//将操作转化成列表数据
 		List<ModuleMemuVo> assignedModMenuList = this.filterModOpt(assignedModOptList, true).getModuleMenu();
 		List<ModuleMemuVo>  unassignedModMenuList = this.filterModOpt(unassignedModOptList, true).getModuleMenu();
@@ -227,7 +211,7 @@ public class PrivilegeService {
 				privilegeScope);
 	}
 
-	public Map findSelectRowPrivilegeByUserId(long userId) {
+	public UserRowPrivilegeVo findSelectRowPrivilegeByUserId(long userId) {
 		// 查找已经分配的权限
 		Long[] userIds = new Long[] { userId };
 		String[] ownerTypes = new String[] { OWNER_TYPE_USR };
@@ -235,40 +219,50 @@ public class PrivilegeService {
 		List<Privilege> privilegeOptList = privilegeMapper.findByOwnIdAndPrivilegeType(userIds, ownerTypes, privilegeTypes);
 		List<Long> resourceIdList = new ArrayList<Long>();
 		String privilegeScope = "";
-		for(Privilege uumPrivilege : privilegeOptList) {
-			String resourceId = uumPrivilege.getResourceId();
+		for(Privilege privilege : privilegeOptList) {
+			String resourceId = privilege.getResourceId();
 			resourceIdList.add(Long.parseLong(resourceId));
 			if("".endsWith(privilegeScope)) {
-				privilegeScope = uumPrivilege.getPrivilegeScope();
+				privilegeScope = privilege.getPrivilegeScope();
 			}
 		}
 		
 		Long[] resourceIdArray = resourceIdList.toArray(new Long[resourceIdList.size()]);
-		List userInfoList = new ArrayList();
+		final List<UserRowPrivilegeVo.RowVo> rowVos = new ArrayList();
 		if(PrivilegeScopeEnum.USER.value().equals(privilegeScope)) {
 			List userList = userService.findByUserIds(resourceIdArray);
-			userInfoList = userList;
+			userList.forEach(item -> {
+				Map map = (Map) item;
+				UserRowPrivilegeVo.RowVo vo = new UserRowPrivilegeVo.RowVo();
+				vo.setId((Long) map.get("userId"));
+				vo.setName((String) map.get("userName"));
+				rowVos.add(vo);
+			});
 		} else if(PrivilegeScopeEnum.ROLE.value().equals(privilegeScope)) {
 			List<OrgRoleRef> orgRoleRefList = roleOrganService.findByOrgRoleIds(resourceIdArray);
-			for(OrgRoleRef uumOrgRoleRef : orgRoleRefList) {
-				long orgRoleId = uumOrgRoleRef.getOrgRoleId();
-				String orgName = uumOrgRoleRef.getOrgan().getOrgSimpleName();
-				String roleName = uumOrgRoleRef.getRole().getRoleName();
-				Object[] orgObj = new Object[2];
-				orgObj[0] = orgRoleId;
-				orgObj[1] = orgName + "-" + roleName;
-				userInfoList.add(orgObj);
-			}
+			orgRoleRefList.forEach(item -> {
+				String orgName = item.getOrgan().getOrgSimpleName();
+				String roleName = item.getRole().getRoleName();
+				UserRowPrivilegeVo.RowVo vo = new UserRowPrivilegeVo.RowVo();
+				vo.setId(item.getOrgRoleId());
+				vo.setName(orgName + "-" + roleName);
+				rowVos.add(vo);
+			});
 		} else {
-			List organList = organService.findByOrgIds(resourceIdArray);
-			userInfoList = organList;
+			List<Organ> organList = organService.findByOrgIds(resourceIdArray);
+			organList.forEach(organ -> {
+				UserRowPrivilegeVo.RowVo vo = new UserRowPrivilegeVo.RowVo();
+				vo.setId(organ.getOrgId());
+				vo.setName(organ.getOrgSimpleName());
+				rowVos.add(vo);
+			});
 		}
+
+		UserRowPrivilegeVo vo = new UserRowPrivilegeVo();
+		vo.setRow(rowVos);
+		vo.setRowPrivilege(privilegeScope);
 		
-		Map map = new HashMap();
-		map.put(USER, userInfoList);
-		map.put(PRIVILEGE_SCOPE, privilegeScope);
-		
-		return map;
+		return vo;
 	}
 
 	public boolean existsSpecialPrivilegeByUserId(long userId) {
