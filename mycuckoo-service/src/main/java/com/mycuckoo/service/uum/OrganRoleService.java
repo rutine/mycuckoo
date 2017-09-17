@@ -6,6 +6,7 @@ import static com.mycuckoo.common.constant.ServiceVariable.ROLE_ASSIGN;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +110,13 @@ public class OrganRoleService {
 	public Page<Role> findUnselectedRolesByOrgId(long orgId, Pageable page) { 
 		List<Role> allRoleList = roleService.findAll();
 		List<Role> selectedRoleList = findSelectedRoleByOrgId(orgId);
-		allRoleList.removeAll(selectedRoleList);
+		if(!selectedRoleList.isEmpty()) {
+			List<Role> roles = Lists.newArrayList();
+			roles.addAll(allRoleList);
+			roles.removeAll(selectedRoleList);
+			allRoleList = roles;
+		}
+
 		List<Role> newRoleList = new ArrayList<Role>();
 		int count = 0;
 		for (Role role : allRoleList) {

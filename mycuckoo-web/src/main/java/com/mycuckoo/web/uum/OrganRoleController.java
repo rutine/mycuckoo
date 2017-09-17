@@ -6,6 +6,7 @@ import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.uum.OrganRoleService;
 import com.mycuckoo.web.vo.AjaxResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class OrganRoleController {
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
+		roleName = StringUtils.isNotBlank(roleName) ? "%" + roleName + "%" : null;
+
 		Page<Role> page = roleOrganService.findSelectedRolesByOrgId(treeId,
 				roleName, new PageRequest(pageNo - 1, pageSize));
 
@@ -82,23 +85,20 @@ public class OrganRoleController {
 	/**
 	 * 功能说明 : 创建新的机构角色关系
 	 *
-	 * @param id         机构id
-	 * @param roleIdList 角色id集合
+	 * @param putVo         机构id 角色id集合
 	 * @return json 消息
 	 * @author rutine
 	 * @time Sep 15, 2013 6:07:06 PM
 	 */
 	@PutMapping(value = "/save")
-	public AjaxResponse<String> save(
-			@RequestParam long id,
-			@RequestParam Set<Long> roleIdList) {
+	public AjaxResponse<String> save(@RequestBody AssignRolePutVo putVo) {
 
-		logger.debug("orgId ---> {}, roleIdList ---> {}", id, roleIdList);
+		logger.debug("orgId ---> {}, roleIdList ---> {}", putVo.getId(), putVo.getRoleIdList());
 
 		// 去掉重复
 		List<Long> list = new ArrayList<Long>();
-		list.addAll(roleIdList);
-		roleOrganService.save(id, list);
+		list.addAll(putVo.roleIdList);
+		roleOrganService.save(putVo.id, list);
 
 		return AjaxResponse.create("成功为机构分配角色");
 	}
@@ -122,4 +122,25 @@ public class OrganRoleController {
 		return AjaxResponse.create("成功删除机构角色");
 	}
 
+
+	static class AssignRolePutVo {
+		private long id;
+		private Set<Long> roleIdList;
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public Set<Long> getRoleIdList() {
+			return roleIdList;
+		}
+
+		public void setRoleIdList(Set<Long> roleIdList) {
+			this.roleIdList = roleIdList;
+		}
+	}
 }
