@@ -9,14 +9,11 @@ import com.mycuckoo.vo.TreeVo;
 import com.mycuckoo.vo.uum.OrganVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,23 +45,22 @@ public class OrganController {
 	 * @param orgName 机构名称
 	 * @param pageNo 第几页
 	 * @param pageSize 每页显示数量, 暂时没有使用
-	 * @param model 业务数据
 	 * @return
 	 * @author rutine
 	 * @time Jul 2, 2013 3:31:22 PM
 	 */
-	@RequestMapping(value = "/list")
+	@GetMapping(value = "/list")
 	public AjaxResponse<Page<OrganVo>> list(
 			@RequestParam(value = "treeId", defaultValue = "-1") long treeId,
 			@RequestParam(value = "orgCode", defaultValue = "") String orgCode,
 			@RequestParam(value = "orgName", defaultValue = "") String orgName,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize,
-			Model model) {
+			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+
+		orgCode = StringUtils.isNotBlank(orgCode) ? "%" + orgCode + "%" : null;
+		orgName = StringUtils.isNotBlank(orgName) ? "%" + orgName + "%" : null;
 
 		Page<OrganVo> page = organService.findByPage(treeId, orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
-		model.addAttribute("page", page);
-		model.addAttribute("searchParams", "orgCode=" + orgCode + "&orgName=" + orgName);
 
 		return AjaxResponse.create(page);
 	}
@@ -77,8 +73,8 @@ public class OrganController {
 	 * @author rutine
 	 * @time Jul 2, 2013 3:35:51 PM
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AjaxResponse<String> postCreate(Organ organ) {
+	@PutMapping(value = "/create")
+	public AjaxResponse<String> putCreate(@RequestBody Organ organ) {
 		
 		logger.debug(JsonUtils.toJson(organ));
 
@@ -97,7 +93,7 @@ public class OrganController {
 	 * @author rutine
 	 * @time Jul 2, 2013 3:38:46 PM
 	 */
-	@RequestMapping(value = "/disEnable", method = RequestMethod.GET)
+	@GetMapping(value = "/disEnable")
 	public AjaxResponse<String> disEnable(
 			@RequestParam long id,
 			@RequestParam String disEnableFlag) {
@@ -116,7 +112,7 @@ public class OrganController {
 	 * @author rutine
 	 * @time Jul 2, 2013 3:40:18 PM
 	 */
-	@RequestMapping(value = "/get/child/nodes", method = RequestMethod.GET)
+	@GetMapping(value = "/get/child/nodes")
 	public AjaxResponse<List<TreeVo>> getChildNodes(
 			@RequestParam(value = "treeId", defaultValue = "0") long id,
 			@RequestParam(value = "filterOrgId", defaultValue = "0") long filterId) {
@@ -136,8 +132,8 @@ public class OrganController {
 	 * @author rutine
 	 * @time Jul 2, 2013 3:42:51 PM
 	 */
-	@RequestMapping(value = "/updateForm", method = RequestMethod.POST)
-	public AjaxResponse<String> postUpdateForm(Organ organ) {
+	@PutMapping(value = "/update")
+	public AjaxResponse<String> postUpdate(@RequestBody Organ organ) {
 
 		organService.update(organ);
 
@@ -145,8 +141,8 @@ public class OrganController {
 	}
 
 
-	@RequestMapping(value = "/viewForm", method = RequestMethod.GET)
-	public AjaxResponse<Organ> getViewForm(@RequestParam long id, Model model) {
+	@GetMapping(value = "/view")
+	public AjaxResponse<Organ> getView(@RequestParam long id) {
 		Organ organ = organService.get(id);
 
 		return AjaxResponse.create(organ);

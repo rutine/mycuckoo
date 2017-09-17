@@ -153,7 +153,7 @@ public class UserService {
 		}
 		
 		List<OrgRoleRef> orgRoleList = roleOrganService.findRolesByOrgId(orgId);
-		List<TreeVo> orgList = organService.findNextLevelChildNodes(orgId, 0);
+		List<TreeVoExtend> orgList = organService.findNextLevelChildNodesWithCheckbox(orgId, 0);
 		List<TreeVoExtend> vos = Lists.newArrayList();
 
 		for(TreeVo treeVo : orgList) {

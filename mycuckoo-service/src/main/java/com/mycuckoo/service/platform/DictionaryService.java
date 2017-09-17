@@ -71,7 +71,7 @@ public class DictionaryService {
 		return dicBigTypeMapper.get(bigTypeId);
 	}
 
-	public Page<DicBigType> findDicBigTypesByCon(Map<String, Object> params, Pageable page) {
+	public Page<DicBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
 		return dicBigTypeMapper.findByPage(params, page);
 	}
 

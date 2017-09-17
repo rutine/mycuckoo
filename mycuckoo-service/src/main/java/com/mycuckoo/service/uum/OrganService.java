@@ -62,7 +62,7 @@ public class OrganService {
 
 	
 	@Transactional(readOnly=false)
-	public int disEnable(long organId, String disEnableFlag) throws ApplicationException {
+	public void disEnable(long organId, String disEnableFlag) throws ApplicationException {
 		
 		if(DISABLE.equals(disEnableFlag)) {
 			/**
@@ -73,9 +73,9 @@ public class OrganService {
 			 * 0、停用启用成功
 			 */
 			int childCount = organMapper.countByParentId(organId);
-			if( childCount > 0) return 1;
+			if( childCount > 0) throw new ApplicationException("机构有下级");
 			int roleCount = roleOrganService.countByOrgId(organId);
-			if(roleCount > 0) return 2;
+			if(roleCount > 0) throw new ApplicationException("机构下有角色");
 			
 			Organ organ = organMapper.get(organId);
 			organ.setStatus(DISABLE);
@@ -83,14 +83,11 @@ public class OrganService {
 			privilegeService.deleteRowPriByResourceId(organId + ""); // 删除机构行权限
 			
 			this.writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
-			return 0;
 		} else {
 			Organ organ = get(organId);
 			organ.setStatus(ENABLE);
 			organMapper.update(organ);
 			writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
-			
-			return 0;
 		}
 	}
 
@@ -193,13 +190,13 @@ public class OrganService {
 			for(OrganVo vo : vos) {
 				idList.add(vo.getOrgId());
 			}
-			if(idList.isEmpty()) return new PageImpl<OrganVo>(new ArrayList<OrganVo>(), page, 0);
 		}
+		if(idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
 		
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("orgIds", idList);
-		params.put("orgCode", isNullOrEmpty(orgCode) ? null : "%" + orgCode + "%");
-		params.put("orgName", isNullOrEmpty(orgName) ? null : "%" + orgName + "%");
+		params.put("orgCode", orgCode);
+		params.put("orgName", orgName);
 		Page<Organ> entityPage = organMapper.findByPage(params, page);
 		
 		List<OrganVo> vos = Lists.newArrayList();
