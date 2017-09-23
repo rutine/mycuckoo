@@ -1,22 +1,5 @@
 package com.mycuckoo.service.platform;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
-import static com.mycuckoo.common.constant.ServiceVariable.ENABLE;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_CODE;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.common.utils.SessionUtil;
@@ -25,6 +8,21 @@ import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.CodeMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static com.mycuckoo.common.constant.Common.SPLIT;
+import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 编码管理业务类
@@ -37,9 +35,12 @@ import com.mycuckoo.repository.platform.CodeMapper;
 @Transactional(readOnly=true)
 public class CodeService {
 	static Logger logger = LoggerFactory.getLogger(CodeService.class);
-	
+
+	@Autowired
 	private CodeMapper codeMapper;
+	@Autowired
 	private SystemOptLogService sysOptLogService;
+
 
 	@Transactional(readOnly=false)
 	public boolean disEnable(long codeId, String disEnableFlag) throws ApplicationException {

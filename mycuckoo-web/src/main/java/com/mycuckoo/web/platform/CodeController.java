@@ -63,7 +63,7 @@ public class CodeController {
 	 * @author rutine
 	 * @time Jun 25, 2013 8:48:33 PM
 	 */
-	@PutMapping(value = "/createForm")
+	@PutMapping(value = "/create")
 	public AjaxResponse<String> putCreate(@RequestBody Code code) {
 		
 		logger.debug(JsonUtils.toJson(code));
