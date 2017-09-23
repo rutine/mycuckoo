@@ -63,7 +63,7 @@ public class DistrictController {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("treeId", treeId);
 		params.put("districtName", StringUtils.isBlank(districtName) ? null : "%" + districtName + "%");
-		params.put("districtLevel", districtLevel);
+		params.put("districtLevel", StringUtils.trimToNull(districtLevel));
 
 		Page<DistrictVo> page = districtService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 
@@ -79,7 +79,7 @@ public class DistrictController {
 	 * @time Jul 2, 2013 11:18:03 AM
 	 */
 	@PutMapping(value = "/create")
-	public AjaxResponse<String> putCreate(District district) {
+	public AjaxResponse<String> putCreate(@RequestBody District district) {
 		
 		logger.debug(JsonUtils.toJson(district));
 
@@ -122,7 +122,7 @@ public class DistrictController {
 	 */
 	@GetMapping(value = "/get/child/nodes")
 	public AjaxResponse<List<TreeVo>> getChildNodes(
-			@RequestParam(value = "districtId", defaultValue = "-1") long id,
+			@RequestParam(value = "treeId", defaultValue = "-1") long id,
 			@RequestParam(value = "filterModuleId", defaultValue = "0") long filterId) {
 		
 		List<TreeVo> asyncTreeList = Lists.newArrayList();
@@ -150,14 +150,14 @@ public class DistrictController {
 	 * @time Jul 2, 2013 11:37:39 AM
 	 */
 	@PutMapping(value = "/update")
-	public AjaxResponse<String> putUpdate(District district) {
+	public AjaxResponse<String> putUpdate(@RequestBody District district) {
 		districtService.update(district);
 
 		return AjaxResponse.create("修改地区成功");
 	}
 
 
-	@GetMapping(value = "/viewForm")
+	@GetMapping(value = "/view")
 	public AjaxResponse<DistrictVo> getView(@RequestParam long id) {
 		DistrictVo district = districtService.get(id);
 		DistrictVo parentDistrict = districtService.get(district.getParentId());

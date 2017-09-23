@@ -113,8 +113,9 @@ public class DistrictService {
 				idList.add(-1l);
 			}
 		}
+
 		
-		params.put("array", idList.toArray(new Long[idList.size()]));
+		params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
 		Page<District> entityPage = districtMapper.findByPage(params, page);
 		List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
 		
