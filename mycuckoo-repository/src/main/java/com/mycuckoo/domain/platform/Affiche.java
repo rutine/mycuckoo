@@ -1,11 +1,11 @@
 package com.mycuckoo.domain.platform;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 功能说明: 域对象
@@ -21,7 +21,7 @@ public class Affiche implements Serializable {
 	private Date afficheInvalidate; //公告有效期
 	private Short affichePulish; //是否发布
 	private String afficheContent; //公告内容
-	private List<Accessory> accessoryList; //公告附件添加
+	private List<Accessory> accessories; //公告附件添加
 
 	/** default constructor */
 	public Affiche() {
@@ -34,8 +34,7 @@ public class Affiche implements Serializable {
 
 	/** full constructor */
 	public Affiche(Long afficheId, String afficheTitle,
-			Date afficheInvalidate, Short affichePulish, String afficheContent,
-			String afficheAccessory) {
+			Date afficheInvalidate, Short affichePulish, String afficheContent) {
 		this.afficheId = afficheId;
 		this.afficheTitle = afficheTitle;
 		this.afficheInvalidate = afficheInvalidate;
@@ -83,14 +82,14 @@ public class Affiche implements Serializable {
 		this.afficheContent = afficheContent;
 	}
 
-	public List<Accessory> getAccessoryList() {
-		return accessoryList;
+	public List<Accessory> getAccessories() {
+		return accessories;
 	}
 
-	public void setAccessoryList(List<Accessory> accessoryList) {
-		this.accessoryList = accessoryList;
+	public void setAccessories(List<Accessory> accessories) {
+		this.accessories = accessories;
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);

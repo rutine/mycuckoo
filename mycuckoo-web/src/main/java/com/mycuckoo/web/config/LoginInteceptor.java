@@ -1,11 +1,8 @@
 package com.mycuckoo.web.config;
 
-import java.io.PrintWriter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.web.util.JsonUtils;
+import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.AntPathMatcher;
@@ -13,9 +10,10 @@ import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.mycuckoo.common.utils.SessionUtil;
-import com.mycuckoo.web.util.JsonUtils;
-import com.mycuckoo.web.vo.AjaxResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.PrintWriter;
 
 public class LoginInteceptor implements HandlerInterceptor {
 	private static Logger logger = LoggerFactory.getLogger(LoginInteceptor.class);
@@ -28,6 +26,8 @@ public class LoginInteceptor implements HandlerInterceptor {
 		
 		String uri = request.getRequestURI();
 		if(matcher.match("/login/step/first", uri)) {
+			return true;
+		} else if(matcher.match("/platform/accessory/mgr/upload", uri)) {
 			return true;
 		}
 			

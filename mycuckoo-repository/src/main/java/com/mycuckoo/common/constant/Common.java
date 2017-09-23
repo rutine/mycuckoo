@@ -48,7 +48,7 @@ public class Common {
 	public final static String USER = "user";//用户类型
 	public final static String ROLE = "role";//用户类型
 	//创建系统文件路径
-	public final static String MYCUCKOO_SYSTEM_FILE_DIR = "mycuckoo_system_file_dir";
+	public final static String MYCUCKOO_SYSTEM_FILE_DIR = "/home/rutine/upload";
 	//系统配置文件
 //	public final static String SYS_CONFIGFILE_XML = "SystemConfig.xml";
 //	public final static String TOMCAT = "tomcat";

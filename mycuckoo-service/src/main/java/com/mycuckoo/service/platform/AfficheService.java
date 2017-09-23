@@ -1,18 +1,5 @@
 package com.mycuckoo.service.platform;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_AFFICHE;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.common.utils.CommonUtils;
@@ -22,6 +9,18 @@ import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.AfficheMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static com.mycuckoo.common.constant.Common.SPLIT;
+import static com.mycuckoo.common.constant.ServiceVariable.SYS_AFFICHE;
 
 /**
  * 功能说明: 公告业务类
@@ -68,7 +67,7 @@ public class AfficheService {
 	public Affiche get(Long afficheId) {
 		List<Accessory> accessoryList = accessoryService.findByAfficheId(afficheId);
 		Affiche affiche = afficheMapper.get(afficheId);
-		affiche.setAccessoryList(accessoryList);
+		affiche.setAccessories(accessoryList);
 		
 		return affiche;
 	}
@@ -82,8 +81,24 @@ public class AfficheService {
 	}
 
 	@Transactional(readOnly=false)
-	public void updateAffiche(Affiche affiche) throws ApplicationException {
+	public void update(Affiche affiche) throws ApplicationException {
 		afficheMapper.update(affiche);
+
+		for(Accessory acc : affiche.getAccessories()) {
+			if(acc.getAccessoryId() != null) {
+				continue;
+			}
+
+			String tempFileName = acc.getAccessoryName();
+			int index = tempFileName.lastIndexOf('!');
+			String newFileName = tempFileName.substring(0, index) + "." + tempFileName.substring(index + 1);
+			CommonUtils.renameFile(documentPath, newFileName, tempFileName);
+
+			Accessory accessory = new Accessory();
+			accessory.setInfoId(affiche.getAfficheId());
+			accessory.setAccessoryName(newFileName);
+			accessoryService.save(accessory);
+		}
 
 		StringBuilder optContent = new StringBuilder();
 		optContent.append("修改公告ID：").append(affiche.getAfficheId()).append(SPLIT);
@@ -96,17 +111,18 @@ public class AfficheService {
 	}
 
 	@Transactional(readOnly=false)
-	public void saveAffiche(Affiche affiche, List<String> accessoryNameList) throws ApplicationException {
+	public void save(Affiche affiche) throws ApplicationException {
 		
 		// 1. 保存公告
 		afficheMapper.save(affiche);
 		
 		// 2. 保存附件信息
-		if(accessoryNameList != null) {
-			for(String newFileName : accessoryNameList) {
-				int index = newFileName.lastIndexOf('.');
-				String oldFileName = newFileName.substring(0, index) + "!" + newFileName.substring(index + 1);
-				CommonUtils.renameFile(documentPath, newFileName, oldFileName);
+		if(affiche.getAccessories() != null) {
+			for(Accessory acc : affiche.getAccessories()) {
+				String tempFileName = acc.getAccessoryName();
+				int index = tempFileName.lastIndexOf('!');
+				String newFileName = tempFileName.substring(0, index) + "." + tempFileName.substring(index + 1);
+				CommonUtils.renameFile(documentPath, newFileName, tempFileName);
 				
 				Accessory accessory = new Accessory();
 				accessory.setInfoId(affiche.getAfficheId());

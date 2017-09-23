@@ -1,9 +1,9 @@
 package com.mycuckoo.domain.platform;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.Serializable;
 
 /**
  * 功能说明: 域对象
@@ -15,8 +15,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class Accessory implements Serializable {
 
 	private Long accessoryId;
-	private Long infoId;
 	private String accessoryName;
+	private Long infoId;
 
 	/** default constructor */
 	public Accessory() {
@@ -28,10 +28,10 @@ public class Accessory implements Serializable {
 	}
 
 	/** full constructor */
-	public Accessory(Long accessoryId, Long infoId, String accessoryName) {
+	public Accessory(Long accessoryId, String accessoryName, Long infoId) {
 		this.accessoryId = accessoryId;
-		this.infoId = infoId;
 		this.accessoryName = accessoryName;
+		this.infoId = infoId;
 	}
 
 	public Long getAccessoryId() {
@@ -42,20 +42,20 @@ public class Accessory implements Serializable {
 		this.accessoryId = accessoryId;
 	}
 
-	public Long getInfoId() {
-		return this.infoId;
-	}
-
-	public void setInfoId(Long infoId) {
-		this.infoId = infoId;
-	}
-
 	public String getAccessoryName() {
 		return this.accessoryName;
 	}
 
 	public void setAccessoryName(String accessoryName) {
 		this.accessoryName = accessoryName;
+	}
+
+	public Long getInfoId() {
+		return this.infoId;
+	}
+
+	public void setInfoId(Long infoId) {
+		this.infoId = infoId;
 	}
 	
 	@Override

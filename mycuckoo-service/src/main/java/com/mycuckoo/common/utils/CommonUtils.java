@@ -139,10 +139,16 @@ public class CommonUtils {
 	 */
 	public static String getResourcePath() {
 		String resPath = System.getProperty(WEB_APP_ROOT_KEY);
+		if(resPath == null) {
+			resPath = System.getProperty("catalina.home");
+		}
+		if(resPath == null) {
+			resPath = System.getProperty("user.dir");
+		}
 		
 		logger.info("webAppRootKey path ----> {}", resPath);
 		
-		return resPath == null ? "D:/java/eclipse/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/mycuckoo/" : resPath;
+		return resPath == null ? "" : resPath;
 	}
 
 	/**
