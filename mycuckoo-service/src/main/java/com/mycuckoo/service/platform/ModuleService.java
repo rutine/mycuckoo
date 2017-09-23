@@ -215,8 +215,12 @@ public class ModuleService {
 	public AssignVo<Operate> findAssignedAUnAssignedOperatesByModuleId(long moduleId) {
 		List<Operate> allOperateList = operateService.findAll(); // 所有操作
 		List<Operate> assignedOperateList = findAssignedOperatesByModuleId(moduleId); // 已经分配的操作
-		allOperateList.removeAll(assignedOperateList); // 删除已经分配
 		List<Operate> unassignedOperateList = allOperateList; // 未分配的操作
+		if(!allOperateList.isEmpty()) {
+			List<Operate> list = Lists.newArrayList(allOperateList);
+			list.removeAll(assignedOperateList); // 删除已经分配
+			unassignedOperateList = allOperateList; // 未分配的操作
+		}
 	
 		return new AssignVo<>(assignedOperateList, unassignedOperateList);
 	}
@@ -258,7 +262,7 @@ public class ModuleService {
 		List<ModuleMemuVo> vos = Lists.newArrayList();
 		filterList.forEach(module -> {
 			ModuleMemuVo vo = new ModuleMemuVo();
-			BeanUtils.copyProperties(moduleMemu, vo);
+			BeanUtils.copyProperties(module, vo);
 			vos.add(vo);
 		});
 		
@@ -285,7 +289,7 @@ public class ModuleService {
 			}
 		}
 		Map<String, Object> params = Maps.newHashMap();
-		params.put("array", idList.toArray(new Long[idList.size()]));
+		params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
 		params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
 		params.put("modEnId", isNullOrEmpty(modEnId) ? null : "%" + modEnId + "%");
 		Page<ModuleMemu> entityPage = moduleMemuMapper.findByPage(params, page);
@@ -384,20 +388,20 @@ public class ModuleService {
 			 * 原模块操作列表删除重复的之后删除(并级联删除权限操作) 
 			 * 新分配的操作列表删除重复的之后增加
 			 */
-			List<ModOptRef> repeateModOptRefList = new ArrayList<ModOptRef>();
-			List<Long> repeateOperateIdList = new ArrayList<Long>();
+			List<ModOptRef> repeatModOptRefList = new ArrayList<ModOptRef>();
+			List<Long> repeatOperateIdList = new ArrayList<Long>();
 			for(ModOptRef modOptRef : modOptRefList) {
 				Long oldOperateId = modOptRef.getOperate().getOperateId();
 				for(Long newOperateId : operateIdList) {
 					if(newOperateId  == oldOperateId) {
-						repeateModOptRefList.add(modOptRef);
-						repeateOperateIdList.add(newOperateId);
+						repeatModOptRefList.add(modOptRef);
+						repeatOperateIdList.add(newOperateId);
 						break;
 					}
 				}
 			}
-			modOptRefList.removeAll(repeateModOptRefList); //删除重复的模块操作
-			operateIdList.removeAll(repeateOperateIdList); //删除重复的ID
+			modOptRefList.removeAll(repeatModOptRefList); //删除重复的模块操作
+			operateIdList.removeAll(repeatOperateIdList); //删除重复的ID
 			
 			modOptRefList.forEach(modOptRef -> {
 				modOptRefMapper.delete(modOptRef.getModOptId()); //进行模块操作关系删除
@@ -520,9 +524,9 @@ public class ModuleService {
 		StringBuilder operateIds = new StringBuilder();
 		if(operateIdList != null) {
 			for(Long operateId : operateIdList) {
-				Operate sysplOperate = new Operate(operateId, null);
+				Operate operate = new Operate(operateId, null);
 				ModuleMemu moduleMemu = new ModuleMemu(moduleId);
-				ModOptRef modOptRef = new ModOptRef(null, sysplOperate, moduleMemu);
+				ModOptRef modOptRef = new ModOptRef(null, operate, moduleMemu);
 				modOptRefMapper.save(modOptRef);
 				
 				operateIds.append(operateIds.length() > 0 ? "," + operateId : operateId);

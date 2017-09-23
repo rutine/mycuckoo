@@ -28,7 +28,7 @@ import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
  * 
  * @author rutine
  * @time Oct 18, 2014 10:42:49 AM
- * @version 2.0.0
+ * @version 3.0.0
  */
 @RestController
 @RequestMapping("/platform/district/mgr")

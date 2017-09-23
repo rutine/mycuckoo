@@ -26,7 +26,7 @@ public class ModOptRef implements Serializable {
 
 	/** full constructor */
 	public ModOptRef(Long modOptId, Operate operate,
-			ModuleMemu sysplModuleMemu) {
+			ModuleMemu moduleMemu) {
 		this.modOptId = modOptId;
 		this.operate = operate;
 		this.moduleMemu = moduleMemu;
