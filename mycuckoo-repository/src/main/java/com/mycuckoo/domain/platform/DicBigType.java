@@ -25,7 +25,7 @@ public class DicBigType implements Serializable {
 	private String status;
 	private String creator;
 	private Date createDate;
-	private List<DicSmallType> dicSmallTypes = Lists.newArrayList();
+	private List<DicSmallType> smallTypes = Lists.newArrayList();
 
 	/** default constructor */
 	public DicBigType() {
@@ -39,7 +39,7 @@ public class DicBigType implements Serializable {
 	
 	/** full constructor */
 	public DicBigType(Long bigTypeId, String bigTypeName, String bigTypeCode,
-			String memo, String status, String creator, Date createDate, List<DicSmallType> dicSmallTypes) {
+			String memo, String status, String creator, Date createDate, List<DicSmallType> smallTypes) {
 		this.bigTypeId = bigTypeId;
 		this.bigTypeName = bigTypeName;
 		this.bigTypeCode = bigTypeCode;
@@ -47,7 +47,7 @@ public class DicBigType implements Serializable {
 		this.status = status;
 		this.creator = creator;
 		this.createDate = createDate;
-		this.dicSmallTypes = dicSmallTypes;
+		this.smallTypes = smallTypes;
 	}
 
 	public Long getBigTypeId() {
@@ -106,14 +106,14 @@ public class DicBigType implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public List<DicSmallType> getDicSmallTypes() {
-		return this.dicSmallTypes;
+	public List<DicSmallType> getSmallTypes() {
+		return smallTypes;
 	}
-	
-	public void setDicSmallTypes(List<DicSmallType> dicSmallTypes) {
-		this.dicSmallTypes = dicSmallTypes;
+
+	public void setSmallTypes(List<DicSmallType> smallTypes) {
+		this.smallTypes = smallTypes;
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);

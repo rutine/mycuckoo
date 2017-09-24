@@ -21,6 +21,9 @@ public class SystemConfigBean {
 	private String tomcatObjectName;
 	private String jmxDefault;
 
+
+	private String userAddDelFlag;
+
 	public String getLoggerLevel() {
 		return loggerLevel;
 	}
@@ -91,5 +94,13 @@ public class SystemConfigBean {
 
 	public void setRowPrivilegeLevel(String rowPrivilegeLevel) {
 		this.rowPrivilegeLevel = rowPrivilegeLevel;
+	}
+
+	public String getUserAddDelFlag() {
+		return userAddDelFlag;
+	}
+
+	public void setUserAddDelFlag(String userAddDelFlag) {
+		this.userAddDelFlag = userAddDelFlag;
 	}
 }

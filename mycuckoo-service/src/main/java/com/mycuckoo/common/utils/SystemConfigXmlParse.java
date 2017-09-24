@@ -12,6 +12,9 @@ import org.springframework.core.io.ClassPathResource;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.vo.SystemConfigBean;
+import org.springframework.util.FileCopyUtils;
+
+import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件操作类
@@ -52,15 +55,14 @@ public class SystemConfigXmlParse {
 	
 	public void loadSystemConfigDoc() {
 		try {
-//			String fileName = getClusterResourcePath(SYS_CONFIG_FILE_XML);
-//			File systemConfigFile = new File(fileName);
-			
-			String fileName = SYS_CONFIG_FILE_XML;
-			File systemConfigFile = null;
-			try {
-				systemConfigFile = new ClassPathResource(SYS_CONFIG_FILE_XML).getFile();
-			} catch (IOException e) {
-				logger.info("加载class系统配置文件错误", e);
+			String fileName = getClusterResourcePath(SYS_CONFIG_FILE_XML);
+			File systemConfigFile = new File(fileName);
+			if(!systemConfigFile.exists()) {
+				try {
+					FileCopyUtils.copy(new ClassPathResource(SYS_CONFIG_FILE_XML).getFile(), systemConfigFile);
+				} catch (IOException e) {
+					logger.info("加载class系统配置文件错误", e);
+				}
 			}
 			
 			if (!systemConfigFile.exists()) {

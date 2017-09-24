@@ -1,23 +1,21 @@
 package com.mycuckoo.service.platform;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_CONFIG_MGR;
-import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
-
-import java.util.List;
-
+import com.mycuckoo.common.constant.LogLevelEnum;
+import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.utils.SystemConfigXmlParse;
+import com.mycuckoo.common.utils.XmlOptUtils;
+import com.mycuckoo.exception.SystemException;
+import com.mycuckoo.vo.SystemConfigBean;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
-import com.mycuckoo.common.utils.SystemConfigXmlParse;
-import com.mycuckoo.common.utils.XmlOptUtils;
-import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.exception.SystemException;
-import com.mycuckoo.vo.SystemConfigBean;
+import java.util.List;
+
+import static com.mycuckoo.common.constant.Common.SPLIT;
+import static com.mycuckoo.common.constant.ServiceVariable.SYS_CONFIG_MGR;
+import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件维护业务类
@@ -33,7 +31,7 @@ public class SystemConfigService {
 	private SystemOptLogService sysOptLogService;
 	
 
-	public SystemConfigBean getSystemConfigInfo() throws ApplicationException {
+	public SystemConfigBean getSystemConfigInfo() {
 		return SystemConfigXmlParse.getInstance().getSystemConfigBean();
 	}
 
@@ -87,6 +85,7 @@ public class SystemConfigService {
 			optContent.append("设置日志保留天数:" + logRecordKeepDays + SPLIT);
 		}
 		XmlOptUtils.doc2XMLFile(doc, fileName);
+		SystemConfigXmlParse.getInstance().loadSystemConfigDoc();
 		
 		sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.SAVE, SYS_CONFIG_MGR, optContent.toString(), "");
 	}

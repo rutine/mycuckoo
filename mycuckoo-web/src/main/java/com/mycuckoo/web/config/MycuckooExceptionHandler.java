@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @time 2017-08-27 10:29
  */
 @RestControllerAdvice
-public class GlobalControllerExceptionHandler {
-	private static Logger logger = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+public class MycuckooExceptionHandler {
+	private static Logger logger = LoggerFactory.getLogger(MycuckooExceptionHandler.class);
 
 	@ExceptionHandler(value = {ApplicationException.class})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
