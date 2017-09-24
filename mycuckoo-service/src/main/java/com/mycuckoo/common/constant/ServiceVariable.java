@@ -13,13 +13,8 @@ public class ServiceVariable extends Common {
 	public final static String SYSTEM_TYPE = "systemType";
 	//类别字典地区类别
 	public final static String DISTRICT = "district";
-	
-//	//一级菜单
-//	public final static String ONE = "1";
-//	//二级菜单
-//	public final static String TWO = "2";
-//	//三级菜单
-//	public final static String THREE = "3";
+
+
 	//地区city
 	public final static String CITY = "city";
 	
@@ -27,9 +22,6 @@ public class ServiceVariable extends Common {
 	public final static String DISABLE = "disable";
 	public final static String Y = "Y";//默认角色
 	public final static String N = "N";//否
-//	//系统配置 管理员增加 删除
-//	public final static String ADD = "add";
-//	public final static String DELETE = "delete";
 	
 	//模块名称
 	public final static String MAIN_PAGE_SET = "主页模版设置";

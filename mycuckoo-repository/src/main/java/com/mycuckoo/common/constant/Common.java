@@ -29,11 +29,7 @@ public class Common {
 	//日志功能设置
 	public final static String SPLIT = ";";
 	
-	//角色切换类型
-	public final static String LOGIN = "login";
-	public final static String IN_SYSTEM = "insystem";
-	//切换角色标志
-	public final static String CHANGE_ROLE_FLAG = "changeRoleFlag";
+
 	public final static String PRIVILEGE_TYPE_ROW = "row";
 	public final static String PRIVILEGE_TYPE_OPT = "opt";
 	public final static String PRIVILEGE_SCOPE = "privilegeScope";
@@ -49,11 +45,7 @@ public class Common {
 	public final static String ROLE = "role";//用户类型
 	//创建系统文件路径
 	public final static String MYCUCKOO_SYSTEM_FILE_DIR = "/home/rutine/upload";
-	//系统配置文件
-//	public final static String SYS_CONFIGFILE_XML = "SystemConfig.xml";
-//	public final static String TOMCAT = "tomcat";
-//	public final static String WEBSPHERE = "websphere";
-//	public final static String WEBLOGIC = "weblogic";
+
 	public final static String COMMON_FUN = "commonFun";//常用功能
 	public final static String AGENT_LOGIN = "agentLogin";//代理登录
 	public final static String NORMAL_LOGIN = "normalLogin";//正常登录
