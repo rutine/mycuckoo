@@ -247,7 +247,7 @@ public class JsonUtils {
 	 * @param include 传入一个枚举值, 设置输出属性
 	 * @return 返回ObjectMapper对象
 	 */
-	private static ObjectMapper newMapper(Include include) {
+	public static ObjectMapper newMapper(Include include) {
 		ObjectMapper customMapper = new ObjectMapper();
 		// 设置输出时包含属性的风格
 		customMapper.setSerializationInclusion(include);

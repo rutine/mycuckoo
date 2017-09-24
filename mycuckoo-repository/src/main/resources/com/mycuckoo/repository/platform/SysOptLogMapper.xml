@@ -112,18 +112,6 @@
 			<if test="optUserName != null">
 				and opt_user_name like #{optUserName}
 			</if>
-			<if test="optUserRole != null">
-				and opt_user_role like #{optUserRole}
-			</if>
-			<if test="optPcIp != null">
-				and opt_pc_ip like #{optPcIp}
-			</if>
-			<if test="optBusinessId != null">
-				and opt_business_id = #{optBusinessId}
-			</if>
-			<if test="startTime != null and endTime != null">
-				and opt_time between #{startTime} and #{endTime}
-			</if>
 		</where>
 		order by 
 			opt_id desc
