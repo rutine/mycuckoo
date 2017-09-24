@@ -29,7 +29,7 @@ import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
  * @version 3.0.0
  */
 @RestController
-@RequestMapping(value = "/platform/type/dictionary/mgr")
+@RequestMapping(value = "/platform/system/dictionary/mgr")
 public class DictionaryController {
 	private static Logger logger = LoggerFactory.getLogger(DictionaryController.class);
 
@@ -66,16 +66,16 @@ public class DictionaryController {
 	 * @time Jun 11, 2013 4:29:28 PM
 	 */
 	@PutMapping(value = "/create")
-	public AjaxResponse<String> postCreateForm(DicBigType dicBigType) {
-		logger.debug(JsonUtils.toJson(dicBigType.getDicSmallTypes(), DicSmallType.class));
+	public AjaxResponse<String> putCreate(@RequestBody DicBigType dicBigType) {
+		logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
 		
 		boolean success = true;
 		dictionaryService.saveDicBigType(dicBigType);
 
-		for (DicSmallType dicSmallType : dicBigType.getDicSmallTypes()) {
+		for (DicSmallType dicSmallType : dicBigType.getSmallTypes()) {
 			dicSmallType.setBigTypeId(dicBigType.getBigTypeId());
 		}
-		dictionaryService.saveDicSmallTypes(dicBigType.getDicSmallTypes());
+		dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
 
 		return AjaxResponse.create("保存成功");
 	}
@@ -123,50 +123,26 @@ public class DictionaryController {
 	 * @time Jun 11, 2013 5:43:50 PM
 	 */
 	@PutMapping(value = "/update")
-	public AjaxResponse<String> putUpdate(DicBigType dicBigType) {
-		logger.debug(JsonUtils.toJson(dicBigType.getDicSmallTypes(), DicSmallType.class));
+	public AjaxResponse<String> putUpdate(@RequestBody DicBigType dicBigType) {
+		logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
 		
 		dictionaryService.updateDicBigType(dicBigType);
 
-		for (DicSmallType sysplDicSmallType : dicBigType.getDicSmallTypes()) {
-			sysplDicSmallType.setBigTypeId(dicBigType.getBigTypeId());
+		for (DicSmallType smallType : dicBigType.getSmallTypes()) {
+			smallType.setBigTypeId(dicBigType.getBigTypeId());
 		}
-		dictionaryService.saveDicSmallTypes(dicBigType.getDicSmallTypes());
+		dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
 
 		return AjaxResponse.create("修改字典成功");
 	}
 
 	@GetMapping(value = "/view")
-	public AjaxResponse<DictionaryViewVo> getView(@RequestParam long id) {
-		DicBigType bigDictionary = dictionaryService.getDicBigTypeByBigTypeId(id);
-		List<DicSmallType> smallDictionarys = dictionaryService
-				.findDicSmallTypesByBigTypeCode(bigDictionary.getBigTypeCode());
+	public AjaxResponse<DicBigType> getView(@RequestParam long id) {
+		DicBigType dicBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
+		List<DicSmallType> smallTypes = dictionaryService
+				.findDicSmallTypesByBigTypeCode(dicBigType.getBigTypeCode());
+		dicBigType.setSmallTypes(smallTypes);
 
-		DictionaryViewVo vo = new DictionaryViewVo();
-		vo.setBigType(bigDictionary);
-		vo.setSmallTypes(smallDictionarys);
-
-		return AjaxResponse.create(vo);
-	}
-
-	static class DictionaryViewVo {
-		private DicBigType bigType;
-		private List<DicSmallType> smallTypes;
-
-		public DicBigType getBigType() {
-			return bigType;
-		}
-
-		public void setBigType(DicBigType bigType) {
-			this.bigType = bigType;
-		}
-
-		public List<DicSmallType> getSmallTypes() {
-			return smallTypes;
-		}
-
-		public void setSmallTypes(List<DicSmallType> smallTypes) {
-			this.smallTypes = smallTypes;
-		}
+		return AjaxResponse.create(dicBigType);
 	}
 }
