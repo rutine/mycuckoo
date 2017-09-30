@@ -39,14 +39,11 @@ public class DictionaryController {
 
 
 	@GetMapping(value = "/list")
-	public AjaxResponse<Page<DicBigType>> dictionaryMgr(
+	public AjaxResponse<Page<DicBigType>> list(
 			@RequestParam(value = "bigTypeName", defaultValue = "") String dictName,
 			@RequestParam(value = "bigTypeCode", defaultValue = "") String dictCode,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize,
-			Model model) {
-
-		logger.info("---------------- 请求字典菜单管理界面 -----------------");
+			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("dictCode", StringUtils.isBlank(dictCode) ? null : "%" + dictCode + "%");

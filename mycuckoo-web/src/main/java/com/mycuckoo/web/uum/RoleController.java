@@ -50,7 +50,7 @@ public class RoleController {
 
 
 	@GetMapping(value = "/list")
-	public AjaxResponse<Page<Role>> roleMgr(
+	public AjaxResponse<Page<Role>> list(
 			@RequestParam(value = "roleName", defaultValue = "") String roleName,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize,

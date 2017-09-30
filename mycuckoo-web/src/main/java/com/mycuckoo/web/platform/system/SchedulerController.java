@@ -4,6 +4,7 @@ package com.mycuckoo.web.platform.system;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.platform.SchedulerJob;
+import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.SchedulerHandle;
@@ -14,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -69,7 +69,11 @@ public class SchedulerController {
 
 		schedulerJob.setCreateDate(new Date());
 		schedulerJob.setCreator(SessionUtil.getUserCode());
-		schedulerService.save(schedulerJob);
+		try {
+			schedulerService.save(schedulerJob);
+		} catch (SystemException e) {
+			return AjaxResponse.create("任务保存失败");
+		}
 
 		return AjaxResponse.create("任务保存成功");
 	}
@@ -84,8 +88,11 @@ public class SchedulerController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public AjaxResponse<String> delete(@RequestParam(value = "id") Long jobId) {
-
-		schedulerService.delete(jobId);
+		try {
+			schedulerService.delete(jobId);
+		} catch (SystemException e) {
+			return AjaxResponse.create("删除任务失败");
+		}
 
 		return AjaxResponse.create("成功删除任务");
 	}
@@ -123,7 +130,11 @@ public class SchedulerController {
 	 */
 	@GetMapping("/start/scheduler")
 	public AjaxResponse<String> startScheduler() {
-		schedulerService.startScheduler();
+		try {
+			schedulerService.startScheduler();
+		} catch (SystemException e) {
+			return AjaxResponse.create("启动调度器失败");
+		}
 
 		return AjaxResponse.create("启动调度器成功");
 	}
@@ -137,7 +148,11 @@ public class SchedulerController {
 	 */
 	@GetMapping("/stop/scheduler")
 	public AjaxResponse<String> stopScheduler() {
-		schedulerService.stopScheduler();
+		try {
+			schedulerService.stopScheduler();
+		} catch (SystemException e) {
+			return AjaxResponse.create("停止调度器失败");
+		}
 
 		return AjaxResponse.create("停止调度器成功");
 	}
@@ -152,7 +167,11 @@ public class SchedulerController {
 	 */
 	@GetMapping("/start/job")
 	public AjaxResponse<String> startJob(@RequestParam Long jobId) {
-		schedulerService.startJob(jobId);
+		try {
+			schedulerService.startJob(jobId);
+		} catch (SystemException e) {
+			return AjaxResponse.create("任务调度启动失败");
+		}
 
 		return AjaxResponse.create("任务调度启动成功");
 	}
@@ -171,7 +190,11 @@ public class SchedulerController {
 			@RequestParam Long jobId,
 			@RequestParam String jobName) {
 
-		schedulerService.stopJob(jobId, jobName);
+		try {
+			schedulerService.stopJob(jobId, jobName);
+		} catch (SystemException e) {
+			return AjaxResponse.create("任务调度停止失败");
+		}
 
 		return AjaxResponse.create("任务调度停止成功");
 	}

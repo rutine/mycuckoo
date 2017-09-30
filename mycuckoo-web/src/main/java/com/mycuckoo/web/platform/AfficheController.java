@@ -34,7 +34,7 @@ public class AfficheController {
 	private AfficheService afficheService;
 
 	@RequestMapping(value = "/list")
-	public AjaxResponse<Page<Affiche>> afficheMgr(
+	public AjaxResponse<Page<Affiche>> list(
 			@RequestParam(value = "afficheTitle", defaultValue = "") String afficheTitle,
 			@RequestParam(value = "affichePulish", defaultValue = "0") Short affichePulish,
 			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,

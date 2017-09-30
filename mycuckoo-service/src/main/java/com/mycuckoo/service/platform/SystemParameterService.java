@@ -23,22 +23,22 @@ import com.mycuckoo.repository.platform.SysParameterMapper;
  * 功能说明: 系统参数业务类
  *
  * @author rutine
- * @time Sep 25, 2014 10:55:50 AM
  * @version 3.0.0
+ * @time Sep 25, 2014 10:55:50 AM
  */
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
 public class SystemParameterService {
-	
+
 	@Autowired
 	private SysParameterMapper sysParameterMapper;
 	@Autowired
 	private SystemOptLogService sysOptLogService;
 
 
-	@Transactional(readOnly=false)
-	public boolean disEnable(long paraId, String disEnableFlag)  throws ApplicationException {
-		if(DISABLE.equals(disEnableFlag)) {
+	@Transactional
+	public boolean disEnable(long paraId, String disEnableFlag) {
+		if (DISABLE.equals(disEnableFlag)) {
 			SysParameter sysParameter = get(paraId);
 			sysParameter.setStatus(DISABLE);
 			update(sysParameter);
@@ -65,25 +65,23 @@ public class SystemParameterService {
 		return sysParameterMapper.getByParaName(paraName);
 	}
 
-	@Transactional(readOnly=false)
-	public void update(SysParameter systemParameter) throws ApplicationException {
+	@Transactional
+	public void update(SysParameter systemParameter) {
 		sysParameterMapper.update(systemParameter);
-		
+
 		writeLog(systemParameter, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
 	}
 
-	@Transactional(readOnly=false)
-	public void save(SysParameter systemParameter) throws ApplicationException {
+	@Transactional
+	public void save(SysParameter systemParameter) {
 		sysParameterMapper.save(systemParameter);
-		
+
 		writeLog(systemParameter, LogLevelEnum.FIRST, OptNameEnum.SAVE);
 	}
 
-	
-	
-	
 
 	// --------------------------- 私有方法 -------------------------------
+
 	/**
 	 * 公用模块写日志
 	 *
@@ -94,15 +92,14 @@ public class SystemParameterService {
 	 * @author rutine
 	 * @time Oct 15, 2012 8:20:17 PM
 	 */
-	private void writeLog(SysParameter systemParameter, LogLevelEnum logLevel, 
-			OptNameEnum opt) throws ApplicationException {
-		
+	private void writeLog(SysParameter systemParameter, LogLevelEnum logLevel, OptNameEnum opt) {
+
 		StringBuilder optContent = new StringBuilder();
 		optContent.append("参数名称：").append(systemParameter.getParaName()).append(SPLIT);
 		optContent.append("参数键值：").append(systemParameter.getParaKeyName()).append(SPLIT);
 		optContent.append("参数值：").append(systemParameter.getParaValue()).append(SPLIT);
 		optContent.append("参数类型：").append(systemParameter.getParaType()).append(SPLIT);
-		sysOptLogService.saveLog(logLevel, opt, SYS_PARAMETER, 
+		sysOptLogService.saveLog(logLevel, opt, SYS_PARAMETER,
 				optContent.toString(), systemParameter.getParaId() + "");
 	}
 

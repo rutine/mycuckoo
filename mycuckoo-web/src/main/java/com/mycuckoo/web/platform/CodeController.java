@@ -38,7 +38,7 @@ public class CodeController {
 
 
 	@GetMapping(value = "/list")
-	public AjaxResponse<Page<Code>> codeMgr(
+	public AjaxResponse<Page<Code>> list(
 			@RequestParam(value = "codeName", defaultValue = "") String codeName,
 			@RequestParam(value = "codeEngName", defaultValue = "") String codeEngName,
 			@RequestParam(value = "moduleName", defaultValue = "") String moduleName,

@@ -1,59 +1,56 @@
 package com.mycuckoo.service.uum;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.ROLE_ASSIGN;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
+import com.mycuckoo.common.constant.LogLevelEnum;
+import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.domain.uum.OrgRoleRef;
+import com.mycuckoo.domain.uum.Organ;
+import com.mycuckoo.domain.uum.Role;
+import com.mycuckoo.repository.Page;
+import com.mycuckoo.repository.PageImpl;
+import com.mycuckoo.repository.Pageable;
+import com.mycuckoo.repository.uum.OrgRoleRefMapper;
+import com.mycuckoo.service.platform.SystemOptLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
-import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.Organ;
-import com.mycuckoo.domain.uum.Role;
-import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.repository.Page;
-import com.mycuckoo.repository.PageImpl;
-import com.mycuckoo.repository.Pageable;
-import com.mycuckoo.repository.uum.OrgRoleRefMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mycuckoo.common.constant.Common.SPLIT;
+import static com.mycuckoo.common.constant.ServiceVariable.ROLE_ASSIGN;
 
 /**
  * 功能说明: 机构角色业务类
  *
  * @author rutine
- * @time Sep 25, 2014 11:29:55 AM
  * @version 3.0.0
+ * @time Sep 25, 2014 11:29:55 AM
  */
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
 public class OrganRoleService {
 	static Logger logger = LoggerFactory.getLogger(OrganRoleService.class);
-	
+
 	@Autowired
 	private OrgRoleRefMapper orgRoleRefMapper;
 	@Autowired
 	private RoleService roleService;
 	@Autowired
-	private RoleUserService roleUserService; 
+	private RoleUserService roleUserService;
 	@Autowired
 	private SystemOptLogService sysOptLogService;
 
-	
+
 	public int countByOrgId(long orgId) {
 		return orgRoleRefMapper.countByOrgId(orgId);
 	}
 
-	@Transactional(readOnly=false)
-	public boolean deleteOrgRoleRef(long orgId, List<Long> roleIds) throws ApplicationException {
-		List<OrgRoleRef> orgRoleRefList = new ArrayList<OrgRoleRef>();
+	@Transactional
+	public boolean deleteOrgRoleRef(long orgId, List<Long> roleIds) {
 		StringBuilder optContent = new StringBuilder("删除机构下的角色ID：");
 		for (long roleId : roleIds) {
 			OrgRoleRef orgRoleRef = getByOrgRoleId(orgId, roleId);
@@ -65,59 +62,59 @@ public class OrganRoleService {
 			}
 			optContent.append(roleId + SPLIT);
 		}
-		
-		sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, ROLE_ASSIGN, 
-				optContent.toString(), orgId+"");
-		
+
+		sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, ROLE_ASSIGN,
+				optContent.toString(), orgId + "");
+
 		return false;
 	}
 
-	@Transactional(readOnly=false)
+	@Transactional
 	public void deleteByRoleId(long roleId) {
 		orgRoleRefMapper.deleteByRoleId(roleId);
 	}
 
-	public OrgRoleRef getByOrgRoleId(long orgId, long roleId) throws ApplicationException { 
+	public OrgRoleRef getByOrgRoleId(long orgId, long roleId) {
 		return orgRoleRefMapper.getByOrgRoleId(orgId, roleId);
 	}
 
-	public OrgRoleRef get(long orgRoleId) { 
+	public OrgRoleRef get(long orgRoleId) {
 		return orgRoleRefMapper.get(orgRoleId);
 	}
 
-	public List<OrgRoleRef> findByOrgRoleIds(Long[] orgRoleRefIds) { 
+	public List<OrgRoleRef> findByOrgRoleIds(Long[] orgRoleRefIds) {
 		return orgRoleRefMapper.findByOrgRoleIds(orgRoleRefIds);
 	}
 
-	public List<Long> findOrgRoleRefIdsByRoleId(Long roleId) { 
+	public List<Long> findOrgRoleRefIdsByRoleId(Long roleId) {
 		return orgRoleRefMapper.findOrgRoleIdsByRoleId(roleId);
 	}
 
-	public List<OrgRoleRef> findRolesByOrgId(long orgId) { 
+	public List<OrgRoleRef> findRolesByOrgId(long orgId) {
 		return orgRoleRefMapper.findRolesByOrgId(orgId);
 	}
 
-	public Page<Role> findSelectedRolesByOrgId(long orgId, String roleName, Pageable page) { 
+	public Page<Role> findSelectedRolesByOrgId(long orgId, String roleName, Pageable page) {
 		Page<OrgRoleRef> pageTemp = orgRoleRefMapper.findRolesByPage(orgId, roleName, page);
-		List<Role> roleList = new ArrayList<Role>();
-		for(OrgRoleRef orgRoleRef : pageTemp.getContent()) {
+		List<Role> roleList = new ArrayList<>();
+		for (OrgRoleRef orgRoleRef : pageTemp.getContent()) {
 			roleList.add(orgRoleRef.getRole());
 		}
-		
-		return new PageImpl<Role>(roleList, page, pageTemp.getTotalElements());
+
+		return new PageImpl<>(roleList, page, pageTemp.getTotalElements());
 	}
 
-	public Page<Role> findUnselectedRolesByOrgId(long orgId, Pageable page) { 
+	public Page<Role> findUnselectedRolesByOrgId(long orgId, Pageable page) {
 		List<Role> allRoleList = roleService.findAll();
 		List<Role> selectedRoleList = findSelectedRoleByOrgId(orgId);
-		if(!selectedRoleList.isEmpty()) {
+		if (!selectedRoleList.isEmpty()) {
 			List<Role> roles = Lists.newArrayList();
 			roles.addAll(allRoleList);
 			roles.removeAll(selectedRoleList);
 			allRoleList = roles;
 		}
 
-		List<Role> newRoleList = new ArrayList<Role>();
+		List<Role> newRoleList = new ArrayList<>();
 		int count = 0;
 		for (Role role : allRoleList) {
 			count++;
@@ -125,37 +122,36 @@ public class OrganRoleService {
 				newRoleList.add(role);
 			}
 		}
-		
-		return new PageImpl<Role>(newRoleList, page, count);
+
+		return new PageImpl<>(newRoleList, page, count);
 	}
 
-	@Transactional(readOnly=false)
-	public void save(long orgId, List<Long> roleIds) throws ApplicationException {
-		if(!roleIds.isEmpty()) {
-			StringBuilder optContent = new StringBuilder(); 
+	@Transactional
+	public void save(long orgId, List<Long> roleIds) {
+		if (!roleIds.isEmpty()) {
+			StringBuilder optContent = new StringBuilder();
 			Organ organ = new Organ();
 			organ.setOrgId(orgId);
-			for(Long roleId : roleIds) {
+			for (Long roleId : roleIds) {
 				Role role = new Role();
 				role.setRoleId(roleId);
-				
+
 				OrgRoleRef orgRoleRef = new OrgRoleRef();
 				orgRoleRef.setOrgan(organ);
 				orgRoleRef.setRole(role);
 				orgRoleRefMapper.save(orgRoleRef);
-				
+
 				optContent.append("机构id:" + orgId + SPLIT + "角色id:" + roleId + SPLIT);
 			}
-			
-			sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, ROLE_ASSIGN, 
+
+			sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, ROLE_ASSIGN,
 					optContent.toString(), "");
 		}
 	}
 
 
-	
-	
 	// --------------------------- 私有方法 -------------------------------
+
 	/**
 	 * 根据机构ID查询其下已有的角色信息
 	 *
@@ -172,7 +168,7 @@ public class OrganRoleService {
 				roleList.add(orgRoleRef.getRole());
 			}
 		}
-		
+
 		return roleList;
 	}
 

@@ -24,7 +24,6 @@ public class ServiceVariable extends Common {
 	public final static String N = "N";//否
 	
 	//模块名称
-	public final static String MAIN_PAGE_SET = "主页模版设置";
 	public final static String SYS_MOD_MGR = "系统模块管理";
 	public final static String SYS_MODOPT_MGR = "系统模块操作管理";
 	public final static String SYS_MODOPT_ASSIGN = "模块分配操作";
@@ -34,7 +33,6 @@ public class ServiceVariable extends Common {
 	public final static String SYS_PARAMETER = "系统参数管理";
 	public final static String SYS_CODE = "系统编码管理";
 	public final static String SYS_SCHEDULER = "系统调度管理";
-	public final static String MAIN_PAGE_FUN = "主页面功能区";
 	public final static String MOD_ASSIGN_OPT = "模块分配操作";
 	public final static String SYS_DISTRICT = "省市地区管理";
 	public final static String SYS_TYPEDIC = "类别字典管理";
@@ -44,12 +42,6 @@ public class ServiceVariable extends Common {
 	public final static String ROLE_ASSIGN = "角色分配";
 	public final static String ROLE_CSS = "rolemgr";
 	public final static String USER_MGR = "用户管理";
-	public final static String USER_AGENT = "用户代理";
 	public final static String USER_ROLE_MGR = "用户分配角色";
-	public final static String USER_GROUP_MGR = "用户(普通)组管理";
-	public final static String ROLE_GROUP_MGR = "角色组管理";
-	public final static String GENERAL_GROUP_MGR = "普通组管理";
-	public final static String USER_SET_PAGELAYOUT = "用户设置页面布局";
-	public final static String USER_COMM_FUN = "用户常用功能设置";
 	
 }

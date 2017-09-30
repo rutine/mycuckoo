@@ -20,7 +20,7 @@ public interface RoleUserRefMapper extends Repository<RoleUserRef, Long> {
 	 * 
 	 * 根据用户ID查询角色用户关系
 	 * 
-	 * @param user_id 用户ID
+	 * @param userId 用户ID
 	 * @return 用户所有关联的角色用户关系
 	 */
 	List<RoleUserRef> findByUserId(Long userId);
@@ -43,7 +43,7 @@ public interface RoleUserRefMapper extends Repository<RoleUserRef, Long> {
 	/**
 	 * 根据角色ID统计角色用户关系记录
 	 * 
-	 * @param orgRoleId
+	 * @param roleId
 	 * @return
 	 */
 	int countByRoleId(Long roleId);
