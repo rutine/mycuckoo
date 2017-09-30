@@ -64,8 +64,6 @@ public class UserService {
 	private PrivilegeService privilegeService;
 	@Autowired
 	private SystemOptLogService sysOptLogService;
-	@Autowired
-	private UserCommFunService userCommFunService;
 	
 
 	/**
@@ -80,9 +78,8 @@ public class UserService {
 	 * 
 	 * 1 移除用户角色 
 	 * 2 移除用户代理 
-	 * 3 移除用户代理权限 
-	 * 4 移除用户常用功能 
-	 * 5 移除用户操作行权限
+	 * 3 移除用户代理权限
+	 * 4 移除用户操作行权限
 	 */
 	public boolean disEnable(long userId, String disEnableFlag) throws ApplicationException {
 		if(DISABLE.equals(disEnableFlag)) {
@@ -101,7 +98,6 @@ public class UserService {
 			roleUserService.save(roleUserRef); // 设置无角色用户
 			privilegeService.deleteByOwnerIdAndOwnerType(userId, OWNER_TYPE_USR); // 5 移除用户所拥有操作、行权限
 			userAgentService.deleteUserAgentsByUserId(userId); // 2 移除用户代理 3 移除用户代理权限
-			userCommFunService.deleteByUserId(userId); // 4 移除用户常用功能
 			
 			writeLog(user, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
 			return true;
