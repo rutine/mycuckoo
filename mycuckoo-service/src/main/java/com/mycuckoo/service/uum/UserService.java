@@ -18,7 +18,7 @@ import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.TreeVo;
 import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.uum.OrganVo;
-import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.RoleUserVo;
 import com.mycuckoo.vo.uum.UserVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -249,11 +249,11 @@ public class UserService {
 		UserVo vo = new UserVo();
 		BeanUtils.copyProperties(user, vo);
 		
-		List<RoleUserRefVo> roleUserVos = roleUserService.findByUserId(user.getUserId());
-		for(RoleUserRefVo refVo : roleUserVos) {
+		List<RoleUserVo> roleUserVos = roleUserService.findByUserId(user.getUserId());
+		for(RoleUserVo refVo : roleUserVos) {
 			if(Y.equals(refVo.getIsDefault())) {
-				long orgRoleId = refVo.getOrgRoleRef().getOrgRoleId();
-				String roleName = refVo.getOrgRoleRef().getRole().getRoleName();
+				long orgRoleId = refVo.getOrganRoleId();
+				String roleName = refVo.getRoleName();
 				
 				vo.setOrgRoleId(orgRoleId);
 				vo.setRoleName(roleName);

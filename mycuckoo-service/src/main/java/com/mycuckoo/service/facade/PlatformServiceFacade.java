@@ -30,10 +30,8 @@ public class PlatformServiceFacade {
 	private ModuleService moduleService;
 	@Autowired
 	private SystemParameterService systemParameterService;
-//	private DictionaryService dictionaryService;
 	@Autowired
 	private DistrictService districtService;
-//	private CodeService codeService;
 	
 
 	public HierarchyModuleVo filterModule(List<ModuleMemuVo> list) {
@@ -61,9 +59,9 @@ public class PlatformServiceFacade {
 	}
 
 	public String findSystemParaByParaName(String paraName) {
-		SysParameter sysplSysParameter = systemParameterService.getByParaName(paraName);
+		SysParameter sysParameter = systemParameterService.getByParaName(paraName);
 		
-		return sysplSysParameter == null ? "" : sysplSysParameter.getParaValue();
+		return sysParameter == null ? "" : sysParameter.getParaValue();
 	}
 
 }

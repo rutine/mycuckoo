@@ -271,7 +271,7 @@ public class PrivilegeService {
 		return count > 0;
 	}
 
-	public HierarchyModuleVo findUserPrivilegesForAdminLogin() {
+	public HierarchyModuleVo findPrivilegesForAdminLogin() {
 		List<ModuleMemuVo> allModuleMemus = platformServiceFacade.findAllModule();// 所有模块菜单
 		List<ModOptRef> modOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
 		HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMemus); // 过滤模块 
@@ -409,7 +409,7 @@ public class PrivilegeService {
 		return hierarchyModuleVo;
 	}
 
-	public HierarchyModuleVo findUserPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
+	public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
 		Long[] ownerIds = {userId, roleId, organRoleId}; // 拥有者数组
 		String[] ownerTypes = OWNER_TYPE_ARR; // 拥有者类型数组
 		String[] privilegeTypes = PRIVILEGE_TYPE_ARR; // 权限类型数组

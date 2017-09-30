@@ -1,11 +1,13 @@
 package com.mycuckoo.service.uum;
 
-import static com.mycuckoo.common.constant.ServiceVariable.N;
-import static com.mycuckoo.common.constant.ServiceVariable.USER_ROLE_MGR;
-import static com.mycuckoo.common.constant.ServiceVariable.Y;
-
-import java.util.List;
-
+import com.mycuckoo.common.constant.LogLevelEnum;
+import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.domain.uum.*;
+import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.repository.uum.RoleUserRefMapper;
+import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.RoleUserVo;
 import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
-import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.Organ;
-import com.mycuckoo.domain.uum.Role;
-import com.mycuckoo.domain.uum.RoleUserRef;
-import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.repository.uum.RoleUserRefMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.uum.RoleUserRefVo;
+import java.util.List;
+
+import static com.mycuckoo.common.constant.ServiceVariable.*;
 
 /**
  * 功能说明: 角色用户业务类
@@ -68,23 +62,26 @@ public class RoleUserService {
 		return vo;
 	}
 
-	public List<RoleUserRefVo> findByUserId(long userId) {
+	public List<RoleUserVo> findByUserId(long userId) {
 		List<RoleUserRef> roleUserRefList = roleUserRefMapper.findByUserId(userId);
 		
-		List<RoleUserRefVo> vos = Lists.newArrayList();
+		List<RoleUserVo> vos = Lists.newArrayList();
 		for(RoleUserRef roleUserRef : roleUserRefList) {
 			OrgRoleRef orgRoleRef = roleUserRef.getOrgRoleRef(); //机构角色关系
 			Organ organ = orgRoleRef.getOrgan();
 			Role role = orgRoleRef.getRole();
-			
-			RoleUserRefVo vo = new RoleUserRefVo();
-			BeanUtils.copyProperties(roleUserRef, vo);
-			
-			vo.setOrgRoleId(orgRoleRef.getOrgRoleId());
+			User user = roleUserRef.getUser();
+
+			RoleUserVo vo = new RoleUserVo();
+			vo.setOrganRoleId(orgRoleRef.getOrgRoleId());
 			vo.setOrganId(organ.getOrgId());
 			vo.setOrganName(organ.getOrgSimpleName());
 			vo.setRoleId(role.getRoleId());
 			vo.setRoleName(role.getRoleName());
+			vo.setUserId(user.getUserId());
+			vo.setUserName(user.getUserName());
+			vo.setUserPhotoUrl(user.getUserPhotoUrl());
+			vo.setIsDefault(roleUserRef.getIsDefault());
 			vos.add(vo);
 		}
 		

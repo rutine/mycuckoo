@@ -16,7 +16,7 @@ import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.TreeVo;
 import com.mycuckoo.vo.TreeVoExtend;
-import com.mycuckoo.vo.uum.RoleUserRefVo;
+import com.mycuckoo.vo.uum.RoleUserVo;
 import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.web.util.JsonUtils;
@@ -105,7 +105,7 @@ public class UserController {
 	 */
 	@GetMapping(value = "/list/role/privilege")
 	public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id) {
-		List<RoleUserRefVo> roleUserRefs = roleUserService.findByUserId(id);
+		List<RoleUserVo> roleUserRefs = roleUserService.findByUserId(id);
 		List<? extends TreeVo> orgRoles = this.getChildNodes("0_1", "Y").getData();
 
 		Map<String, Object> map = Maps.newHashMap();
