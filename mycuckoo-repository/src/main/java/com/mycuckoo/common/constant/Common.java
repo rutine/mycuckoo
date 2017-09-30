@@ -23,12 +23,9 @@ public class Common {
 	public final static String USER_NAME = "userName";
 	public final static String USER_CODE = "userCode";
 	public final static String USER_ID = "userId";
-	public final static String PASSWORD = "password";
-	public final static String AGENT_ID = "agentId";
 	
 	//日志功能设置
 	public final static String SPLIT = ";";
-	
 
 	public final static String PRIVILEGE_TYPE_ROW = "row";
 	public final static String PRIVILEGE_TYPE_OPT = "opt";
@@ -36,17 +33,9 @@ public class Common {
 	public final static String OWNER_TYPE_ROL = "rol";
 	public final static String OWNER_TYPE_USR = "usr";
 	public final static String USER_DEFAULT_PWD = "userdefaultpassword";
-	public final static String USER_VALIDATE = "uservalidate";
 	public final static String[] PRIVILEGE_TYPE_ARR = {PRIVILEGE_TYPE_ROW, PRIVILEGE_TYPE_OPT};
 	public final static String[] OWNER_TYPE_ARR = {OWNER_TYPE_USR, OWNER_TYPE_ROL};
 
-	//组相关信息
-	public final static String USER = "user";//用户类型
-	public final static String ROLE = "role";//用户类型
 	//创建系统文件路径
 	public final static String MYCUCKOO_SYSTEM_FILE_DIR = "/home/rutine/upload";
-
-	public final static String COMMON_FUN = "commonFun";//常用功能
-	public final static String AGENT_LOGIN = "agentLogin";//代理登录
-	public final static String NORMAL_LOGIN = "normalLogin";//正常登录
 }
