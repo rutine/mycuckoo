@@ -23,6 +23,9 @@ public class Common {
 	public final static String USER_NAME = "userName";
 	public final static String USER_CODE = "userCode";
 	public final static String USER_ID = "userId";
+
+	//用户菜单
+	public final static String MODULE_MENU = "moduleMenu";
 	
 	//日志功能设置
 	public final static String SPLIT = ";";

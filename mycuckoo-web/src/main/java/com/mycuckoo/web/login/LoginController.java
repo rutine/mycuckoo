@@ -198,7 +198,7 @@ public class LoginController {
 		HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode);
 		logger.info("user row privilege : 【{}】", moduleVo.getRow());
 		
-		session.setAttribute("module", moduleVo);
+		session.setAttribute(MODULE_MENU, moduleVo);
 		
 		// 记录登录日志
 		StringBuilder optContent = new StringBuilder();

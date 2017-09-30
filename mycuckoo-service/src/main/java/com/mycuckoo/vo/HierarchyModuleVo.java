@@ -1,9 +1,9 @@
 package com.mycuckoo.vo;
 
+import com.mycuckoo.vo.platform.ModuleMemuVo;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mycuckoo.vo.platform.ModuleMemuVo;
 
 /**
  * 功能说明: 四级层级菜单模块
@@ -17,7 +17,6 @@ public class HierarchyModuleVo {
 	private Map<String, List<ModuleMemuVo>> second;
 	private Map<String, List<ModuleMemuVo>> third;
 	private Map<Long, List<ModuleMemuVo>> fourth;
-	private List<ModuleMemuVo> commonFun;
 	private String row;
 	
 	public HierarchyModuleVo(
@@ -52,12 +51,6 @@ public class HierarchyModuleVo {
 	}
 	public void setFourth(Map<Long, List<ModuleMemuVo>> fourth) {
 		this.fourth = fourth;
-	}
-	public List<ModuleMemuVo> getCommonFun() {
-		return commonFun;
-	}
-	public void setCommonFun(List<ModuleMemuVo> commonFun) {
-		this.commonFun = commonFun;
 	}
 	public String getRow() {
 		return row;

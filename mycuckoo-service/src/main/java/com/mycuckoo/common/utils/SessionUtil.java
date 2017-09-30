@@ -1,30 +1,17 @@
 package com.mycuckoo.common.utils;
 
-import static com.mycuckoo.common.constant.Common.ORGAN_ID;
-import static com.mycuckoo.common.constant.Common.ORGAN_NAME;
-import static com.mycuckoo.common.constant.Common.ORGAN_ROLE_ID;
-import static com.mycuckoo.common.constant.Common.ROLE_ID;
-import static com.mycuckoo.common.constant.Common.ROLE_NAME;
-import static com.mycuckoo.common.constant.Common.USER_CODE;
-import static com.mycuckoo.common.constant.Common.USER_ID;
-import static com.mycuckoo.common.constant.Common.USER_NAME;
-import static com.mycuckoo.common.constant.Common.USER_PHOTO_URL;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.vo.HierarchyModuleVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 
-import com.mycuckoo.domain.platform.ModuleMemu;
-import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.exception.SystemException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import static com.mycuckoo.common.constant.Common.*;
 
 /**
  * 功能说明: 取会话信息工具类，主要是统一获取会话中的信息
@@ -192,47 +179,14 @@ public final class SessionUtil {
 	}
 	
 	/**
-	 * 功能说明 : 获取用户一级菜单, 此值登录后存入会话
+	 * 功能说明 : 获取用户菜单, 此值登录后存入会话
 	 * 
 	 * @return
 	 * @author rutine
 	 * @time Nov 2, 2014 12:11:23 PM
 	 */
-	public static List<ModuleMemu> getFirstMenu() {
-		return (List<ModuleMemu>) getSession().getAttribute("firstList");
-	}
-	
-	/**
-	 * 功能说明 : 获取用户二级菜单, 此值登录后存入会话
-	 * 
-	 * @return
-	 * @author rutine
-	 * @time Nov 2, 2014 12:13:21 PM
-	 */
-	public static Map<String, List<ModuleMemu>> getSecondMenu() {
-		return (Map<String, List<ModuleMemu>>) getSession().getAttribute("secondMap");
-	}
-	
-	/**
-	 * 功能说明 : 获取用户三级菜单, 此值登录后存入会话
-	 * 
-	 * @return
-	 * @author rutine
-	 * @time Nov 2, 2014 12:13:53 PM
-	 */
-	public static Map<String, List<ModuleMemu>> getThirdMenu() {
-		return (Map<String, List<ModuleMemu>>) getSession().getAttribute("thirdMap");
-	}
-	
-	/**
-	 * 功能说明 : 获取用户四级菜单(操作按钮), 此值登录后存入会话
-	 * 
-	 * @return
-	 * @author rutine
-	 * @time Nov 4, 2014 8:36:48 PM
-	 */
-	public static Map<String, List<ModuleMemu>> getFourthMenu() {
-		return (Map<String, List<ModuleMemu>>) getSession().getAttribute("fourthMap");
+	public static HierarchyModuleVo getHierarchyModule() {
+		return (HierarchyModuleVo) getSession().getAttribute(MODULE_MENU);
 	}
 
 }

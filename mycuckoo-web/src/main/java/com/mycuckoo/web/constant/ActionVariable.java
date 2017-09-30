@@ -11,6 +11,4 @@ import com.mycuckoo.common.constant.Common;
  */
 public class ActionVariable extends Common {
 	public final static int LIMIT = 10;
-	public final static String ADMIN_ORGNAME = "总部";
-	public final static String ADMIN_ROLENAME = "管理员";
 }

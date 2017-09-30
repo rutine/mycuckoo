@@ -21,6 +21,4 @@ spring:
     maxOpenPreparedStatements: 20
     
 mycuckoo:
-  affiche:
-    documentUrl: mycuckoo/documents/
-  imageUrl: mycuckoo/images/
+  basePath: mycuckoo/upload/

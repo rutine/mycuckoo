@@ -2,14 +2,12 @@ package com.mycuckoo.service.platform;
 
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
-import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.AfficheMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +29,6 @@ import static com.mycuckoo.common.constant.ServiceVariable.SYS_AFFICHE;
 @Service
 @Transactional(readOnly = true)
 public class AfficheService {
-	@Value("${mycuckoo.affiche.documentUrl}")
-	private String documentPath;
 
 	@Autowired
 	private AfficheMapper afficheMapper;
@@ -52,7 +48,6 @@ public class AfficheService {
 				List<Long> accessoryIdList = new ArrayList<Long>();
 				for (Accessory accessory : accessoryList) {
 					accessoryIdList.add(accessory.getAccessoryId()); // 附件ID
-					CommonUtils.deleteFile(documentPath, accessory.getAccessoryName()); // 删除附件
 				}
 				accessoryService.deleteByIds(accessoryIdList); // 删除附件数据库记录
 				afficheMapper.delete(afficheId);
@@ -88,11 +83,7 @@ public class AfficheService {
 				continue;
 			}
 
-			String tempFileName = acc.getAccessoryName();
-			int index = tempFileName.lastIndexOf('!');
-			String newFileName = tempFileName.substring(0, index) + "." + tempFileName.substring(index + 1);
-			CommonUtils.renameFile(documentPath, newFileName, tempFileName);
-
+			String newFileName = acc.getAccessoryName();
 			Accessory accessory = new Accessory();
 			accessory.setInfoId(affiche.getAfficheId());
 			accessory.setAccessoryName(newFileName);
@@ -111,18 +102,13 @@ public class AfficheService {
 
 	@Transactional
 	public void save(Affiche affiche) {
-
 		// 1. 保存公告
 		afficheMapper.save(affiche);
 
 		// 2. 保存附件信息
 		if (affiche.getAccessories() != null) {
 			for (Accessory acc : affiche.getAccessories()) {
-				String tempFileName = acc.getAccessoryName();
-				int index = tempFileName.lastIndexOf('!');
-				String newFileName = tempFileName.substring(0, index) + "." + tempFileName.substring(index + 1);
-				CommonUtils.renameFile(documentPath, newFileName, tempFileName);
-
+				String newFileName = acc.getAccessoryName();
 				Accessory accessory = new Accessory();
 				accessory.setInfoId(affiche.getAfficheId());
 				accessory.setAccessoryName(newFileName);

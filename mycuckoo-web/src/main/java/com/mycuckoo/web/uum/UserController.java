@@ -6,7 +6,6 @@ import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.common.utils.FirstLetter;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
@@ -21,17 +20,16 @@ import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
+import com.mycuckoo.web.vo.req.UserPasswordUvo;
+import com.mycuckoo.web.vo.req.UserPhotoUvo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.mycuckoo.common.constant.Common.*;
@@ -48,9 +46,6 @@ import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
 @RequestMapping("/uum/user/mgr")
 public class UserController {
 	private static Logger logger = LoggerFactory.getLogger(UserController.class);
-	
-	@Value("${mycuckoo.imageUrl}")
-	private String imagePath;
 
 	@Autowired
 	private UserService userService;
@@ -324,25 +319,20 @@ public class UserController {
 	/**
 	 * 功能说明 : 修改用户密码
 	 * 
-	 * @param password
-	 * @param newPassword
-	 * @param confirmPassword
+	 * @param vo
 	 *
 	 * @author rutine
 	 * @time Nov 6, 2014 9:13:20 PM
 	 */
-	@PostMapping(value = "updateUserInfo")
-	public AjaxResponse<String> updateUserInfo(
-			@RequestParam(value = "userPassword") String password,
-			@RequestParam(value = "userNewPassword") String newPassword,
-			@RequestParam(value = "userConfirmPassword") String confirmPassword) {
+	@PutMapping(value = "update/password")
+	public AjaxResponse<String> putUpdatePassword(UserPasswordUvo vo) {
 		
-		Assert.state(newPassword.equals(confirmPassword), "两次输入的新密码不一致");
-		password = CommonUtils.encrypt(password);
+		Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
+		String password = CommonUtils.encrypt(vo.getPassword());
 		User user = userService.getUserByUserId(SessionUtil.getUserId());
 		Assert.state(!password.equals(user.getUserPassword()), "密码错误");
 
-		user.setUserPassword(CommonUtils.encrypt(newPassword));
+		user.setUserPassword(CommonUtils.encrypt(vo.getNewPassword()));
 		userService.updateUserInfo(user);
 		
 		return AjaxResponse.create("修改成功");
@@ -355,28 +345,13 @@ public class UserController {
 	 * @author rutine
 	 * @time Nov 1, 2014 8:28:55 AM
 	 */
-	@PostMapping(value = "/upload/photo")
-	public AjaxResponse<String> postUploadPhoto(MultipartHttpServletRequest request) {
-		MultipartFile file = request.getFile("file");
-		if(file != null && !file.isEmpty()) {
-			String originalFileName = file.getOriginalFilename();
-			StringBuilder nameBuilder = new StringBuilder();
-			for (int i = 0; i < 32; i++) {
-				nameBuilder.append(CommonUtils.getRandomChar());
-			}
-			nameBuilder.append("_").append(originalFileName);
-			try {
-				Long userId = SessionUtil.getUserId();
-				String fileName = nameBuilder.toString();
-				String photoUrl = "/mycuckoo/" + imagePath + fileName;
-				CommonUtils.saveFile(imagePath, fileName, file.getInputStream());
-				userService.updateUserPhotoUrl(photoUrl, userId);
-				request.getSession().setAttribute(USER_PHOTO_URL, photoUrl);
-			} catch (IOException e) {
-				throw new ApplicationException("上传头像失败", e);
-			}
-		}
-		
+	@PutMapping(value = "/update/photo")
+	public AjaxResponse<String> putUpdatePhoto(UserPhotoUvo vo, HttpServletRequest request) {
+		Assert.state(StringUtils.startsWith("http://", vo.getPhoto()), "无效头像地址");
+
+		userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
+		request.getSession().setAttribute(USER_PHOTO_URL, vo.getPhoto());
+
 		return AjaxResponse.create("上传头像成功");
 	}
 }

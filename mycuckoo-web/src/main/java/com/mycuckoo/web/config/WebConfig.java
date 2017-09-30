@@ -21,7 +21,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements ServletContext
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new LoginInteceptor())
+		registry.addInterceptor(new LoginInterceptor())
 			.addPathPatterns("/**");
 //			.excludePathPatterns("/login/**");
 	}

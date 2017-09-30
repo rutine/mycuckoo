@@ -15,19 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 
-public class LoginInteceptor implements HandlerInterceptor {
-	private static Logger logger = LoggerFactory.getLogger(LoginInteceptor.class);
+public class LoginInterceptor implements HandlerInterceptor {
+	private static Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
 	private static PathMatcher matcher = new AntPathMatcher();
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
-		SessionUtil.setRequest((HttpServletRequest) request);
+		SessionUtil.setRequest(request);
 		
 		String uri = request.getRequestURI();
-		if(matcher.match("/login/step/first", uri)) {
-			return true;
-		} else if(matcher.match("/platform/accessory/mgr/upload", uri)) {
+		if(matcher.match("(/login/step/first)|(/file/)", uri)) {
 			return true;
 		}
 			

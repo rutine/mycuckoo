@@ -1,24 +1,16 @@
 package com.mycuckoo.common.utils;
 
-import static com.mycuckoo.common.constant.Common.MYCUCKOO_SYSTEM_FILE_DIR;
-import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.exception.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mycuckoo.exception.ApplicationException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
+
+import static com.mycuckoo.common.constant.Common.MYCUCKOO_SYSTEM_FILE_DIR;
+import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
 
 /**
  * 功能说明: 常用工具类
@@ -184,10 +176,11 @@ public class CommonUtils {
 	 * @author rutine
 	 * @time Oct 6, 2012 11:05:02 AM
 	 */
-	public static void saveFile(String dirPath, String fileName, InputStream is) {
+	public static String saveFile(String dirPath, String fileName, InputStream is) throws SystemException {
 		if (is == null) {
-			return;
+			return null;
 		}
+
 		// 文件上传路径
 		String absolutePath = getClusterResourcePath("") + dirPath;
 		// 如果路径不存在则自动创建
@@ -198,9 +191,7 @@ public class CommonUtils {
 	
 		// 文件上传
 		String filePath = absolutePath + File.separator + fileName;
-		
 		logger.info("save file path --> {}", filePath);
-		
 		try {
 			FileOutputStream fos = new FileOutputStream(filePath);
 			byte[] buffer = new byte[10240];
@@ -211,11 +202,13 @@ public class CommonUtils {
 			}
 			is.close();
 			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("write file error", e);
+
+			throw new SystemException("", e);
 		}
+
+		return absolutePath;
 	}
 	
 	/**
@@ -226,13 +219,12 @@ public class CommonUtils {
 	 * @param isOnline 是否在线打开
 	 * @param response 
 	 * @return
-	 * @throws ApplicationException
+	 * @throws SystemException
 	 * @author rutine
 	 * @time Oct 6, 2012 2:22:06 PM
 	 */
 	public static void downloadFile(String dirPath, String fileName, 
-			boolean isOnline, HttpServletResponse response) 
-					throws ApplicationException {
+			boolean isOnline, HttpServletResponse response) throws SystemException {
 		
 		// 文件下载
 		// String filePath = request.getRealPath(File.separator) + dirPath + File.separator + fileName;
@@ -242,7 +234,7 @@ public class CommonUtils {
 		try {
 			File file = new File(filePath);
 			if (!file.exists()) {
-				throw new ApplicationException("对不起，找不到" + fileName + "文件!");
+				throw new SystemException("对不起，找不到" + fileName + "文件!");
 			}
 			
 			String displayFileName = fileName.substring(fileName.indexOf("_") + 1);
@@ -266,20 +258,18 @@ public class CommonUtils {
 				bufOutStream.write(buffer, 0, len);
 				bufOutStream.flush();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SystemException("", e);
 		} finally {
 			try {
 				if (bufInStream != null) {
 					bufInStream.close();
 				}
-//				if (bufOutStream != null) {
-//					bufOutStream.close();
-//				}
+				if (bufOutStream != null) {
+					bufOutStream.close();
+				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("close file error", e);
 			}
 		}
 	}
@@ -295,7 +285,7 @@ public class CommonUtils {
 	 * @author rutine
 	 * @time Oct 6, 2012 2:32:27 PM
 	 */
-	public static void replaceFile(String dirPath, String newFileName, String oldFileName, InputStream is) {
+	public static void replaceFile(String dirPath, String newFileName, String oldFileName, InputStream is) throws SystemException {
 		// 文件上传目录
 		// String absolutePath = request.getRealPath(File.separator) + dirPath;
 		String absolutePath = getClusterResourcePath("") + dirPath;
@@ -371,10 +361,10 @@ public class CommonUtils {
 
 
 	public static void main(String[] args) {
-		String fileSepator = System.getProperties().getProperty("file.separator");
-		CommonUtils.class.getResourceAsStream(fileSepator);
+		String fileSeparator = System.getProperties().getProperty("file.separator");
+		CommonUtils.class.getResourceAsStream(fileSeparator);
 		System.out.println(CommonUtils.getResourcePath());
-		System.out.println(System.getProperty("bhtec.root"));
+		System.out.println(System.getProperty("mycuckoo.root"));
 		File[] drive = File.listRoots();
 		for (int i = 0; i < drive.length; i++) {
 			System.out.println("\t" + drive[i]);

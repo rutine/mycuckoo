@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.mycuckoo.common.constant.BusinessType.document;
 import static com.mycuckoo.common.constant.Common.SPLIT;
 import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
 
@@ -27,8 +28,8 @@ import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
 @Transactional(readOnly = true)
 public class AccessoryService {
 
-	@Value("${mycuckoo.affiche.documentUrl}")
-	private String afficheAttachmentPath;
+	@Value("${mycuckoo.basePath}")
+	private String basePath;
 
 	@Autowired
 	private AccessoryMapper accessoryMapper;
@@ -37,14 +38,12 @@ public class AccessoryService {
 
 
 	@Transactional
-	public void deleteByIds(List<Long> accessoryIds)
-			throws ApplicationException {
-
+	public void deleteByIds(List<Long> accessoryIds) {
 		if (!accessoryIds.isEmpty()) {
 			// 删除文件
 			for (long id : accessoryIds) {
 				Accessory accessory = this.get(id);
-				CommonUtils.deleteFile(afficheAttachmentPath, accessory.getAccessoryName());
+				CommonUtils.deleteFile(basePath + "/" + document.name(), accessory.getAccessoryName());
 
 				accessoryMapper.delete(id);
 			}
