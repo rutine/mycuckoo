@@ -52,8 +52,6 @@ public class PrivilegeService {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private UserAgentService userAgentService;
-	@Autowired
 	private OrganService organService;
 	@Autowired
 	private OrganRoleService roleOrganService;
@@ -542,9 +540,7 @@ public class PrivilegeService {
 			String ownerType, String privilegeScope) throws ApplicationException {
 
 		// 删除角色或用戶拥有操作权限
-		delete(ownerId, ownerType, privilegeType); 
-		// 删除角色或用戶代理权限
-		userAgentService.deleteUserAgentsByOwnerId(ownerId, ownerType);
+		delete(ownerId, ownerType, privilegeType);
 		
 		StringBuilder optContent = new StringBuilder();
 		optContent.append("模块操作关系ID: ");

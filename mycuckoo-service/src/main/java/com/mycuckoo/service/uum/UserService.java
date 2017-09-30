@@ -51,9 +51,7 @@ public class UserService {
 	
 	@Autowired
 	private UserMapper userMapper;
-	
-	@Autowired
-	private UserAgentService userAgentService;
+
 	@Autowired
 	private RoleUserService roleUserService;
 	@Autowired
@@ -76,10 +74,8 @@ public class UserService {
 	 * @author rutine
 	 * @time Oct 20, 2012 3:50:29 PM
 	 * 
-	 * 1 移除用户角色 
-	 * 2 移除用户代理 
-	 * 3 移除用户代理权限
-	 * 4 移除用户操作行权限
+	 * 1 移除用户角色
+	 * 2 移除用户操作行权限
 	 */
 	public boolean disEnable(long userId, String disEnableFlag) throws ApplicationException {
 		if(DISABLE.equals(disEnableFlag)) {
@@ -96,8 +92,7 @@ public class UserService {
 			orgRoleRef.setOrgRoleId(0l);
 			roleUserRef.setOrgRoleRef(orgRoleRef);
 			roleUserService.save(roleUserRef); // 设置无角色用户
-			privilegeService.deleteByOwnerIdAndOwnerType(userId, OWNER_TYPE_USR); // 5 移除用户所拥有操作、行权限
-			userAgentService.deleteUserAgentsByUserId(userId); // 2 移除用户代理 3 移除用户代理权限
+			privilegeService.deleteByOwnerIdAndOwnerType(userId, OWNER_TYPE_USR); // 2 移除用户所拥有操作、行权限
 			
 			writeLog(user, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
 			return true;
