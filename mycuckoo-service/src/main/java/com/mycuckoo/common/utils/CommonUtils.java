@@ -208,7 +208,7 @@ public class CommonUtils {
 			throw new SystemException("", e);
 		}
 
-		return absolutePath;
+		return filePath;
 	}
 	
 	/**

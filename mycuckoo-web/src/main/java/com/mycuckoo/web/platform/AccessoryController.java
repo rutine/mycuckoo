@@ -7,15 +7,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
-
-import static com.mycuckoo.common.constant.BusinessType.document;
 
 /**
  * 功能说明: 附件Controller
@@ -28,9 +25,6 @@ import static com.mycuckoo.common.constant.BusinessType.document;
 @RequestMapping("/platform/accessory/mgr")
 public class AccessoryController {
 	private static Logger logger = LoggerFactory.getLogger(AccessoryController.class);
-
-	@Value("${mycuckoo.basePath}")
-	private String basePath;
 	
 	@Autowired
 	private AccessoryService accessoryService;
@@ -44,11 +38,11 @@ public class AccessoryController {
 	 * @author rutine
 	 * @time Jul 1, 2013 8:58:27 PM
 	 */
-	@DeleteMapping(value = "/delete/{fileNameOrId:.+}")
-	public AjaxResponse<String> delete(@PathVariable String fileNameOrId) {
+	@DeleteMapping(value = "/delete")
+	public AjaxResponse<String> delete(@RequestParam String fileNameOrId) {
 		long id = NumberUtils.toLong(fileNameOrId, -1L);
 		if(id == -1L) {
-			CommonUtils.deleteFile(basePath + "/" + document.name(), fileNameOrId);
+			CommonUtils.deleteFile("", fileNameOrId);
 		} else {
 			accessoryService.deleteByIds(Arrays.asList(id));
 		}

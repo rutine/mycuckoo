@@ -325,7 +325,7 @@ public class UserController {
 	 * @time Nov 6, 2014 9:13:20 PM
 	 */
 	@PutMapping(value = "update/password")
-	public AjaxResponse<String> putUpdatePassword(UserPasswordUvo vo) {
+	public AjaxResponse<String> putUpdatePassword(@RequestBody UserPasswordUvo vo) {
 		
 		Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 		String password = CommonUtils.encrypt(vo.getPassword());
@@ -346,8 +346,8 @@ public class UserController {
 	 * @time Nov 1, 2014 8:28:55 AM
 	 */
 	@PutMapping(value = "/update/photo")
-	public AjaxResponse<String> putUpdatePhoto(UserPhotoUvo vo, HttpServletRequest request) {
-		Assert.state(StringUtils.startsWith("http://", vo.getPhoto()), "无效头像地址");
+	public AjaxResponse<String> putUpdatePhoto(@RequestBody UserPhotoUvo vo, HttpServletRequest request) {
+		Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
 		userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
 		request.getSession().setAttribute(USER_PHOTO_URL, vo.getPhoto());

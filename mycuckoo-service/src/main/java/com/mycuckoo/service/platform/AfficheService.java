@@ -10,6 +10,7 @@ import com.mycuckoo.repository.platform.AfficheMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,6 +61,9 @@ public class AfficheService {
 
 	public Affiche get(Long afficheId) {
 		List<Accessory> accessoryList = accessoryService.findByAfficheId(afficheId);
+		accessoryList.forEach(accessory -> {
+			accessory.setAccessoryName(StringUtils.getFilename(accessory.getAccessoryName()));
+		});
 		Affiche affiche = afficheMapper.get(afficheId);
 		affiche.setAccessories(accessoryList);
 

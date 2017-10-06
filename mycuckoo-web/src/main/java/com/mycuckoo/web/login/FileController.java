@@ -8,6 +8,7 @@ import com.mycuckoo.web.vo.FileMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,11 +59,12 @@ public class FileController {
 			nameBuilder.append(".").append(originalFileName.substring(index + 1));
 			String fileName = nameBuilder.toString();
 
-			String path = CommonUtils.saveFile(basePath + "/" + business.name(), fileName, file.getInputStream());
+			String dirPath = StringUtils.cleanPath(basePath) + business.name();
+			String path = CommonUtils.saveFile(dirPath, fileName, file.getInputStream());
 
 			logger.debug("filename : {}, size : {}", fileName, file.getSize());
 
-			fileMeta.setUrl(path);
+			fileMeta.setUrl(dirPath + "/" + fileName);
 			fileMeta.setName(fileName);
 			fileMeta.setSize(file.getSize());
 			fileMeta.setType(file.getContentType());
@@ -100,7 +102,8 @@ public class FileController {
 		response.reset(); // 重置
 
 		try {
-			CommonUtils.downloadFile(basePath + "/" + business.name(), fileName, "Y".equals(isOnline), response);
+			String dirPath = StringUtils.cleanPath(basePath) + business.name();
+			CommonUtils.downloadFile(dirPath, fileName, "Y".equals(isOnline), response);
 		} catch (SystemException e) {
 			logger.error("下载文件失败: {}/{}", business.name(), fileName, e);
 		}
@@ -118,7 +121,8 @@ public class FileController {
 	@DeleteMapping(value = "/delete")
 	public AjaxResponse<String> delete(@RequestParam BusinessType business,
 									   @RequestParam String fileName) {
-		CommonUtils.deleteFile(basePath + "/" + business.name(), fileName);
+		String dirPath = StringUtils.cleanPath(basePath) + business.name();
+		CommonUtils.deleteFile(dirPath, fileName);
 
 		return AjaxResponse.create("附件删除成功");
 	}

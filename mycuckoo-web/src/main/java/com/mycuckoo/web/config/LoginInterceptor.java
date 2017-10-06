@@ -25,7 +25,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 		SessionUtil.setRequest(request);
 		
 		String uri = request.getRequestURI();
-		if(matcher.match("(/login/step/first)|(/file/)", uri)) {
+		if(matcher.match("/login/step/first", uri)
+				|| matcher.match("/file", uri)) {
 			return true;
 		}
 			

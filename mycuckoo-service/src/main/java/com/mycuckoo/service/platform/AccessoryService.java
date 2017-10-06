@@ -4,16 +4,13 @@ import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Accessory;
-import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.platform.AccessoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.mycuckoo.common.constant.BusinessType.document;
 import static com.mycuckoo.common.constant.Common.SPLIT;
 import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
 
@@ -28,9 +25,6 @@ import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
 @Transactional(readOnly = true)
 public class AccessoryService {
 
-	@Value("${mycuckoo.basePath}")
-	private String basePath;
-
 	@Autowired
 	private AccessoryMapper accessoryMapper;
 	@Autowired
@@ -43,7 +37,7 @@ public class AccessoryService {
 			// 删除文件
 			for (long id : accessoryIds) {
 				Accessory accessory = this.get(id);
-				CommonUtils.deleteFile(basePath + "/" + document.name(), accessory.getAccessoryName());
+				CommonUtils.deleteFile("", accessory.getAccessoryName());
 
 				accessoryMapper.delete(id);
 			}
