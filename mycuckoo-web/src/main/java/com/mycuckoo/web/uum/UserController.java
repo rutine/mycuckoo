@@ -324,13 +324,13 @@ public class UserController {
 	 * @author rutine
 	 * @time Nov 6, 2014 9:13:20 PM
 	 */
-	@PutMapping(value = "update/password")
+	@PutMapping(value = "/update/password")
 	public AjaxResponse<String> putUpdatePassword(@RequestBody UserPasswordUvo vo) {
 		
 		Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 		String password = CommonUtils.encrypt(vo.getPassword());
 		User user = userService.getUserByUserId(SessionUtil.getUserId());
-		Assert.state(!password.equals(user.getUserPassword()), "密码错误");
+		Assert.state(password.equals(user.getUserPassword()), "密码错误");
 
 		user.setUserPassword(CommonUtils.encrypt(vo.getNewPassword()));
 		userService.updateUserInfo(user);

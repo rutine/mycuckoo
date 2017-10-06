@@ -39,7 +39,15 @@ public class MycuckooExceptionHandler {
 
 	@ExceptionHandler(value = {IllegalArgumentException.class})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> illegalArgumentException(SystemException ex) {
+	public AjaxResponse<String> illegalArgumentException(IllegalArgumentException ex) {
+		logger.info("全局异常处理", ex);
+
+		return AjaxResponse.create(500, ex.getMessage());
+	}
+
+	@ExceptionHandler(value = {IllegalStateException.class})
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public AjaxResponse<String> illegalStateException(IllegalStateException ex) {
 		logger.info("全局异常处理", ex);
 
 		return AjaxResponse.create(500, ex.getMessage());
