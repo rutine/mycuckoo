@@ -9,7 +9,7 @@ import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.uum.RoleUserVo;
+import com.mycuckoo.vo.uum.UserRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +49,9 @@ public class LoginService {
 		return uumServiceFacade.getUserByUserCodeAndPwd(userCode, password);
 	}
 
-	public List<RoleUserVo> preLogin(User user) {
+	public List<UserRoleVo> preLogin(User user) {
 		long userId = user.getUserId();
-		List<RoleUserVo> vos = uumServiceFacade.findRoleUsersByUserId(userId);
+		List<UserRoleVo> vos = uumServiceFacade.findRoleUsersByUserId(userId);
 
 		return vos;
 	}

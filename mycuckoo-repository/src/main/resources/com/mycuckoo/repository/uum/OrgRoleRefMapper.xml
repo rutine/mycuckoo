@@ -69,8 +69,8 @@
             t1.role_id                as role_role_id,
             t1.org_id                 as org_org_id,
             t2.role_name              as role_role_name,
-            t2.status                 as role_status,
             t2.role_level             as role_role_level,
+            t2.status                 as role_status,
             t3.org_simple_name        as org_org_simple_name,
             t3.org_full_name          as org_org_full_name,
             t3.org_code               as org_org_code,
@@ -120,19 +120,43 @@
             t1.org_role_id      as org_role_id,
             t1.role_id          as role_role_id,
             t2.role_name        as role_role_name,
+            t2.role_level       as role_role_level,
             t2.status           as role_status,
             t2.memo             as role_memo,
             t2.creator          as role_creator,
-            t2.create_date      as role_create_date,
-            t2.role_level       as role_role_level
-        from 
+            t2.create_date      as role_create_date
+        from
             cuckoo.uum_org_role_ref t1
         left join 
-            cuckoo.uum_role t2 on  t1.role_id = t2.role_id
+            cuckoo.uum_role t2 on  t2.role_id = t1.role_id
         where 
             t1.org_id = #{id}
         order by 
             org_role_id desc
+    </select>
+
+    <!-- 查询不在orgId下的角色记录, 映射到baseMap -->
+    <select id="findUnselectedRolesByOrgId" parameterType="long" resultMap="baseMap">
+        select
+            t2.role_id          as role_role_id,
+            t2.role_name        as role_role_name,
+            t2.role_level       as role_role_level,
+            t2.status           as role_status,
+            t2.memo             as role_memo,
+            t2.creator          as role_creator,
+            t2.create_date      as role_create_date
+        from
+            cuckoo.uum_role t2
+        where not exists (
+          select
+            1
+          from
+            cuckoo.uum_org_role_ref t1
+          where
+            t1.role_id = t2.role_id
+          and
+            t1.org_id = #{id}
+        )
     </select>
     
     <!-- 根据roleId查询所有机构记录, 映射到baseMap -->
@@ -163,7 +187,7 @@
         from 
             cuckoo.uum_org_role_ref  t1
         left join 
-            cuckoo.uum_organ t2 on t1.org_id = t2.org_id
+            cuckoo.uum_organ t2 on t2.org_id = t1.org_id
         where 
              t1.role_id = #{id}
         order by 
@@ -185,14 +209,14 @@
             t2.status               as org_status,
             t2.creator              as org_creator,
             t3.role_name            as role_role_name,
-            t3.status               as role_status,
-            t3.role_level           as role_role_level
-        from 
+            t3.role_level           as role_role_level,
+            t3.status               as role_status
+        from
             cuckoo.uum_org_role_ref t1
         left join 
-            cuckoo.uum_organ  t2 on t1.org_id = t2.org_id
+            cuckoo.uum_organ  t2 on t2.org_id = t1.org_id
         left join 
-            cuckoo.uum_role t3 on  t1.role_id = t3.role_id
+            cuckoo.uum_role t3 on  t3.role_id = t1.role_id
         where 
              t1.role_id = #{roleId}
         and
@@ -203,14 +227,14 @@
     <select id="findRolesByPage" parameterType="map" resultMap="baseMap">
         select 
             t1.org_role_id          as org_role_id,
-            t1.role_id              as role_role_id,
+            t2.role_id              as role_role_id,
             t2.role_name            as role_role_name,
+            t2.role_level           as role_role_level,
             t2.status               as role_status,
             t2.memo                 as role_memo,
             t2.creator              as role_creator,
-            t2.create_date          as role_create_date,
-            t2.role_level           as role_role_level
-        from 
+            t2.create_date          as role_create_date
+        from
             cuckoo.uum_org_role_ref t1
         left join 
             cuckoo.uum_role t2 on t1.role_id = t2.role_id
@@ -257,9 +281,9 @@
             t1.role_id            as role_role_id,
             t1.org_id             as org_org_id,
             t2.role_name          as role_role_name,
-            t2.status             as role_status,
             t2.role_level         as role_role_level,
-            t3.org_simple_name    as org_org_simple_name, 
+            t2.status             as role_status,
+            t3.org_simple_name    as org_org_simple_name,
             t3.org_full_name      as org_org_full_name,
             t3.org_code           as org_org_code,
             t3.org_type           as org_org_type,

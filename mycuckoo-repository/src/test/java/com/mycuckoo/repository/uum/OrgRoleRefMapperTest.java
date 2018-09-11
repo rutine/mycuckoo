@@ -35,6 +35,17 @@ public class OrgRoleRefMapperTest extends AbstractTransactionalJUnit4SpringConte
     }
 
     @Test
+    public void testFindUnselectedRolesByOrgId() {
+        Page<OrgRoleRef> page = mapper.findUnselectedRolesByOrgId(2L, new PageRequest(0, 5));
+
+        Assert.assertTrue(page.getTotalElements() > 0);
+
+        for (OrgRoleRef entity : page) {
+            logger.info("------> findUnselectedRolesByOrgId: {}", entity);
+        }
+    }
+
+    @Test
     public void testFindOrgansByRoleId() {
         List<OrgRoleRef> list = mapper.findOrgansByRoleId(1L);
 

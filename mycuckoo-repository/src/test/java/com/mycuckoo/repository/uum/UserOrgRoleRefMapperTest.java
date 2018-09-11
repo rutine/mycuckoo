@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
 import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.RoleUserRef;
 import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserOrgRoleRef;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import org.junit.Assert;
@@ -18,17 +18,17 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @SpringBootTest
-public class RoleUserRefMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class UserOrgRoleRefMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 
-    private static Logger logger = LoggerFactory.getLogger(RoleUserRefMapperTest.class);
+    private static Logger logger = LoggerFactory.getLogger(UserOrgRoleRefMapperTest.class);
 
     @Autowired
-    private RoleUserRefMapper mapper;
+    private UserOrgRoleRefMapper mapper;
 
     @Test
     public void testFindByUserId() {
-        List<RoleUserRef> list = mapper.findByUserId(14L);
+        List<UserOrgRoleRef> list = mapper.findByUserId(14L);
 
         Assert.assertTrue(list.size() > 0);
         logger.info("------> findByUserId: {}", list.get(0).getOrgRoleRef().getOrgan());
@@ -56,23 +56,23 @@ public class RoleUserRefMapperTest extends AbstractTransactionalJUnit4SpringCont
 
     @Test
     public void testFindByUserIdAndOrgRoleId() {
-        RoleUserRef roleUserRef = this.mapper.findByUserIdAndOrgRoleId(0l, 1l);
+        UserOrgRoleRef roleUserRef = this.mapper.findByUserIdAndOrgRoleId(0l, 1l);
 
         logger.info("------> findByUserIdAndOrgRoleId: {}", roleUserRef);
     }
 
     @Test
     public void testFindByOrgRoleId() {
-        List<RoleUserRef> roleUserRefs = this.mapper.findByOrgRoleId(11l, 4l);
+        List<UserOrgRoleRef> roleUserRefs = this.mapper.findByOrgRoleId(11l, 4l);
 
-        for (RoleUserRef entity : roleUserRefs) {
+        for (UserOrgRoleRef entity : roleUserRefs) {
             logger.info("------> findByOrgRoleId: {}", entity);
         }
     }
 
     @Test
     public void testSave() {
-        RoleUserRef roleUserRef = new RoleUserRef();
+        UserOrgRoleRef roleUserRef = new UserOrgRoleRef();
         roleUserRef.setUser(new User(3L, "enable"));
         roleUserRef.setOrgRoleRef(new OrgRoleRef(3L));
         roleUserRef.setIsDefault("t");
@@ -80,16 +80,16 @@ public class RoleUserRefMapperTest extends AbstractTransactionalJUnit4SpringCont
         mapper.save(roleUserRef);
         logger.info("------> save: {}", roleUserRef);
 
-        assertEquals(new Long(5L), roleUserRef.getOrgRoleUserId());
+        assertEquals(new Long(5L), roleUserRef.getUserOrgRoleId());
     }
 
     @Test
     public void testUpdate() {
-        RoleUserRef roleUserRef = new RoleUserRef();
+        UserOrgRoleRef roleUserRef = new UserOrgRoleRef();
         roleUserRef.setUser(new User(3L, "enable"));
         roleUserRef.setOrgRoleRef(new OrgRoleRef(3L));
         roleUserRef.setIsDefault("true");
-        roleUserRef.setOrgRoleUserId(3L);
+        roleUserRef.setUserOrgRoleId(3L);
 
         Integer row = mapper.update(roleUserRef);
         assertEquals(new Integer(1), row);
@@ -102,7 +102,7 @@ public class RoleUserRefMapperTest extends AbstractTransactionalJUnit4SpringCont
 
     @Test
     public void testGet() {
-        RoleUserRef roleUserRef = mapper.get(0L);
+        UserOrgRoleRef roleUserRef = mapper.get(0L);
 
         Assert.assertNotNull(roleUserRef);
         assertEquals(new Long(1L), roleUserRef.getOrgRoleRef().getOrgRoleId());
@@ -118,11 +118,11 @@ public class RoleUserRefMapperTest extends AbstractTransactionalJUnit4SpringCont
 
     @Test
     public void testFindByPage() {
-        Page<RoleUserRef> page = mapper.findByPage(null, new PageRequest(0, 5));
+        Page<UserOrgRoleRef> page = mapper.findByPage(null, new PageRequest(0, 5));
 
         Assert.assertNotNull(page.getContent().get(0).getOrgRoleRef().getOrgRoleId());
 
-        for (RoleUserRef entity : page.getContent()) {
+        for (UserOrgRoleRef entity : page.getContent()) {
             logger.info("------> findByPage: orgRoleId: {} userId: {}",
                     entity.getOrgRoleRef().getOrgRoleId(), entity.getUser().getUserId());
         }

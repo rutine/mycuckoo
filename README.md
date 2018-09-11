@@ -15,23 +15,9 @@ mycuckoo
 4. 存储业务操作日志
 5. 登录拦截器`LoginInterceptor`, 权限控制, 跨域请求
 6. 全局异常建议`MycuckooExceptionHandler`, 统一异常处理
-7. postgres数据库, dbname和schema是`cuckoo`, 附带可导入sql脚本
+7. MySQL数据库, 数据库名为`cuckoo`, 附带结构和数据sql脚本
 8. RESTFul接口
 9. 搭配前端`mycuckoo-front`, 实现前后端分离
-
-# 安装PostgreSQL数据库
-1. 系统 *ubuntu 14.04*
-2. 创建 */etc/apt/sources.list.d/pgdg.list* 文件
-3. 输入内容：`deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main`
-4. 导入仓库签名并更新仓库：  
-   `wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -`  
-   `sudo apt-get update`
-5. 安装: `apt-get install postgresql-10`
-6. 安装完后, 执行: `su - postgres` 切换到 *postgres* 用户, 修改linux系统这个用户的密码请自行搜索资料
-7. 执行: `psql` 进入默认数据库
-8. 修改用户 *postgres* 的密码: `alter user postgres with password '123456';`
-9. 创建数据库: `createdb cuckoo`
-10. 还原 `psql -d cuckoo -U postgres -f cuckoo-20171007.sql`
 
 
 # 示例:

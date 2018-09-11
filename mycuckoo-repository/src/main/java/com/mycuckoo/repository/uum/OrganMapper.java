@@ -42,11 +42,11 @@ public interface OrganMapper extends Repository<Organ, Long> {
     /**
      * 根据机构ID和过滤ID查询直接下级机构记录
      *
-     * @param parentId    父级机构ID
-     * @param filterOrgId 过滤掉此机构
+     * @param parentId          父级机构ID
+     * @param filterOutOrgId    过滤掉此机构
      * @return
      */
-    List<Organ> findByParentIdAFilter(@Param("parentId") Long parentId, @Param("filterOrgId") Long filterOrgId);
+    List<Organ> findByParentIdAndFilterOutOrgId(@Param("parentId") Long parentId, @Param("filterOutOrgId") Long filterOutOrgId);
 
     /**
      * 根据机构IDs查询机构记录

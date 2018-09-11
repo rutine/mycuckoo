@@ -24,10 +24,10 @@ public interface OrgRoleRefMapper extends Repository<OrgRoleRef, Long> {
      * 	<b>数据结构:</b>
      * 	[
      *        {
-     * 			"orgRoleId"    : {@code Long},
-     * 			"role"      : {@code List<Role>}
+     *          "orgRoleId"    : {@code Long},
+     *          "role"      : {@code List<Role>}
      *        },
-     * 		...
+     *        ...
      * 	]
      * </pre>
      *
@@ -37,16 +37,34 @@ public interface OrgRoleRefMapper extends Repository<OrgRoleRef, Long> {
     List<OrgRoleRef> findRolesByOrgId(Long orgId);
 
     /**
+     * <p>查询不在orgId下的角色.</p>
+     * <p>
+     * <pre>
+     * 	<b>数据结构:</b>
+     * 	[
+     *        {
+     *          "role"      : {@code List<Role>}
+     *        },
+     *        ...
+     * 	]
+     * </pre>
+     *
+     * @param orgId
+     * @return 机构角色关系列表
+     **/
+    Page<OrgRoleRef> findUnselectedRolesByOrgId(@Param("orgId") Long orgId, Pageable page);
+
+    /**
      * <p>根据roleId查询所有机构.</p>
      * <p>
      * <pre>
      * 	<b>数据结构:</b>
      * 	[
      *        {
-     * 			"orgRoleId"    : {@code Long},
-     * 			"organ"     : {@code List<Organ>}
+     *          "orgRoleId"    : {@code Long},
+     * 	        "organ"     : {@code List<Organ>}
      *        },
-     * 		...
+     *        ...
      * 	]
      * </pre>
      *

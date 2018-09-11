@@ -6,7 +6,7 @@ import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.uum.RoleUserVo;
+import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
@@ -56,7 +56,7 @@ public class LoginController {
 	 * @time Nov 21, 2012 8:00:26 PM
 	 */
 	@RequestMapping(value="/login/step/first", method=RequestMethod.POST)
-	public AjaxResponse<List<RoleUserVo>> stepFirst(
+	public AjaxResponse<List<UserRoleVo>> stepFirst(
 			@RequestParam String userCode, 
 			@RequestParam String password,
 			HttpSession session) {
@@ -89,12 +89,12 @@ public class LoginController {
 			throw new ApplicationException(4, "用户过期");
 		}
 
-		List<RoleUserVo> vos = loginService.preLogin(user);
+		List<UserRoleVo> vos = loginService.preLogin(user);
 		if(!isAdmin) {
 			int len = vos.size();
-			Iterator<RoleUserVo> it = vos.iterator();
+			Iterator<UserRoleVo> it = vos.iterator();
 			while (it.hasNext()) {
-				RoleUserVo vo = it.next();
+				UserRoleVo vo = it.next();
 				if(vo.getOrganRoleId() == 0) {
 					if(len == 1) {
 						throw new ApplicationException(4, "用户为无角色用户没有使用权限");
@@ -126,7 +126,7 @@ public class LoginController {
 	 */
 	@RequestMapping(value="/login/step/second", method=RequestMethod.POST)
 	public AjaxResponse<?> stepSecond(
-			@RequestBody RoleUserVo role,
+			@RequestBody UserRoleVo role,
 			HttpSession session) {
 
 		logger.debug("role --> {}", JsonUtils.toJson(role));

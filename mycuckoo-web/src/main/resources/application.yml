@@ -1,24 +1,25 @@
 spring:
   datasource:
     name: cuckoo
+    default-catalog: cuckoo
     #type: com.alibaba.druid.pool.DruidDataSource
     type: org.apache.commons.dbcp2.BasicDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/cuckoo
-    username: postgres
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306
+    username: cuckoo
     password: 123456
-    maxActive: 20
-    initialSize: 1
-    maxWait: 60000
-    minIdle: 1
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: select 'x'
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    maxOpenPreparedStatements: 20
+    max-active: 20
+    initial-size: 1
+    max-wait: 60000
+    min-idle: 1
+    time-between-eviction-euns-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: select 'x'
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
     
 mycuckoo:
   basePath: mycuckoo/upload/

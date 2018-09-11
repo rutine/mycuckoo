@@ -43,7 +43,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * @param ownerId   拥有者ID
      * @param ownerType 拥有者类型
      */
-    void deleteByOwnerIdAndOwnerType(
+    int deleteByOwnerIdAndOwnerType(
             @Param("ownerId") Long ownerId,
             @Param("ownerType") String ownerType);
 
@@ -54,7 +54,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * @param ownerType     为用户或角色标识
      * @param privilegeType 行或操作权限
      */
-    void deleteByOwnerIdAndPrivilegeType(
+    int deleteByOwnerIdAndPrivilegeType(
             @Param("ownerId") Long ownerId,
             @Param("ownerType") String ownerType,
             @Param("privilegeType") String privilegeType);
@@ -66,7 +66,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * @param privilegeType  @see com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ROW
      * @param privilegeScope @see com.mycuckoo.common.constant.Common.PRIVILEGE_SCOPE_ORG
      */
-    void deleteRowPrivilegeByOrgId(
+    int deleteRowPrivilegeByOrgId(
             @Param("resourceId") String orgId,
             @Param("privilegeType") String privilegeType,
             @Param("privilegeScope") String privilegeScope);
@@ -77,7 +77,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * @param modOptRefIds
      * @param privilegeType @see com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_OPT
      */
-    void deleteByModOptId(
+    int deleteByModOptId(
             @Param("modOptRefIds") String[] modOptRefIds,
             @Param("privilegeType") String privilegeType);
 

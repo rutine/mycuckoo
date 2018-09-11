@@ -1,6 +1,6 @@
 package com.mycuckoo.vo.uum;
 
-import com.mycuckoo.domain.uum.RoleUserRef;
+import com.mycuckoo.domain.uum.UserOrgRoleRef;
 
 /**
  * 功能说明: 角色用户vo
@@ -9,7 +9,7 @@ import com.mycuckoo.domain.uum.RoleUserRef;
  * @time Jul 9, 2017 5:50:43 PM
  * @version 3.0.0
  */
-public class RoleUserRefVo extends RoleUserRef {
+public class UserOrgRoleRefVo extends UserOrgRoleRef {
 	private Long orgRoleId;
 	private Long organId;
 	private String organName;

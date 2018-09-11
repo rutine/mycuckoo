@@ -13,7 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -21,131 +26,129 @@ import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
 
 /**
  * 功能说明: 机构管理Controller
- * 
+ *
  * @author rutine
- * @time Oct 18, 2014 1:26:18 PM
  * @version 3.0.0
+ * @time Oct 18, 2014 1:26:18 PM
  */
 @RestController
 @RequestMapping("/uum/organ/mgr")
 public class OrganController {
-	private static Logger logger = LoggerFactory.getLogger(OrganController.class);
+    private static Logger logger = LoggerFactory.getLogger(OrganController.class);
 
-	@Autowired
-	private OrganService organService;
-
-
+    @Autowired
+    private OrganService organService;
 
 
-	/**
-	 * 功能说明 : 列表展示页面
-	 * 
-	 * @param treeId 机构ID
-	 * @param orgCode 机构代码
-	 * @param orgName 机构名称
-	 * @param pageNo 第几页
-	 * @param pageSize 每页显示数量, 暂时没有使用
-	 * @return
-	 * @author rutine
-	 * @time Jul 2, 2013 3:31:22 PM
-	 */
-	@GetMapping(value = "/list")
-	public AjaxResponse<Page<OrganVo>> list(
-			@RequestParam(value = "treeId", defaultValue = "-1") long treeId,
-			@RequestParam(value = "orgCode", defaultValue = "") String orgCode,
-			@RequestParam(value = "orgName", defaultValue = "") String orgName,
-			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+    /**
+     * 功能说明 : 列表展示页面
+     *
+     * @param treeId   机构ID
+     * @param orgCode  机构代码
+     * @param orgName  机构名称
+     * @param pageNo   第几页
+     * @param pageSize 每页显示数量, 暂时没有使用
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:31:22 PM
+     */
+    @GetMapping(value = "/list")
+    public AjaxResponse<Page<OrganVo>> list(
+            @RequestParam(value = "treeId", defaultValue = "-1") long treeId,
+            @RequestParam(value = "orgCode", defaultValue = "") String orgCode,
+            @RequestParam(value = "orgName", defaultValue = "") String orgName,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
-		orgCode = StringUtils.isNotBlank(orgCode) ? "%" + orgCode + "%" : null;
-		orgName = StringUtils.isNotBlank(orgName) ? "%" + orgName + "%" : null;
+        orgCode = StringUtils.isNotBlank(orgCode) ? "%" + orgCode + "%" : null;
+        orgName = StringUtils.isNotBlank(orgName) ? "%" + orgName + "%" : null;
 
-		Page<OrganVo> page = organService.findByPage(treeId, orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
+        Page<OrganVo> page = organService.findByPage(treeId, orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
 
-		return AjaxResponse.create(page);
-	}
+        return AjaxResponse.create(page);
+    }
 
-	/**
-	 * 功能说明 : 创建新机构
-	 * 
-	 * @param organ
-	 * @return
-	 * @author rutine
-	 * @time Jul 2, 2013 3:35:51 PM
-	 */
-	@PutMapping(value = "/create")
-	public AjaxResponse<String> putCreate(@RequestBody Organ organ) {
-		
-		logger.debug(JsonUtils.toJson(organ));
+    /**
+     * 功能说明 : 创建新机构
+     *
+     * @param organ
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:35:51 PM
+     */
+    @PutMapping(value = "/create")
+    public AjaxResponse<String> putCreate(@RequestBody Organ organ) {
 
-		organ.setCreator(SessionUtil.getUserCode());
-		organService.save(organ);
+        logger.debug(JsonUtils.toJson(organ));
 
-		return AjaxResponse.create("保存机构成功");
-	}
+        organ.setCreator(SessionUtil.getUserCode());
+        organService.save(organ);
 
-	/**
-	 * 功能说明 : 停用/启用机构
-	 * 
-	 * @param id 机构ID
-	 * @param disEnableFlag 停用/启用标志
-	 * @return
-	 * @author rutine
-	 * @time Jul 2, 2013 3:38:46 PM
-	 */
-	@GetMapping(value = "/disEnable")
-	public AjaxResponse<String> disEnable(
-			@RequestParam long id,
-			@RequestParam String disEnableFlag) {
+        return AjaxResponse.create("保存机构成功");
+    }
 
-		organService.disEnable(id, disEnableFlag);
+    /**
+     * 功能说明 : 停用/启用机构
+     *
+     * @param id            机构ID
+     * @param disEnableFlag 停用/启用标志
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:38:46 PM
+     */
+    @GetMapping(value = "/disEnable")
+    public AjaxResponse<String> disEnable(
+            @RequestParam long id,
+            @RequestParam String disEnableFlag) {
 
-		return AjaxResponse.create("停用启用成功");
-	}
+        organService.disEnable(id, disEnableFlag);
 
-	/**
-	 * 功能说明 : 获取下级机构json数据
-	 * 
-	 * @param id 机构id
-	 * @param filterId
-	 * @return
-	 * @author rutine
-	 * @time Jul 2, 2013 3:40:18 PM
-	 */
-	@GetMapping(value = "/get/child/nodes")
-	public AjaxResponse<List<TreeVo>> getChildNodes(
-			@RequestParam(value = "treeId", defaultValue = "0") long id,
-			@RequestParam(value = "filterOrgId", defaultValue = "0") long filterId) {
-		
-		List<TreeVo> asyncTreeList = organService.findNextLevelChildNodes(id, filterId);
+        return AjaxResponse.create("停用启用成功");
+    }
 
-		logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
+    /**
+     * 功能说明 : 获取下级机构json数据
+     *
+     * @param id             机构id
+     * @param filterOutOrgId
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:40:18 PM
+     */
+    @GetMapping(value = "/get/child/nodes")
+    public AjaxResponse<List<TreeVo>> getChildNodes(
+            @RequestParam(value = "treeId", defaultValue = "0") long id,
+            @RequestParam(value = "filterOrgId", defaultValue = "0") long filterOutOrgId) {
 
-		return AjaxResponse.create(asyncTreeList);
-	}
+        List<TreeVo> asyncTreeList = organService.findNextLevelChildNodes(id, filterOutOrgId);
 
-	/**
-	 * 功能说明 : 修改机构
-	 * 
-	 * @param organ
-	 * @return
-	 * @author rutine
-	 * @time Jul 2, 2013 3:42:51 PM
-	 */
-	@PutMapping(value = "/update")
-	public AjaxResponse<String> postUpdate(@RequestBody Organ organ) {
+        logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
 
-		organService.update(organ);
+        return AjaxResponse.create(asyncTreeList);
+    }
 
-		return AjaxResponse.create("修改机构成功");
-	}
+    /**
+     * 功能说明 : 修改机构
+     *
+     * @param organ
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:42:51 PM
+     */
+    @PutMapping(value = "/update")
+    public AjaxResponse<String> postUpdate(@RequestBody Organ organ) {
+
+        organService.update(organ);
+
+        return AjaxResponse.create("修改机构成功");
+    }
 
 
-	@GetMapping(value = "/view")
-	public AjaxResponse<Organ> getView(@RequestParam long id) {
-		Organ organ = organService.get(id);
+    @GetMapping(value = "/view")
+    public AjaxResponse<Organ> getView(@RequestParam long id) {
+        Organ organ = organService.get(id);
 
-		return AjaxResponse.create(organ);
-	}
+        return AjaxResponse.create(organ);
+    }
 
 }

@@ -46,8 +46,8 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     }
 
     @Test
-    public void testFindByParentIdAFilter() {
-        List<Organ> list = (List<Organ>) organMapper.findByParentIdAFilter(1L, 3L);
+    public void testFindByParentIdAndFilterOutOrgId() {
+        List<Organ> list = organMapper.findByParentIdAndFilterOutOrgId(1L, 3L);
 
         logger.info("------> findByParentIdAFilter: {}", list);
     }

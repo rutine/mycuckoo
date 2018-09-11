@@ -11,7 +11,7 @@ package com.mycuckoo.vo.uum;
  * @time Sept 29, 2017 17:55:43 PM
  * @version 3.0.0
  */
-public class RoleUserVo {
+public class UserRoleVo {
 	private Long organRoleId;
 	private Long organId;
 	private String organName;

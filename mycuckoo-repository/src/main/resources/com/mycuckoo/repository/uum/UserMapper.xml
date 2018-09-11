@@ -266,7 +266,7 @@
     <!-- 根据拼音代码查询用户信息 -->
     <select id="findByUserNamePy" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
         select
-            user_id as "userId",
+            user_id   as "userId",
             user_name as "userName"
         from
             <include refid="table" />

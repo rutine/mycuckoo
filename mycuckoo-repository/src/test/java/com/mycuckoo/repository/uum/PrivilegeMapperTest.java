@@ -15,6 +15,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 
 import java.util.List;
 
+import static com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ROW;
+
 @SpringBootTest
 public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -25,7 +27,7 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testFindByOwnIdAndPrivilegeType() {
-        List<Privilege> list = (List<Privilege>) privilegeMapper.findByOwnIdAndPrivilegeType(new Long[]{0L, 1L, 2L, 8L, 9L, 10L},
+        List<Privilege> list = privilegeMapper.findByOwnIdAndPrivilegeType(new Long[]{0L, 1L, 2L, 8L, 9L, 10L},
                 new String[]{Common.OWNER_TYPE_ROL, Common.OWNER_TYPE_USR}, new String[]{PrivilegeScopeEnum.ALL.value()});
 
         logger.info("------> findByOwnIdAndPrivilegeType: {}", list);
@@ -46,6 +48,9 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testDeleteRowPrivilegeByOrgId() {
+        privilegeMapper.deleteRowPrivilegeByOrgId("1",
+                PRIVILEGE_TYPE_ROW,
+                PrivilegeScopeEnum.ORGAN.value());
     }
 
     @Test

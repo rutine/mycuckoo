@@ -2,12 +2,12 @@ package com.mycuckoo.service.facade;
 
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.service.uum.PrivilegeService;
-import com.mycuckoo.service.uum.RoleUserService;
+import com.mycuckoo.service.uum.UserOrgRoleService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.platform.ModuleMemuVo;
-import com.mycuckoo.vo.uum.RoleUserVo;
+import com.mycuckoo.vo.uum.UserRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class UumServiceFacade {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private RoleUserService roleUserService;
+	private UserOrgRoleService roleUserService;
 	@Autowired
 	private PrivilegeService privilegeService;
 	
@@ -39,7 +39,7 @@ public class UumServiceFacade {
 
 
 
-	public List<RoleUserVo> findRoleUsersByUserId(long userId) {
+	public List<UserRoleVo> findRoleUsersByUserId(long userId) {
 		return roleUserService.findByUserId(userId);
 	}
 
