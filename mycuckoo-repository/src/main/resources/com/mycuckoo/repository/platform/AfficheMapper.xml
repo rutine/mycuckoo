@@ -1,117 +1,124 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: AfficheMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 9:27:13 AM
-	@version 3.0.0
+    说明: AfficheMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:27:13 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.platform.AfficheMapper">
-	<!-- 系统公告 -->
-	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.Affiche">
-		<id property="afficheId" column="affiche_id" />
-		<result property="afficheTitle" column="affiche_title" />
-		<result property="afficheInvalidate" column="affiche_invalidate" />
-		<result property="affichePulish" column="affiche_pulish" />
-		<result property="afficheContent" column="affiche_content" />
-	</resultMap>
-	
-	<sql id="colums">
-		affiche_id, affiche_title, affiche_invalidate, affiche_pulish, affiche_content
-	</sql>
-	
-	<sql id="table">
-		cuckoo.syspl_affiche
-	</sql>
+    <!-- 系统公告 -->
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Affiche">
+        <id property="afficheId" column="affiche_id" />
+        <result property="afficheTitle" column="affiche_title" />
+        <result property="afficheInvalidate" column="affiche_invalidate" />
+        <result property="affichePulish" column="affiche_pulish" />
+        <result property="afficheContent" column="affiche_content" />
+    </resultMap>
+    
+    <sql id="colums">
+        affiche_id, affiche_title, affiche_invalidate, affiche_pulish, affiche_content
+    </sql>
+    
+    <sql id="table">
+        cuckoo.syspl_affiche
+    </sql>
 
-	<!-- 插入公告： 1.由数据库生成id并赋值到SysplAffiche对象 -->
-	<insert id="save" parameterType="com.mycuckoo.domain.platform.Affiche">
-		<selectKey keyProperty="afficheId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.syspl_affiche_seq')
-		</selectKey>
-		insert into <include refid="table" /> (
-			affiche_id, affiche_title, affiche_invalidate, affiche_pulish, affiche_content
-		)
-		values (
-			#{afficheId}, #{afficheTitle}, #{afficheInvalidate}, #{affichePulish}, #{afficheContent}
-		)
-	</insert>
-	
-	<!-- 更新公告： 1.输入对象参数  -->
-	<update id="update" parameterType="com.mycuckoo.domain.platform.Affiche">
-		update <include refid="table" />
-		<set>
-			<if test="afficheTitle != null">affiche_title = #{afficheTitle}, </if>
-			<if test="afficheInvalidate != null">affiche_invalidate = #{afficheInvalidate}, </if>
-			<if test="affichePulish != null">affiche_pulish = #{affichePulish}, </if>
-			<if test="afficheContent != null">affiche_content = #{afficheContent}, </if>
-		</set>
-		where 
-			affiche_id = #{afficheId}
-	</update>
-	
-	<!-- 删除公告 -->
-	<delete id="delete" parameterType="long">
-		delete from <include refid="table" /> where affiche_id = #{id}
-	</delete>
-	
-		<!--
-		获取公告: 输出直接映射到对象
-	-->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			affiche_id = #{id}
-	</select>
-	
-	<!-- 判断公告是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(1) > 0 
-		from 
-			<include refid="table" />
-		where 
-			affiche_id = #{id}
-	</select>
+    <!-- 插入公告： 1.由数据库生成id并赋值到SysplAffiche对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.Affiche"
+            useGeneratedKeys="true" keyProperty="afficheId" keyColumn="affiche_id">
+        insert into <include refid="table" />
+        (
+            affiche_id,
+            affiche_title,
+            affiche_invalidate,
+            affiche_pulish,
+            affiche_content
+        )
+        values (
+            #{afficheId},
+            #{afficheTitle},
+            #{afficheInvalidate},
+            #{affichePulish},
+            #{afficheContent}
+        )
+    </insert>
+    
+    <!-- 更新公告： 1.输入对象参数  -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.Affiche">
+        update <include refid="table" />
+        <set>
+            <if test="afficheTitle != null">affiche_title = #{afficheTitle}, </if>
+            <if test="afficheInvalidate != null">affiche_invalidate = #{afficheInvalidate}, </if>
+            <if test="affichePulish != null">affiche_pulish = #{affichePulish}, </if>
+            <if test="afficheContent != null">affiche_content = #{afficheContent}, </if>
+        </set>
+        where 
+            affiche_id = #{afficheId}
+    </update>
+    
+    <!-- 删除公告 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where affiche_id = #{id}
+    </delete>
+    
+        <!--
+        获取公告: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            affiche_id = #{id}
+    </select>
+    
+    <!-- 判断公告是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from 
+            <include refid="table" />
+        where 
+            affiche_id = #{id}
+    </select>
 
-	<!-- 根据条件分页查询公告 -->
-	<select id="findByPage" parameterType="map" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		<where>
-			<if test="afficheTitle != null">
-				and affiche_title like #{afficheTitle}
-			</if>
-			<if test="affichePulish != null">
-				and affiche_pulish = #{affichePulish}
-			</if>
-		</where>
-		order by 
-			affiche_id desc
-	</select>
-	
-	<!-- 统计公告记录总数 -->
-	<select id="count" resultType="long">
-		select count(1) from <include refid="table" />
-	</select>
-	
-	<!-- 查询有效期内的公告记录 -->
-	<select id="findBeforeValidate" parameterType="date" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			affiche_pulish = 0
-		and 
-			affiche_invalidate >= #{afficheInvalidate}
-	</select>
+    <!-- 根据条件分页查询公告 -->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        <where>
+            <if test="afficheTitle != null">
+                and affiche_title like #{afficheTitle}
+            </if>
+            <if test="affichePulish != null">
+                and affiche_pulish = #{affichePulish}
+            </if>
+        </where>
+        order by 
+            affiche_id desc
+    </select>
+    
+    <!-- 统计公告记录总数 -->
+    <select id="count" resultType="long">
+        select count(1) from <include refid="table" />
+    </select>
+    
+    <!-- 查询有效期内的公告记录 -->
+    <select id="findBeforeValidate" parameterType="date" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            affiche_pulish = 0
+        and 
+            affiche_invalidate >= #{afficheInvalidate}
+    </select>
 </mapper> 

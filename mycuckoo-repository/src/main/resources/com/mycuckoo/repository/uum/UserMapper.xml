@@ -1,259 +1,294 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: UserMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 10:23:58 AM
-	@version 3.0.0
+    说明: UserMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 10:23:58 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.uum.UserMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserExtend">
-		<id property="userId" column="user_id" />
-		<result property="userBelongtoOrg" column="user_belongto_org" />
-		<result property="userCode" column="user_code" />
-		<result property="userNamePy" column="user_name_py" />
-		<result property="userName" column="user_name" />
-		<result property="userPassword" column="user_password" />
-		<result property="userGender" column="user_gender" />
-		<result property="userPosition" column="user_position" />
-		<result property="userPhotoUrl" column="user_photo_url" />
-		<result property="userQq" column="user_qq" />
-		<result property="userMsn" column="user_msn" />
-		<result property="userMobile" column="user_mobile" />
-		<result property="userMobile2" column="user_mobile2" />
-		<result property="userOfficeTel" column="user_office_tel" />
-		<result property="userFamilyTel" column="user_family_tel" />
-		<result property="userAddress" column="user_address" />
-		<result property="userEmail" column="user_email" />
-		<result property="userAvidate" column="user_avidate" />
-		<result property="userIsAgent" column="user_is_agent" />
-		<result property="memo" column="memo" />
-		<result property="status" column="status" />
-		<result property="creator" column="creator" />
-		<result property="createDate" column="create_date" />
-		<!-- 其他用途 -->
-		<result property="orgRoleId" column="org_role_id" />
-		<result property="roleName" column="role_name" />
-		<result property="orgName" column="org_simple_name" />
-	</resultMap>
-	
-	<sql id="colums">
-		user_id, user_belongto_org, user_code, user_name_py, user_name, 
-		user_password, user_gender, user_position, user_photo_url, user_qq, 
-		user_msn, user_mobile, user_mobile2, user_office_tel, user_family_tel, 
-		user_address, user_email, user_avidate, user_is_agent, memo, 
-		status, creator, create_date
-	</sql>
-	
-	<sql id="table">
-		cuckoo.uum_user
-	</sql>
+    <resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserExtend">
+        <id property="userId" column="user_id" />
+        <result property="userBelongtoOrg" column="user_belongto_org" />
+        <result property="userCode" column="user_code" />
+        <result property="userNamePy" column="user_name_py" />
+        <result property="userName" column="user_name" />
+        <result property="userPassword" column="user_password" />
+        <result property="userGender" column="user_gender" />
+        <result property="userPosition" column="user_position" />
+        <result property="userPhotoUrl" column="user_photo_url" />
+        <result property="userQq" column="user_qq" />
+        <result property="userMsn" column="user_msn" />
+        <result property="userMobile" column="user_mobile" />
+        <result property="userMobile2" column="user_mobile2" />
+        <result property="userOfficeTel" column="user_office_tel" />
+        <result property="userFamilyTel" column="user_family_tel" />
+        <result property="userAddress" column="user_address" />
+        <result property="userEmail" column="user_email" />
+        <result property="userAvidate" column="user_avidate" />
+        <result property="userIsAgent" column="user_is_agent" />
+        <result property="memo" column="memo" />
+        <result property="status" column="status" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+        <!-- 其他用途 -->
+        <result property="orgRoleId" column="org_role_id" />
+        <result property="roleName" column="role_name" />
+        <result property="orgName" column="org_simple_name" />
+    </resultMap>
 
-	<!-- 插入用户： 1.由数据库生成id并赋值到user对象 2.输入用对象, 嵌套属性表达式#{department.id} -->
-	<insert id="save" parameterType="com.mycuckoo.domain.uum.User">
-		<selectKey keyProperty="userId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.uum_user_seq')
-		</selectKey>
-		insert into <include refid="table" /> (
-			user_id, user_belongto_org, user_code, user_name_py, user_name, 
-			user_password, user_gender, user_position, user_photo_url, user_qq, 
-			user_msn, user_mobile, user_mobile2, user_office_tel, user_family_tel, 
-			user_address, user_email, user_avidate, user_is_agent, memo, 
-			status, creator, create_date
-		)
-		values (
-			#{userId}, #{ouserBelongtoOrg}, #{userCode}, #{userNamePy}, #{userName}, 
-			#{userPassword}, #{userGender}, #{userPosition}, #{userPhotoUrl}, #{userQq}, 
-			#{userMsn}, #{userMobile}, #{userMobile2}, #{userOfficeTel}, #{userFamilyTel}, 
-			#{userAddress}, #{userEmail}, #{userAvidate}, #{userIsAgent}, #{memo}, 
-			#{status}, #{creator}, #{createDate}
-		)
-	</insert>
-	
-	<!-- 更新用户： 1.输入用对象 -->
-	<update id="update" parameterType="com.mycuckoo.domain.uum.User">
-		update 
-			<include refid="table" />
-		<set>
-			<if test="userBelongtoOrg != null">user_belongto_org = #{userBelongtoOrg}, </if>
-			<if test="userCode != null">user_code = #{userCode}, </if>
-			<if test="userNamePy != null">user_name_py = #{userNamePy}, </if>
-			<if test="userName != null">user_name = #{userName}, </if>
-			<if test="userPassword != null">user_password = #{userPassword}, </if>
-			<if test="userGender != null">user_gender = #{userGender}, </if>
-			<if test="userPosition != null">user_position = #{userPosition}, </if>
-			<if test="userPhotoUrl != null">user_photo_url = #{userPhotoUrl}, </if>
-			<if test="userQq != null">user_qq = #{userQq}, </if>
-			<if test="userMsn != null">user_msn = #{userMsn}, </if>
-			<if test="userMobile != null">user_mobile = #{userMobile}, </if>
-			<if test="userMobile2 != null">user_mobile2 = #{userMobile2}, </if>
-			<if test="userOfficeTel != null">user_office_tel = #{userOfficeTel}, </if>
-			<if test="userFamilyTel != null">user_family_tel = #{userFamilyTel}, </if>
-			<if test="userAddress != null">user_address = #{userAddress}, </if>
-			<if test="userEmail != null">user_email = #{userEmail}, </if>
-			<if test="userAvidate != null">user_avidate = #{userAvidate}, </if>
-			<if test="userIsAgent != null">user_is_agent = #{userIsAgent}, </if>
-			<if test="memo != null">memo = #{memo}, </if>
-			<if test="status != null">status = #{status}, </if>
-		</set>
-		where 
-			user_id = #{userId}
-	</update>
-	
-	<!-- 删除单个用户 -->
-	<delete id="delete" parameterType="long">
-		delete from <include refid="table" /> where user_id = #{userId}
-	</delete>
-	
-	<!--
-		获取用户: 输出直接映射到对象
-	-->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			user_id=#{id}
-	</select>
-	
-	<!-- 判断用户是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(user_id) > 0
-		from 
-			<include refid="table" />
-		where 
-			user_id=#{id}
-	</select>
+    <sql id="colums">
+        user_id, user_belongto_org, user_code, user_name_py, user_name, 
+        user_password, user_gender, user_position, user_photo_url, user_qq, 
+        user_msn, user_mobile, user_mobile2, user_office_tel, user_family_tel, 
+        user_address, user_email, user_avidate, user_is_agent, memo, 
+        status, creator, create_date
+    </sql>
 
-	<!-- 返回所有用户,映射到'uumUser'-->
-	<select id="findByPage" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-	</select>
-	
-	<!-- 统计用户记录总数 -->
-	<select id="count" resultType="long">
-		select
-			count(1) 
-		from 
-			<include refid="table" />
-	</select>
-	
-	<!-- 以所属机构ID查询用户, 演示: 1.输出直接映射对象 -->
-	<select id="findByOrgId" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums"/>
-		from 
-			<include refid="table" />
-		where
-			user_belongto_org = #{id}
-	</select>
-	
-	<!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
-	<select id="findByCodeAndName" resultMap="baseMap">
-		select 
-			t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
-		from 
-			<include refid="table" /> t1
-		left join 
-			cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id 
-		left join 
-			cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-		left join 
-			cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id 
-		left join 
-			cuckoo.uum_role t5 on t4.role_id = t5.role_id
-		<where>
-			<if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
-			<if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
-		</where>
-			order by 
-				user_id desc
-	</select>
-	
-	<!-- 根据用户代码、用户名称、机构ids或角色ids查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
-	<select id="findByPage2" resultMap="baseMap">
-		select 
-			t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
-		from 
-			<include refid="table" /> t1
-		left join 
-			cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id 
-		left join 
-			cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-		left join 
-			cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id 
-		left join 
-			cuckoo.uum_role t5 on t4.role_id = t5.role_id
-		<where>
-			<if test="orgIds != null">
-				and t1.user_belongto_org in
-				<foreach collection="orgIds" item="orgId" open="(" separator="," close=")">#{orgId}</foreach> 
-			</if>
-			<if test="orgRoleId != null">
-				and t1.user_id in (select st1.user_id from cuckoo.uum_role_user_ref st1 where st1.org_role_id = #{orgRoleId})
-			</if>
-			<if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
-			<if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
-		</where>
-			order by 
-				t1.user_id desc
-	</select>
-	
-	<!-- 判断用户号是否存在 -->
-	<select id="existsByUserCode" parameterType="string" resultType="boolean">
-		select
-			count(1) > 0
-		from 
-			<include refid="table" />
-		where 
-			user_code = #{user_code}
-	</select>
-	
-		<!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
-	<select id="getByUserCodeAndPwd" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
-		select 
-			<include refid="colums"/>
-		from 
-			<include refid="table" />
-		where
-			user_code = #{userCode}
-		<if test="userPassword != null and userPassword != ''">and user_password = #{userPassword}</if>
-	</select>
-	
-	<!-- 根据拼音代码查询用户信息 -->
-	<select id="findByUserNamePy" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
-		select
-			user_id as "userId",
-			user_name as "userName"
-		from 
-			<include refid="table" />
-		where 
-			user_name_py like #{userNamePy}
-		and
-			user_id != #{userId}
-	</select>
-	
-	<!-- 根据指定的用户ID集合查询用户信息 -->
-	<select id="findByUserIds" resultType="map">
-		select
-			user_id as "userId",
-			user_name as "userName"
-		from 
-			<include refid="table" />
-		<where>
-			user_id in
-			<foreach collection="array" item="userId" open="(" separator="," close=")">
-				#{userId}
-			</foreach>
-		</where>
-	</select>
-	
+    <sql id="table">
+        cuckoo.uum_user
+    </sql>
+
+    <!-- 插入用户： 1.由数据库生成id并赋值到user对象 2.输入用对象, 嵌套属性表达式#{department.id} -->
+    <insert id="save" parameterType="com.mycuckoo.domain.uum.User"
+            useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
+        insert into <include refid="table" />
+        (
+            user_id,
+            user_belongto_org,
+            user_code,
+            user_name_py,
+            user_name,
+            user_password,
+            user_gender,
+            user_position,
+            user_photo_url,
+            user_qq,
+            user_msn,
+            user_mobile,
+            user_mobile2,
+            user_office_tel,
+            user_family_tel,
+            user_address,
+            user_email,
+            user_avidate,
+            user_is_agent,
+            memo,
+            status,
+            creator,
+            create_date
+        )
+        values (
+            #{userId},
+            #{userBelongtoOrg},
+            #{userCode},
+            #{userNamePy},
+            #{userName},
+            #{userPassword},
+            #{userGender},
+            #{userPosition},
+            #{userPhotoUrl},
+            #{userQq},
+            #{userMsn},
+            #{userMobile},
+            #{userMobile2},
+            #{userOfficeTel},
+            #{userFamilyTel},
+            #{userAddress},
+            #{userEmail},
+            #{userAvidate},
+            #{userIsAgent},
+            #{memo},
+            #{status},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+
+    <!-- 更新用户： 1.输入用对象 -->
+    <update id="update" parameterType="com.mycuckoo.domain.uum.User">
+        update
+            <include refid="table" />
+        <set>
+            <if test="userBelongtoOrg != null">user_belongto_org = #{userBelongtoOrg}, </if>
+            <if test="userCode != null">user_code = #{userCode}, </if>
+            <if test="userNamePy != null">user_name_py = #{userNamePy}, </if>
+            <if test="userName != null">user_name = #{userName}, </if>
+            <if test="userPassword != null">user_password = #{userPassword}, </if>
+            <if test="userGender != null">user_gender = #{userGender}, </if>
+            <if test="userPosition != null">user_position = #{userPosition}, </if>
+            <if test="userPhotoUrl != null">user_photo_url = #{userPhotoUrl}, </if>
+            <if test="userQq != null">user_qq = #{userQq}, </if>
+            <if test="userMsn != null">user_msn = #{userMsn}, </if>
+            <if test="userMobile != null">user_mobile = #{userMobile}, </if>
+            <if test="userMobile2 != null">user_mobile2 = #{userMobile2}, </if>
+            <if test="userOfficeTel != null">user_office_tel = #{userOfficeTel}, </if>
+            <if test="userFamilyTel != null">user_family_tel = #{userFamilyTel}, </if>
+            <if test="userAddress != null">user_address = #{userAddress}, </if>
+            <if test="userEmail != null">user_email = #{userEmail}, </if>
+            <if test="userAvidate != null">user_avidate = #{userAvidate}, </if>
+            <if test="userIsAgent != null">user_is_agent = #{userIsAgent}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+        </set>
+        where
+            user_id = #{userId}
+    </update>
+
+    <!-- 删除单个用户 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where user_id = #{userId}
+    </delete>
+
+    <!--
+        获取用户: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select
+            <include refid="colums" />
+        from
+            <include refid="table" />
+        where
+            user_id=#{id}
+    </select>
+
+    <!-- 判断用户是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(user_id) > 0
+        from
+            <include refid="table" />
+        where
+            user_id=#{id}
+    </select>
+
+    <!-- 返回所有用户,映射到'uumUser'-->
+    <select id="findByPage" resultMap="baseMap">
+        select
+            <include refid="colums" />
+        from
+            <include refid="table" />
+    </select>
+
+    <!-- 统计用户记录总数 -->
+    <select id="count" resultType="long">
+        select
+            count(1)
+        from
+            <include refid="table" />
+    </select>
+
+    <!-- 以所属机构ID查询用户, 演示: 1.输出直接映射对象 -->
+    <select id="findByOrgId" parameterType="long" resultMap="baseMap">
+        select
+            <include refid="colums"/>
+        from
+            <include refid="table" />
+        where
+            user_belongto_org = #{id}
+    </select>
+
+    <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
+    <select id="findByCodeAndName" resultMap="baseMap">
+        select
+            t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
+        from
+            <include refid="table" /> t1
+        left join
+            cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join
+            cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+        left join
+            cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
+        left join
+            cuckoo.uum_role t5 on t4.role_id = t5.role_id
+        <where>
+            <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
+            <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
+        </where>
+            order by
+                user_id desc
+    </select>
+
+    <!-- 根据用户代码、用户名称、机构ids或角色ids查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
+    <select id="findByPage2" resultMap="baseMap">
+        select
+            t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
+        from
+            <include refid="table" /> t1
+        left join
+            cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join
+            cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+        left join
+            cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
+        left join
+            cuckoo.uum_role t5 on t4.role_id = t5.role_id
+        <where>
+            <if test="orgIds != null">
+                and t1.user_belongto_org in
+                <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">#{orgId}</foreach>
+            </if>
+            <if test="orgRoleId != null">
+                and t1.user_id in (select st1.user_id from cuckoo.uum_role_user_ref st1 where st1.org_role_id = #{orgRoleId})
+            </if>
+            <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
+            <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
+        </where>
+            order by
+                t1.user_id desc
+    </select>
+
+    <!-- 判断用户号是否存在 -->
+    <select id="existsByUserCode" parameterType="string" resultType="boolean">
+        select
+            count(1) > 0
+        from
+            <include refid="table" />
+        where
+            user_code = #{user_code}
+    </select>
+
+        <!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
+    <select id="getByUserCodeAndPwd" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
+        select
+            <include refid="colums"/>
+        from
+            <include refid="table" />
+        where
+            user_code = #{userCode}
+        <if test="userPassword != null and userPassword != ''">and user_password = #{userPassword}</if>
+    </select>
+
+    <!-- 根据拼音代码查询用户信息 -->
+    <select id="findByUserNamePy" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
+        select
+            user_id as "userId",
+            user_name as "userName"
+        from
+            <include refid="table" />
+        where
+            user_name_py like #{userNamePy}
+        and
+            user_id != #{userId}
+    </select>
+
+    <!-- 根据指定的用户ID集合查询用户信息 -->
+    <select id="findByUserIds" resultType="map">
+        select
+            user_id as "userId",
+            user_name as "userName"
+        from
+            <include refid="table" />
+        <where>
+            user_id in
+            <foreach collection="array" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+        </where>
+    </select>
+
 </mapper> 

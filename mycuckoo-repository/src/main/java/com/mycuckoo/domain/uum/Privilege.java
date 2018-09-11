@@ -1,96 +1,102 @@
 package com.mycuckoo.domain.uum;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.Serializable;
 
 /**
  * 功能说明: 域对象
  *
  * @author rutine
- * @time Sep 23, 2014 10:48:29 AM
  * @version 3.0.0
+ * @time Sep 23, 2014 10:48:29 AM
  */
 public class Privilege implements Serializable {
-	
-	private Long privilegeId;
-	private String resourceId;
-	private Long ownerId;
-	private String ownerType;
-	private String privilegeScope;
-	private String privilegeType;
 
-	/** default constructor */
-	public Privilege() {
-	}
+    private Long privilegeId;
+    private String resourceId;
+    private Long ownerId;
+    private String ownerType;
+    private String privilegeScope;
+    private String privilegeType;
 
-	/** minimal constructor */
-	public Privilege(Long privilegeId) {
-		this.privilegeId = privilegeId;
-	}
+    /**
+     * default constructor
+     */
+    public Privilege() {
+    }
 
-	/** full constructor */
-	public Privilege(Long privilegeId, String resourceId, Long ownerId,
-			String ownerType, String privilegeScope, String privilegeType) {
-		this.privilegeId = privilegeId;
-		this.resourceId = resourceId;
-		this.ownerId = ownerId;
-		this.ownerType = ownerType;
-		this.privilegeScope = privilegeScope;
-		this.privilegeType = privilegeType;
-	}
+    /**
+     * minimal constructor
+     */
+    public Privilege(Long privilegeId) {
+        this.privilegeId = privilegeId;
+    }
 
-	public Long getPrivilegeId() {
-		return this.privilegeId;
-	}
+    /**
+     * full constructor
+     */
+    public Privilege(Long privilegeId, String resourceId, Long ownerId,
+                     String ownerType, String privilegeScope, String privilegeType) {
+        this.privilegeId = privilegeId;
+        this.resourceId = resourceId;
+        this.ownerId = ownerId;
+        this.ownerType = ownerType;
+        this.privilegeScope = privilegeScope;
+        this.privilegeType = privilegeType;
+    }
 
-	public void setPrivilegeId(Long privilegeId) {
-		this.privilegeId = privilegeId;
-	}
+    public Long getPrivilegeId() {
+        return this.privilegeId;
+    }
 
-	public String getResourceId() {
-		return this.resourceId;
-	}
+    public void setPrivilegeId(Long privilegeId) {
+        this.privilegeId = privilegeId;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public String getResourceId() {
+        return this.resourceId;
+    }
 
-	public Long getOwnerId() {
-		return this.ownerId;
-	}
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
 
-	public void setOwnerId(Long ownerId) {
-		this.ownerId = ownerId;
-	}
+    public Long getOwnerId() {
+        return this.ownerId;
+    }
 
-	public String getOwnerType() {
-		return this.ownerType;
-	}
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
 
-	public void setOwnerType(String ownerType) {
-		this.ownerType = ownerType;
-	}
+    public String getOwnerType() {
+        return this.ownerType;
+    }
 
-	public String getPrivilegeScope() {
-		return this.privilegeScope;
-	}
+    public void setOwnerType(String ownerType) {
+        this.ownerType = ownerType;
+    }
 
-	public void setPrivilegeScope(String privilegeScope) {
-		this.privilegeScope = privilegeScope;
-	}
+    public String getPrivilegeScope() {
+        return this.privilegeScope;
+    }
 
-	public String getPrivilegeType() {
-		return this.privilegeType;
-	}
+    public void setPrivilegeScope(String privilegeScope) {
+        this.privilegeScope = privilegeScope;
+    }
 
-	public void setPrivilegeType(String privilegeType) {
-		this.privilegeType = privilegeType;
-	}
-	
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+    public String getPrivilegeType() {
+        return this.privilegeType;
+    }
+
+    public void setPrivilegeType(String privilegeType) {
+        this.privilegeType = privilegeType;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
 }

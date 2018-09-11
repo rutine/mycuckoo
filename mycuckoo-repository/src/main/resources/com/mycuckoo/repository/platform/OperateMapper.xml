@@ -1,125 +1,141 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: OperateMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 9:50:37 AM
-	@version 3.0.0
+    说明: OperateMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:50:37 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.platform.OperateMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.Operate">
-		<id property="operateId" column="operate_id" />
-		<result property="operateName" column="operate_name" />
-		<result property="optImgLink" column="opt_img_link" />
-		<result property="optOrder" column="opt_order" />
-		<result property="optGroup" column="opt_group" />
-		<result property="memo" column="memo" />
-		<result property="status" column="status" />
-		<result property="creator" column="creator" />
-		<result property="createDate" column="create_date" />
-		<result property="optFunLink" column="opt_fun_link" />
-	</resultMap>
-	
-	<sql id="colums">
-		operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
-	</sql>
-	
-	<sql id="table">
-		cuckoo.syspl_operate
-	</sql>
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Operate">
+        <id property="operateId" column="operate_id" />
+        <result property="operateName" column="operate_name" />
+        <result property="optFunLink" column="opt_fun_link" />
+        <result property="optImgLink" column="opt_img_link" />
+        <result property="optOrder" column="opt_order" />
+        <result property="optGroup" column="opt_group" />
+        <result property="memo" column="memo" />
+        <result property="status" column="status" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+    </resultMap>
+    
+    <sql id="colums">
+        operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+    </sql>
+    
+    <sql id="table">
+        cuckoo.syspl_operate
+    </sql>
 
-	<!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->
-	<insert id="save" parameterType="com.mycuckoo.domain.platform.Operate">
-		<selectKey keyProperty="operateId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.syspl_operate_seq')
-		</selectKey>
-		insert into <include refid="table" />
-		(
-			operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
-		)
-		values (
-			#{operateId}, #{operateName}, #{optImgLink}, #{optOrder}, #{optGroup}, #{memo}, #{status}, #{creator}, #{createDate}, #{optFunLink}
-		)
-	</insert>
-	
-	<!-- 更新操作： 1.输入对象参数 -->
-	<update id="update" parameterType="com.mycuckoo.domain.platform.Operate">
-		update 
-			<include refid="table" />
-		<set>
-			<if test="operateName != null">operate_name = #{operateName}, </if>
-			<if test="optImgLink != null">opt_img_link = #{optImgLink}, </if>
-			<if test="optOrder != null">opt_order = #{optOrder}, </if>
-			<if test="optGroup != null">opt_group = #{optGroup}, </if>
-			<if test="optFunLink != null">opt_fun_link = #{optFunLink}, </if>
-			<if test="memo != null">memo = #{memo}, </if>
-			<if test="status != null">status = #{status}, </if>
-		</set>
-		where 
-			operate_id = #{operateId}
-	</update>
-	
-	<!-- 删除操作 -->
-	<delete id="delete" parameterType="long">
-		delete from <include refid="table" /> where operate_id = #{id}
-	</delete>
-	
-	<!--
-		获取操作: 输出直接映射到对象
-	-->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			operate_id = #{id}
-	</select>
-	
-	<!-- 判断操作是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(1) > 0 
-		from 
-			<include refid="table" />
-		where 
-			operate_id = #{id}
-	</select>
+    <!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.Operate"
+            useGeneratedKeys="true" keyProperty="operateId" keyColumn="operate_id">
+        insert into <include refid="table" />
+        (
+            operate_id,
+            operate_name,
+            opt_fun_link,
+            opt_img_link,
+            opt_order,
+            opt_group,
+            memo,
+            status,
+            creator,
+            create_date
+        )
+        values (
+            #{operateId},
+            #{operateName},
+            #{optFunLink},
+            #{optImgLink},
+            #{optOrder},
+            #{optGroup},
+            #{memo},
+            #{status},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+    
+    <!-- 更新操作： 1.输入对象参数 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.Operate">
+        update 
+            <include refid="table" />
+        <set>
+            <if test="operateName != null">operate_name = #{operateName}, </if>
+            <if test="optFunLink != null">opt_fun_link = #{optFunLink}, </if>
+            <if test="optImgLink != null">opt_img_link = #{optImgLink}, </if>
+            <if test="optOrder != null">opt_order = #{optOrder}, </if>
+            <if test="optGroup != null">opt_group = #{optGroup}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+        </set>
+        where 
+            operate_id = #{operateId}
+    </update>
+    
+    <!-- 删除操作 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where operate_id = #{id}
+    </delete>
+    
+    <!--
+        获取操作: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            operate_id = #{id}
+    </select>
+    
+    <!-- 判断操作是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from 
+            <include refid="table" />
+        where 
+            operate_id = #{id}
+    </select>
 
-		<!-- 根据条件分页查询模块操作-->
-	<select id="findByPage" parameterType="map" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		<where>
-			<if test="operateName != null">
-				operate_name like #{operateName}
-			</if>
-		</where>
-		order by 
-			operate_id desc
-	</select>
-	
-		<!-- 统计操作记录总数 -->
-	<select id="count" resultType="long">
-		select
-			count(1) 
-		from 
-			<include refid="table" />
-	</select>
-	
-	<!-- 根据模块操作名统计模块操作数量-->
-	<select id="countByName" parameterType="string" resultType="int">
-		select 
-			count(1)
-		from 
-			<include refid="table" />
-		where
-			operate_name = #{operateName}
-	</select>
-	
+        <!-- 根据条件分页查询模块操作-->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        <where>
+            <if test="operateName != null">
+                operate_name like #{operateName}
+            </if>
+        </where>
+        order by 
+            operate_id desc
+    </select>
+    
+        <!-- 统计操作记录总数 -->
+    <select id="count" resultType="long">
+        select
+            count(1) 
+        from 
+            <include refid="table" />
+    </select>
+    
+    <!-- 根据模块操作名统计模块操作数量-->
+    <select id="countByName" parameterType="string" resultType="int">
+        select 
+            count(1)
+        from 
+            <include refid="table" />
+        where
+            operate_name = #{operateName}
+    </select>
+    
 </mapper> 

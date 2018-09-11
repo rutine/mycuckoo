@@ -1,7 +1,5 @@
 package com.mycuckoo.repository;
 
-import javax.sql.DataSource;
-
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -12,26 +10,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
+
 @SpringBootApplication
 @MapperScan("com.mycuckoo.repository")
 public class ApplicationTest {
-	private static Logger logger = LoggerFactory.getLogger(ApplicationTest.class);
+    private static Logger logger = LoggerFactory.getLogger(ApplicationTest.class);
 
-	@Bean
-	public PlatformTransactionManager transactionManager(DataSource dataSource) {
-		return new DataSourceTransactionManager(dataSource);
-	}
-	
-	@Bean
-	public Interceptor interceptors() {
-		return new PageInterceptor();
-	}
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
-	/**
-	 * Main Start
-	 */
-	public static void main(String[] args) {
-		SpringApplication.run(ApplicationTest.class, args);
-		logger.info("============= Mycuckoo Start Success =============");
-	}
+    @Bean
+    public Interceptor interceptors() {
+        return new PageInterceptor();
+    }
+
+    /**
+     * Main Start
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(ApplicationTest.class, args);
+        logger.info("============= Mycuckoo Start Success =============");
+    }
 }

@@ -1,245 +1,249 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: RoleUserRefMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 10:16:42 AM
-	@version 3.0.0
+    说明: RoleUserRefMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 10:16:42 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.uum.RoleUserRefMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.uum.RoleUserRef">
-		<id property="orgRoleUserId" column="org_role_user_id" />
-		<result property="user.userId" column="user_id" />
-		<result property="isDefault" column="is_default" />
-		<association property="orgRoleRef"
-			javaType="com.mycuckoo.domain.uum.OrgRoleRef"
-			resultMap="com.mycuckoo.repository.uum.OrgRoleRefMapper.baseMap" />
-		<association property="user"
-			javaType="com.mycuckoo.domain.uum.User"
-			resultMap="com.mycuckoo.repository.uum.UserMapper.baseMap"
-			columnPrefix="user_" />
-	</resultMap>
-	
-	<sql id="colums">
-		org_role_user_id, org_role_id, user_id, is_default
-	</sql>
+    <resultMap id="baseMap" type="com.mycuckoo.domain.uum.RoleUserRef">
+        <id property="orgRoleUserId" column="org_role_user_id" />
+        <result property="user.userId" column="user_id" />
+        <result property="isDefault" column="is_default" />
+        <association property="orgRoleRef"
+            javaType="com.mycuckoo.domain.uum.OrgRoleRef"
+            resultMap="com.mycuckoo.repository.uum.OrgRoleRefMapper.baseMap" />
+        <association property="user"
+            javaType="com.mycuckoo.domain.uum.User"
+            resultMap="com.mycuckoo.repository.uum.UserMapper.baseMap"
+            columnPrefix="user_" />
+    </resultMap>
+    
+    <sql id="colums">
+        org_role_user_id, org_role_id, user_id, is_default
+    </sql>
 
-	<!-- 插入角色用户关系： 1.由数据库生成id并赋值到RoleUserRef对象 2.输入对象参数 -->
-	<insert id="save" parameterType="com.mycuckoo.domain.uum.RoleUserRef">
-		<selectKey keyProperty="orgRoleUserId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.uum_role_user_ref_seq')
-		</selectKey>
-		insert into cuckoo.uum_role_user_ref
-		(
-			org_role_user_id, org_role_id, user_id, is_default
-		)
-		values (
-			#{orgRoleUserId}, #{orgRoleRef.orgRoleId}, #{user.userId}, #{isDefault}
-		)
-	</insert>
-	
-	<!-- 更新角色用户关系： 1.输入对象参数, 嵌套属性表达式#{orgRoleRef.orgRoleId}, #{user.userId} -->
-	<update id="update" parameterType="com.mycuckoo.domain.uum.RoleUserRef">
-		update 
-			cuckoo.uum_role_user_ref
-		set
-			org_role_id 				= #{orgRoleRef.orgRoleId},
-			user_id 						= #{user.userId},
-			is_default					= #{isDefault}
-		where 
-			org_role_user_id = #{orgRoleUserId}
-	</update>
-	
-	<!-- 删除角色用户关系 -->
-	<delete id="delete" parameterType="long">
-		delete from cuckoo.uum_role_user_ref where org_role_user_id = #{id}
-	</delete>
-	
-	<!-- 获取角色用户关系: 输出直接映射到对象 -->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			org_role_user_id,
-			org_role_id,
-			user_id,
-			is_default
-		from 
-			cuckoo.uum_role_user_ref
-		where 
-			org_role_user_id = #{id}
-	</select>
-	
-	<!-- 角色用户关系是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(1) > 0 
-		from 
-			cuckoo.uum_role_user_ref
-		where 
-			org_role_user_id = #{id}
-	</select>
+    <!-- 插入角色用户关系： 1.由数据库生成id并赋值到RoleUserRef对象 2.输入对象参数 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.uum.RoleUserRef"
+            useGeneratedKeys="true" keyProperty="orgRoleUserId" keyColumn="org_role_user_id">
+        insert into cuckoo.uum_role_user_ref
+        (
+            org_role_user_id,
+            org_role_id,
+            user_id,
+            is_default
+        )
+        values (
+            #{orgRoleUserId}, 
+            #{orgRoleRef.orgRoleId},
+            #{user.userId},
+            #{isDefault}
+        )
+    </insert>
+    
+    <!-- 更新角色用户关系： 1.输入对象参数, 嵌套属性表达式#{orgRoleRef.orgRoleId}, #{user.userId} -->
+    <update id="update" parameterType="com.mycuckoo.domain.uum.RoleUserRef">
+        update 
+            cuckoo.uum_role_user_ref
+        set
+            org_role_id             = #{orgRoleRef.orgRoleId},
+            user_id                 = #{user.userId},
+            is_default              = #{isDefault}
+        where 
+            org_role_user_id = #{orgRoleUserId}
+    </update>
+    
+    <!-- 删除角色用户关系 -->
+    <delete id="delete" parameterType="long">
+        delete from cuckoo.uum_role_user_ref where org_role_user_id = #{id}
+    </delete>
+    
+    <!-- 获取角色用户关系: 输出直接映射到对象 -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            org_role_user_id,
+            org_role_id,
+            user_id,
+            is_default
+        from 
+            cuckoo.uum_role_user_ref
+        where 
+            org_role_user_id = #{id}
+    </select>
+    
+    <!-- 角色用户关系是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from 
+            cuckoo.uum_role_user_ref
+        where 
+            org_role_user_id = #{id}
+    </select>
 
-	<!-- 查询所有角色用户关系, 输出直接映射到对象 -->
-	<select id="findByPage" resultMap="baseMap">
-		select 
-			org_role_user_id,
-			org_role_id,
-			user_id,
-			is_default
-		from 
-			cuckoo.uum_role_user_ref
-	</select>
-	
-	<!-- 统计角色用户关系记录 -->
-	<select id="count" resultType="long">
-		select
-			count(1) 
-		from 
-			cuckoo.uum_role_user_ref
-	</select>
-	
-	<!-- 根据userId查询角色用户关系, 映射到roleUserRef -->
-	<select id="findByUserId" parameterType="long" resultMap="baseMap">
-		select 
-			t1.org_role_user_id		as org_role_user_id,
-			t1.org_role_id				as org_role_id,
-			t1.is_default					as is_default,
-			t2.role_id						as role_role_id,
-			t2.org_id							as org_org_id,
-			t3.role_name					as role_role_name, 
-			t3.status							as role_status,
-			t3.role_level					as role_role_level,
-			t4.org_simple_name		as org_org_simple_name, 
-			t4.org_full_name			as org_org_full_name,
-			t4.org_code						as org_org_code, 
-			t4.org_type						as org_org_type, 
-			t4.status							as org_status,
-			t5.user_id						as user_user_id,
-			t5.user_name					as user_user_name,
-			t5.user_photo_url			as user_user_photo_url
-		from 
-			cuckoo.uum_role_user_ref t1
-		left join
-			cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
-		left join 
-			cuckoo.uum_role t3 on t2.role_id = t3.role_id 
-		left join 
-			cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
-		left join 
-			cuckoo.uum_user t5 on t1.user_id = t5.user_id 
-		where 
-			t1.user_id = #{id}
-	</select>
-	
-	<!-- 根据userId删除用户的所有角色 -->
-	<delete id="deleteByUserId" parameterType="long">
-		delete from cuckoo.uum_role_user_ref where user_id = #{userId}
-	</delete>
-	
-	<!-- 根据机构角色ID统计角色用户关系记录 -->
-	<select id="countByOrgRoleId" resultType="int">
-		select
-			count(1)
-		from
-			cuckoo.uum_role_user_ref
-		where 
-			org_role_id = #{orgRoleId}
-	</select>
-	
-	<!-- 根据角色ID统计角色用户关系 -->
-	<select id="countByRoleId" resultType="int">
-		select
-			count(1)
-		from
-			cuckoo.uum_role_user_ref
-		where 
-			org_role_id in
-			(
-				select 
-					org_role_id 
-				from 
-					cuckoo.uum_org_role_ref
-				where 
-					role_id = #{roleId}
-			)
-	</select>
-	
-	<!-- 根据用户ID和机构角色ID查找用户的角色 -->
-	<select id="findByUserIdAndOrgRoleId" resultMap="baseMap">
-		select 
-			t1.org_role_user_id		as org_role_user_id,
-			t1.org_role_id				as org_role_id,
-			t1.is_default					as is_default,
-			t2.role_id						as role_role_id,
-			t2.org_id							as org_org_id,
-			t3.role_name					as role_role_name, 
-			t3.status							as role_status,
-			t3.role_level					as role_role_level,
-			t4.org_simple_name		as org_org_simple_name, 
-			t4.org_full_name			as org_org_full_name,
-			t4.org_code						as org_org_code, 
-			t4.org_type						as org_org_type, 
-			t4.status							as org_status
-		from 
-			cuckoo.uum_role_user_ref t1
-		left join
-			cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
-		left join 
-			cuckoo.uum_role t3 on t2.role_id = t3.role_id 
-		left join 
-			cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
-		where 
-			t1.user_id = #{userId}
-		and 
-			t1.org_role_id = #{orgRoleId}
-	</select>
-	
-	<!-- 根据orgId和roleId查询用户, 映射到uumRoleUserRef -->
-	<select id="findByOrgRoleId" parameterType="map" resultMap="baseMap">
-		select 
-			t1.org_role_user_id		as org_role_user_id,
-			t1.user_id						as user_user_id,
-			t2.user_belongto_org	as user_user_belongto_org, 
-			t2.user_code					as user_user_code, 
-			t2.user_name_py				as user_user_name_py, 
-			t2.user_name					as user_user_name
-			<!-- 
-			t2.user_gender				as user_user_gender, 
-			t2.user_position			as user_user_position, 
-			t2.user_photo_url			as user_user_photo_url, 
-			t2.user_qq						as user_user_qq, 
-			t2.user_msn						as user_user_msn, 
-			t2.user_mobile				as user_user_mobile, 
-			t2.user_mobile2				as user_user_mobile2, 
-			t2.user_office_tel		as user_user_office_tel, 
-			t2.user_family_tel		as user_user_family_tel, 
-			t2.user_address				as user_user_address, 
-			t2.user_email					as user_user_email, 
-			t2.user_avidate				as user_user_avidate, 
-			t2.user_is_agent			as user_user_is_agent, 
-			t2.memo								as user_memo, 
-			t2.status							as user_status, 
-			t2.creator						as user_creator, 
-			t2.create_date				as user_createDate
-			-->
-		from 
-			cuckoo.uum_role_user_ref t1
-		left join
-			cuckoo.uum_user t2 on t1.user_id = t2.user_id
-		where 
-			t1.org_role_id in
-			(
-				select 
-					org_role_id
-				from
-					cuckoo.uum_org_role_ref
-				where
-					role_id = #{roleId}
-				and
-					org_id = #{orgId}
-			)
-	</select>
-	
+    <!-- 查询所有角色用户关系, 输出直接映射到对象 -->
+    <select id="findByPage" resultMap="baseMap">
+        select 
+            org_role_user_id,
+            org_role_id,
+            user_id,
+            is_default
+        from 
+            cuckoo.uum_role_user_ref
+    </select>
+    
+    <!-- 统计角色用户关系记录 -->
+    <select id="count" resultType="long">
+        select
+            count(1) 
+        from 
+            cuckoo.uum_role_user_ref
+    </select>
+    
+    <!-- 根据userId查询角色用户关系, 映射到roleUserRef -->
+    <select id="findByUserId" parameterType="long" resultMap="baseMap">
+        select 
+            t1.org_role_user_id        as org_role_user_id,
+            t1.org_role_id             as org_role_id,
+            t1.is_default              as is_default,
+            t2.role_id                 as role_role_id,
+            t2.org_id                  as org_org_id,
+            t3.role_name               as role_role_name,
+            t3.status                  as role_status,
+            t3.role_level              as role_role_level,
+            t4.org_simple_name         as org_org_simple_name,
+            t4.org_full_name           as org_org_full_name,
+            t4.org_code                as org_org_code,
+            t4.org_type                as org_org_type,
+            t4.status                  as org_status,
+            t5.user_id                 as user_user_id,
+            t5.user_name               as user_user_name,
+            t5.user_photo_url          as user_user_photo_url
+        from 
+            cuckoo.uum_role_user_ref t1
+        left join
+            cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
+        left join 
+            cuckoo.uum_role t3 on t2.role_id = t3.role_id 
+        left join 
+            cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
+        left join 
+            cuckoo.uum_user t5 on t1.user_id = t5.user_id 
+        where 
+            t1.user_id = #{id}
+    </select>
+    
+    <!-- 根据userId删除用户的所有角色 -->
+    <delete id="deleteByUserId" parameterType="long">
+        delete from cuckoo.uum_role_user_ref where user_id = #{userId}
+    </delete>
+    
+    <!-- 根据机构角色ID统计角色用户关系记录 -->
+    <select id="countByOrgRoleId" resultType="int">
+        select
+            count(1)
+        from
+            cuckoo.uum_role_user_ref
+        where 
+            org_role_id = #{orgRoleId}
+    </select>
+    
+    <!-- 根据角色ID统计角色用户关系 -->
+    <select id="countByRoleId" resultType="int">
+        select
+            count(1)
+        from
+            cuckoo.uum_role_user_ref
+        where 
+            org_role_id in
+            (
+                select 
+                    org_role_id 
+                from 
+                    cuckoo.uum_org_role_ref
+                where 
+                    role_id = #{roleId}
+            )
+    </select>
+    
+    <!-- 根据用户ID和机构角色ID查找用户的角色 -->
+    <select id="findByUserIdAndOrgRoleId" resultMap="baseMap">
+        select 
+            t1.org_role_user_id        as org_role_user_id,
+            t1.org_role_id             as org_role_id,
+            t1.is_default              as is_default,
+            t2.role_id                 as role_role_id,
+            t2.org_id                  as org_org_id,
+            t3.role_name               as role_role_name,
+            t3.status                  as role_status,
+            t3.role_level              as role_role_level,
+            t4.org_simple_name         as org_org_simple_name,
+            t4.org_full_name           as org_org_full_name,
+            t4.org_code                as org_org_code,
+            t4.org_type                as org_org_type,
+            t4.status                  as org_status
+        from 
+            cuckoo.uum_role_user_ref t1
+        left join
+            cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
+        left join 
+            cuckoo.uum_role t3 on t2.role_id = t3.role_id 
+        left join 
+            cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
+        where 
+            t1.user_id = #{userId}
+        and 
+            t1.org_role_id = #{orgRoleId}
+    </select>
+    
+    <!-- 根据orgId和roleId查询用户, 映射到uumRoleUserRef -->
+    <select id="findByOrgRoleId" parameterType="map" resultMap="baseMap">
+        select 
+            t1.org_role_user_id        as org_role_user_id,
+            t1.user_id                 as user_user_id,
+            t2.user_belongto_org       as user_user_belongto_org,
+            t2.user_code               as user_user_code,
+            t2.user_name_py            as user_user_name_py,
+            t2.user_name               as user_user_name
+            <!-- 
+            t2.user_gender             as user_user_gender,
+            t2.user_position           as user_user_position,
+            t2.user_photo_url          as user_user_photo_url,
+            t2.user_qq                 as user_user_qq,
+            t2.user_msn                as user_user_msn,
+            t2.user_mobile             as user_user_mobile,
+            t2.user_mobile2            as user_user_mobile2,
+            t2.user_office_tel         as user_user_office_tel,
+            t2.user_family_tel         as user_user_family_tel,
+            t2.user_address            as user_user_address,
+            t2.user_email              as user_user_email,
+            t2.user_avidate            as user_user_avidate,
+            t2.user_is_agent           as user_user_is_agent,
+            t2.memo                    as user_memo,
+            t2.status                  as user_status,
+            t2.creator                 as user_creator,
+            t2.create_date             as user_createDate
+            -->
+        from 
+            cuckoo.uum_role_user_ref t1
+        left join
+            cuckoo.uum_user t2 on t1.user_id = t2.user_id
+        where 
+            t1.org_role_id in
+            (
+                select 
+                    org_role_id
+                from
+                    cuckoo.uum_org_role_ref
+                where
+                    role_id = #{roleId}
+                and
+                    org_id = #{orgId}
+            )
+    </select>
+    
 </mapper> 

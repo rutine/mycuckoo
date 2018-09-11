@@ -1,176 +1,192 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: DistrictMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 9:38:25 AM
-	@version 3.0.0
+    说明: DistrictMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:38:25 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.platform.DistrictMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.District">
-		<id property="districtId" column="district_id" />
-		<result property="parentId" column="dis_parent_id" />
-		<result property="districtName" column="district_name" />
-		<result property="districtCode" column="district_code" />
-		<result property="districtPostal" column="district_postal" />
-		<result property="districtTelcode" column="district_telcode" />
-		<result property="districtLevel" column="district_level" />
-		<result property="memo" column="memo" />
-		<result property="status" column="status" />
-		<result property="creator" column="creator" />
-		<result property="createDate" column="create_date" />
-	</resultMap>
-	
-	<sql id="colums">
-		district_id, dis_parent_id, district_name, district_code, district_postal, 
-		district_telcode, district_level, memo, status, creator, create_date
-	</sql>
-	
-	<sql id="table">
-		cuckoo.syspl_district
-	</sql>
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.District">
+        <id property="districtId" column="district_id" />
+        <result property="parentId" column="dis_parent_id" />
+        <result property="districtName" column="district_name" />
+        <result property="districtCode" column="district_code" />
+        <result property="districtPostal" column="district_postal" />
+        <result property="districtTelcode" column="district_telcode" />
+        <result property="districtLevel" column="district_level" />
+        <result property="memo" column="memo" />
+        <result property="status" column="status" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+    </resultMap>
+    
+    <sql id="colums">
+        district_id, dis_parent_id, district_name, district_code, district_postal, 
+        district_telcode, district_level, memo, status, creator, create_date
+    </sql>
+    
+    <sql id="table">
+        cuckoo.syspl_district
+    </sql>
 
-	<!-- 
-		插入地区： 
-		1.由数据库生成id并赋值到DistrictType对象
-	-->
-	<insert id="save" parameterType="com.mycuckoo.domain.platform.District">
-		<selectKey keyProperty="districtId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.syspl_district_seq')
-		</selectKey>
-		insert into <include refid="table" /> (
-			district_id, dis_parent_id, district_name, district_code, district_postal, 
-			district_telcode, district_level, memo, status, creator, create_date
-		)
-		values (
-			#{districtId}, #{parentId}, #{districtName}, #{districtCode}, #{districtPostal}, 
-			#{districtTelcode}, #{districtLevel}, #{memo}, #{status}, #{creator}, #{createDate}
-		)
-	</insert>
-	
-	<!-- 更新地区： 1.输入对象参数 -->
-	<update id="update" parameterType="com.mycuckoo.domain.platform.District">
-		update 
-			<include refid="table" />
-		<set>
-			<if test="parentId != null">dis_parent_id = #{parentId}, </if>
-			<if test="districtName != null">district_name = #{districtName}, </if>
-			<if test="districtCode != null">district_code = #{districtCode}, </if>
-			<if test="districtPostal != null">district_postal = #{districtPostal}, </if>
-			<if test="districtTelcode != null">district_telcode = #{districtTelcode}, </if>
-			<if test="districtLevel != null">district_level = #{districtLevel}, </if>
-			<if test="memo != null">memo = #{memo}, </if>
-			<if test="status != null">status = #{status}, </if>
-		</set>
-		where district_id = #{districtId}
-	</update>
-	
-	<!-- 删除地区 -->
-	<delete id="delete" parameterType="long">
-		delete from <include refid="table" /> where district_id = #{id}
-	</delete>
-	
-	<!--
-		获取地区: 输出直接映射到对象
-	-->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			district_id = #{id}
-	</select>
-	
-	<!-- 判断地区是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(1) > 0 
-		from 
-			<include refid="table" />
-		where 
-			district_id = #{id}
-	</select>
+    <!-- 
+        插入地区： 
+        1.由数据库生成id并赋值到DistrictType对象
+    -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.District"
+            useGeneratedKeys="true" keyProperty="districtId" keyColumn="district_id">
+        insert into <include refid="table" /> (
+            district_id,
+            dis_parent_id,
+            district_name,
+            district_code,
+            district_postal,
+            district_telcode,
+            district_level,
+            memo,
+            status,
+            creator,
+            create_date
+        )
+        values (
+            #{districtId},
+            #{parentId},
+            #{districtName},
+            #{districtCode},
+            #{districtPostal},
+            #{districtTelcode},
+            #{districtLevel},
+            #{memo},
+            #{status},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+    
+    <!-- 更新地区： 1.输入对象参数 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.District">
+        update 
+            <include refid="table" />
+        <set>
+            <if test="parentId != null">dis_parent_id = #{parentId}, </if>
+            <if test="districtName != null">district_name = #{districtName}, </if>
+            <if test="districtCode != null">district_code = #{districtCode}, </if>
+            <if test="districtPostal != null">district_postal = #{districtPostal}, </if>
+            <if test="districtTelcode != null">district_telcode = #{districtTelcode}, </if>
+            <if test="districtLevel != null">district_level = #{districtLevel}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+        </set>
+        where district_id = #{districtId}
+    </update>
+    
+    <!-- 删除地区 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where district_id = #{id}
+    </delete>
+    
+    <!--
+        获取地区: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            district_id = #{id}
+    </select>
+    
+    <!-- 判断地区是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from 
+            <include refid="table" />
+        where 
+            district_id = #{id}
+    </select>
 
-	<!-- 根据条件分页查询地区 -->
-	<select id="findByPage" parameterType="map" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			district_id != 0
-		<if test="array != null">
-			and district_id in
-			<foreach item="id" collection="array" open="(" separator="," close=")">
-				#{id}
-			</foreach>
-		</if>
-		<if test="districtName != null">
-			and district_name like #{districtName}
-		</if>
-		<if test="districtLevel != null">
-			and district_level = #{districtLevel}
-		</if>
-		order by 
-			district_id
-	</select>
-	
-		<!-- 统计地区记录总数 -->
-	<select id="count" resultType="long">
-		select
-			count(1) 
-		from 
-			<include refid="table" />
-	</select>
-	
-	<!-- 根据父地区ID统计下级地区数 -->
-	<select id="countByParentId" parameterType="long" resultType="int">
-		select 
-			count(1)
-		from 
-			<include refid="table" />
-		where
-			dis_parent_id = #{parentId}
-	</select>
-	
-	<!-- 判断地区名称是否存在 -->
-	<select id="countByDistrictName" parameterType="string" resultType="int">
-		select 
-			count(1)
-		from 
-			<include refid="table" />
-		where
-			district_name = #{districtName}
-	</select>
-	
-	<!-- 根据父地区查询下级地区, 映射到 baseMap -->
-	<select id="findByParentId" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where
-			dis_parent_id = #{parentId}
-	</select>
-	
-	<!-- 根据父地区和过滤条件查询下级地区 -->
-	<select id="findByParentIdAndFilterIds" parameterType="map" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where
-			dis_parent_id = #{parentId}
-		and
-			district_id not in
-		<foreach item="id" collection="filterDistrictIds" open="(" separator="," close=")">
-			#{id}
-		</foreach>
-		order by 
-			district_id
-	</select>
+    <!-- 根据条件分页查询地区 -->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            district_id != 0
+        <if test="array != null">
+            and district_id in
+            <foreach item="id" collection="array" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="districtName != null">
+            and district_name like #{districtName}
+        </if>
+        <if test="districtLevel != null">
+            and district_level = #{districtLevel}
+        </if>
+        order by 
+            district_id
+    </select>
+    
+        <!-- 统计地区记录总数 -->
+    <select id="count" resultType="long">
+        select
+            count(1) 
+        from 
+            <include refid="table" />
+    </select>
+    
+    <!-- 根据父地区ID统计下级地区数 -->
+    <select id="countByParentId" parameterType="long" resultType="int">
+        select 
+            count(1)
+        from 
+            <include refid="table" />
+        where
+            dis_parent_id = #{parentId}
+    </select>
+    
+    <!-- 判断地区名称是否存在 -->
+    <select id="countByDistrictName" parameterType="string" resultType="int">
+        select 
+            count(1)
+        from 
+            <include refid="table" />
+        where
+            district_name = #{districtName}
+    </select>
+    
+    <!-- 根据父地区查询下级地区, 映射到 baseMap -->
+    <select id="findByParentId" parameterType="long" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where
+            dis_parent_id = #{parentId}
+    </select>
+    
+    <!-- 根据父地区和过滤条件查询下级地区 -->
+    <select id="findByParentIdAndFilterIds" parameterType="map" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where
+            dis_parent_id = #{parentId}
+        and
+            district_id not in
+        <foreach item="id" collection="filterDistrictIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by 
+            district_id
+    </select>
 </mapper> 

@@ -1,146 +1,162 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-	说明: SysOptLogMapper映射文件
-	
-	@author rutine
-	@time Sep 23, 2014 9:56:13 AM
-	@version 3.0.0
+    说明: SysOptLogMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:56:13 AM
+    @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.platform.SysOptLogMapper">
-	<resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysOptLog">
-		<id property="optId" column="opt_id" />
-		<result property="optModName" column="opt_mod_name" />
-		<result property="optName" column="opt_name" />
-		<result property="optContent" column="opt_content" />
-		<result property="optBusinessId" column="opt_business_id" />
-		<result property="optTime" column="opt_time" />
-		<result property="optPcName" column="opt_pc_name" />
-		<result property="optPcIp" column="opt_pc_ip" />
-		<result property="optUserName" column="opt_user_name" />
-		<result property="optUserRole" column="opt_user_role" />
-		<result property="optUserOgan" column="opt_user_ogan" />
-	</resultMap>
-	
-	<sql id="colums">
-		opt_id, opt_mod_name, opt_name, opt_content, opt_business_id, 
-		opt_time, opt_pc_name, opt_pc_ip, opt_user_name, opt_user_role, opt_user_ogan
-	</sql>
-	
-	<sql id="table">
-		cuckoo.syspl_sys_opt_log
-	</sql>
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysOptLog">
+        <id property="optId" column="opt_id" />
+        <result property="optModName" column="opt_mod_name" />
+        <result property="optName" column="opt_name" />
+        <result property="optContent" column="opt_content" />
+        <result property="optBusinessId" column="opt_business_id" />
+        <result property="optTime" column="opt_time" />
+        <result property="optPcName" column="opt_pc_name" />
+        <result property="optPcIp" column="opt_pc_ip" />
+        <result property="optUserName" column="opt_user_name" />
+        <result property="optUserRole" column="opt_user_role" />
+        <result property="optUserOgan" column="opt_user_ogan" />
+    </resultMap>
+    
+    <sql id="colums">
+        opt_id, opt_mod_name, opt_name, opt_content, opt_business_id, 
+        opt_time, opt_pc_name, opt_pc_ip, opt_user_name, opt_user_role, opt_user_ogan
+    </sql>
+    
+    <sql id="table">
+        cuckoo.syspl_sys_opt_log
+    </sql>
 
-	<!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->
-	<insert id="save" parameterType="com.mycuckoo.domain.platform.SysOptLog">
-		<selectKey keyProperty="optId" resultType="long" order="BEFORE">
-			select nextval('cuckoo.syspl_sys_opt_log_seq')
-		</selectKey>
-		insert into <include refid="table" />
-		(
-			opt_id, opt_mod_name, opt_name, opt_content, opt_business_id, 
-			opt_time, opt_pc_name, opt_pc_ip, opt_user_name, opt_user_role, opt_user_ogan
-		)
-		values (
-			#{optId}, #{optModName}, #{optName}, #{optContent}, #{optBusinessId}, 
-			#{optTime}, #{optPcName}, #{optPcIp}, #{optUserName}, #{optUserRole}, #{optUserOgan}
-		)
-	</insert>
-	
-	<!-- 更新系统操作日志： 1.输入对象参数 -->
-	<update id="update" parameterType="com.mycuckoo.domain.platform.SysOptLog">
-		update 
-			<include refid="table" />
-		<set>
-			<if test="optModName != null">opt_mod_name = #{optModName}, </if>
-			<if test="optName != null">opt_name = #{optName}, </if>
-			<if test="optContent != null">opt_content = #{optContent}, </if>
-			<if test="optBusinessId != null">opt_business_id = #{optBusinessId}, </if>
-			<if test="optTime != null">opt_time = #{optTime}, </if>
-			<if test="optPcName != null">opt_pc_name = #{optPcName}, </if>
-			<if test="optPcIp != null">opt_pc_ip = #{optPcIp}, </if>
-			<if test="optUserName != null">opt_user_name = #{optUserName}, </if>
-			<if test="optUserRole != null">opt_user_role = #{optUserRole}, </if>
-			<if test="optUserOgan != null">opt_user_ogan = #{optUserOgan}, </if>
-		</set>
-		where 
-			opt_id = #{optId}
-	</update>
-	
-	<!-- 删除系统操作日志 -->
-	<delete id="delete" parameterType="long">
-		delete from <include refid="table" /> where opt_id = #{id}
-	</delete>
-	
-	<!--
-		获取系统操作日志: 输出直接映射到对象
-	-->
-	<select id="get" parameterType="long" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		where 
-			opt_id = #{id}
-	</select>
-	
-	<!-- 判断系统操作日志是否存在 -->
-	<select id="exists" parameterType="long" resultType="boolean">
-		select
-			count(1) > 0 
-		from 
-			<include refid="table" />
-		where 
-			opt_id = #{id}
-	</select>
+    <!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.SysOptLog"
+            useGeneratedKeys="true" keyProperty="optId" keyColumn="opt_id">
+        insert into <include refid="table" />
+        (
+            opt_id,
+            opt_mod_name,
+            opt_name,
+            opt_content,
+            opt_business_id,
+            opt_time,
+            opt_pc_name,
+            opt_pc_ip,
+            opt_user_name,
+            opt_user_role,
+            opt_user_ogan
+        )
+        values (
+            #{optId},
+            #{optModName},
+            #{optName},
+            #{optContent},
+            #{optBusinessId},
+            #{optTime},
+            #{optPcName},
+            #{optPcIp},
+            #{optUserName},
+            #{optUserRole},
+            #{optUserOgan}
+        )
+    </insert>
+    
+    <!-- 更新系统操作日志： 1.输入对象参数 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.SysOptLog">
+        update 
+            <include refid="table" />
+        <set>
+            <if test="optModName != null">opt_mod_name = #{optModName}, </if>
+            <if test="optName != null">opt_name = #{optName}, </if>
+            <if test="optContent != null">opt_content = #{optContent}, </if>
+            <if test="optBusinessId != null">opt_business_id = #{optBusinessId}, </if>
+            <if test="optTime != null">opt_time = #{optTime}, </if>
+            <if test="optPcName != null">opt_pc_name = #{optPcName}, </if>
+            <if test="optPcIp != null">opt_pc_ip = #{optPcIp}, </if>
+            <if test="optUserName != null">opt_user_name = #{optUserName}, </if>
+            <if test="optUserRole != null">opt_user_role = #{optUserRole}, </if>
+            <if test="optUserOgan != null">opt_user_ogan = #{optUserOgan}, </if>
+        </set>
+        where 
+            opt_id = #{optId}
+    </update>
+    
+    <!-- 删除系统操作日志 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where opt_id = #{id}
+    </delete>
+    
+    <!--
+        获取系统操作日志: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        where 
+            opt_id = #{id}
+    </select>
+    
+    <!-- 判断系统操作日志是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from 
+            <include refid="table" />
+        where 
+            opt_id = #{id}
+    </select>
 
-	<!-- 分页查找系统操作日志, 映射到 baseMap -->
-	<select id="findByPage" parameterType="map" resultMap="baseMap">
-		select 
-			<include refid="colums" />
-		from 
-			<include refid="table" />
-		<where>
-			<if test="optModName != null">
-				opt_mod_name like #{optModName}
-			</if>
-			<if test="optName != null">
-				and opt_name like #{optName}
-			</if>
-			<if test="optUserName != null">
-				and opt_user_name like #{optUserName}
-			</if>
-		</where>
-		order by 
-			opt_id desc
-	</select>
-	
-	<!-- 统计系统操作日志记录总数 -->
-	<select id="count" resultType="long">
-		select
-			count(1) 
-		from 
-			<include refid="table" />
-	</select>
-	
-	<!-- 删除日志 -->
-	<delete id="deleteLogger" parameterType="date">
-		delete from 
-			<include refid="table" />
-		where
-			opt_time &lt;= #{optTime}
-	</delete>
-	
-	<!-- 根据日志ID获取系统操作日志内容 -->
-	<select id="getOptContentById" parameterType="long" resultType="string">
-		select 
-			opt_content
-		from 
-			<include refid="table" />
-		where
-			opt_id = #{id}
-	</select>
-	
+    <!-- 分页查找系统操作日志, 映射到 baseMap -->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select 
+            <include refid="colums" />
+        from 
+            <include refid="table" />
+        <where>
+            <if test="optModName != null">
+                opt_mod_name like #{optModName}
+            </if>
+            <if test="optName != null">
+                and opt_name like #{optName}
+            </if>
+            <if test="optUserName != null">
+                and opt_user_name like #{optUserName}
+            </if>
+        </where>
+        order by 
+            opt_id desc
+    </select>
+    
+    <!-- 统计系统操作日志记录总数 -->
+    <select id="count" resultType="long">
+        select
+            count(1) 
+        from 
+            <include refid="table" />
+    </select>
+    
+    <!-- 删除日志 -->
+    <delete id="deleteLogger" parameterType="date">
+        delete from 
+            <include refid="table" />
+        where
+            opt_time &lt;= #{optTime}
+    </delete>
+    
+    <!-- 根据日志ID获取系统操作日志内容 -->
+    <select id="getOptContentById" parameterType="long" resultType="string">
+        select 
+            opt_content
+        from 
+            <include refid="table" />
+        where
+            opt_id = #{id}
+    </select>
+    
 </mapper> 
