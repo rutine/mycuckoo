@@ -74,7 +74,7 @@ public class RoleController {
      */
     @GetMapping(value = "/list/row/privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@RequestParam long id) {
-        AssignVo<TreeVoExtend> baseVo = privilegeService.findSelectAUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_ROL);
+        AssignVo<TreeVoExtend> baseVo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_ROL);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getAssign(),

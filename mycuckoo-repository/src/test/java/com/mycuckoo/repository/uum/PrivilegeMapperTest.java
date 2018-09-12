@@ -1,7 +1,8 @@
 package com.mycuckoo.repository.uum;
 
-import com.mycuckoo.common.constant.Common;
-import com.mycuckoo.common.constant.PrivilegeScopeEnum;
+import com.mycuckoo.common.constant.OwnerType;
+import com.mycuckoo.common.constant.PrivilegeScope;
+import com.mycuckoo.common.constant.PrivilegeType;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -15,8 +16,6 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ROW;
-
 @SpringBootTest
 public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -27,8 +26,10 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testFindByOwnIdAndPrivilegeType() {
-        List<Privilege> list = privilegeMapper.findByOwnIdAndPrivilegeType(new Long[]{0L, 1L, 2L, 8L, 9L, 10L},
-                new String[]{Common.OWNER_TYPE_ROL, Common.OWNER_TYPE_USR}, new String[]{PrivilegeScopeEnum.ALL.value()});
+        List<Privilege> list = privilegeMapper.findByOwnIdAndPrivilegeType(
+                new Long[]{ 0L, 1L, 2L, 8L, 9L, 10L },
+                new String[]{ OwnerType.ROLE.value(), OwnerType.USR.value() },
+                new String[]{ PrivilegeScope.ALL.value() });
 
         logger.info("------> findByOwnIdAndPrivilegeType: {}", list);
     }
@@ -39,7 +40,7 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testDeleteByOwnerIdAndOwnerType() {
-        privilegeMapper.deleteByOwnerIdAndOwnerType(1L, Common.OWNER_TYPE_USR);
+        privilegeMapper.deleteByOwnerIdAndOwnerType(1L, OwnerType.USR.value());
     }
 
     @Test
@@ -49,8 +50,8 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testDeleteRowPrivilegeByOrgId() {
         privilegeMapper.deleteRowPrivilegeByOrgId("1",
-                PRIVILEGE_TYPE_ROW,
-                PrivilegeScopeEnum.ORGAN.value());
+                PrivilegeType.ROW.value(),
+                PrivilegeScope.ORGAN.value());
     }
 
     @Test

@@ -277,10 +277,10 @@
     </select>
 
     <!-- 根据指定的用户ID集合查询用户信息 -->
-    <select id="findByUserIds" resultType="map">
+    <select id="findByUserIds" resultMap="baseMap">
         select
-            user_id as "userId",
-            user_name as "userName"
+            user_id,
+            user_name
         from
             <include refid="table" />
         <where>

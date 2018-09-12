@@ -32,60 +32,60 @@ import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 @Service
 @Transactional(readOnly = true)
 public class SystemOptLogService {
-	private static Logger logger = LoggerFactory.getLogger(SystemOptLogService.class);
+    private static Logger logger = LoggerFactory.getLogger(SystemOptLogService.class);
 
-	@Autowired
-	private SysOptLogMapper sysOptLogMapper;
+    @Autowired
+    private SysOptLogMapper sysOptLogMapper;
 
 
-	@Transactional
-	public void deleteLog(int keepdays) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DAY_OF_MONTH, -keepdays);
+    @Transactional
+    public void deleteLog(int keepdays) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -keepdays);
 
-		sysOptLogMapper.deleteLogger(calendar.getTime());
-	}
+        sysOptLogMapper.deleteLogger(calendar.getTime());
+    }
 
-	public Page<SysOptLog> findByPage(Map<String, Object> params, Pageable page) {
-		return sysOptLogMapper.findByPage(params, page);
-	}
+    public Page<SysOptLog> findByPage(Map<String, Object> params, Pageable page) {
+        return sysOptLogMapper.findByPage(params, page);
+    }
 
-	public String getOptContentById(long optId) {
-		return sysOptLogMapper.getOptContentById(optId);
-	}
+    public String getOptContentById(long optId) {
+        return sysOptLogMapper.getOptContentById(optId);
+    }
 
-	@Transactional
-	public void saveLog(LogLevelEnum level, OptNameEnum optName, String optModName,
-						String optContent, String optBusinessId) {
+    @Transactional
+    public void saveLog(LogLevelEnum level, OptNameEnum optName, String optModName,
+                        String optContent, String optBusinessId) {
 
-		SystemConfigXmlParse.getInstance();
-		SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
-		String sysConfigLevel = systemConfigBean.getLoggerLevel();
-		String[] levelArray = {level.value().toString(), sysConfigLevel};
-		for (String alevel : levelArray) {//检查日志级别是否合法
-			if (isNullOrEmpty(alevel) || "0123".indexOf(alevel) < 0 || alevel.length() > 1) {
-				throw new ApplicationException("日志级别错误,值为: " + alevel);
-			}
-		}
-		int iLevel = level.value();
-		int iSysConfigLevel = Integer.parseInt(sysConfigLevel);
-		if (iSysConfigLevel == 0 || iLevel < iSysConfigLevel) {
-			return;
-		}
+        SystemConfigXmlParse.getInstance();
+        SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
+        String sysConfigLevel = systemConfigBean.getLoggerLevel();
+        String[] levelArray = { level.value().toString(), sysConfigLevel };
+        for (String myLevel : levelArray) {//检查日志级别是否合法
+            if (isNullOrEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {
+                throw new ApplicationException("日志级别错误,值为: " + myLevel);
+            }
+        }
+        int iLevel = level.value();
+        int iSysConfigLevel = Integer.parseInt(sysConfigLevel);
+        if (iSysConfigLevel == 0 || iLevel < iSysConfigLevel) {
+            return;
+        }
 
-		SysOptLog sysOptLog = new SysOptLog();
-		sysOptLog.setOptModName(optModName);
-		sysOptLog.setOptName(optName.value());
-		sysOptLog.setOptContent(optContent);
-		sysOptLog.setOptBusinessId(optBusinessId);
-		sysOptLog.setOptTime(new Date());
-		sysOptLog.setOptPcName(SessionUtil.getHostName()); //得到计算机名称
-		sysOptLog.setOptPcIp(SessionUtil.getIP());
-		sysOptLog.setOptUserName(SessionUtil.getUserName());
-		sysOptLog.setOptUserRole(SessionUtil.getRoleName());
-		sysOptLog.setOptUserOgan(SessionUtil.getOrganName());
+        SysOptLog sysOptLog = new SysOptLog();
+        sysOptLog.setOptModName(optModName);
+        sysOptLog.setOptName(optName.value());
+        sysOptLog.setOptContent(optContent);
+        sysOptLog.setOptBusinessId(optBusinessId);
+        sysOptLog.setOptTime(new Date());
+        sysOptLog.setOptPcName(SessionUtil.getHostName()); //得到计算机名称
+        sysOptLog.setOptPcIp(SessionUtil.getIP());
+        sysOptLog.setOptUserName(SessionUtil.getUserName());
+        sysOptLog.setOptUserRole(SessionUtil.getRoleName());
+        sysOptLog.setOptUserOgan(SessionUtil.getOrganName());
 
-		sysOptLogMapper.save(sysOptLog);
-	}
+        sysOptLogMapper.save(sysOptLog);
+    }
 
 }

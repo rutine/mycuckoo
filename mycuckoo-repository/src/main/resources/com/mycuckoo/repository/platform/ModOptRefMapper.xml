@@ -17,8 +17,8 @@
             resultMap="com.mycuckoo.repository.platform.OperateMapper.baseMap"
             columnPrefix="opt_"/>
         <association property="moduleMemu"
-            javaType="com.mycuckoo.domain.platform.ModuleMemu"
-            resultMap="com.mycuckoo.repository.platform.ModuleMemuMapper.baseMap"
+            javaType="com.mycuckoo.domain.platform.ModuleMenu"
+            resultMap="com.mycuckoo.repository.platform.ModuleMenuMapper.baseMap"
             columnPrefix="modu_"/>
     </resultMap>
     

@@ -115,7 +115,7 @@ public class DistrictController {
 	 * 功能说明 : 查找节点的下级节点
 	 * 
 	 * @param id 地区id
-	 * @param filterId
+	 * @param filterOutId
 	 * @return
 	 * @author rutine
 	 * @time Jul 2, 2013 11:27:54 AM
@@ -123,7 +123,7 @@ public class DistrictController {
 	@GetMapping(value = "/get/child/nodes")
 	public AjaxResponse<List<TreeVo>> getChildNodes(
 			@RequestParam(value = "treeId", defaultValue = "-1") long id,
-			@RequestParam(value = "filterModuleId", defaultValue = "0") long filterId) {
+			@RequestParam(value = "filterModuleId", defaultValue = "0") long filterOutId) {
 		
 		List<TreeVo> asyncTreeList = Lists.newArrayList();
 		if(id == -1L) {
@@ -133,7 +133,7 @@ public class DistrictController {
 			treeVo.setIsParent(true);
 			asyncTreeList.add(treeVo);
 		} else {
-			asyncTreeList = districtService.findNextLevelChildNodes(id, filterId);
+			asyncTreeList = districtService.findNextLevelChildNodes(id, filterOutId);
 		}
 
 		logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));

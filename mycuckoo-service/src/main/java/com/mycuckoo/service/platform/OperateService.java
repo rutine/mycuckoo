@@ -32,105 +32,103 @@ import static com.mycuckoo.common.constant.ServiceVariable.*;
 @Service
 @Transactional(readOnly = true)
 public class OperateService {
-	static Logger logger = LoggerFactory.getLogger(OperateService.class);
+    static Logger logger = LoggerFactory.getLogger(OperateService.class);
 
-	@Autowired
-	private OperateMapper operateMapper;
-	@Autowired
-	private ModuleService moduleService;
-	@Autowired
-	private SystemOptLogService sysOptLogService;
-
-
-	@Transactional
-	public boolean disEnable(long operateId, String disEnableFlag) {
-		if (DISABLE.equals(disEnableFlag)) {
-			Operate operate = get(operateId);
-			operate.setStatus(DISABLE);
-			update(operate); //修改模块操作
-			moduleService.deleteModOptRefByOperateId(operateId); //根据操作ID删除模块操作关系,级联删除权限
-
-			writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
-
-			return true;
-		} else {
-			Operate operate = get(operateId);
-			operate.setStatus(ENABLE);
-			update(operate); //修改模块操作
-
-			writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
-
-			return true;
-		}
-	}
-
-	public List<Operate> findAll() {
-		return operateMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
-	}
-
-	public Page<Operate> findByPage(String modOptName, Pageable page) {
-		logger.debug("start={} limit={} modOptName={}", page.getOffset(), page.getPageSize(), modOptName);
-
-		Map<String, Object> params = Maps.newHashMap();
-		if (!CommonUtils.isNullOrEmpty(modOptName)) {
-			params.put("modOptName", "%" + modOptName + "%");
-		}
-
-		return operateMapper.findByPage(params, page);
-	}
-
-	public boolean existsByName(String moduleOptName) {
-		int count = operateMapper.countByName(moduleOptName);
-
-		logger.debug("find module total is {}", count);
-
-		if (count > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public Operate get(Long operateId) {
-		logger.debug("will find moduleopt id is {}", operateId);
-
-		return operateMapper.get(operateId);
-	}
-
-	@Transactional
-	public void update(Operate operate) {
-		operateMapper.update(operate);
-
-		writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
-	}
-
-	@Transactional
-	public void save(Operate operate) {
-		operateMapper.save(operate);
-
-		writeLog(operate, LogLevelEnum.FIRST, OptNameEnum.SAVE);
-	}
+    @Autowired
+    private OperateMapper operateMapper;
+    @Autowired
+    private ModuleService moduleService;
+    @Autowired
+    private SystemOptLogService sysOptLogService;
 
 
-	// --------------------------- 私有方法-------------------------------
+    @Transactional
+    public boolean disEnable(long operateId, String disEnableFlag) {
+        if (DISABLE.equals(disEnableFlag)) {
+            Operate operate = get(operateId);
+            operate.setStatus(DISABLE);
+            operateMapper.update(operate); //修改模块操作
+            moduleService.deleteModOptRefByOperateId(operateId); //根据操作ID删除模块操作关系,级联删除权限
 
-	/**
-	 * 公用模块写日志
-	 *
-	 * @param operate  模块对象
-	 * @param logLevel 日志级别
-	 * @param opt      操作名称
-	 * @throws ApplicationException
-	 * @author rutine
-	 * @time Oct 14, 2012 1:17:12 PM
-	 */
-	private void writeLog(Operate operate, LogLevelEnum logLevel, OptNameEnum opt) {
-		StringBuilder optContent = new StringBuilder();
-		optContent.append(operate.getOperateName()).append(SPLIT)
-				.append(operate.getOptImgLink()).append(SPLIT)
-				.append(operate.getOptFunLink()).append(SPLIT);
+            writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+        } else {
+            Operate operate = get(operateId);
+            operate.setStatus(ENABLE);
+            operateMapper.update(operate); //修改模块操作
 
-		sysOptLogService.saveLog(logLevel, opt, SYS_MODOPT_MGR,
-				optContent.toString(), operate.getOperateId() + "");
-	}
+            writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+        }
+
+        return true;
+    }
+
+    public List<Operate> findAll() {
+        return operateMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+    }
+
+    public Page<Operate> findByPage(String modOptName, Pageable page) {
+        logger.debug("start={} limit={} modOptName={}", page.getOffset(), page.getPageSize(), modOptName);
+
+        Map<String, Object> params = Maps.newHashMap();
+        if (!CommonUtils.isNullOrEmpty(modOptName)) {
+            params.put("modOptName", "%" + modOptName + "%");
+        }
+
+        return operateMapper.findByPage(params, page);
+    }
+
+    public boolean existsByName(String moduleOptName) {
+        int count = operateMapper.countByName(moduleOptName);
+
+        logger.debug("find module total is {}", count);
+
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public Operate get(Long operateId) {
+        logger.debug("will find moduleopt id is {}", operateId);
+
+        return operateMapper.get(operateId);
+    }
+
+    @Transactional
+    public void update(Operate operate) {
+        operateMapper.update(operate);
+
+        writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+    }
+
+    @Transactional
+    public void save(Operate operate) {
+        operateMapper.save(operate);
+
+        writeLog(operate, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+    }
+
+
+    // --------------------------- 私有方法-------------------------------
+
+    /**
+     * 公用模块写日志
+     *
+     * @param operate  模块对象
+     * @param logLevel 日志级别
+     * @param opt      操作名称
+     * @throws ApplicationException
+     * @author rutine
+     * @time Oct 14, 2012 1:17:12 PM
+     */
+    private void writeLog(Operate operate, LogLevelEnum logLevel, OptNameEnum opt) {
+        StringBuilder optContent = new StringBuilder();
+        optContent.append(operate.getOperateName()).append(SPLIT)
+                .append(operate.getOptImgLink()).append(SPLIT)
+                .append(operate.getOptFunLink()).append(SPLIT);
+
+        sysOptLogService.saveLog(logLevel, opt, SYS_MODOPT_MGR,
+                optContent.toString(), operate.getOperateId() + "");
+    }
 
 }

@@ -34,134 +34,130 @@ import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 @Service
 @Transactional(readOnly = true)
 public class CodeService {
-	static Logger logger = LoggerFactory.getLogger(CodeService.class);
+    static Logger logger = LoggerFactory.getLogger(CodeService.class);
 
-	@Autowired
-	private CodeMapper codeMapper;
-	@Autowired
-	private SystemOptLogService sysOptLogService;
+    @Autowired
+    private CodeMapper codeMapper;
+    @Autowired
+    private SystemOptLogService sysOptLogService;
 
 
-	@Transactional
-	public boolean disEnable(long codeId, String disEnableFlag) {
+    @Transactional
+    public boolean disEnable(long codeId, String disEnableFlag) {
+        if (DISABLE.equals(disEnableFlag)) {
+            Code code = new Code(codeId, DISABLE);
+            codeMapper.update(code);
 
-		if (DISABLE.equals(disEnableFlag)) {
-			Code code = get(codeId);
-			code.setStatus(DISABLE);
-			update(code);
+            code = get(codeId);
+            StringBuilder optContent = new StringBuilder();
+            optContent.append("编码停用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
+            optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
+            optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
+            optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
+            sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.DISABLE, SYS_CODE,
+                    optContent.toString(), code.getCodeId().toString());
 
-			StringBuilder optContent = new StringBuilder();
-			optContent.append("编码停用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-			optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-			optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-			optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-			sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.DISABLE, SYS_CODE,
-					optContent.toString(), code.getCodeId().toString());
+            return true;
+        } else {
+            Code code = new Code(codeId, ENABLE);
+            codeMapper.update(code);
 
-			return true;
-		} else {
-			Code code = get(codeId);
-			code.setStatus(ENABLE);
-			update(code);
+            code = get(codeId);
+            StringBuilder optContent = new StringBuilder();
+            optContent.append("编码启用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
+            optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
+            optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
+            optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
+            sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.ENABLE, SYS_CODE,
+                    optContent.toString(), code.getCodeId().toString());
+        }
 
-			StringBuilder optContent = new StringBuilder();
-			optContent.append("编码启用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-			optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-			optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-			optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-			sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.ENABLE, SYS_CODE,
-					optContent.toString(), code.getCodeId().toString());
-		}
+        return true;
+    }
 
-		return true;
-	}
+    public Page<Code> findByPage(Map<String, Object> params, Pageable page) {
+        return codeMapper.findByPage(params, page);
+    }
 
-	public Page<Code> findByPage(Map<String, Object> params, Pageable page) {
-		return codeMapper.findByPage(params, page);
-	}
+    public boolean existByCodeEngName(String codeEngName) {
+        int count = codeMapper.countByCodeEngName(codeEngName);
 
-	public boolean existByCodeEngName(String codeEngName) {
-		int count = codeMapper.countByCodeEngName(codeEngName);
+        return count > 0;
+    }
 
-		return count > 0;
-	}
+    public Code get(Long codeId) {
+        Code code = codeMapper.get(codeId);
 
-	public Code get(Long codeId) {
-		Code code = codeMapper.get(codeId);
+        List<String> partList = new ArrayList<String>();
+        partList.add(code.getPart1());
+        partList.add(code.getPart2());
+        partList.add(code.getPart3());
+        partList.add(code.getPart4());
 
-		List<String> partList = new ArrayList<String>();
-		partList.add(code.getPart1());
-		partList.add(code.getPart2());
-		partList.add(code.getPart3());
-		partList.add(code.getPart4());
+        List<String> partConList = new ArrayList<String>();
+        partConList.add(code.getPart1Con());
+        partConList.add(code.getPart2Con());
+        partConList.add(code.getPart3Con());
+        partConList.add(code.getPart4Con());
 
-		List<String> partConList = new ArrayList<String>();
-		partConList.add(code.getPart1Con());
-		partConList.add(code.getPart2Con());
-		partConList.add(code.getPart3Con());
-		partConList.add(code.getPart4Con());
+        code.setPartList(partList);
+        code.setPartConList(partConList);
 
-		code.setPartList(partList);
-		code.setPartConList(partConList);
+        return code;
+    }
 
-		return code;
-	}
+    @Transactional
+    public void update(Code code) {
+        codeMapper.update(code);
 
-	@Transactional
-	public void update(Code code) {
-		codeMapper.update(code);
+        StringBuilder optContent = new StringBuilder();
+        optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
+        optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
+        optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
+        optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
+        sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.MODIFY, SYS_CODE,
+                optContent.toString(), code.getCodeId().toString());
+    }
 
-		StringBuilder optContent = new StringBuilder();
-		optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-		optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-		optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-		optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-		sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.MODIFY, SYS_CODE,
-				optContent.toString(), code.getCodeId().toString());
-	}
+    /**
+     * <b>注意：</b>该方法存在问题没有解决, 暂待解决.
+     */
+    public String getCodeNameByCodeEngName(String codeEngName) {
+        String currentCode = "";
 
-	/**
-	 * <b>注意：</b>该方法存在问题没有解决, 暂待解决.
-	 */
-	public String getCodeNameByCodeEngName(String codeEngName) {
-//		ModuleCode moduleCode = (ModuleCode) codeDao.getPojoById("com.mycuckoo.domain.platform.ModuleCode", codeEngName);
-//		String currentCode = moduleCode != null ? moduleCode.getCodeContent() : ""; // obtain newwest code from DB.
+        Code code = codeMapper.getByCodeEngName(codeEngName);
+        String part1 = code.getPart1();
+        String part1Con = code.getPart1Con();
+        String part2 = code.getPart2();
+        String part2Con = code.getPart2Con();
+        String part3 = code.getPart3();
+        String part3Con = code.getPart3Con();
+        String part4 = code.getPart4();
+        String part4Con = code.getPart4Con();
+        String delimite = code.getDelimite();
 
-		String currentCode = "";
+        part1Con = this.getPartContent(part1, part1Con, currentCode, 1, delimite);
+        part2Con = this.getPartContent(part2, part2Con, currentCode, 2, delimite);
+        part3Con = this.getPartContent(part3, part3Con, currentCode, 3, delimite);
+        part4Con = this.getPartContent(part4, part4Con, currentCode, 4, delimite);
 
-		Code code = codeMapper.getByCodeEngName(codeEngName);
-		String part1 = code.getPart1();
-		String part1Con = code.getPart1Con();
-		String part2 = code.getPart2();
-		String part2Con = code.getPart2Con();
-		String part3 = code.getPart3();
-		String part3Con = code.getPart3Con();
-		String part4 = code.getPart4();
-		String part4Con = code.getPart4Con();
-		String delimite = code.getDelimite();
-
-		part1Con = this.getPartContent(part1, part1Con, currentCode, 1, delimite);
-		part2Con = this.getPartContent(part2, part2Con, currentCode, 2, delimite);
-		part3Con = this.getPartContent(part3, part3Con, currentCode, 3, delimite);
-		part4Con = this.getPartContent(part4, part4Con, currentCode, 4, delimite);
-
-		String newCode = "";
-		int partNum = code.getPartNum();
-		switch (partNum) {
-			case 1:
-				newCode = part1Con;
-				break;
-			case 2:
-				newCode = part1Con + delimite + part2Con;
-				break;
-			case 3:
-				newCode = part1Con + delimite + part2Con + delimite + part3Con;
-				break;
-			case 4:
-				newCode = part1Con + delimite + part2Con + delimite + part3Con + delimite + part4Con;
-				break;
-		}
-		logger.info("newCode is : {}", newCode);
+        String newCode = "";
+        int partNum = code.getPartNum();
+        switch (partNum) {
+            case 1:
+                newCode = part1Con;
+                break;
+            case 2:
+                newCode = part1Con + delimite + part2Con;
+                break;
+            case 3:
+                newCode = part1Con + delimite + part2Con + delimite + part3Con;
+                break;
+            case 4:
+                newCode = part1Con + delimite + part2Con + delimite + part3Con + delimite + part4Con;
+                break;
+        }
+        logger.info("newCode is : {}", newCode);
 
 //		if ("".equals(currentCode)) {
 //			ModuleCode newModuleCode = new ModuleCode();
@@ -173,67 +169,67 @@ public class CodeService {
 //			codeMapper.update(moduleCode);
 //		}
 
-		return newCode;
-	}
+        return newCode;
+    }
 
-	@Transactional
-	public void saveCode(Code code) throws ApplicationException {
-		codeMapper.save(code);
+    @Transactional
+    public void saveCode(Code code) throws ApplicationException {
+        codeMapper.save(code);
 
-		StringBuilder optContent = new StringBuilder();
-		optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-		optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-		optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-		optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-		sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_CODE,
-				optContent.toString(), code.getCodeId().toString());
-	}
+        StringBuilder optContent = new StringBuilder();
+        optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
+        optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
+        optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
+        optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
+        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_CODE,
+                optContent.toString(), code.getCodeId().toString());
+    }
 
 
-	// --------------------------- 私有方法 -------------------------------
+    // --------------------------- 私有方法 -------------------------------
 
-	/**
-	 * 私有方法获得格式化后的编码
-	 *
-	 * @param part
-	 * @param partCon
-	 * @param currentCode
-	 * @param partFlag
-	 * @param delimite
-	 * @return
-	 * @author rutine
-	 * @time Oct 14, 2012 8:03:22 PM
-	 */
-	private String getPartContent(String part, String partCon, String currentCode, int partFlag, String delimite) {
-		if (isNullOrEmpty(part) || isNullOrEmpty(partCon)) return "";
-		if ("date".equalsIgnoreCase(part)) {
-			SimpleDateFormat sf = new SimpleDateFormat(partCon);
-			partCon = sf.format(new Date());
-		} else if ("char".equalsIgnoreCase(part)) {
-			// do nothing
-		} else if ("number".equalsIgnoreCase(part)) {
-			if (!isNullOrEmpty(currentCode)) {
-				String[] partArr = currentCode.split(delimite);
-				String numStr = partArr[partFlag - 1];
-				int numLength = numStr.length();
-				numStr = (Integer.parseInt(numStr) + 1) + "";
-				int newNumLength = numStr.length();
-				while (numLength > newNumLength) {
-					numStr = "0" + numStr;
-					newNumLength++;
-				}
-				partCon = numStr;
-			}
-		} else if ("sysPara".equalsIgnoreCase(part)) {
-			if ("userName".equals(partCon)) {
-				partCon = SessionUtil.getUserCode();
-			} else if ("roleUser".equals(partCon)) {
-				partCon = SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
-			} else if ("organRoleUser".equals(partCon)) {
-				partCon = SessionUtil.getOrganName() + "~" + SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
-			}
-		}
+    /**
+     * 私有方法获得格式化后的编码
+     *
+     * @param part
+     * @param partCon
+     * @param currentCode
+     * @param partFlag
+     * @param delimite
+     * @return
+     * @author rutine
+     * @time Oct 14, 2012 8:03:22 PM
+     */
+    private String getPartContent(String part, String partCon, String currentCode, int partFlag, String delimite) {
+        if (isNullOrEmpty(part) || isNullOrEmpty(partCon)) return "";
+        if ("date".equalsIgnoreCase(part)) {
+            SimpleDateFormat sf = new SimpleDateFormat(partCon);
+            partCon = sf.format(new Date());
+        } else if ("char".equalsIgnoreCase(part)) {
+            // do nothing
+        } else if ("number".equalsIgnoreCase(part)) {
+            if (!isNullOrEmpty(currentCode)) {
+                String[] partArr = currentCode.split(delimite);
+                String numStr = partArr[partFlag - 1];
+                int numLength = numStr.length();
+                numStr = (Integer.parseInt(numStr) + 1) + "";
+                int newNumLength = numStr.length();
+                while (numLength > newNumLength) {
+                    numStr = "0" + numStr;
+                    newNumLength++;
+                }
+                partCon = numStr;
+            }
+        } else if ("sysPara".equalsIgnoreCase(part)) {
+            if ("userName".equals(partCon)) {
+                partCon = SessionUtil.getUserCode();
+            } else if ("roleUser".equals(partCon)) {
+                partCon = SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
+            } else if ("organRoleUser".equals(partCon)) {
+                partCon = SessionUtil.getOrganName() + "~" + SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
+            }
+        }
 
-		return partCon;
-	}
+        return partCon;
+    }
 }

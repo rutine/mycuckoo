@@ -32,12 +32,9 @@ public class Common {
 
     public final static String PRIVILEGE_TYPE_ROW = "row";
     public final static String PRIVILEGE_TYPE_OPT = "opt";
-    public final static String PRIVILEGE_SCOPE = "privilegeScope";
     public final static String OWNER_TYPE_ROL = "rol";
     public final static String OWNER_TYPE_USR = "usr";
     public final static String USER_DEFAULT_PWD = "userdefaultpassword";
-    public final static String[] PRIVILEGE_TYPE_ARR = {PRIVILEGE_TYPE_ROW, PRIVILEGE_TYPE_OPT};
-    public final static String[] OWNER_TYPE_ARR = {OWNER_TYPE_USR, OWNER_TYPE_ROL};
 
     //创建系统文件路径
     public final static String MYCUCKOO_SYSTEM_FILE_DIR = "/home/rutine/upload";

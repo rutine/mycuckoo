@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
 import com.mycuckoo.domain.platform.ModOptRef;
-import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -69,7 +69,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testSave() {
         ModOptRef modOptRef = new ModOptRef();
-        modOptRef.setModuleMemu(new ModuleMemu(8L));
+        modOptRef.setModuleMemu(new ModuleMenu(8L));
         modOptRef.setOperate(new Operate(2L, "enable"));
 
         mapper.save(modOptRef);
@@ -80,7 +80,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testUpdate() {
         ModOptRef modOptRef = new ModOptRef();
-        modOptRef.setModuleMemu(new ModuleMemu(8L));
+        modOptRef.setModuleMemu(new ModuleMenu(8L));
         modOptRef.setOperate(new Operate(2L, "enable"));
         modOptRef.setModOptId(3L);
 

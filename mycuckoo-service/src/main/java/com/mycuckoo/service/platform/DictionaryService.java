@@ -30,85 +30,87 @@ import static com.mycuckoo.common.constant.ServiceVariable.*;
 @Transactional(readOnly = true)
 public class DictionaryService {
 
-	@Autowired
-	private DicBigTypeMapper dicBigTypeMapper;
-	@Autowired
-	private DicSmallTypeMapper dicSmallTypeMapper;
-	@Autowired
-	private SystemOptLogService sysOptLogService;
+    @Autowired
+    private DicBigTypeMapper dicBigTypeMapper;
+    @Autowired
+    private DicSmallTypeMapper dicSmallTypeMapper;
+    @Autowired
+    private SystemOptLogService sysOptLogService;
 
 
-	@Transactional
-	public boolean disEnableDicBigType(long bigTypeId, String disEnableFlag) {
-		if (DISABLE.equals(disEnableFlag)) {
-			DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
-			dicBigTypeMapper.updateStatus(bigTypeId, DISABLE);
-			writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
-		} else {
-			DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
-			dicBigTypeMapper.updateStatus(bigTypeId, ENABLE);
-			writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
-		}
+    @Transactional
+    public boolean disEnableDicBigType(long bigTypeId, String disEnableFlag) {
+        if (DISABLE.equals(disEnableFlag)) {
+            DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
+            dicBigTypeMapper.updateStatus(bigTypeId, DISABLE);
 
-		return true;
-	}
+            writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+        } else {
+            DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
+            dicBigTypeMapper.updateStatus(bigTypeId, ENABLE);
 
-	public boolean existDicBigTypeByBigTypeCode(String bigTypeCode) {
-		int count = dicBigTypeMapper.countByBigTypeCode(bigTypeCode);
-		if (count > 0) return true;
+            writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+        }
 
-		return false;
-	}
+        return true;
+    }
 
-	public List<DicSmallType> findDicSmallTypesByBigTypeCode(String bigTypeCode) {
-		return dicSmallTypeMapper.findByBigTypeCode(bigTypeCode);
-	}
+    public boolean existDicBigTypeByBigTypeCode(String bigTypeCode) {
+        int count = dicBigTypeMapper.countByBigTypeCode(bigTypeCode);
+        if (count > 0) return true;
 
-	public DicBigType getDicBigTypeByBigTypeId(long bigTypeId) {
-		return dicBigTypeMapper.get(bigTypeId);
-	}
+        return false;
+    }
 
-	public Page<DicBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
-		return dicBigTypeMapper.findByPage(params, page);
-	}
+    public List<DicSmallType> findDicSmallTypesByBigTypeCode(String bigTypeCode) {
+        return dicSmallTypeMapper.findByBigTypeCode(bigTypeCode);
+    }
 
-	@Transactional
-	public void updateDicBigType(DicBigType dicBigType) {
-		dicSmallTypeMapper.deleteByBigTypeId(dicBigType.getBigTypeId());
-		dicBigTypeMapper.update(dicBigType);
+    public DicBigType getDicBigTypeByBigTypeId(long bigTypeId) {
+        return dicBigTypeMapper.get(bigTypeId);
+    }
 
-		writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
-	}
+    public Page<DicBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
+        return dicBigTypeMapper.findByPage(params, page);
+    }
 
-	@Transactional
-	public void saveDicBigType(DicBigType dicBigType) {
-		dicBigTypeMapper.save(dicBigType);
+    @Transactional
+    public void updateDicBigType(DicBigType dicBigType) {
+        dicSmallTypeMapper.deleteByBigTypeId(dicBigType.getBigTypeId());
+        dicBigTypeMapper.update(dicBigType);
 
-		writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.SAVE);
-	}
+        writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+    }
 
-	@Transactional
-	public void saveDicSmallTypes(List<DicSmallType> dicSmallTypes) {
-		dicSmallTypes.forEach(dicSmallType -> {
-			dicSmallTypeMapper.save(dicSmallType);
-		});
-	}
+    @Transactional
+    public void saveDicBigType(DicBigType dicBigType) {
+        dicBigTypeMapper.save(dicBigType);
 
-	// --------------------------- 私有方法-------------------------------
+        writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.SAVE);
+    }
 
-	/**
-	 * 公用模块写日志
-	 *
-	 * @param dicBigType 字典大类
-	 * @param logLevel   日志级别
-	 * @param opt        操作名称
-	 * @throws ApplicationException
-	 * @author rutine
-	 * @time Oct 14, 2012 4:08:38 PM
-	 */
-	private void writeLog(DicBigType dicBigType, LogLevelEnum logLevel, OptNameEnum opt) {
-		String optContent = "字典大类名称：" + dicBigType.getBigTypeName() + SPLIT;
+    @Transactional
+    public void saveDicSmallTypes(List<DicSmallType> dicSmallTypes) {
+        dicSmallTypes.forEach(dicSmallType -> {
+            dicSmallTypeMapper.save(dicSmallType);
+        });
+    }
 
-		sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dicBigType.getBigTypeId() + "");
-	}
+    // --------------------------- 私有方法-------------------------------
+
+    /**
+     * 公用模块写日志
+     *
+     * @param dicBigType 字典大类
+     * @param logLevel   日志级别
+     * @param opt        操作名称
+     * @throws ApplicationException
+     * @author rutine
+     * @time Oct 14, 2012 4:08:38 PM
+     */
+    private void writeLog(DicBigType dicBigType, LogLevelEnum logLevel, OptNameEnum opt) {
+        String optContent = "字典大类名称：" + dicBigType.getBigTypeName() + SPLIT;
+
+        sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dicBigType.getBigTypeId() + "");
+    }
 }

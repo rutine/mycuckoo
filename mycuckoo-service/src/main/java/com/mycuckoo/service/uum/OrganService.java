@@ -79,10 +79,13 @@ public class OrganService {
             organMapper.update(organ);
             privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
 
+            organ = get(organId);
             this.writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
         } else {
             Organ organ = new Organ(organId, ENABLE);
             organMapper.update(organ);
+
+            organ = get(organId);
             writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
         }
     }

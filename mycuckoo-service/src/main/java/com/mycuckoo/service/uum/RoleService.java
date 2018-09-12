@@ -3,6 +3,7 @@ package com.mycuckoo.service.uum;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.exception.ApplicationException;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_ROL;
 import static com.mycuckoo.common.constant.Common.SPLIT;
 import static com.mycuckoo.common.constant.ServiceVariable.*;
 
@@ -48,14 +48,18 @@ public class RoleService {
     public void disEnable(long roleId, String disEnableFlag) {
         if (DISABLE.equals(disEnableFlag)) {
             organRoleService.deleteByRoleId(roleId); //根据角色ID删除机构角色关系记录，为停用角色所用
-            privilegeService.deleteByOwnerIdAndOwnerType(roleId, OWNER_TYPE_ROL);  //删除用户所拥有操作、行权限
+            privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.value());  //删除用户所拥有操作、行权限
 
             Role role = new Role(roleId, DISABLE);
             roleMapper.save(role);
+
+            role = getByRoleId(roleId);
             writeLog(role, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
         } else {
             Role role = new Role(roleId, ENABLE);
             roleMapper.save(role);
+
+            role = getByRoleId(roleId);
             writeLog(role, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
         }
     }

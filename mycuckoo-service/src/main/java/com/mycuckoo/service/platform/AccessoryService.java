@@ -25,42 +25,41 @@ import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
 @Transactional(readOnly = true)
 public class AccessoryService {
 
-	@Autowired
-	private AccessoryMapper accessoryMapper;
-	@Autowired
-	private SystemOptLogService systemOptLogService;
+    @Autowired
+    private AccessoryMapper accessoryMapper;
+    @Autowired
+    private SystemOptLogService systemOptLogService;
 
 
-	@Transactional
-	public void deleteByIds(List<Long> accessoryIds) {
-		if (!accessoryIds.isEmpty()) {
-			// 删除文件
-			for (long id : accessoryIds) {
-				Accessory accessory = this.get(id);
-				CommonUtils.deleteFile("", accessory.getAccessoryName());
+    @Transactional
+    public void deleteByIds(List<Long> accessoryIds) {
+        if (!accessoryIds.isEmpty()) {
+            // 删除文件
+            for (long id : accessoryIds) {
+                Accessory accessory = this.get(id);
+                CommonUtils.deleteFile("", accessory.getAccessoryName());
 
-				accessoryMapper.delete(id);
-			}
+                accessoryMapper.delete(id);
+            }
 
+            String optContent = "删除附件ID：" + accessoryIds.toString();
+            systemOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_ACCESSORY, optContent, "");
+        }
+    }
 
-			String optContent = "删除附件ID：" + accessoryIds.toString();
-			systemOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_ACCESSORY, optContent, "");
-		}
-	}
+    public List<Accessory> findByAfficheId(long afficheId) {
+        return accessoryMapper.findByAfficheId(afficheId);
+    }
 
-	public List<Accessory> findByAfficheId(long afficheId) {
-		return accessoryMapper.findByAfficheId(afficheId);
-	}
+    public Accessory get(long accessoryId) {
+        return accessoryMapper.get(accessoryId);
+    }
 
-	public Accessory get(long accessoryId) {
-		return accessoryMapper.get(accessoryId);
-	}
+    @Transactional
+    public void save(Accessory accessory) {
+        accessoryMapper.save(accessory);
 
-	@Transactional
-	public void save(Accessory accessory) {
-		accessoryMapper.save(accessory);
-
-		String optContent = "附件业务表ID：" + accessory.getInfoId() + SPLIT + "附件名称:" + accessory.getAccessoryName();
-		systemOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_ACCESSORY, optContent, accessory.getAccessoryId() + "");
-	}
+        String optContent = "附件业务表ID：" + accessory.getInfoId() + SPLIT + "附件名称:" + accessory.getAccessoryName();
+        systemOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_ACCESSORY, optContent, accessory.getAccessoryId() + "");
+    }
 }

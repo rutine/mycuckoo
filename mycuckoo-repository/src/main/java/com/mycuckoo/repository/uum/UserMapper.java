@@ -101,5 +101,5 @@ public interface UserMapper extends Repository<User, Long> {
      * @param userIds
      * @return
      */
-    List findByUserIds(Long[] userIds);
+    List<User> findByUserIds(Long[] userIds);
 }

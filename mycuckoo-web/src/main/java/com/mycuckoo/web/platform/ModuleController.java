@@ -2,20 +2,26 @@ package com.mycuckoo.web.platform;
 
 
 import com.mycuckoo.common.utils.SessionUtil;
-import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.TreeVo;
-import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
@@ -52,13 +58,13 @@ public class ModuleController {
 	 * @time Dec 2, 2012 8:22:41 PM
 	 */
 	@GetMapping(value="/list")
-	public AjaxResponse<Page<ModuleMemuVo>> list(@RequestParam(value="treeId", defaultValue="-1") long treeId,
-							 @RequestParam(value="modName", defaultValue="") String modName,
-							 @RequestParam(value="modEnId", defaultValue="") String modEnId,
-							 @RequestParam(value="pageNo", defaultValue="1") int pageNo,
-							 @RequestParam(value="pageSize", defaultValue=LIMIT + "") int pageSize) {
+	public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(value="treeId", defaultValue="-1") long treeId,
+                                                 @RequestParam(value="modName", defaultValue="") String modName,
+                                                 @RequestParam(value="modEnId", defaultValue="") String modEnId,
+                                                 @RequestParam(value="pageNo", defaultValue="1") int pageNo,
+                                                 @RequestParam(value="pageSize", defaultValue=LIMIT + "") int pageSize) {
 		
-		Page<ModuleMemuVo> page = moduleService.findByPage(treeId, modName, modEnId,
+		Page<ModuleMenuVo> page = moduleService.findByPage(treeId, modName, modEnId,
 				new PageRequest(pageNo - 1, pageSize));
 		
 		return AjaxResponse.create(page);
@@ -78,7 +84,7 @@ public class ModuleController {
 			@RequestParam(value="moduleId") long id,
 			@RequestParam(value="modName") String modName) {
 
-		AssignVo<Operate> vo = moduleService.findAssignedAUnAssignedOperatesByModuleId(id);
+		AssignVo<Operate> vo = moduleService.findAssignedAndUnAssignedOperatesByModuleId(id);
 
 		return AjaxResponse.create(vo);
 	}
@@ -91,7 +97,7 @@ public class ModuleController {
 	 * @time Jun 1, 2013 9:13:49 AM
 	 */
 	@PutMapping(value="/create")
-	public AjaxResponse<String> putCreate(@RequestBody  ModuleMemu moduleMemu) {
+	public AjaxResponse<String> putCreate(@RequestBody ModuleMenu moduleMemu) {
 		
 		logger.debug(JsonUtils.toJson(moduleMemu));
 		
@@ -161,16 +167,16 @@ public class ModuleController {
 	 * 功能说明 : 获取模块的下级模块
 	 *
 	 * @param id 模块id
-	 * @param filterModId
+	 * @param filterOutModId
 	 * @author rutine
 	 * @time Dec 1, 2012 1:45:37 PM
 	 */
 	@GetMapping(value="/get/child/nodes")
 	public AjaxResponse<List<TreeVo>> getChildNodes(
 			@RequestParam(value = "treeId", defaultValue = "0") long id,
-			@RequestParam(value = "filterModId", defaultValue = "0") long filterModId) {
+			@RequestParam(value = "filterModId", defaultValue = "0") long filterOutModId) {
 
-		List<TreeVo> asyncTreeList = moduleService.findByParentIdAndFilterModuleIds(id, filterModId);
+		List<TreeVo> asyncTreeList = moduleService.findByParentIdAndFilterOutModuleIds(id, filterOutModId);
 		
 		logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
 		
@@ -185,16 +191,16 @@ public class ModuleController {
 	 * @time Jun 1, 2013 3:45:56 PM
 	 */
 	@PutMapping(value="/update")
-	public AjaxResponse<String> putUpdate(@RequestBody ModuleMemu moduleMemu) {
+	public AjaxResponse<String> putUpdate(@RequestBody ModuleMenu moduleMemu) {
 		moduleService.update(moduleMemu);
 		
 		return AjaxResponse.create("修改模块成功");
 	}
 			
 	@GetMapping(value="/view")
-	public AjaxResponse<ModuleMemuVo> getView(@RequestParam long id) {
-		ModuleMemuVo moduleMemu = moduleService.get(id);
-		ModuleMemuVo parentMemu  = moduleService.get(moduleMemu.getParentId());
+	public AjaxResponse<ModuleMenuVo> getView(@RequestParam long id) {
+		ModuleMenuVo moduleMemu = moduleService.get(id);
+		ModuleMenuVo parentMemu  = moduleService.get(moduleMemu.getParentId());
 		moduleMemu.setParentName(parentMemu.getModName());
 		
 		return AjaxResponse.create(moduleMemu);

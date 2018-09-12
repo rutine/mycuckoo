@@ -4,14 +4,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
-import com.mycuckoo.common.constant.PrivilegeScopeEnum;
+import com.mycuckoo.common.constant.OwnerType;
+import com.mycuckoo.common.constant.PrivilegeScope;
+import com.mycuckoo.common.constant.PrivilegeType;
+import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.platform.ModOptRef;
-import com.mycuckoo.domain.platform.ModuleMemu;
+import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Privilege;
+import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
@@ -20,9 +24,8 @@ import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.ModuleOperationVo;
 import com.mycuckoo.vo.SystemConfigBean;
 import com.mycuckoo.vo.TreeVoExtend;
-import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
-import com.mycuckoo.vo.uum.UserVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +42,12 @@ import java.util.stream.Collectors;
 
 import static com.mycuckoo.common.constant.Common.*;
 import static com.mycuckoo.common.constant.ServiceVariable.MOD_ASSIGN_OPT;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 权限业务类
  *
  * @author rutine
- * @version 2.0.0
+ * @version 4.0.0
  * @time Sep 25, 2014 11:21:42 AM
  */
 @Service
@@ -60,7 +62,7 @@ public class PrivilegeService {
     @Autowired
     private OrganService organService;
     @Autowired
-    private OrganRoleService roleOrganService;
+    private OrganRoleService organRoleService;
     @Autowired
     private SystemOptLogService sysOptLogService;
     @Autowired
@@ -74,7 +76,7 @@ public class PrivilegeService {
     public void deletePrivilegeByModOptId(String[] modOptRefIds) {
         if (modOptRefIds == null || modOptRefIds.length == 0) return;
 
-        privilegeMapper.deleteByModOptId(modOptRefIds, PRIVILEGE_TYPE_OPT);
+        privilegeMapper.deleteByModOptId(modOptRefIds, PrivilegeType.OPT.value());
     }
 
     public void deleteByOwnerIdAndOwnerType(long ownerId, String ownerType) {
@@ -82,165 +84,94 @@ public class PrivilegeService {
     }
 
     public void deleteRowPrivilegeByOrgId(String orgId) {
-        privilegeMapper.deleteRowPrivilegeByOrgId(orgId, PRIVILEGE_TYPE_ROW, PrivilegeScopeEnum.ORGAN.value());
+        privilegeMapper.deleteRowPrivilegeByOrgId(orgId, PrivilegeType.ROW.value(), PrivilegeScope.ORGAN.value());
     }
-
-    public List<UserVo> findUsersByUserName(String userName) {
-        return userService.findByUserName(userName);
-    }
-
-    public ModuleOperationVo filterModOpt(List<ModOptRef> modOptRefList, boolean isTreeFlag) {
-        Map<Long, List<ModuleMemuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
-        List<ModuleMemuVo> moduleMemuList = Lists.newArrayList(); // 模块菜单list
-
-        for (ModOptRef modOptRef : modOptRefList) {
-            ModuleMemu moduleMemu3 = modOptRef.getModuleMemu(); // 第三级菜单
-            ModuleMemuVo vo3 = new ModuleMemuVo();
-            BeanUtils.copyProperties(moduleMemu3, vo3);
-
-            // 操作按钮
-            Operate operate = modOptRef.getOperate();
-            ModuleMemuVo moduleMemuOpt = new ModuleMemuVo();
-            moduleMemuOpt.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
-            moduleMemuOpt.setModName(operate.getOperateName());
-            moduleMemuOpt.setModImgCls(operate.getOptImgLink());
-            moduleMemuOpt.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
-            moduleMemuOpt.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            moduleMemuOpt.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
-            moduleMemuOpt.setIsLeaf(true);
-            if (isTreeFlag) { // 如果为树则加入模块list
-                moduleMemuList.add(moduleMemuOpt);
-            } else { // 不为树则维护操作按钮map
-                Long modEnId = vo3.getModuleId(); // 模块英文id, 作为操作列表map的key值
-                if (modOptMap.containsKey(modEnId)) {
-                    List<ModuleMemuVo> modOptList = modOptMap.get(modEnId);
-                    // 根据操作顺序进行排序
-                    int listIndex = 0; // 元素索引
-                    boolean orderBol = true; //是否插入指定索引元素
-                    for (ModuleMemu moduleMemuOptt : modOptList) {
-                        int listModOrder = moduleMemuOptt.getModOrder(); // 已经有的操作顺序
-                        int currModOrder = moduleMemuOpt.getModOrder(); // 当前操作顺序
-                        if (listModOrder > currModOrder) {
-                            modOptList.add(listIndex, moduleMemuOpt); // 顺序小的插在前
-                            orderBol = false;
-                            break;
-                        }
-                        listIndex++;
-                    }
-                    if (orderBol) {
-                        modOptList.add(moduleMemuOpt); // 加到操作list中
-                    }
-                } else {
-                    List<ModuleMemuVo> modOptList = Lists.newArrayList(); // 操作list
-                    modOptList.add(moduleMemuOpt); // 加到操作list中
-                    modOptMap.put(modEnId, modOptList);
-                }
-            }
-
-            // 如果包含相应菜单项则加入相应模块菜单
-            if (!moduleMemuList.contains(vo3)) {
-                moduleMemuList.add(vo3);
-                ModuleMemuVo vo2 = new ModuleMemuVo(vo3.getParentId()); // 第二级菜单
-                if (!moduleMemuList.contains(vo2)) {
-                    vo2 = platformServiceFacade.getModule(vo2.getModuleId());
-                    moduleMemuList.add(vo2);
-                    ModuleMemuVo vo1 = new ModuleMemuVo(vo2.getParentId()); // 第一级菜单
-                    if (!moduleMemuList.contains(vo1)) {
-                        moduleMemuList.add(platformServiceFacade.getModule(vo1.getModuleId()));
-                    }
-                }
-            }
-        }
-
-        Collections.sort(moduleMemuList, new ModuleMemu());
-
-        return new ModuleOperationVo(moduleMemuList, modOptMap);
-    }
-
 
     public String findRowPrivilegeByRoleIdAPriType(long roleId) {
         // 查找已经分配的权限
-        Long[] roleIds = new Long[]{roleId};
-        String[] ownerTypes = new String[]{OWNER_TYPE_ROL};
-        String[] privilegeTypes = new String[]{PRIVILEGE_TYPE_ROW};
+        Long[] roleIds = { roleId };
+        String[] ownerTypes = { OwnerType.ROLE.value() };
+        String[] privilegeTypes = { PrivilegeType.ROW.value() };
+        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
 
-        List<Privilege> privilegeOptList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
+        if (privilegeList.isEmpty()) return PrivilegeScope.ORGAN.value();
 
-        if (privilegeOptList.isEmpty()) return PrivilegeScopeEnum.ORGAN.value();
-
-        Privilege uumPrivilege = privilegeOptList.get(0);
-        String resourceId = uumPrivilege.getResourceId();
+        Privilege privilege = privilegeList.get(0);
+        String resourceId = privilege.getResourceId();
 
         return resourceId;
     }
 
-    public AssignVo<TreeVoExtend> findSelectAUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
+    public AssignVo<TreeVoExtend> findSelectAndUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
         // 查找已经分配的权限
-        Long[] roleIds = new Long[]{ownerId};
-        String[] ownerTypes = new String[]{ownerType};
-        String[] privilegeTypes = new String[]{PRIVILEGE_TYPE_OPT};
-        List<Privilege> privilegeOptList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
+        Long[] roleIds = { ownerId };
+        String[] ownerTypes = { ownerType };
+        String[] privilegeTypes = { PrivilegeType.OPT.value() };
+        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
+
         // 操作id集
-        List<Long> resourceIdList = new ArrayList<Long>();
+        List<Long> resourceIdList = new ArrayList<>();
         String privilegeScope = "";
-        for (Privilege uumPrivilege : privilegeOptList) {
-            String resouceId = uumPrivilege.getResourceId();
+        for (Privilege privilege : privilegeList) {
+            String resourceId = privilege.getResourceId();
             try {
-                resourceIdList.add(Long.parseLong(resouceId));
+                resourceIdList.add(Long.parseLong(resourceId));
             } catch (NumberFormatException e) {
-                logger.warn("{} 不能转换成模块id, 忽略此id.", resouceId);
+                logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
             }
             if (StringUtils.isBlank(privilegeScope)) {
-                privilegeScope = uumPrivilege.getPrivilegeScope();
+                privilegeScope = privilege.getPrivilegeScope();
             }
         }
+
         List<ModOptRef> assignedModOptList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
         // 查找所有模块操作关系
         List<ModOptRef> allModOptList = platformServiceFacade.findAllModOptRefs();
-        List<ModOptRef> allModOptList2 = Lists.newArrayList(allModOptList);
-        allModOptList2.removeAll(assignedModOptList);
+        List<ModOptRef> allModOptListTemp = Lists.newArrayList(allModOptList);
+        allModOptListTemp.removeAll(assignedModOptList);
         // 未分配的权限
-        List<ModOptRef> unassignedModOptList = allModOptList2;
+        List<ModOptRef> unassignedModOptList = allModOptListTemp;
         //将操作转化成列表数据
-        List<ModuleMemuVo> assignedModMenuList = this.filterModOpt(assignedModOptList, true).getModuleMenu();
-        List<ModuleMemuVo> unassignedModMenuList = this.filterModOpt(unassignedModOptList, true).getModuleMenu();
+        List<ModuleMenuVo> assignedModMenuList = this.filterModOpt(assignedModOptList, true).getModuleMenu();
+        List<ModuleMenuVo> unassignedModMenuList = this.filterModOpt(unassignedModOptList, true).getModuleMenu();
 
         //将已分配和未分配的模块操作放入
         return new AssignVo<>(
-                convertToTree(assignedModMenuList),
-                convertToTree(unassignedModMenuList),
+                this.convertToTree(assignedModMenuList),
+                this.convertToTree(unassignedModMenuList),
                 privilegeScope);
     }
 
     public UserRowPrivilegeVo findSelectRowPrivilegeByUserId(long userId) {
         // 查找已经分配的权限
-        Long[] userIds = new Long[]{userId};
-        String[] ownerTypes = new String[]{OWNER_TYPE_USR};
-        String[] privilegeTypes = new String[]{PRIVILEGE_TYPE_ROW};
-        List<Privilege> privilegeOptList = privilegeMapper.findByOwnIdAndPrivilegeType(userIds, ownerTypes, privilegeTypes);
-        List<Long> resourceIdList = new ArrayList<Long>();
-        String privilegeScope = "";
-        for (Privilege privilege : privilegeOptList) {
+        Long[] userIds = { userId };
+        String[] ownerTypes = { OwnerType.USR.value() };
+        String[] privilegeTypes = { PrivilegeType.ROW.value() };
+        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(userIds, ownerTypes, privilegeTypes);
+
+        List<Long> resourceIdList = new ArrayList<>();
+        PrivilegeScope privilegeScope = null;
+        for (Privilege privilege : privilegeList) {
             String resourceId = privilege.getResourceId();
             resourceIdList.add(Long.parseLong(resourceId));
-            if ("".endsWith(privilegeScope)) {
-                privilegeScope = privilege.getPrivilegeScope();
+            if (null == privilegeScope) {
+                privilegeScope = PrivilegeScope.of(privilege.getPrivilegeScope());
             }
         }
 
         Long[] resourceIdArray = resourceIdList.toArray(new Long[resourceIdList.size()]);
         final List<UserRowPrivilegeVo.RowVo> rowVos = new ArrayList();
-        if (PrivilegeScopeEnum.USER.value().equals(privilegeScope)) {
-            List userList = userService.findByUserIds(resourceIdArray);
+        if (PrivilegeScope.USER == privilegeScope) {
+            List<User> userList = userService.findByUserIds(resourceIdArray);
             userList.forEach(item -> {
-                Map map = (Map) item;
                 UserRowPrivilegeVo.RowVo vo = new UserRowPrivilegeVo.RowVo();
-                vo.setId((Long) map.get("userId"));
-                vo.setName((String) map.get("userName"));
+                vo.setId(item.getUserId());
+                vo.setName(item.getUserName());
                 rowVos.add(vo);
             });
-        } else if (PrivilegeScopeEnum.ROLE.value().equals(privilegeScope)) {
-            List<OrgRoleRef> orgRoleRefList = roleOrganService.findByOrgRoleIds(resourceIdArray);
+        }
+        else if (PrivilegeScope.ROLE == privilegeScope) {
+            List<OrgRoleRef> orgRoleRefList = organRoleService.findByOrgRoleIds(resourceIdArray);
             orgRoleRefList.forEach(item -> {
                 String orgName = item.getOrgan().getOrgSimpleName();
                 String roleName = item.getRole().getRoleName();
@@ -249,87 +180,87 @@ public class PrivilegeService {
                 vo.setName(orgName + "-" + roleName);
                 rowVos.add(vo);
             });
-        } else {
+        }
+        else {
             List<Organ> organList = organService.findByOrgIds(resourceIdArray);
-            organList.forEach(organ -> {
+            organList.forEach(item -> {
                 UserRowPrivilegeVo.RowVo vo = new UserRowPrivilegeVo.RowVo();
-                vo.setId(organ.getOrgId());
-                vo.setName(organ.getOrgSimpleName());
+                vo.setId(item.getOrgId());
+                vo.setName(item.getOrgSimpleName());
                 rowVos.add(vo);
             });
         }
 
         UserRowPrivilegeVo vo = new UserRowPrivilegeVo();
+        vo.setRowPrivilege(privilegeScope == null ? "" : privilegeScope.value());
         vo.setRow(rowVos);
-        vo.setRowPrivilege(privilegeScope);
 
         return vo;
     }
 
     public boolean existsSpecialPrivilegeByUserId(long userId) {
-        int count = privilegeMapper.countByUserIdAndOwnerType(userId, OWNER_TYPE_USR);
+        int count = privilegeMapper.countByUserIdAndOwnerType(userId, OwnerType.USR.value());
 
         return count > 0;
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {
-        List<ModuleMemuVo> allModuleMemus = platformServiceFacade.findAllModule();// 所有模块菜单
         List<ModOptRef> modOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
-        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMemus); // 过滤模块
-
-        Map<Long, List<ModuleMemuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
+        Map<Long, List<ModuleMenuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
         for (ModOptRef modOptRef : modOptRefList) {
-            ModuleMemu moduleMemu = modOptRef.getModuleMemu(); // 所属模块
+            ModuleMenu moduleMenu = modOptRef.getModuleMemu(); // 所属模块
             Operate operate = modOptRef.getOperate(); // 具体操作
-            ModuleMemuVo vo = new ModuleMemuVo();
-            BeanUtils.copyProperties(moduleMemu, vo);
+            ModuleMenuVo vo = new ModuleMenuVo();
+            BeanUtils.copyProperties(moduleMenu, vo);
 
             // 操作按钮
-            ModuleMemuVo moduleMemuOpt = new ModuleMemuVo();
-            moduleMemuOpt.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
-            moduleMemuOpt.setModName(operate.getOperateName());
-            moduleMemuOpt.setModImgCls(operate.getOptImgLink());
-            moduleMemuOpt.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
-            moduleMemuOpt.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            moduleMemuOpt.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
-            moduleMemuOpt.setIsLeaf(true);
+            ModuleMenuVo modOptVo = new ModuleMenuVo();
+            modOptVo.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
+            modOptVo.setModName(operate.getOperateName());
+            modOptVo.setModImgCls(operate.getOptImgLink());
+            modOptVo.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
+            modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
+            modOptVo.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
+            modOptVo.setIsLeaf(true);
 
             Long modEnId = vo.getModuleId(); // 模块英文id,作为操作列表map的key值
             if (modOptMap.containsKey(modEnId)) {
-                List<ModuleMemuVo> modOptList = modOptMap.get(modEnId);
+                List<ModuleMenuVo> modOptVoList = modOptMap.get(modEnId);
                 // 根据操作顺序进行排序
                 int listIndex = 0; // 元素索引
                 boolean orderBol = true; // 是否插入指定索引元素
-                for (ModuleMemu moduleMemuOptt : modOptList) {
-                    int listModOrder = moduleMemuOptt.getModOrder(); // 已经有的操作顺序
-                    int currModOrder = moduleMemuOpt.getModOrder(); // 当前操作顺序
+                for (ModuleMenu modOptVoo : modOptVoList) {
+                    int listModOrder = modOptVoo.getModOrder(); // 已经有的操作顺序
+                    int currModOrder = modOptVo.getModOrder(); // 当前操作顺序
                     if (listModOrder > currModOrder) {
-                        modOptList.add(listIndex, moduleMemuOpt); // 顺序小的插在前
+                        modOptVoList.add(listIndex, modOptVo); // 顺序小的插在前
                         orderBol = false;
                         break;
                     }
                     listIndex++;
                 }
                 if (orderBol) {
-                    modOptList.add(moduleMemuOpt);// 加到操作list中
+                    modOptVoList.add(modOptVo);// 加到操作list中
                 }
             } else {
-                List<ModuleMemuVo> modOptList = Lists.newArrayList();// 操作list
-                modOptList.add(moduleMemuOpt);// 加到操作list中
-                modOptMap.put(modEnId, modOptList);// 设置map
+                List<ModuleMenuVo> modOptVoList = Lists.newArrayList();// 操作list
+                modOptVoList.add(modOptVo);// 加到操作list中
+                modOptMap.put(modEnId, modOptVoList);// 设置map
             }
         }
-        // hierarchyModuleVo:{"1" : list, "2" : map, "3" : map, "4" : map}
+
+        List<ModuleMenuVo> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
+        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
         hierarchyModuleVo.setFourth(modOptMap);
 
         return hierarchyModuleVo;
     }
 
     public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
-        Long[] ownerIds = {userId, roleId, organRoleId}; // 拥有者数组
-        String[] ownerTypes = OWNER_TYPE_ARR; // 拥有者类型数组
-        String[] privilegeTypes = PRIVILEGE_TYPE_ARR; // 权限类型数组
         // 查找用户相关所有权限
+        Long[] ownerIds = { userId, roleId, organRoleId }; // 拥有者数组
+        String[] ownerTypes =  { OwnerType.USR.value(), OwnerType.ROLE.value() }; // 拥有者类型数组
+        String[] privilegeTypes = { PrivilegeType.ROW.value(), PrivilegeType.OPT.value() }; // 权限类型数组
         List<Privilege> privilegeList = privilegeMapper
                 .findByOwnIdAndPrivilegeType(ownerIds, ownerTypes, privilegeTypes);
 
@@ -338,20 +269,21 @@ public class PrivilegeService {
         List<Privilege> privilegeRowList = Lists.newArrayList();
         List<Privilege> privilegeOptSpecialList = Lists.newArrayList();
         List<Privilege> privilegeRowSpecialList = Lists.newArrayList();
-        for (Privilege uumPrivilege : privilegeList) {
-            String ownerType = uumPrivilege.getOwnerType();
-            String privilegeType = uumPrivilege.getPrivilegeType();
-            if (OWNER_TYPE_USR.equals(ownerType)) { // 用户
-                if (PRIVILEGE_TYPE_OPT.equals(privilegeType)) {
-                    privilegeOptSpecialList.add(uumPrivilege);
-                } else if (PRIVILEGE_TYPE_ROW.equals(privilegeType)) {
-                    privilegeRowSpecialList.add(uumPrivilege);
+        for (Privilege privilege : privilegeList) {
+            OwnerType ownerType = OwnerType.of(privilege.getOwnerType());
+            PrivilegeType privilegeType = PrivilegeType.of(privilege.getPrivilegeType());
+            if (OwnerType.USR == ownerType) { // 用户
+                if (PrivilegeType.OPT == privilegeType) {
+                    privilegeOptSpecialList.add(privilege);
+                } else if (PrivilegeType.ROW == privilegeType) {
+                    privilegeRowSpecialList.add(privilege);
                 }
-            } else if (OWNER_TYPE_ROL.equals(ownerType)) {
-                if (PRIVILEGE_TYPE_OPT.equals(privilegeType)) {
-                    privilegeOptList.add(uumPrivilege);
-                } else if (PRIVILEGE_TYPE_ROW.equals(privilegeType)) {
-                    privilegeRowList.add(uumPrivilege);
+            }
+            else if (OwnerType.ROLE == ownerType) {
+                if (PrivilegeType.OPT == privilegeType) {
+                    privilegeOptList.add(privilege);
+                } else if (PrivilegeType.ROW == privilegeType) {
+                    privilegeRowList.add(privilege);
                 }
             }
         }
@@ -364,83 +296,85 @@ public class PrivilegeService {
             privilegeRowList = privilegeRowSpecialList;
         }
 
-        // 操作
-        List<Long> resourceIdList = new ArrayList<Long>();
-        String privilegeScope = "";
-        for (Privilege uumPrivilege : privilegeOptList) {
-            String resourceId = uumPrivilege.getResourceId();
+        // 2 ====== 操作权限 ======
+        List<Long> resourceIdList = new ArrayList<>();
+        PrivilegeScope privilegeScope = null;
+        for (Privilege privilege : privilegeOptList) {
+            String resourceId = privilege.getResourceId();
             resourceIdList.add(Long.parseLong(resourceId));
-            if ("".equals(privilegeScope)) {
-                privilegeScope = uumPrivilege.getPrivilegeScope();
+            if (null == privilegeScope) {
+                PrivilegeScope.of(privilege.getPrivilegeScope());
             }
         }
         List<ModOptRef> modOptRefList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
-        if (PrivilegeScopeEnum.EXCLUDE.value().equals(privilegeScope)) {
+        if (PrivilegeScope.EXCLUDE == privilegeScope) {
             List<ModOptRef> allModOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
             allModOptRefList.removeAll(modOptRefList);
             modOptRefList = allModOptRefList;
-        } else if (PrivilegeScopeEnum.ALL.value().equals(privilegeScope)) {
+        } else if (PrivilegeScope.ALL == privilegeScope) {
             List<ModOptRef> allModOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
             modOptRefList = allModOptRefList;
         }
 
         // 过滤所有的模块操作
         ModuleOperationVo moduleOperationVo = this.filterModOpt(modOptRefList, false);
-        List<ModuleMemuVo> moduleMemuList = moduleOperationVo.getModuleMenu();
-        Map<Long, List<ModuleMemuVo>> modOptMap = moduleOperationVo.getModuleOperate();
+        List<ModuleMenuVo> moduleMenuList = moduleOperationVo.getModuleMenu();
+        Map<Long, List<ModuleMenuVo>> modOptMap = moduleOperationVo.getModuleOperate();
 
         // 1,2,3 级菜单分类
-        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(moduleMemuList);
+        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(moduleMenuList);
         hierarchyModuleVo.setFourth(modOptMap);
 
-        // 2 ====== 行权限 ======
-        StringBuilder ownerTypeAUserPriBulider = new StringBuilder();
-        String privilegeScopeFlag = "";
-        String ownerTypeFlag = "";
-        for (Privilege uumPrivilege : privilegeRowList) {
-            String ownerType = uumPrivilege.getOwnerType();
-            String privilegeScopeRow = uumPrivilege.getPrivilegeScope();
-            String resourceId = uumPrivilege.getResourceId();
-            if (OWNER_TYPE_ROL.equals(ownerType)) { // 角色只有其一权限
-                ownerTypeFlag = OWNER_TYPE_ROL;
+        // 3 ====== 行权限 ======
+        StringBuilder ownerTypeAndUserPriBuilder = new StringBuilder();
+        OwnerType ownerTypeFlag = null;
+        PrivilegeScope privilegeScopeFlag = null;
+        for (Privilege privilege : privilegeRowList) {
+            String resourceId = privilege.getResourceId();
+            OwnerType ownerType = OwnerType.of(privilege.getOwnerType());
+            PrivilegeScope privilegeScopeRow = PrivilegeScope.of(privilege.getPrivilegeScope());
+            if (OwnerType.ROLE == ownerType) { // 角色只有其一权限
+                ownerTypeFlag = OwnerType.ROLE;
                 privilegeScopeFlag = privilegeScopeRow;
                 break;
-            } else if (OWNER_TYPE_USR.equals(ownerType)) {
-                if (isNullOrEmpty(ownerTypeFlag) || isNullOrEmpty(privilegeScopeFlag)
-                        || !OWNER_TYPE_USR.equals(ownerType)) { // 为空不等ownerTypeUser
-                    ownerTypeFlag = OWNER_TYPE_USR;
+            }
+            else if (OwnerType.USR == ownerType) {
+                if (ownerTypeFlag == null || privilegeScopeFlag == null || OwnerType.USR != ownerTypeFlag) {
+                    ownerTypeFlag = OwnerType.USR;
                     privilegeScopeFlag = privilegeScopeRow;
                 }
-                ownerTypeAUserPriBulider = ownerTypeAUserPriBulider.length() == 0
-                        ? ownerTypeAUserPriBulider.append(resourceId) : ownerTypeAUserPriBulider.append("," + resourceId);
+                ownerTypeAndUserPriBuilder = ownerTypeAndUserPriBuilder.length() == 0
+                        ? ownerTypeAndUserPriBuilder.append(resourceId) : ownerTypeAndUserPriBuilder.append("," + resourceId);
             }
         }
         // 行权限条件sql
         StringBuilder resourceIdBuf = new StringBuilder();
         resourceIdBuf.append(" AND ");
-        if (OWNER_TYPE_ROL.equals(ownerTypeFlag)) {
-            if (PrivilegeScopeEnum.ROLE.value().equals(privilegeScopeFlag)) {
+        if (OwnerType.ROLE == ownerTypeFlag) {
+            if (PrivilegeScope.ROLE == privilegeScopeFlag) {
                 resourceIdBuf.append(ROLE_ID + " = " + organRoleId + " "); // 自我真实角色
-            } else if (PrivilegeScopeEnum.USER.value().equals(privilegeScopeFlag)) {
+            } else if (PrivilegeScope.USER == privilegeScopeFlag) {
                 resourceIdBuf.append(USER_ID + " = " + userId + " ");
             } else {
                 String organChildren = getPrivilegeOrganChildren(organId);
                 resourceIdBuf.append(ORGAN_ID + " in ( " + organChildren + ") ");
             }
-        } else if (OWNER_TYPE_USR.equals(ownerTypeFlag)) {
-            if (PrivilegeScopeEnum.ROLE.value().equals(privilegeScopeFlag)) {
-                resourceIdBuf.append(ROLE_ID + " in (" + ownerTypeAUserPriBulider + ") ");
-            } else if (PrivilegeScopeEnum.USER.value().equals(privilegeScopeFlag)) {
-                resourceIdBuf.append(USER_ID + " in (" + ownerTypeAUserPriBulider + ") ");
+        }
+        else if (OwnerType.USR == ownerTypeFlag) {
+            if (PrivilegeScope.ROLE == privilegeScopeFlag) {
+                resourceIdBuf.append(ROLE_ID + " in (" + ownerTypeAndUserPriBuilder + ") ");
+            } else if (PrivilegeScope.USER == privilegeScopeFlag) {
+                resourceIdBuf.append(USER_ID + " in (" + ownerTypeAndUserPriBuilder + ") ");
             } else {
-                resourceIdBuf.append(ORGAN_ID + " in (" + ownerTypeAUserPriBulider + ") ");
+                resourceIdBuf.append(ORGAN_ID + " in (" + ownerTypeAndUserPriBuilder + ") ");
             }
-        } else {
+        }
+        else {
             SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean(); // 系统配置权限
             String rowPrivilegeLevel = systemConfigBean.getRowPrivilegeLevel();
-            if (PrivilegeScopeEnum.ROLE.value().equals(rowPrivilegeLevel)) {
+            if (PrivilegeScope.ROLE.value().equals(rowPrivilegeLevel)) {
                 resourceIdBuf.append(ROLE_ID + " = " + organRoleId + " "); // 自我真实角色
-            } else if (PrivilegeScopeEnum.USER.value().equals(rowPrivilegeLevel)) {
+            } else if (PrivilegeScope.USER.value().equals(rowPrivilegeLevel)) {
                 resourceIdBuf.append(USER_ID + " = " + userId + " ");
             } else {
                 String organChildren = getPrivilegeOrganChildren(organId);
@@ -462,9 +396,9 @@ public class PrivilegeService {
 
         StringBuilder optContent = new StringBuilder();
         optContent.append("模块操作关系ID: ");
-        if (PrivilegeScopeEnum.ALL.value().equals(privilegeScope)) {
+        if (PrivilegeScope.ALL.value().equals(privilegeScope)) {
             Privilege privilege = new Privilege();
-            privilege.setResourceId(PrivilegeScopeEnum.ALL.value());
+            privilege.setResourceId(PrivilegeScope.ALL.value());
             privilege.setOwnerId(ownerId);
             privilege.setOwnerType(ownerType);
             privilege.setPrivilegeType(privilegeType);
@@ -473,7 +407,7 @@ public class PrivilegeService {
         } else {
             if (modOptIds != null) {
                 for (String modOptId : modOptIds) {
-                    if (isNullOrEmpty(modOptId)) continue;
+                    if (CommonUtils.isNullOrEmpty(modOptId)) continue;
                     Privilege privilege = new Privilege();
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);
@@ -491,9 +425,9 @@ public class PrivilegeService {
         }
     }
 
-    public List<TreeVoExtend> convertToTree(List<ModuleMemuVo> vos) {
-        List<TreeVoExtend> treeList = new ArrayList<TreeVoExtend>();
-        for (ModuleMemuVo vo : vos) {
+    public List<TreeVoExtend> convertToTree(List<ModuleMenuVo> vos) {
+        List<TreeVoExtend> treeList = new ArrayList<>();
+        for (ModuleMenuVo vo : vos) {
             TreeVoExtend tree = new TreeVoExtend();
             tree.setId(vo.getModuleId().toString());
             tree.setParentId(vo.getParentId().toString());
@@ -512,6 +446,76 @@ public class PrivilegeService {
 
 
     // --------------------------- 私有方法 -------------------------------
+
+
+
+    private ModuleOperationVo filterModOpt(List<ModOptRef> modOptRefList, boolean isTreeFlag) {
+        Map<Long, List<ModuleMenuVo>> modOptMap = Maps.newHashMap(); // 四级模块操作
+        List<ModuleMenuVo> moduleMenuVoList = Lists.newArrayList(); // 模块菜单list
+        for (ModOptRef modOptRef : modOptRefList) {
+            ModuleMenu moduleMenu3 = modOptRef.getModuleMemu(); // 第三级菜单
+            ModuleMenuVo vo3 = new ModuleMenuVo();
+            BeanUtils.copyProperties(moduleMenu3, vo3);
+
+            // 操作按钮
+            Operate operate = modOptRef.getOperate();
+            ModuleMenuVo modOptVo = new ModuleMenuVo();
+            modOptVo.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
+            modOptVo.setModName(operate.getOperateName());
+            modOptVo.setModImgCls(operate.getOptImgLink());
+            modOptVo.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
+            modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
+            modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
+            modOptVo.setIsLeaf(true);
+
+            if (isTreeFlag) { // 如果为树则加入模块list
+                moduleMenuVoList.add(modOptVo);
+            }
+            else { // 不为树则维护操作按钮map
+                Long modEnId = vo3.getModuleId(); // 模块英文id, 作为操作列表map的key值
+                if (modOptMap.containsKey(modEnId)) {
+                    List<ModuleMenuVo> modOptVoList = modOptMap.get(modEnId);
+                    // 根据操作顺序进行排序
+                    int listIndex = 0; // 元素索引
+                    boolean orderBol = true; //是否插入指定索引元素
+                    for (ModuleMenuVo modOptVoo : modOptVoList) {
+                        int listModOrder = modOptVoo.getModOrder(); // 已经有的操作顺序
+                        int currModOrder = modOptVo.getModOrder(); // 当前操作顺序
+                        if (listModOrder > currModOrder) {
+                            modOptVoList.add(listIndex, modOptVo); // 顺序小的插在前
+                            orderBol = false;
+                            break;
+                        }
+                        listIndex++;
+                    }
+                    if (orderBol) {
+                        modOptVoList.add(modOptVo); // 加到操作list中
+                    }
+                } else {
+                    List<ModuleMenuVo> modOptVoList = Lists.newArrayList(); // 操作list
+                    modOptVoList.add(modOptVo); // 加到操作list中
+                    modOptMap.put(modEnId, modOptVoList);
+                }
+            }
+
+            // 如果包含相应菜单项则加入相应模块菜单
+            if (!moduleMenuVoList.contains(vo3)) {
+                moduleMenuVoList.add(vo3);
+                ModuleMenuVo vo2 = new ModuleMenuVo(vo3.getParentId()); // 第二级菜单
+                if (!moduleMenuVoList.contains(vo2)) {
+                    vo2 = platformServiceFacade.getModule(vo2.getModuleId());
+                    moduleMenuVoList.add(vo2);
+                    ModuleMenuVo vo1 = new ModuleMenuVo(vo2.getParentId()); // 第一级菜单
+                    if (!moduleMenuVoList.contains(vo1)) {
+                        moduleMenuVoList.add(platformServiceFacade.getModule(vo1.getModuleId()));
+                    }
+                }
+            }
+        }
+        Collections.sort(moduleMenuVoList, new ModuleMenu());
+
+        return new ModuleOperationVo(moduleMenuVoList, modOptMap);
+    }
 
     /**
      * 查询用户的机构上级

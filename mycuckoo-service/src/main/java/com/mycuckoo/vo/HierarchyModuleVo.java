@@ -1,6 +1,6 @@
 package com.mycuckoo.vo;
 
-import com.mycuckoo.vo.platform.ModuleMemuVo;
+import com.mycuckoo.vo.platform.ModuleMenuVo;
 
 import java.util.List;
 import java.util.Map;
@@ -9,53 +9,62 @@ import java.util.Map;
  * 功能说明: 四级层级菜单模块
  *
  * @author rutine
- * @time Jul 2, 2017 6:17:29 PM
  * @version 3.0.0
+ * @time Jul 2, 2017 6:17:29 PM
  */
 public class HierarchyModuleVo {
-	private List<ModuleMemuVo> first;
-	private Map<String, List<ModuleMemuVo>> second;
-	private Map<String, List<ModuleMemuVo>> third;
-	private Map<Long, List<ModuleMemuVo>> fourth;
-	private String row;
-	
-	public HierarchyModuleVo(
-			List<ModuleMemuVo> first, 
-			Map<String, List<ModuleMemuVo>> second, 
-			Map<String, List<ModuleMemuVo>> third) {
-		this.first = first;
-		this.second = second;
-		this.third = third;
-	}
-	
-	public List<ModuleMemuVo> getFirst() {
-		return first;
-	}
-	public void setFirst(List<ModuleMemuVo> first) {
-		this.first = first;
-	}
-	public Map<String, List<ModuleMemuVo>> getSecond() {
-		return second;
-	}
-	public void setSecond(Map<String, List<ModuleMemuVo>> second) {
-		this.second = second;
-	}
-	public Map<String, List<ModuleMemuVo>> getThird() {
-		return third;
-	}
-	public void setThird(Map<String, List<ModuleMemuVo>> third) {
-		this.third = third;
-	}
-	public Map<Long, List<ModuleMemuVo>> getFourth() {
-		return fourth;
-	}
-	public void setFourth(Map<Long, List<ModuleMemuVo>> fourth) {
-		this.fourth = fourth;
-	}
-	public String getRow() {
-		return row;
-	}
-	public void setRow(String row) {
-		this.row = row;
-	}
+    private List<ModuleMenuVo> first;
+    private Map<String, List<ModuleMenuVo>> second;
+    private Map<String, List<ModuleMenuVo>> third;
+    private Map<Long, List<ModuleMenuVo>> fourth;
+    private String row;
+
+    public HierarchyModuleVo(
+            List<ModuleMenuVo> first,
+            Map<String, List<ModuleMenuVo>> second,
+            Map<String, List<ModuleMenuVo>> third) {
+        this.first = first;
+        this.second = second;
+        this.third = third;
+    }
+
+    public List<ModuleMenuVo> getFirst() {
+        return first;
+    }
+
+    public void setFirst(List<ModuleMenuVo> first) {
+        this.first = first;
+    }
+
+    public Map<String, List<ModuleMenuVo>> getSecond() {
+        return second;
+    }
+
+    public void setSecond(Map<String, List<ModuleMenuVo>> second) {
+        this.second = second;
+    }
+
+    public Map<String, List<ModuleMenuVo>> getThird() {
+        return third;
+    }
+
+    public void setThird(Map<String, List<ModuleMenuVo>> third) {
+        this.third = third;
+    }
+
+    public Map<Long, List<ModuleMenuVo>> getFourth() {
+        return fourth;
+    }
+
+    public void setFourth(Map<Long, List<ModuleMenuVo>> fourth) {
+        this.fourth = fourth;
+    }
+
+    public String getRow() {
+        return row;
+    }
+
+    public void setRow(String row) {
+        this.row = row;
+    }
 }

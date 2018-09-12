@@ -50,11 +50,11 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test
-    public void testFindByParentIdAndFilterIds() {
-        List<District> list = mapper.findByParentIdAndFilterIds(7l, new long[]{0L, 9L});
+    public void testFindByParentIdAndFilterOutIds() {
+        List<District> list = mapper.findByParentIdAndFilterOutIds(7l, new long[]{0L, 9L});
 
         for (District entity : list) {
-            logger.info("------> findByParentIdAndFilterIds: {}", entity);
+            logger.info("------> findByParentIdAndFilterOutIds: {}", entity);
         }
     }
 

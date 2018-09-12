@@ -42,9 +42,10 @@ public interface DistrictMapper extends Repository<District, Long> {
     /**
      * 根据地区ID和过滤条件查询下级地区
      *
-     * @param upDistrictId     父地区ID
-     * @param filterDistrictId 过滤id,当修改时将本ID过滤掉
+     * @param parentId     父地区ID
+     * @param filterOutDistrictIds 过滤id,当修改时将本ID过滤掉
      * @return
      */
-    List<District> findByParentIdAndFilterIds(@Param("parentId") long parentId, @Param("filterDistrictIds") long[] filterDistrictIds);
+    List<District> findByParentIdAndFilterOutIds(@Param("parentId") long parentId,
+                                              @Param("filterOutDistrictIds") long[] filterOutDistrictIds);
 }

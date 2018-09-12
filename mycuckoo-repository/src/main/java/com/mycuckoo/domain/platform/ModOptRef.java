@@ -13,7 +13,7 @@ public class ModOptRef implements Serializable {
 
     private Long modOptId;
     private Operate operate;
-    private ModuleMemu moduleMemu;
+    private ModuleMenu moduleMemu;
 
     /**
      * default constructor
@@ -32,7 +32,7 @@ public class ModOptRef implements Serializable {
      * full constructor
      */
     public ModOptRef(Long modOptId, Operate operate,
-                     ModuleMemu moduleMemu) {
+                     ModuleMenu moduleMemu) {
         this.modOptId = modOptId;
         this.operate = operate;
         this.moduleMemu = moduleMemu;
@@ -54,11 +54,11 @@ public class ModOptRef implements Serializable {
         this.operate = operate;
     }
 
-    public ModuleMemu getModuleMemu() {
+    public ModuleMenu getModuleMemu() {
         return this.moduleMemu;
     }
 
-    public void setModuleMemu(ModuleMemu moduleMemu) {
+    public void setModuleMemu(ModuleMenu moduleMemu) {
         this.moduleMemu = moduleMemu;
     }
 

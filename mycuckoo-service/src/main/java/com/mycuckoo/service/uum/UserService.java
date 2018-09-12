@@ -3,6 +3,7 @@ package com.mycuckoo.service.uum;
 import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.uum.OrgRoleRef;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.OWNER_TYPE_USR;
 import static com.mycuckoo.common.constant.Common.SPLIT;
 import static com.mycuckoo.common.constant.ServiceVariable.*;
 
@@ -80,19 +80,21 @@ public class UserService {
             user.setUserBelongtoOrg(0L);
             userMapper.update(user); // 更改用户所属机构为0
             userOrgRoleService.deleteByUserId(userId); // 1 移除用户角色
-            privilegeService.deleteByOwnerIdAndOwnerType(userId, OWNER_TYPE_USR); // 2 移除用户所拥有操作、行权限
+            privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.value()); // 2 移除用户所拥有操作、行权限
 
             OrgRoleRef orgRoleRef = new OrgRoleRef(0L);
             UserOrgRoleRef userOrgRoleRef = new UserOrgRoleRef(null, orgRoleRef, user);
             userOrgRoleRef.setIsDefault(Y);
             userOrgRoleService.save(userOrgRoleRef); // 设置无角色用户
 
+            user = userMapper.get(userId);
             writeLog(user, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
             return true;
         } else {
             User user = new User(userId, ENABLE);
             userMapper.update(user);
 
+            user = userMapper.get(userId);
             writeLog(user, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
             return true;
         }
@@ -228,7 +230,7 @@ public class UserService {
         return vo;
     }
 
-    public List findByUserIds(Long[] userIds) {
+    public List<User> findByUserIds(Long[] userIds) {
         if (userIds == null || userIds.length == 0) return null;
 
         return userMapper.findByUserIds(userIds);

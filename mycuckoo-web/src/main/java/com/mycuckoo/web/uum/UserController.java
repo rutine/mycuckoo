@@ -91,7 +91,7 @@ public class UserController {
      */
     @GetMapping(value = "/list/user/privilege")
     public AjaxResponse<AssignVo<TreeVoExtend>> listUserPrivilege(@RequestParam long id) {
-        AssignVo<TreeVoExtend> vo = privilegeService.findSelectAUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
+        AssignVo<TreeVoExtend> vo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
 
         return AjaxResponse.create(vo);
     }
@@ -191,7 +191,7 @@ public class UserController {
      */
     @GetMapping(value = "query/users")
     public AjaxResponse<List<UserVo>> queryUsersByUserName(@RequestParam(defaultValue = "") String userName) {
-        List<UserVo> vos = privilegeService.findUsersByUserName(userName);
+        List<UserVo> vos = userService.findByUserName(userName);
 
         return AjaxResponse.create(vos);
     }

@@ -174,7 +174,7 @@
     </select>
     
     <!-- 根据父地区和过滤条件查询下级地区 -->
-    <select id="findByParentIdAndFilterIds" parameterType="map" resultMap="baseMap">
+    <select id="findByParentIdAndFilterOutIds" parameterType="map" resultMap="baseMap">
         select 
             <include refid="colums" />
         from 
@@ -183,7 +183,7 @@
             dis_parent_id = #{parentId}
         and
             district_id not in
-        <foreach item="id" collection="filterDistrictIds" open="(" separator="," close=")">
+        <foreach item="id" collection="filterOutDistrictIds" open="(" separator="," close=")">
             #{id}
         </foreach>
         order by 

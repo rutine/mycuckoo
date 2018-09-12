@@ -83,7 +83,7 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 
     @Test
     public void testFindByUserIds() {
-        List list = mapper.findByUserIds(new Long[]{12l, 13l, 14l, 15l, 16l});
+        List<User> list = mapper.findByUserIds(new Long[]{12l, 13l, 14l, 15l, 16l});
 
         logger.info("------> findByUserIds: {}", list);
     }

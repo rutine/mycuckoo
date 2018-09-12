@@ -13,13 +13,13 @@
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SchedulerJob">
         <id property="jobId" column="job_id" />
         <result property="jobName" column="job_name" />
-        <result property="jobClassDescript" column="job_class_descript" />
+        <result property="jobClass" column="job_class" />
         <result property="triggerType" column="trigger_type" />
-        <result property="timeExpress" column="time_express" />
+        <result property="cronExpression" column="cron_expression" />
         <result property="startTime" column="start_time" />
         <result property="endTime" column="end_time" />
-        <result property="repeatTime" column="repeat_time" />
-        <result property="splitTime" column="split_time" />
+        <result property="repeatCount" column="repeat_count" />
+        <result property="intervalTime" column="interval_time" />
         <result property="status" column="status" />
         <result property="memo" column="memo" />
         <result property="creator" column="creator" />
@@ -27,8 +27,8 @@
     </resultMap>
     
     <sql id="colums">
-        job_id, job_name, job_class_descript, trigger_type, time_express, 
-        start_time, end_time, repeat_time, split_time, status, memo, creator, create_date
+        job_id, job_name, job_class, trigger_type, cron_expression,
+        start_time, end_time, repeat_count, interval_time, status, memo, creator, create_date
     </sql>
     
     <sql id="table">
@@ -42,13 +42,13 @@
         (
             job_id,
             job_name,
-            job_class_descript,
+            job_class,
             trigger_type,
-            time_express,
+            cron_expression,
             start_time,
             end_time,
-            repeat_time,
-            split_time,
+            repeat_count,
+            interval_time,
             status,
             memo,
             creator,
@@ -57,13 +57,13 @@
         values (
             #{jobId},
             #{jobName},
-            #{jobClassDescript},
+            #{jobClass},
             #{triggerType},
-            #{timeExpress},
+            #{cronExpression},
             #{startTime},
             #{endTime},
-            #{repeatTime},
-            #{splitTime},
+            #{repeatCount},
+            #{intervalTime},
             #{status},
             #{memo},
             #{creator},
@@ -77,13 +77,13 @@
             <include refid="table" />
         <set>
             <if test="jobName != null">job_name = #{jobName}, </if>
-            <if test="jobClassDescript != null">job_class_descript = #{jobClassDescript}, </if>
+            <if test="jobClass != null">job_class = #{jobClass}, </if>
             <if test="triggerType != null">trigger_type = #{triggerType}, </if>
-            <if test="timeExpress != null">time_express = #{timeExpress}, </if>
+            <if test="cronExpression != null">cron_expression = #{cronExpression}, </if>
             <if test="startTime != null">start_time = #{startTime}, </if>
             <if test="endTime != null">end_time = #{endTime}, </if>
-            <if test="repeatTime != null">repeat_time = #{repeatTime}, </if>
-            <if test="splitTime != null">split_time = #{splitTime}, </if>
+            <if test="repeatCount != null">repeat_count = #{repeatCount}, </if>
+            <if test="intervalTime != null">interval_time = #{intervalTime}, </if>
             <if test="status != null">status = #{status}, </if>
             <if test="memo != null">memo = #{memo}, </if>
         </set>
