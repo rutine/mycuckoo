@@ -19,46 +19,46 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class MycuckooExceptionHandler {
-	private static Logger logger = LoggerFactory.getLogger(MycuckooExceptionHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(MycuckooExceptionHandler.class);
 
-	@ExceptionHandler(value = {ApplicationException.class})
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> applicationException(ApplicationException ex) {
-		logger.info("全局异常处理", ex);
+    @ExceptionHandler(value = {ApplicationException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResponse<String> applicationException(ApplicationException ex) {
+        logger.error("应用异常", ex);
 
-		return AjaxResponse.create(ex.getCode(), ex.getMessage());
-	}
+        return AjaxResponse.create(ex.getCode(), ex.getMessage());
+    }
 
-	@ExceptionHandler(value = {SystemException.class})
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> systemException(SystemException ex) {
-		logger.info("全局异常处理", ex);
+    @ExceptionHandler(value = {SystemException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResponse<String> systemException(SystemException ex) {
+        logger.info("系统异常", ex);
 
-		return AjaxResponse.create(500, ex.getMessage());
-	}
+        return AjaxResponse.create(500, ex.getMessage());
+    }
 
-	@ExceptionHandler(value = {IllegalArgumentException.class})
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> illegalArgumentException(IllegalArgumentException ex) {
-		logger.info("全局异常处理", ex);
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResponse<String> illegalArgumentException(IllegalArgumentException ex) {
+        logger.info("非法参数", ex);
 
-		return AjaxResponse.create(500, ex.getMessage());
-	}
+        return AjaxResponse.create(500, ex.getMessage());
+    }
 
-	@ExceptionHandler(value = {IllegalStateException.class})
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> illegalStateException(IllegalStateException ex) {
-		logger.info("全局异常处理", ex);
+    @ExceptionHandler(value = {IllegalStateException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResponse<String> illegalStateException(IllegalStateException ex) {
+        logger.info("非法数据状态", ex);
 
-		return AjaxResponse.create(500, ex.getMessage());
-	}
+        return AjaxResponse.create(500, ex.getMessage());
+    }
 
 
-	@ExceptionHandler(value = {Exception.class})
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public AjaxResponse<String> unknownException(Exception ex) {
-		logger.info("全局异常处理", ex);
+    @ExceptionHandler(value = {Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResponse<String> unknownException(Exception ex) {
+        logger.info("全局异常处理", ex);
 
-		return AjaxResponse.create(500, "系统异常");
-	}
+        return AjaxResponse.create(500, "系统异常");
+    }
 }

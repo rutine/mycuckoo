@@ -13,7 +13,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.Map;
@@ -24,114 +30,113 @@ import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
  * 功能说明: 系统编码Controller
  *
  * @author rutine
- * @time Oct 14, 2014 3:16:02 PM
  * @version 3.0.0
+ * @time Oct 14, 2014 3:16:02 PM
  */
 @RestController
 @RequestMapping("/platform/code/mgr")
 public class CodeController {
-	private static Logger logger = LoggerFactory.getLogger(CodeController.class);
+    private static Logger logger = LoggerFactory.getLogger(CodeController.class);
 
-	@Autowired
-	private CodeService codeService;
+    @Autowired
+    private CodeService codeService;
 
 
+    @GetMapping(value = "/list")
+    public AjaxResponse<Page<Code>> list(
+            @RequestParam(value = "codeName", defaultValue = "") String codeName,
+            @RequestParam(value = "codeEngName", defaultValue = "") String codeEngName,
+            @RequestParam(value = "moduleName", defaultValue = "") String moduleName,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
-	@GetMapping(value = "/list")
-	public AjaxResponse<Page<Code>> list(
-			@RequestParam(value = "codeName", defaultValue = "") String codeName,
-			@RequestParam(value = "codeEngName", defaultValue = "") String codeEngName,
-			@RequestParam(value = "moduleName", defaultValue = "") String moduleName,
-			@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-			@RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-		
 
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("codeName", StringUtils.isBlank(codeName) ? null : "%" + codeName + "%");
-		params.put("codeEngName", StringUtils.isBlank(codeEngName) ? null : "%" + codeEngName + "%");
-		params.put("moduleName", StringUtils.isBlank(moduleName) ? null : "%" + moduleName + "%");
-		Page<Code> page = codeService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("codeName", StringUtils.isBlank(codeName) ? null : "%" + codeName + "%");
+        params.put("codeEngName", StringUtils.isBlank(codeEngName) ? null : "%" + codeEngName + "%");
+        params.put("moduleName", StringUtils.isBlank(moduleName) ? null : "%" + moduleName + "%");
+        Page<Code> page = codeService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 
-		return AjaxResponse.create(page);
-	}
+        return AjaxResponse.create(page);
+    }
 
-	/**
-	 * 功能说明 : 创建新编码
-	 * 
-	 * @param code
-	 * @return
-	 * @author rutine
-	 * @time Jun 25, 2013 8:48:33 PM
-	 */
-	@PutMapping(value = "/create")
-	public AjaxResponse<String> putCreate(@RequestBody Code code) {
-		
-		logger.debug(JsonUtils.toJson(code));
+    /**
+     * 功能说明 : 创建新编码
+     *
+     * @param code
+     * @return
+     * @author rutine
+     * @time Jun 25, 2013 8:48:33 PM
+     */
+    @PutMapping(value = "/create")
+    public AjaxResponse<String> putCreate(@RequestBody Code code) {
 
-		code.setCreator(SessionUtil.getUserCode());
-		code.setCreateDate(new Date());
-		codeService.saveCode(code);
+        logger.debug(JsonUtils.toJson(code));
 
-		return AjaxResponse.create("保存系统编码成功");
-	}
+        code.setCreator(SessionUtil.getUserCode());
+        code.setCreateDate(new Date());
+        codeService.saveCode(code);
 
-	/**
-	 * 功能说明 : 删除系统编码
-	 * 
-	 * @param id
-	 * @return
-	 * @author rutine
-	 * @time Jun 25, 2013 8:59:46 PM
-	 */
-	@DeleteMapping(value = "/delete")
-	public AjaxResponse<String> delete(@RequestParam long id) {
-		
-		throw new ApplicationException("找不到删除记录的方法!");
+        return AjaxResponse.create("保存系统编码成功");
+    }
 
-//		return AjaxResponse.create("删除系统编码成功");
-	}
+    /**
+     * 功能说明 : 删除系统编码
+     *
+     * @param id
+     * @return
+     * @author rutine
+     * @time Jun 25, 2013 8:59:46 PM
+     */
+    @DeleteMapping(value = "/delete")
+    public AjaxResponse<String> delete(@RequestParam long id) {
 
-	/**
-	 * 功能说明 : 停用/启用编码
-	 * 
-	 * @param id
-	 * @param disEnableFlag 停用/启用标志
-	 * @return
-	 * @author rutine
-	 * @time Jun 25, 2013 8:57:53 PM
-	 */
-	@GetMapping(value = "/disEnable")
-	public AjaxResponse<String> disEnable(
-			@RequestParam long id,
-			@RequestParam String disEnableFlag) {
+        throw new ApplicationException("找不到删除记录的方法!");
 
-		boolean disEnableBol = codeService.disEnable(id, disEnableFlag);
+//        return AjaxResponse.create("删除系统编码成功");
+    }
 
-		return AjaxResponse.create("操作成功");
-	}
+    /**
+     * 功能说明 : 停用/启用编码
+     *
+     * @param id
+     * @param disEnableFlag 停用/启用标志
+     * @return
+     * @author rutine
+     * @time Jun 25, 2013 8:57:53 PM
+     */
+    @GetMapping(value = "/disEnable")
+    public AjaxResponse<String> disEnable(
+            @RequestParam long id,
+            @RequestParam String disEnableFlag) {
 
-	/**
-	 * 功能说明 : 修改编码
-	 * 
-	 * @param code
-	 * @return
-	 * @author rutine
-	 * @time Jun 25, 2013 8:53:05 PM
-	 */
-	@PutMapping(value = "/update")
-	public AjaxResponse<String> putUpdate(@RequestBody Code code) {
-		codeService.update(code);
+        boolean disEnableBol = codeService.disEnable(id, disEnableFlag);
 
-		return AjaxResponse.create("修改系统编码成功");
-	}
+        return AjaxResponse.create("操作成功");
+    }
 
-	@GetMapping(value = "/view")
-	public AjaxResponse<Code> getView(@RequestParam long id) {
-		Code code = codeService.get(id);
+    /**
+     * 功能说明 : 修改编码
+     *
+     * @param code
+     * @return
+     * @author rutine
+     * @time Jun 25, 2013 8:53:05 PM
+     */
+    @PutMapping(value = "/update")
+    public AjaxResponse<String> putUpdate(@RequestBody Code code) {
+        codeService.update(code);
 
-		logger.debug(JsonUtils.toJson(code));
+        return AjaxResponse.create("修改系统编码成功");
+    }
 
-		return AjaxResponse.create(code);
-	}
+    @GetMapping(value = "/view")
+    public AjaxResponse<Code> getView(@RequestParam long id) {
+        Code code = codeService.get(id);
+
+        logger.debug(JsonUtils.toJson(code));
+
+        return AjaxResponse.create(code);
+    }
 
 }

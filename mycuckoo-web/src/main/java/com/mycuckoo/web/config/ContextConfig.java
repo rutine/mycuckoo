@@ -16,26 +16,26 @@ import javax.sql.DataSource;
 import java.text.SimpleDateFormat;
 
 @Configuration
-@MapperScan("com.mycuckoo.repository")
 @ComponentScan("com.mycuckoo.service")
+@MapperScan("com.mycuckoo.repository")
 public class ContextConfig {
-	
-	@Bean
-	public PlatformTransactionManager transactionManager(DataSource dataSource) {
-		return new DataSourceTransactionManager(dataSource);
-	}
-	
-	@Bean
-	public Interceptor interceptors() {
-		return new PageInterceptor();
-	}
 
-	@Bean
-	public ObjectMapper objectMapper() {
-		ObjectMapper objectMapper = JsonUtils.newMapper(JsonInclude.Include.NON_NULL);
-		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
-		return objectMapper;
-	}
+    @Bean
+    public Interceptor interceptors() {
+        return new PageInterceptor();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = JsonUtils.newMapper(JsonInclude.Include.NON_NULL);
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+
+        return objectMapper;
+    }
 
 }

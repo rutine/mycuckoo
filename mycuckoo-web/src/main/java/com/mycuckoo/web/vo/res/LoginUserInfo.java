@@ -10,52 +10,52 @@ import com.mycuckoo.vo.HierarchyModuleVo;
  * @time 2017-10-06 15:48
  */
 public class LoginUserInfo {
-	private HierarchyModuleVo menu;
-	private UserInfo user;
+    private HierarchyModuleVo menu;
+    private UserInfo user;
 
-	public HierarchyModuleVo getMenu() {
-		return menu;
-	}
+    public HierarchyModuleVo getMenu() {
+        return menu;
+    }
 
-	public void setMenu(HierarchyModuleVo menu) {
-		this.menu = menu;
-	}
+    public void setMenu(HierarchyModuleVo menu) {
+        this.menu = menu;
+    }
 
-	public UserInfo getUser() {
-		return user;
-	}
+    public UserInfo getUser() {
+        return user;
+    }
 
-	public void setUser(UserInfo user) {
-		this.user = user;
-	}
+    public void setUser(UserInfo user) {
+        this.user = user;
+    }
 
-	public static class UserInfo {
-		private String userCode;
-		private String userName;
-		private String userPhotoUrl;
+    public static class UserInfo {
+        private String userCode;
+        private String userName;
+        private String userPhotoUrl;
 
-		public String getUserCode() {
-			return userCode;
-		}
+        public String getUserCode() {
+            return userCode;
+        }
 
-		public void setUserCode(String userCode) {
-			this.userCode = userCode;
-		}
+        public void setUserCode(String userCode) {
+            this.userCode = userCode;
+        }
 
-		public String getUserName() {
-			return userName;
-		}
+        public String getUserName() {
+            return userName;
+        }
 
-		public void setUserName(String userName) {
-			this.userName = userName;
-		}
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
 
-		public String getUserPhotoUrl() {
-			return userPhotoUrl;
-		}
+        public String getUserPhotoUrl() {
+            return userPhotoUrl;
+        }
 
-		public void setUserPhotoUrl(String userPhotoUrl) {
-			this.userPhotoUrl = userPhotoUrl;
-		}
-	}
+        public void setUserPhotoUrl(String userPhotoUrl) {
+            this.userPhotoUrl = userPhotoUrl;
+        }
+    }
 }

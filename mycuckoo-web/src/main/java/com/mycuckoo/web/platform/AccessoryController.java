@@ -16,37 +16,37 @@ import java.util.Arrays;
 
 /**
  * 功能说明: 附件Controller
- * 
+ *
  * @author rutine
- * @time Oct 16, 2014 4:47:41 PM
  * @version 3.0.0
+ * @time Oct 16, 2014 4:47:41 PM
  */
 @RestController
 @RequestMapping("/platform/accessory/mgr")
 public class AccessoryController {
-	private static Logger logger = LoggerFactory.getLogger(AccessoryController.class);
-	
-	@Autowired
-	private AccessoryService accessoryService;
+    private static Logger logger = LoggerFactory.getLogger(AccessoryController.class);
+
+    @Autowired
+    private AccessoryService accessoryService;
 
 
-	/**
-	 * 功能说明 : 根据附件ID删除附件
-	 * 
-	 * @param fileNameOrId
-	 * @return
-	 * @author rutine
-	 * @time Jul 1, 2013 8:58:27 PM
-	 */
-	@DeleteMapping(value = "/delete")
-	public AjaxResponse<String> delete(@RequestParam String fileNameOrId) {
-		long id = NumberUtils.toLong(fileNameOrId, -1L);
-		if(id == -1L) {
-			CommonUtils.deleteFile("", fileNameOrId);
-		} else {
-			accessoryService.deleteByIds(Arrays.asList(id));
-		}
+    /**
+     * 功能说明 : 根据附件ID删除附件
+     *
+     * @param fileNameOrId
+     * @return
+     * @author rutine
+     * @time Jul 1, 2013 8:58:27 PM
+     */
+    @DeleteMapping(value = "/delete")
+    public AjaxResponse<String> delete(@RequestParam String fileNameOrId) {
+        long id = NumberUtils.toLong(fileNameOrId, -1L);
+        if (id == -1L) {
+            CommonUtils.deleteFile("", fileNameOrId);
+        } else {
+            accessoryService.deleteByIds(Arrays.asList(id));
+        }
 
-		return AjaxResponse.create("附件删除成功");
-	}
+        return AjaxResponse.create("附件删除成功");
+    }
 }

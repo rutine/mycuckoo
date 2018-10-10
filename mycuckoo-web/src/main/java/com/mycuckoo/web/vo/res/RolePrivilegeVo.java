@@ -13,19 +13,19 @@ import java.util.List;
  * @time 2017-09-10 15:21
  */
 public class RolePrivilegeVo extends AssignVo<TreeVoExtend> {
-	private String rowPrivilege;
+    private String rowPrivilege;
 
-	public RolePrivilegeVo(List<TreeVoExtend> assign, List<TreeVoExtend> unassign, String privilegeScope, String rowPrivilege) {
-		super(assign, unassign, privilegeScope);
+    public RolePrivilegeVo(List<TreeVoExtend> assign, List<TreeVoExtend> unassign, String privilegeScope, String rowPrivilege) {
+        super(assign, unassign, privilegeScope);
 
-		this.rowPrivilege = rowPrivilege;
-	}
+        this.rowPrivilege = rowPrivilege;
+    }
 
-	public String getRowPrivilege() {
-		return rowPrivilege;
-	}
+    public String getRowPrivilege() {
+        return rowPrivilege;
+    }
 
-	public void setRowPrivilege(String rowPrivilege) {
-		this.rowPrivilege = rowPrivilege;
-	}
+    public void setRowPrivilege(String rowPrivilege) {
+        this.rowPrivilege = rowPrivilege;
+    }
 }

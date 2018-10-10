@@ -16,51 +16,51 @@ import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 
 public class LoginInterceptor implements HandlerInterceptor {
-	private static Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
-	private static PathMatcher matcher = new AntPathMatcher();
+    private static Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
+    private static PathMatcher matcher = new AntPathMatcher();
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
-			Object handler) throws Exception {
-		SessionUtil.setRequest(request);
-		
-		String uri = request.getRequestURI();
-		if(matcher.match("/login/step/first", uri)
-				|| matcher.match("/file", uri)) {
-			return true;
-		}
-			
-		HttpSession session = request.getSession(false);
-		if(session == null || SessionUtil.getUserCode() == null) {
-			logger.info("未登录被拦截");
-			
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("application/json; charset=UTF-8");
-			response.addHeader("Access-Control-Allow-Origin", "http://localhost:3111");
-			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-			response.addHeader("Access-Control-Allow-Credentials", "true");
-			response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
-			PrintWriter writer = response.getWriter();
-			writer.write(JsonUtils.toJson(AjaxResponse.create(405, "未登录")));
-			writer.flush();
-			writer.close();
-			
-			return false;
-		}
-		
-		return true;
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
+        SessionUtil.setRequest(request);
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
-		//TODO
-	}
+        String uri = request.getRequestURI();
+        if (matcher.match("/login/step/first", uri)
+                || matcher.match("/file", uri)) {
+            return true;
+        }
 
-	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
-			Object handler, Exception ex) throws Exception {
-		SessionUtil.setRequest(null);
-	}
+        HttpSession session = request.getSession(false);
+        if (session == null || SessionUtil.getUserCode() == null) {
+            logger.info("未登录被拦截");
+
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=UTF-8");
+            response.addHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
+            PrintWriter writer = response.getWriter();
+            writer.write(JsonUtils.toJson(AjaxResponse.create(405, "未登录")));
+            writer.flush();
+            writer.close();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+        //TODO
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                Object handler, Exception ex) throws Exception {
+        SessionUtil.setRequest(null);
+    }
 
 }
