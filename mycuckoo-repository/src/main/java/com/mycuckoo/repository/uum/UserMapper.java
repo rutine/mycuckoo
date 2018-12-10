@@ -59,14 +59,12 @@ public interface UserMapper extends Repository<User, Long> {
     boolean existsByUserCode(String userCode);
 
     /**
-     * <p>根据用户号和用户密码获取用户信息</p>
+     * <p>根据用户号获取用户信息</p>
      *
      * @param userCode     用户号
-     * @param userPassword 用户密码
      * @return 用户
      */
-    User getByUserCodeAndPwd(@Param("userCode") String userCode,
-                             @Param("userPassword") String userPassword);
+    User getByUserCode(@Param("userCode") String userCode);
 
     /**
      * <p>根据拼音代码查询用户信息, 返回值只有用户id和用户名称</p>

@@ -1,6 +1,7 @@
 package com.mycuckoo.vo;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 功能说明:
@@ -10,7 +11,6 @@ import java.io.Serializable;
  * @time Sep 23, 2014 10:59:14 AM
  */
 public class TreeVo implements Serializable {
-
     private static final long serialVersionUID = 7272863933090319635L;
 
     private String id;
@@ -18,8 +18,13 @@ public class TreeVo implements Serializable {
     private String text;
     private String icon; // 图片
     private String iconSkin; // css样式className
-    private boolean leaf;
-    private boolean isParent;
+    private Boolean isLeaf;
+    private List<? super TreeVo> children;
+
+    @Deprecated
+    private Boolean leaf;
+    @Deprecated
+    private Boolean isParent;
 
     public String getId() {
         return id;
@@ -61,19 +66,39 @@ public class TreeVo implements Serializable {
         this.iconSkin = iconSkin;
     }
 
-    public boolean isLeaf() {
+    public Boolean getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(Boolean isLeaf) {
+        this.isLeaf = isLeaf;
+    }
+
+    public List<? super TreeVo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<? super TreeVo> children) {
+        this.children = children;
+    }
+
+    @Deprecated
+    public Boolean isLeaf() {
         return leaf;
     }
 
-    public void setLeaf(boolean leaf) {
+    @Deprecated
+    public void setLeaf(Boolean leaf) {
         this.leaf = leaf;
     }
 
-    public boolean getIsParent() {
+    @Deprecated
+    public Boolean getIsParent() {
         return isParent;
     }
 
-    public void setIsParent(boolean isParent) {
+    @Deprecated
+    public void setIsParent(Boolean isParent) {
         this.isParent = isParent;
     }
 }

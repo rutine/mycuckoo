@@ -167,7 +167,7 @@ public class UserService {
         if (flag == null) { // 根据用户代码和用户名称模糊、分页查询用户记录
             page2 = userMapper.findByPage2(null, null, userCode, userName, page);
         } else if (StringUtils.equals(flag, "orgId")) { // 分页查询属于机构ids的用户记录
-            List<Long> orgIds = organService.findChildNodes(orgRoleId, 0);
+            List<Long> orgIds = organService.findChildIds(orgRoleId, 0);
             Long[] arr = orgIds.isEmpty() ? null : orgIds.toArray(new Long[]{});
             page2 = userMapper.findByPage2(null, arr, userCode, userName, page);
         } else { // 分页查询属于某个角色id的用户记录
@@ -200,10 +200,14 @@ public class UserService {
     public UserVo getUserByUserCodeAndPwd(String userCode, String password) {
         if (CommonUtils.isNullOrEmpty(userCode) || CommonUtils.isNullOrEmpty(userCode)) return null;
 
-        User user = userMapper.getByUserCodeAndPwd(userCode, password);
+        User user = userMapper.getByUserCode(userCode);
         if (user == null) {
             throw new ApplicationException("用户不存在错误!");
         }
+        if (!user.getUserPassword().equals(password)) {
+            throw new ApplicationException("用户密码不正确!");
+        }
+
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user, vo);
 
@@ -285,7 +289,7 @@ public class UserService {
         List<UserVo> vos = new ArrayList<UserVo>();
         for (String userCode : systemAdminCode) {
             try {
-                User entity = userMapper.getByUserCodeAndPwd(userCode, null);
+                User entity = userMapper.getByUserCode(userCode);
                 UserVo vo = new UserVo();
                 BeanUtils.copyProperties(entity, vo);
                 vos.add(vo);

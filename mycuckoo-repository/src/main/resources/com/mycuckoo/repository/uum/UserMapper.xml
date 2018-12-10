@@ -253,14 +253,13 @@
     </select>
 
         <!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
-    <select id="getByUserCodeAndPwd" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
+    <select id="getByUserCode" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
         select
             <include refid="colums"/>
         from
             <include refid="table" />
         where
             user_code = #{userCode}
-        <if test="userPassword != null and userPassword != ''">and user_password = #{userPassword}</if>
     </select>
 
     <!-- 根据拼音代码查询用户信息 -->

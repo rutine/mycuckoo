@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +45,6 @@ public class OrganController {
     /**
      * 功能说明 : 列表展示页面
      *
-     * @param treeId   机构ID
      * @param orgCode  机构代码
      * @param orgName  机构名称
      * @param pageNo   第几页
@@ -52,9 +53,8 @@ public class OrganController {
      * @author rutine
      * @time Jul 2, 2013 3:31:22 PM
      */
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<OrganVo>> list(
-            @RequestParam(value = "treeId", defaultValue = "-1") long treeId,
             @RequestParam(value = "orgCode", defaultValue = "") String orgCode,
             @RequestParam(value = "orgName", defaultValue = "") String orgName,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
@@ -63,7 +63,7 @@ public class OrganController {
         orgCode = StringUtils.isNotBlank(orgCode) ? "%" + orgCode + "%" : null;
         orgName = StringUtils.isNotBlank(orgName) ? "%" + orgName + "%" : null;
 
-        Page<OrganVo> page = organService.findByPage(treeId, orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
+        Page<OrganVo> page = organService.findByPage(orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -76,8 +76,8 @@ public class OrganController {
      * @author rutine
      * @time Jul 2, 2013 3:35:51 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody Organ organ) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody Organ organ) {
 
         logger.debug(JsonUtils.toJson(organ));
 
@@ -85,6 +85,29 @@ public class OrganController {
         organService.save(organ);
 
         return AjaxResponse.create("保存机构成功");
+    }
+
+    /**
+     * 功能说明 : 修改机构
+     *
+     * @param organ
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 3:42:51 PM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody Organ organ) {
+
+        organService.update(organ);
+
+        return AjaxResponse.create("修改机构成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<Organ> get(@PathVariable long id) {
+        Organ organ = organService.get(id);
+
+        return AjaxResponse.create(organ);
     }
 
     /**
@@ -96,10 +119,10 @@ public class OrganController {
      * @author rutine
      * @time Jul 2, 2013 3:38:46 PM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         organService.disEnable(id, disEnableFlag);
 
@@ -110,45 +133,17 @@ public class OrganController {
      * 功能说明 : 获取下级机构json数据
      *
      * @param id             机构id
-     * @param filterOutOrgId
      * @return
      * @author rutine
      * @time Jul 2, 2013 3:40:18 PM
      */
-    @GetMapping(value = "/get/child/nodes")
-    public AjaxResponse<List<TreeVo>> getChildNodes(
-            @RequestParam(value = "treeId", defaultValue = "0") long id,
-            @RequestParam(value = "filterOrgId", defaultValue = "0") long filterOutOrgId) {
+    @GetMapping("/{id}/child/nodes")
+    public AjaxResponse<List<? super TreeVo>> getChildNodes(@PathVariable long id) {
+        List<? super TreeVo> asyncTreeList = organService.findChildNodes(id);
 
-        List<TreeVo> asyncTreeList = organService.findNextLevelChildNodes(id, filterOutOrgId);
-
-        logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
+        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
 
         return AjaxResponse.create(asyncTreeList);
-    }
-
-    /**
-     * 功能说明 : 修改机构
-     *
-     * @param organ
-     * @return
-     * @author rutine
-     * @time Jul 2, 2013 3:42:51 PM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> postUpdate(@RequestBody Organ organ) {
-
-        organService.update(organ);
-
-        return AjaxResponse.create("修改机构成功");
-    }
-
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<Organ> getView(@RequestParam long id) {
-        Organ organ = organService.get(id);
-
-        return AjaxResponse.create(organ);
     }
 
 }

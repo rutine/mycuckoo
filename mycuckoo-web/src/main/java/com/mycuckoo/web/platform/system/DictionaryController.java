@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,7 @@ public class DictionaryController {
     private DictionaryService dictionaryService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<DicBigType>> list(
             @RequestParam(value = "bigTypeName", defaultValue = "") String dictName,
             @RequestParam(value = "bigTypeCode", defaultValue = "") String dictCode,
@@ -65,8 +67,8 @@ public class DictionaryController {
      * @author rutine
      * @time Jun 11, 2013 4:29:28 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody DicBigType dicBigType) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody DicBigType dicBigType) {
         logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
 
         boolean success = true;
@@ -81,6 +83,38 @@ public class DictionaryController {
     }
 
     /**
+     * 功能说明 : 修改字典, 直接删除字典大类关联的字典小类，保存字典小类
+     *
+     * @param dicBigType 字典大类对象
+     * @return
+     * @author rutine
+     * @time Jun 11, 2013 5:43:50 PM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody DicBigType dicBigType) {
+        logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
+
+        dictionaryService.updateDicBigType(dicBigType);
+
+        for (DicSmallType smallType : dicBigType.getSmallTypes()) {
+            smallType.setBigTypeId(dicBigType.getBigTypeId());
+        }
+        dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
+
+        return AjaxResponse.create("修改字典成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<DicBigType> get(@PathVariable long id) {
+        DicBigType dicBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
+        List<DicSmallType> smallTypes = dictionaryService
+                .findDicSmallTypesByBigTypeCode(dicBigType.getBigTypeCode());
+        dicBigType.setSmallTypes(smallTypes);
+
+        return AjaxResponse.create(dicBigType);
+    }
+
+    /**
      * 功能说明 : 停用启用
      *
      * @param id
@@ -89,10 +123,10 @@ public class DictionaryController {
      * @author rutine
      * @time Jun 11, 2013 6:08:04 PM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         dictionaryService.disEnableDicBigType(id, disEnableFlag);
 
@@ -106,43 +140,11 @@ public class DictionaryController {
      * @author rutine
      * @time Dec 15, 2012 4:21:10 PM
      */
-    @GetMapping(value = "/get/small/type")
-    public AjaxResponse<List<DicSmallType>> getSmallTypeByBigTypeCode(@RequestParam String bigTypeCode) {
+    @GetMapping("/{bigTypeCode}/small/type")
+    public AjaxResponse<List<DicSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
 
         List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(bigTypeCode);
 
         return AjaxResponse.create(dicSmallTypeList);
-    }
-
-    /**
-     * 功能说明 : 修改字典, 直接删除字典大类关联的字典小类，保存字典小类
-     *
-     * @param dicBigType 字典大类对象
-     * @return
-     * @author rutine
-     * @time Jun 11, 2013 5:43:50 PM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody DicBigType dicBigType) {
-        logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
-
-        dictionaryService.updateDicBigType(dicBigType);
-
-        for (DicSmallType smallType : dicBigType.getSmallTypes()) {
-            smallType.setBigTypeId(dicBigType.getBigTypeId());
-        }
-        dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
-
-        return AjaxResponse.create("修改字典成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<DicBigType> getView(@RequestParam long id) {
-        DicBigType dicBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
-        List<DicSmallType> smallTypes = dictionaryService
-                .findDicSmallTypesByBigTypeCode(dicBigType.getBigTypeCode());
-        dicBigType.setSmallTypes(smallTypes);
-
-        return AjaxResponse.create(dicBigType);
     }
 }

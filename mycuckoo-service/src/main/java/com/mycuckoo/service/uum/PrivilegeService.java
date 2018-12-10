@@ -526,7 +526,7 @@ public class PrivilegeService {
      * @time Oct 21, 2012 4:37:53 PM
      */
     private String getPrivilegeOrganChildren(long organId) {
-        List<Long> orgIds = organService.findChildNodes(organId, 0);
+        List<Long> orgIds = organService.findChildIds(organId, 0);
         String orgIdStr = orgIds.stream()
                 .map(String::valueOf).collect(Collectors.joining("," ));
 

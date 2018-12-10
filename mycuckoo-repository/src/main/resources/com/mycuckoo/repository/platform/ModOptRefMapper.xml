@@ -89,7 +89,7 @@
         left join 
             cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
         left join 
-            cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
         where 
             mod_opt_id = #{id}
     </select>
@@ -130,7 +130,7 @@
         left join 
             cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
         left join 
-            cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
     </select>
     
         <!-- 统计模块操作关系记录总数 -->
@@ -207,7 +207,7 @@
         left join 
             cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
         left join 
-            cuckoo.syspl_module_memu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
         where 
             t1.mod_opt_id in 
             <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

@@ -5,6 +5,7 @@ import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -40,8 +41,9 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             response.addHeader("Access-Control-Allow-Credentials", "true");
             response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             PrintWriter writer = response.getWriter();
-            writer.write(JsonUtils.toJson(AjaxResponse.create(405, "未登录")));
+            writer.write(JsonUtils.toJson(AjaxResponse.create(HttpStatus.UNAUTHORIZED.value(), "未登录")));
             writer.flush();
             writer.close();
 

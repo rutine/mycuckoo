@@ -151,7 +151,10 @@ public class ModuleService {
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : list) {
-            switch (ModuleLevelEnum.of(vo.getModLevel())) {
+            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
+            if (modLevel == null) { continue; }
+
+            switch (modLevel) {
                 case ONE:
                     sortModule(firstList, vo);
                     break;

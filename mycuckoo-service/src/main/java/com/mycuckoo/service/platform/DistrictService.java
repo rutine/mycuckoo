@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.mycuckoo.common.constant.Common.SPLIT;
 import static com.mycuckoo.common.constant.ServiceVariable.*;
@@ -89,15 +90,11 @@ public class DistrictService {
 
         List<Long> idList = new ArrayList<Long>();
         if (treeId >= 0) {
-            List<District> list = findChildNodeList(treeId, 0); // 过滤出所有下级
-            for (District district : list) {
-                idList.add(district.getDistrictId()); // 所有下级地区ID
-            }
+            idList = findChildIds(treeId, 0); // 过滤出所有下级
             if (idList.isEmpty()) {
                 idList.add(-1l);
             }
         }
-
 
         params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
         Page<District> entityPage = districtMapper.findByPage(params, page);
@@ -123,6 +120,10 @@ public class DistrictService {
     }
 
     public DistrictVo get(Long districtId) {
+        if (districtId == null) {
+            return null;
+        }
+
         logger.debug("will find district id is {}", districtId);
 
         District district = districtMapper.get(districtId);
@@ -132,23 +133,18 @@ public class DistrictService {
         return vo;
     }
 
-    public List<TreeVo> findNextLevelChildNodes(long districtId, long filterOutDistrictId) {
-        List<District> list = districtMapper
-                .findByParentIdAndFilterOutIds(districtId, new long[]{0L, filterOutDistrictId});
-        List<TreeVo> treeVoList = new ArrayList<TreeVo>();
-        for (District district : list) {
-            TreeVo treeVo = new TreeVo();
-            treeVo.setId(district.getDistrictId().toString());
-            treeVo.setText(district.getDistrictName());
-            if (CITY.equalsIgnoreCase(district.getDistrictLevel())) {
-                treeVo.setLeaf(true); // 城市节点
-            } else {
-                treeVo.setIsParent(true);
-            }
-            treeVoList.add(treeVo);
-        }
+    public List<? super TreeVo> findChildNodes(long districtId) {
+        List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
-        return treeVoList;
+        District parent = new District(districtId, null);
+        parent.setParentId(districtId);
+
+        List<District> tempList = Lists.newArrayList();
+        tempList.addAll(all);
+        tempList.remove(parent); //删除根元素
+        TreeVo vo = this.buildTree(parent, tempList);
+
+        return vo.getChildren();
     }
 
     @Transactional
@@ -192,28 +188,33 @@ public class DistrictService {
      * @author rutine
      * @time Oct 16, 2012 8:31:35 PM
      */
-    private List<District> findChildNodeList(long districtId, int flag) {
-        Page<District> page = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
+    private List<Long> findChildIds(long districtId, int flag) {
+        List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
         List<District> tempList = new ArrayList<District>();
-        tempList.addAll(page.getContent());
+        tempList.addAll(all);
 
         //删除根元素
-        District district = new District(0l, null);
+        District district = new District(0L, null);
         tempList.remove(district);
 
         //过滤出所有下级元素
         List<District> filterList = new ArrayList<District>();
-        filterList = getFilterList(filterList, tempList, districtId);
+        filterList = filterChildren(filterList, tempList, districtId);
+
         if (flag == 1) {
             // 本元素
             District districtOld = new District();
             districtOld.setDistrictId(districtId);
             filterList.add(districtOld);
-            page.getContent().removeAll(filterList);
-            filterList = page.getContent();
+            all.removeAll(filterList);
+            filterList = all;
         }
 
-        return filterList;
+
+        List<Long> ids = filterList.parallelStream()
+                .map(District::getDistrictId).collect(Collectors.toList());
+
+        return ids;
     }
 
     /**
@@ -226,13 +227,13 @@ public class DistrictService {
      * @author rutine
      * @time Oct 16, 2012 7:44:35 PM
      */
-    private List<District> getFilterList(List<District> filterList, List<District> allList, long districtId) {
-        List<District> subList = getSubList(allList, districtId);
+    private List<District> filterChildren(List<District> filterList, List<District> allList, long districtId) {
+        List<District> subList = filterChildren(allList, districtId);
         if (!subList.isEmpty()) {
             filterList.addAll(subList);
         }
         for (District district : subList) {
-            getFilterList(filterList, allList, district.getDistrictId());
+            filterChildren(filterList, allList, district.getDistrictId());
         }
 
         return filterList;
@@ -247,7 +248,7 @@ public class DistrictService {
      * @author rutine
      * @time Oct 16, 2012 7:40:46 PM
      */
-    private List<District> getSubList(List<District> allList, long districtId) {
+    private List<District> filterChildren(List<District> allList, long districtId) {
         List<District> subList = new ArrayList<District>();
         Iterator<District> it = allList.iterator();
         while (it.hasNext()) {
@@ -259,5 +260,39 @@ public class DistrictService {
         }
 
         return subList;
+    }
+
+    /**
+     * 根据父级机构构建机构树
+     *
+     * @param parent    父级机构
+     * @param children    所有子机构
+     * @return 机构树
+     * @author rutine
+     * @time Dec 7, 2018 11:29:15 AM
+     */
+    private TreeVo buildTree(District parent, List<District> children) {
+        long id = parent.getDistrictId();
+        List<? super TreeVo> childNodes = Lists.newArrayList();
+        Iterator<District> it = children.iterator();
+        while (it.hasNext()) {
+            District item = it.next();
+            if (item.getParentId().equals(id)) {
+                it.remove();
+                List<District> others = Lists.newArrayList();
+                others.addAll(children);
+                childNodes.add(this.buildTree(item, others));
+            }
+        }
+
+        TreeVo vo = new TreeVo();
+        vo.setId(parent.getDistrictId().toString());
+        vo.setText(parent.getDistrictName());
+        vo.setChildren(childNodes);
+        if (CITY.equalsIgnoreCase(parent.getDistrictLevel())) {
+            vo.setIsLeaf(true); // 城市节点
+        }
+
+        return vo;
     }
 }

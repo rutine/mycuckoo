@@ -1,3 +1,8 @@
+server:
+  servlet:
+    session:
+      timeout: 90m
+
 spring:
   datasource:
     name: cuckoo
@@ -5,7 +10,7 @@ spring:
     #type: com.alibaba.druid.pool.DruidDataSource
     type: org.apache.commons.dbcp2.BasicDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306
+    url: jdbc:mysql://localhost:3306?useUnicode=true&characterEncoding=UTF-8
     username: cuckoo
     password: 123456
     max-active: 20
@@ -20,6 +25,6 @@ spring:
     test-on-return: false
     pool-prepared-statements: true
     max-open-prepared-statements: 20
-    
+
 mycuckoo:
   basePath: mycuckoo/upload/

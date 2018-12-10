@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -96,19 +97,7 @@ public class OrganService {
         return count > 0;
     }
 
-    public List<OrganVo> findAll() {
-        Page<Organ> page = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
-        List<OrganVo> vos = Lists.newArrayList();
-        page.getContent().forEach(entity -> {
-            OrganVo vo = new OrganVo();
-            BeanUtils.copyProperties(entity, vo);
-            vos.add(vo);
-        });
-
-        return vos;
-    }
-
-    public List<Long> findChildNodes(long organId, int flag) {
+    public List<Long> findChildIds(long organId, int flag) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
         List<Organ> filterList = Lists.newArrayList();
         List<Organ> tempList = Lists.newArrayList();
@@ -116,7 +105,7 @@ public class OrganService {
         tempList.remove(new Organ(0L, null)); //删除根元素
 
         //过滤出所有下级元素
-        filterList = this.getFilterList(filterList, tempList, organId);
+        filterList = this.filterChildren(filterList, tempList, organId);
         if (organId != 0) {
             // 加入本元素
             for (Organ organ : all) {
@@ -136,22 +125,17 @@ public class OrganService {
         return orgIds;
     }
 
-    public List<TreeVo> findNextLevelChildNodes(long organId, long filterOutOrgId) {
-        List<Organ> list = organMapper.findByParentIdAndFilterOutOrgId(organId, filterOutOrgId);
-        List<TreeVo> treeVoList = new ArrayList<>();
-        for (Organ organ : list) {
-            TreeVo treeVo = new TreeVo();
-            treeVo.setId(organ.getOrgId().toString());
-            treeVo.setText(organ.getOrgSimpleName());
-            if (ModuleLevelEnum.TWO.value().equals(organ.getOrgType())) {
-                treeVo.setLeaf(true);
-            } else {
-                treeVo.setIsParent(true);
-            }
-            treeVoList.add(treeVo);
-        }
+    public List<? super TreeVo> findChildNodes(long organId) {
+        List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        Organ parent = new Organ(organId, null);
+        parent.setParentId(organId);
 
-        return treeVoList;
+        List<Organ> tempList = Lists.newArrayList();
+        tempList.addAll(all);
+        tempList.remove(parent); //删除根元素
+        TreeVo vo = this.buildTree(parent, tempList);
+
+        return vo.getChildren();
     }
 
     public List<TreeVoExtend> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
@@ -162,9 +146,7 @@ public class OrganService {
             treeVo.setId(organ.getOrgId().toString());
             treeVo.setText(organ.getOrgSimpleName());
             if (ModuleLevelEnum.TWO.value().equals(organ.getOrgType())) {
-                treeVo.setLeaf(true);
-            } else {
-                treeVo.setIsParent(true);
+                treeVo.setIsLeaf(true);
             }
             treeVoList.add(treeVo);
         }
@@ -172,14 +154,12 @@ public class OrganService {
         return treeVoList;
     }
 
-    public Page<OrganVo> findByPage(long treeId, String orgCode, String orgName, Pageable page) {
-        logger.debug("start={} limit={} treeId={} orgName={} orgCode={}",
-                page.getOffset(), page.getPageSize(), treeId, orgName, orgCode);
+    public Page<OrganVo> findByPage(String orgCode, String orgName, Pageable page) {
+        logger.debug("start={} limit={} orgName={} orgCode={}",
+                page.getOffset(), page.getPageSize(), orgName, orgCode);
 
-        List<Long> idList = new ArrayList<>();
-        if (treeId >= 0) {
-            idList = this.findChildNodes(treeId, 0);
-        }
+        Integer organId = 0; //最顶级机构
+        List<Long> idList = this.findChildIds(organId, 0);
         if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
 
         Map<String, Object> params = Maps.newHashMap();
@@ -198,7 +178,10 @@ public class OrganService {
         return new PageImpl<>(vos, page, entityPage.getTotalElements());
     }
 
-    public OrganVo get(long organId) {
+    public OrganVo get(Long organId) {
+        if (organId == null) {
+            return null;
+        }
         logger.debug("will find organ id is {}", organId);
 
         Organ organ = organMapper.get(organId);
@@ -223,6 +206,11 @@ public class OrganService {
 
     @Transactional
     public void update(Organ organ) {
+        Organ old = get(organ.getOrgId());
+        Assert.notNull(old, "机构不存在!");
+        Assert.state(old.getOrgSimpleName().equals(organ.getOrgSimpleName())
+                || !existByOrganName(organ.getOrgSimpleName()), "机构[" + organ.getOrgSimpleName() + "]已存在!");
+
         organMapper.update(organ);
 
         writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
@@ -230,6 +218,8 @@ public class OrganService {
 
     @Transactional
     public void save(Organ organ) {
+        Assert.state(!existByOrganName(organ.getOrgSimpleName()), "机构[" + organ.getOrgSimpleName() + "]已存在!");
+
         organMapper.save(organ);
 
         writeLog(organ, LogLevelEnum.FIRST, OptNameEnum.SAVE);
@@ -267,13 +257,13 @@ public class OrganService {
      * @author rutine
      * @time Oct 17, 2012 7:49:15 PM
      */
-    private List<Organ> getFilterList(List<Organ> filterList, List<Organ> allList, long organId) {
-        List<Organ> subList = this.getSubList(allList, organId);
+    private List<Organ> filterChildren(List<Organ> filterList, List<Organ> allList, long organId) {
+        List<Organ> subList = this.filterChildren(allList, organId);
         if (!subList.isEmpty()) {
             filterList.addAll(subList);
         }
         for (Organ organ : subList) {
-            getFilterList(filterList, allList, organ.getOrgId());
+            filterChildren(filterList, allList, organ.getOrgId());
         }
 
         return filterList;
@@ -288,7 +278,7 @@ public class OrganService {
      * @author rutine
      * @time Oct 17, 2012 7:46:36 PM
      */
-    private List<Organ> getSubList(List<Organ> allList, long organId) {
+    private List<Organ> filterChildren(List<Organ> allList, long organId) {
         List<Organ> subList = Lists.newArrayList();
         Iterator<Organ> it = allList.iterator();
         while (it.hasNext()) {
@@ -302,4 +292,37 @@ public class OrganService {
         return subList;
     }
 
+    /**
+     * 根据父级机构构建机构树
+     *
+     * @param parent    父级机构
+     * @param children    所有子机构
+     * @return 机构树
+     * @author rutine
+     * @time Dec 7, 2018 11:29:15 AM
+     */
+    private TreeVo buildTree(Organ parent, List<Organ> children) {
+        long id = parent.getOrgId();
+        List<? super TreeVo> childNodes = Lists.newArrayList();
+        Iterator<Organ> it = children.iterator();
+        while (it.hasNext()) {
+            Organ item = it.next();
+            if (item.getParentId().equals(id)) {
+                it.remove();
+                List<Organ> others = Lists.newArrayList();
+                others.addAll(children);
+                childNodes.add(this.buildTree(item, others));
+            }
+        }
+
+        TreeVo vo = new TreeVo();
+        vo.setId(parent.getOrgId().toString());
+        vo.setText(parent.getOrgSimpleName());
+        vo.setChildren(childNodes);
+        if (ModuleLevelEnum.TWO.value().equals(parent.getOrgType())) {
+            vo.setIsLeaf(true);
+        }
+
+        return vo;
+    }
 }

@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,7 +60,7 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:00:26 PM
      */
-    @RequestMapping(value = "/login/step/first", method = RequestMethod.POST)
+    @PostMapping("/login/step/first")
     public AjaxResponse<List<UserRoleVo>> stepFirst(
             @RequestParam String userCode,
             @RequestParam String password,
@@ -79,13 +79,7 @@ public class LoginController {
          */
         User user = null;
         boolean isAdmin = loginService.isAdmin(userCode);
-        // 管理员
-        if (isAdmin) {
-            user = loginService.getUserByUserCodePwd(userCode, "");
-        } else {
-            user = loginService.getUserByUserCodePwd(userCode, password);
-        }
-
+        user = loginService.getUserByUserCodePwd(userCode, password);
         if (user == null) {
             throw new ApplicationException(1, "用户不存在");
         } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
@@ -129,7 +123,7 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:00:41 PM
      */
-    @RequestMapping(value = "/login/step/second", method = RequestMethod.POST)
+    @PostMapping("/login/step/second")
     public AjaxResponse<?> stepSecond(
             @RequestBody UserRoleVo role,
             HttpSession session) {
@@ -184,7 +178,7 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:01:00 PM
      */
-    @RequestMapping(value = "/login/step/third", method = RequestMethod.POST)
+    @PostMapping("/login/step/third")
     public AjaxResponse<LoginUserInfo> stepThird(HttpServletRequest request, HttpSession session) {
         /*
          *  8  通过配置XML获得管理员用户，管理员则不需要权限过滤
@@ -225,7 +219,7 @@ public class LoginController {
         return AjaxResponse.create(userInfo);
     }
 
-    @RequestMapping(value = "/login/logout")
+    @GetMapping("/login/logout")
     public AjaxResponse<String> logout(HttpSession session) {
         session.invalidate();
 
@@ -233,7 +227,7 @@ public class LoginController {
     }
 
 
-    @RequestMapping("/test/{var}")
+    @GetMapping("/test/{var}")
     public String test(
             @CookieValue("JSESSIONID") String cookie,
             @PathVariable String var) throws IOException {
