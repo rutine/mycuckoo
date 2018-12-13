@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +50,7 @@ public class OrganRoleController {
      * @param pageSize 每页显示数量
      * @return
      */
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<Role>> list(
             @RequestParam(value = "treeId", defaultValue = "-1") long treeId,
             @RequestParam(value = "roleName", defaultValue = "") String roleName,
@@ -67,22 +68,22 @@ public class OrganRoleController {
     /**
      * 功能说明 : 机构未分配角色页面
      *
-     * @param treeId   机构id
+     * @param orgId   机构id
      * @param pageNo   第几页
      * @param pageSize 每页显示数量
      * @return
      * @author rutine
      * @time Sep 15, 2013 4:05:34 PM
      */
-    @GetMapping(value = "/list/unselect/role")
+    @GetMapping("/{orgId}/unselect/role")
     public AjaxResponse<Page<Role>> listUnselectRole(
-            @RequestParam(value = "treeId", defaultValue = "-1") long treeId,
+            @PathVariable long orgId,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
-        logger.debug("orgId ---> {}", treeId);
+        logger.debug("orgId ---> {}", orgId);
 
-        Page<Role> page = roleOrganService.findUnselectedRolesByOrgId(treeId,
+        Page<Role> page = roleOrganService.findUnselectedRolesByOrgId(orgId,
                 new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
@@ -96,9 +97,8 @@ public class OrganRoleController {
      * @author rutine
      * @time Sep 15, 2013 6:07:06 PM
      */
-    @PutMapping(value = "/save")
+    @PutMapping
     public AjaxResponse<String> save(@RequestBody AssignRolePutVo putVo) {
-
         logger.debug("orgId ---> {}, roleIdList ---> {}", putVo.getId(), putVo.getRoleIdList());
 
         // 去掉重复
@@ -112,18 +112,18 @@ public class OrganRoleController {
     /**
      * 删除为机构分配的角色
      *
-     * @param id
+     * @param orgId
      * @param roleIdList
      * @return
      */
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping("/{orgId}")
     public AjaxResponse<String> delete(
-            @RequestParam long id,
-            @RequestParam List<Long> roleIdList) {
+            @PathVariable long orgId,
+            @RequestBody List<Long> roleIdList) {
 
-        logger.debug("orgId ---> {}, roleIdList ---> {}", id, roleIdList);
+        logger.debug("orgId ---> {}, roleIdList ---> {}", orgId, roleIdList);
 
-        roleOrganService.delete(id, roleIdList);
+        roleOrganService.delete(orgId, roleIdList);
 
         return AjaxResponse.create("成功删除机构角色");
     }
