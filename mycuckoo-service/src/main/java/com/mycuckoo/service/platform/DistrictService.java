@@ -11,7 +11,7 @@ import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.DistrictMapper;
-import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.DistrictVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +133,7 @@ public class DistrictService {
         return vo;
     }
 
-    public List<? super TreeVo> findChildNodes(long districtId) {
+    public List<? super SimpleTree> findChildNodes(long districtId) {
         List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
         District parent = new District(districtId, null);
@@ -142,7 +142,7 @@ public class DistrictService {
         List<District> tempList = Lists.newArrayList();
         tempList.addAll(all);
         tempList.remove(parent); //删除根元素
-        TreeVo vo = this.buildTree(parent, tempList);
+        SimpleTree vo = this.buildTree(parent, tempList);
 
         return vo.getChildren();
     }
@@ -271,9 +271,9 @@ public class DistrictService {
      * @author rutine
      * @time Dec 7, 2018 11:29:15 AM
      */
-    private TreeVo buildTree(District parent, List<District> children) {
+    private SimpleTree buildTree(District parent, List<District> children) {
         long id = parent.getDistrictId();
-        List<? super TreeVo> childNodes = Lists.newArrayList();
+        List<? super SimpleTree> childNodes = Lists.newArrayList();
         Iterator<District> it = children.iterator();
         while (it.hasNext()) {
             District item = it.next();
@@ -285,7 +285,7 @@ public class DistrictService {
             }
         }
 
-        TreeVo vo = new TreeVo();
+        SimpleTree vo = new SimpleTree();
         vo.setId(parent.getDistrictId().toString());
         vo.setText(parent.getDistrictName());
         vo.setChildren(childNodes);

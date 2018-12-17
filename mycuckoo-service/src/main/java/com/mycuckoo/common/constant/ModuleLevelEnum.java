@@ -10,7 +10,8 @@ package com.mycuckoo.common.constant;
 public enum ModuleLevelEnum {
     ONE(1, "一级菜单"),
     TWO(2, "二级菜单"),
-    THREE(3, "三级菜单");
+    THREE(3, "三级菜单"),
+    FOUR(4, "四级操作");
 
     private Integer level;
     private String desc;

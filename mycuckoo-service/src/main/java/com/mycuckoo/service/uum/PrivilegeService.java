@@ -3,6 +3,7 @@ package com.mycuckoo.service.uum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevelEnum;
+import com.mycuckoo.common.constant.ModuleLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.constant.PrivilegeScope;
@@ -20,10 +21,11 @@ import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.AssignVo;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.ModuleOperationVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.SystemConfigBean;
-import com.mycuckoo.vo.TreeVoExtend;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -102,7 +105,8 @@ public class PrivilegeService {
         return resourceId;
     }
 
-    public AssignVo<TreeVoExtend> findSelectAndUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
+    @Deprecated
+    public AssignVo<CheckBoxTree, CheckBoxTree> findSelectAndUnselectModOptByOwnIdAOwnType(long ownerId, String ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
         String[] ownerTypes = { ownerType };
@@ -140,6 +144,43 @@ public class PrivilegeService {
                 this.convertToTree(assignedModMenuList),
                 this.convertToTree(unassignedModMenuList),
                 privilegeScope);
+    }
+
+    public AssignVo<CheckBoxTree, Long> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, String ownerType) {
+        // 查找已经分配的权限
+        Long[] roleIds = { ownerId };
+        String[] ownerTypes = { ownerType };
+        String[] privilegeTypes = { PrivilegeType.OPT.value() };
+        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
+
+        // 操作id集
+        List<Long> resourceIdList = new ArrayList<>();
+        String privilegeScope = "";
+        for (Privilege privilege : privilegeList) {
+            String resourceId = privilege.getResourceId();
+            try {
+                resourceIdList.add(Long.parseLong(resourceId));
+            } catch (NumberFormatException e) {
+                logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
+            }
+            if (StringUtils.isBlank(privilegeScope)) {
+                privilegeScope = privilege.getPrivilegeScope();
+            }
+        }
+
+        // 查找所有模块操作关系
+        List<ModOptRef> allModOptList = platformServiceFacade.findAllModOptRefs();
+        List<ModOptRef> assignedModOptList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
+        List<Long> checkedOperations = assignedModOptList.parallelStream()
+                .map(mapper -> {return mapper.getModOptId() + 1000; }).collect(Collectors.toList());
+
+        //将操作转化成列表数据
+        List<ModuleMenuVo> allModMenuList = this.filterModOpt(allModOptList, true).getModuleMenu();
+
+        List<CheckBoxTree> trees = this.buildTree(allModMenuList, checkedOperations);
+
+        //将已分配和未分配的模块操作放入
+        return new AssignVo<>(trees, checkedOperations, privilegeScope);
     }
 
     public UserRowPrivilegeVo findSelectRowPrivilegeByUserId(long userId) {
@@ -425,10 +466,10 @@ public class PrivilegeService {
         }
     }
 
-    public List<TreeVoExtend> convertToTree(List<ModuleMenuVo> vos) {
-        List<TreeVoExtend> treeList = new ArrayList<>();
+    public List<CheckBoxTree> convertToTree(List<ModuleMenuVo> vos) {
+        List<CheckBoxTree> treeList = new ArrayList<>();
         for (ModuleMenuVo vo : vos) {
-            TreeVoExtend tree = new TreeVoExtend();
+            CheckBoxTree tree = new CheckBoxTree();
             tree.setId(vo.getModuleId().toString());
             tree.setParentId(vo.getParentId().toString());
             tree.setText(vo.getModName());
@@ -460,12 +501,13 @@ public class PrivilegeService {
             // 操作按钮
             Operate operate = modOptRef.getOperate();
             ModuleMenuVo modOptVo = new ModuleMenuVo();
+            modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
             modOptVo.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
             modOptVo.setModName(operate.getOperateName());
             modOptVo.setModImgCls(operate.getOptImgLink());
             modOptVo.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
             modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
+            modOptVo.setModLevel(ModuleLevelEnum.FOUR.value().toString());
             modOptVo.setIsLeaf(true);
 
             if (isTreeFlag) { // 如果为树则加入模块list
@@ -476,24 +518,24 @@ public class PrivilegeService {
                 if (modOptMap.containsKey(modEnId)) {
                     List<ModuleMenuVo> modOptVoList = modOptMap.get(modEnId);
                     // 根据操作顺序进行排序
-                    int listIndex = 0; // 元素索引
-                    boolean orderBol = true; //是否插入指定索引元素
+                    int index = 0; // 元素索引
+                    boolean insert = true; //是否插入指定索引元素
                     for (ModuleMenuVo modOptVoo : modOptVoList) {
-                        int listModOrder = modOptVoo.getModOrder(); // 已经有的操作顺序
-                        int currModOrder = modOptVo.getModOrder(); // 当前操作顺序
+                        int listModOrder = modOptVoo.getModOrder();
+                        int currModOrder = modOptVo.getModOrder();
                         if (listModOrder > currModOrder) {
-                            modOptVoList.add(listIndex, modOptVo); // 顺序小的插在前
-                            orderBol = false;
+                            modOptVoList.add(index, modOptVo); // 顺序小的插在前
+                            insert = false;
                             break;
                         }
-                        listIndex++;
+                        index++;
                     }
-                    if (orderBol) {
-                        modOptVoList.add(modOptVo); // 加到操作list中
+                    if (insert) {
+                        modOptVoList.add(modOptVo);
                     }
                 } else {
-                    List<ModuleMenuVo> modOptVoList = Lists.newArrayList(); // 操作list
-                    modOptVoList.add(modOptVo); // 加到操作list中
+                    List<ModuleMenuVo> modOptVoList = Lists.newArrayList();
+                    modOptVoList.add(modOptVo);
                     modOptMap.put(modEnId, modOptVoList);
                 }
             }
@@ -515,6 +557,67 @@ public class PrivilegeService {
         Collections.sort(moduleMenuVoList, new ModuleMenu());
 
         return new ModuleOperationVo(moduleMenuVoList, modOptMap);
+    }
+
+    private List<CheckBoxTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations) {
+        List<ModuleMenuVo> firstList = Lists.newArrayList();
+        List<ModuleMenuVo> otherList = Lists.newArrayList();
+
+        // 过滤分类一级、二级、三级菜单
+        for (ModuleMenuVo vo : menus) {
+            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
+            switch (modLevel) {
+                case ONE:
+                    firstList.add(vo);
+                    break;
+                case TWO:
+                case THREE:
+                case FOUR:
+                    otherList.add(vo);
+                    break;
+            }
+        }
+
+        List<CheckBoxTree> trees = Lists.newArrayList();
+        for (ModuleMenuVo vo : firstList) {
+            CheckBoxTree tree = this.buildTree(vo, otherList, checkedOperations, new CheckedHolder());
+            trees.add(tree);
+        }
+
+        return trees;
+    }
+    private CheckBoxTree buildTree(ModuleMenuVo parentMenu, List<ModuleMenuVo> otherMenus, List<Long> checkedOperations, CheckedHolder checked) {
+        Long parentId = parentMenu.getModuleId();
+        List<? super SimpleTree> subMenuVos = Lists.newArrayList();
+        Iterator<ModuleMenuVo> it = otherMenus.iterator();
+        while (it.hasNext()) {
+            ModuleMenuVo vo = it.next();
+            if (vo.getParentId().equals(parentId)) {
+                it.remove();
+                List<ModuleMenuVo> others = Lists.newArrayList();
+                others.addAll(otherMenus);
+                subMenuVos.add(this.buildTree(vo, others, checkedOperations, checked));
+            }
+        }
+
+        if (!checked.checked) {
+            checked.checked = checkedOperations.contains(parentId);
+        }
+
+        CheckBoxTree tree = new CheckBoxTree();
+        tree.setId(parentId.toString());
+        tree.setParentId(parentMenu.getParentId().toString());
+        tree.setText(parentMenu.getModName());
+        tree.setIconSkin(parentMenu.getModImgCls());
+        tree.setIsLeaf(parentMenu.getIsLeaf());
+        tree.setChildren(subMenuVos);
+        tree.setChecked(checked.checked);
+
+        return tree;
+    }
+
+    private class CheckedHolder {
+        boolean checked = false;
     }
 
     /**

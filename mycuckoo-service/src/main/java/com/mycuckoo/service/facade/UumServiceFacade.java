@@ -5,7 +5,7 @@ import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserOrgRoleService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class UumServiceFacade {
         return privilegeService.existsSpecialPrivilegeByUserId(userId);
     }
 
-    public List<TreeVoExtend> convertToTree(List<ModuleMenuVo> vos) {
+    public List<CheckBoxTree> convertToTree(List<ModuleMenuVo> vos) {
         return privilegeService.convertToTree(vos);
     }
 }

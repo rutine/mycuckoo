@@ -20,7 +20,7 @@ import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -209,7 +209,7 @@ public class ModuleService {
         return modOptRefMapper.findByPage(null, pageRequest).getContent();
     }
 
-    public AssignVo<Operate> findAssignedAndUnAssignedOperatesByModuleId(long moduleId) {
+    public AssignVo<Operate, Operate> findAssignedAndUnAssignedOperatesByModuleId(long moduleId) {
         List<Operate> allOperateList = operateService.findAll(); // 所有操作
         List<Operate> assignedOperateList = findAssignedOperatesByModuleId(moduleId); // 已经分配的操作
 
@@ -273,11 +273,11 @@ public class ModuleService {
         return false;
     }
 
-    public List<TreeVo> findByParentIdAndFilterOutModuleIds(long moduleId, long filterModuleId) {
+    public List<SimpleTree> findByParentIdAndFilterOutModuleIds(long moduleId, long filterModuleId) {
         List<ModuleMenu> list = moduleMenuMapper.findByParentIdAndFilterOutModuleIds(moduleId, new long[]{0L, filterModuleId});
-        List<TreeVo> treeVoList = new ArrayList<TreeVo>();
+        List<SimpleTree> treeVoList = new ArrayList<SimpleTree>();
         for (ModuleMenu mod : list) {
-            TreeVo treeVo = new TreeVo();
+            SimpleTree treeVo = new SimpleTree();
             treeVo.setId(mod.getModuleId().toString());
             treeVo.setText(mod.getModName());
             treeVo.setIconSkin(mod.getModImgCls());

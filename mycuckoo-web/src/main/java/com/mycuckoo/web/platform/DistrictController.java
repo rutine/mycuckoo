@@ -7,7 +7,7 @@ import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.DistrictService;
-import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.DistrictVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -152,10 +152,10 @@ public class DistrictController {
      * @time Jul 2, 2013 11:27:54 AM
      */
     @GetMapping("/{id}/child/nodes")
-    public AjaxResponse<List<? super TreeVo>> getChildNodes(@PathVariable long id) {
-        List<? super TreeVo> asyncTreeList = Lists.newArrayList();
+    public AjaxResponse<List<? super SimpleTree>> getChildNodes(@PathVariable long id) {
+        List<? super SimpleTree> asyncTreeList = Lists.newArrayList();
         if (id == -1L) {
-            TreeVo treeVo = new TreeVo();
+            SimpleTree treeVo = new SimpleTree();
             treeVo.setId("0");
             treeVo.setText("中国");
             asyncTreeList.add(treeVo);

@@ -16,8 +16,8 @@ import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.UserMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.TreeVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
 import org.apache.commons.lang3.StringUtils;
@@ -118,17 +118,17 @@ public class UserService {
         return userMapper.findByUserNamePy(userNamePy, userId);
     }
 
-    public List<? extends TreeVo> findNextLevelChildNodes(String treeId, String isCheckbox) {
+    public List<? extends SimpleTree> findNextLevelChildNodes(String treeId, String isCheckbox) {
         int index = treeId.indexOf("_");
         int orgId = 0;
         if (index != -1) {
             orgId = Integer.parseInt(treeId.substring(index + 1));
         }
 
-        List<TreeVoExtend> vos = Lists.newArrayList();
-        List<TreeVoExtend> orgList = organService.findNextLevelChildNodesWithCheckbox(orgId, 0);
-        for (TreeVo treeVo : orgList) {
-            TreeVoExtend treeVoExt = new TreeVoExtend();
+        List<CheckBoxTree> vos = Lists.newArrayList();
+        List<CheckBoxTree> orgList = organService.findNextLevelChildNodesWithCheckbox(orgId, 0);
+        for (SimpleTree treeVo : orgList) {
+            CheckBoxTree treeVoExt = new CheckBoxTree();
             BeanUtils.copyProperties(treeVo, treeVoExt);
             // 机构无checkbox
             treeVoExt.setNocheck(true);
@@ -139,7 +139,7 @@ public class UserService {
         List<OrgRoleRef> orgRoleList = organRoleService.findRolesByOrgId(orgId);
         for (OrgRoleRef orgRoleRef : orgRoleList) {
             Role role = orgRoleRef.getRole();
-            TreeVoExtend treeVoExt = new TreeVoExtend();
+            CheckBoxTree treeVoExt = new CheckBoxTree();
             if (!Y.equals(isCheckbox)) {
                 // 角色无checkbox
                 treeVoExt.setNocheck(true);

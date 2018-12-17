@@ -15,8 +15,8 @@ import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.TreeVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +125,7 @@ public class OrganService {
         return orgIds;
     }
 
-    public List<? super TreeVo> findChildNodes(long organId) {
+    public List<? super SimpleTree> findChildNodes(long organId) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
         Organ parent = new Organ(organId, null);
         parent.setParentId(organId);
@@ -133,16 +133,16 @@ public class OrganService {
         List<Organ> tempList = Lists.newArrayList();
         tempList.addAll(all);
         tempList.remove(parent); //删除根元素
-        TreeVo vo = this.buildTree(parent, tempList);
+        SimpleTree vo = this.buildTree(parent, tempList);
 
         return vo.getChildren();
     }
 
-    public List<TreeVoExtend> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
+    public List<CheckBoxTree> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
         List<Organ> list = organMapper.findByParentIdAndFilterOutOrgId(organId, filterOutOrgId);
-        List<TreeVoExtend> treeVoList = new ArrayList<>();
+        List<CheckBoxTree> treeVoList = new ArrayList<>();
         for (Organ organ : list) {
-            TreeVoExtend treeVo = new TreeVoExtend();
+            CheckBoxTree treeVo = new CheckBoxTree();
             treeVo.setId(organ.getOrgId().toString());
             treeVo.setText(organ.getOrgSimpleName());
             if (ModuleLevelEnum.TWO.value().equals(organ.getOrgType())) {
@@ -301,9 +301,9 @@ public class OrganService {
      * @author rutine
      * @time Dec 7, 2018 11:29:15 AM
      */
-    private TreeVo buildTree(Organ parent, List<Organ> children) {
+    private SimpleTree buildTree(Organ parent, List<Organ> children) {
         long id = parent.getOrgId();
-        List<? super TreeVo> childNodes = Lists.newArrayList();
+        List<? super SimpleTree> childNodes = Lists.newArrayList();
         Iterator<Organ> it = children.iterator();
         while (it.hasNext()) {
             Organ item = it.next();
@@ -315,7 +315,7 @@ public class OrganService {
             }
         }
 
-        TreeVo vo = new TreeVo();
+        SimpleTree vo = new SimpleTree();
         vo.setId(parent.getOrgId().toString());
         vo.setText(parent.getOrgSimpleName());
         vo.setChildren(childNodes);

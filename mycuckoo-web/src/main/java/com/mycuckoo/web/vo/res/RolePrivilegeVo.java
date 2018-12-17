@@ -1,7 +1,6 @@
 package com.mycuckoo.web.vo.res;
 
-import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.CheckBoxTree;
 
 import java.util.List;
 
@@ -12,13 +11,26 @@ import java.util.List;
  * @version 3.0.0
  * @time 2017-09-10 15:21
  */
-public class RolePrivilegeVo extends AssignVo<TreeVoExtend> {
+public class RolePrivilegeVo {
+    private String privilegeScope;
     private String rowPrivilege;
+    private List<CheckBoxTree> privileges;
+    private List<Long> assign;
 
-    public RolePrivilegeVo(List<TreeVoExtend> assign, List<TreeVoExtend> unassign, String privilegeScope, String rowPrivilege) {
-        super(assign, unassign, privilegeScope);
-
+    public RolePrivilegeVo(String privilegeScope, String rowPrivilege,
+                           List<CheckBoxTree> privileges, List<Long> assign) {
+        this.privilegeScope = privilegeScope;
         this.rowPrivilege = rowPrivilege;
+        this.privileges = privileges;
+        this.assign = assign;
+    }
+
+    public String getPrivilegeScope() {
+        return privilegeScope;
+    }
+
+    public void setPrivilegeScope(String privilegeScope) {
+        this.privilegeScope = privilegeScope;
     }
 
     public String getRowPrivilege() {
@@ -27,5 +39,21 @@ public class RolePrivilegeVo extends AssignVo<TreeVoExtend> {
 
     public void setRowPrivilege(String rowPrivilege) {
         this.rowPrivilege = rowPrivilege;
+    }
+
+    public List<CheckBoxTree> getPrivileges() {
+        return privileges;
+    }
+
+    public void setPrivileges(List<CheckBoxTree> privileges) {
+        this.privileges = privileges;
+    }
+
+    public List<Long> getAssign() {
+        return assign;
+    }
+
+    public void setAssign(List<Long> assign) {
+        this.assign = assign;
     }
 }

@@ -8,7 +8,7 @@ import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.TreeVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -79,11 +79,11 @@ public class ModuleController {
      * @time May 9, 2013 8:52:56 PM
      */
     @GetMapping(value = "/list/operation")
-    public AjaxResponse<AssignVo<Operate>> listOperation(
+    public AjaxResponse<AssignVo<Operate, Operate>> listOperation(
             @RequestParam(value = "moduleId") long id,
             @RequestParam(value = "modName") String modName) {
 
-        AssignVo<Operate> vo = moduleService.findAssignedAndUnAssignedOperatesByModuleId(id);
+        AssignVo<Operate, Operate> vo = moduleService.findAssignedAndUnAssignedOperatesByModuleId(id);
 
         return AjaxResponse.create(vo);
     }
@@ -171,11 +171,11 @@ public class ModuleController {
      * @time Dec 1, 2012 1:45:37 PM
      */
     @GetMapping(value = "/get/child/nodes")
-    public AjaxResponse<List<TreeVo>> getChildNodes(
+    public AjaxResponse<List<SimpleTree>> getChildNodes(
             @RequestParam(value = "treeId", defaultValue = "0") long id,
             @RequestParam(value = "filterModId", defaultValue = "0") long filterOutModId) {
 
-        List<TreeVo> asyncTreeList = moduleService.findByParentIdAndFilterOutModuleIds(id, filterOutModId);
+        List<SimpleTree> asyncTreeList = moduleService.findByParentIdAndFilterOutModuleIds(id, filterOutModId);
 
         logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
 

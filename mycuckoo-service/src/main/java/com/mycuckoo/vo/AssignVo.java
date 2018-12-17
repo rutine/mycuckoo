@@ -9,16 +9,16 @@ import java.util.List;
  * @version 3.0.0
  * @time Jul 2, 2017 6:32:38 PM
  */
-public class AssignVo<O> {
+public class AssignVo<O, T> {
     private List<O> assign;
-    private List<O> unassign;
+    private List<T> unassign;
     private String privilegeScope;
 
-    public AssignVo(List<O> assign, List<O> unassign) {
+    public AssignVo(List<O> assign, List<T> unassign) {
         this(assign, unassign, null);
     }
 
-    public AssignVo(List<O> assign, List<O> unassign, String privilegeScope) {
+    public AssignVo(List<O> assign, List<T> unassign, String privilegeScope) {
         this.assign = assign;
         this.unassign = unassign;
         this.privilegeScope = privilegeScope;
@@ -32,11 +32,11 @@ public class AssignVo<O> {
         this.assign = assign;
     }
 
-    public List<O> getUnassign() {
+    public List<T> getUnassign() {
         return unassign;
     }
 
-    public void setUnassign(List<O> unassign) {
+    public void setUnassign(List<T> unassign) {
         this.unassign = unassign;
     }
 

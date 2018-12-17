@@ -8,7 +8,7 @@ import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.res.RolePrivilegeVo;
@@ -18,16 +18,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.mycuckoo.common.constant.Common.*;
 import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
@@ -50,7 +52,7 @@ public class RoleController {
     private PrivilegeService privilegeService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<Role>> list(
             @RequestParam(value = "roleName", defaultValue = "") String roleName,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
@@ -72,15 +74,15 @@ public class RoleController {
      * @author rutine
      * @time Jul 14, 2013 4:27:11 PM
      */
-    @GetMapping(value = "/list/row/privilege")
-    public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@RequestParam long id) {
-        AssignVo<TreeVoExtend> baseVo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_ROL);
+    @GetMapping(value = "/{id}/row/privilege")
+    public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
+        AssignVo<CheckBoxTree, Long> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OWNER_TYPE_ROL);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
-                baseVo.getAssign(),
-                baseVo.getUnassign(),
                 baseVo.getPrivilegeScope(),
-                privilegeService.findRowPrivilegeByRoleIdAPriType(id));
+                privilegeService.findRowPrivilegeByRoleIdAPriType(id),
+                baseVo.getAssign(),
+                baseVo.getUnassign());
 
         return AjaxResponse.create(vo);
     }
@@ -93,8 +95,8 @@ public class RoleController {
      * @author rutine
      * @time Jul 14, 2013 9:24:10 AM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody Role role) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody Role role) {
 
         logger.debug(JsonUtils.toJson(role));
 
@@ -103,6 +105,29 @@ public class RoleController {
         roleService.save(role);
 
         return AjaxResponse.create("保存角色成功");
+    }
+
+
+    /**
+     * 功能说明 : 修改角色
+     *
+     * @param role 角色对象
+     * @return
+     * @author rutine
+     * @time Jul 14, 2013 9:39:46 AM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody Role role) {
+        roleService.update(role);
+
+        return AjaxResponse.create("修改角色成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<Role> get(@PathVariable long id) {
+        Role role = roleService.get(id);
+
+        return AjaxResponse.create(role);
     }
 
     /**
@@ -114,36 +139,14 @@ public class RoleController {
      * @author rutine
      * @time Jul 14, 2013 9:32:21 AM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         roleService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.create("停用启用成功");
-    }
-
-    /**
-     * 功能说明 : 修改角色
-     *
-     * @param role 角色对象
-     * @return
-     * @author rutine
-     * @time Jul 14, 2013 9:39:46 AM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody Role role) {
-        roleService.update(role);
-
-        return AjaxResponse.create("修改角色成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<Role> getView(@RequestParam long id) {
-        Role role = roleService.getByRoleId(id);
-
-        return AjaxResponse.create(role);
     }
 
     /**
@@ -156,14 +159,16 @@ public class RoleController {
      * @author rutine
      * @time Sep 15, 2013 9:47:05 AM
      */
-    @GetMapping(value = "/save/operation/privilege")
+    @PostMapping("/{id}/save/operation/privilege/{privilegeScope}")
     public AjaxResponse<String> saveOptPrivilege(
-            @RequestParam long id,
-            @RequestParam String privilegeScope,
-            @RequestParam Set<String> operationIds) {
+            @PathVariable long id,
+            @PathVariable String privilegeScope,
+            @RequestBody Set<String> operationIds) {
 
-        List<String> list = new ArrayList<String>(operationIds.size());
-        list.addAll(operationIds);
+        List<String> list = operationIds.parallelStream()
+                .map(mapper -> { return Long.valueOf(mapper) - 1000L; })
+                .map(String::valueOf)
+                .collect(Collectors.toList());
         privilegeService.save(list, id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_ROL, privilegeScope);
 
         return AjaxResponse.create("分配角色操作权限成功");
@@ -178,10 +183,10 @@ public class RoleController {
      * @author rutine
      * @time Sep 15, 2013 1:18:53 PM
      */
-    @GetMapping(value = "/save/row/privilege")
+    @PostMapping("/{id}/save/row/privilege")
     public AjaxResponse saveRowPrivilege(
-            @RequestParam long id,
-            @RequestParam String rowPrivilege) {
+            @PathVariable long id,
+            @RequestBody String rowPrivilege) {
 
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
         privilegeService.save(optIdList, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_ROL, rowPrivilege);

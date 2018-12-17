@@ -13,8 +13,8 @@ import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserOrgRoleService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.TreeVo;
-import com.mycuckoo.vo.TreeVoExtend;
+import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
@@ -90,8 +90,8 @@ public class UserController {
      * @time Oct 13, 2013 1:05:30 PM
      */
     @GetMapping(value = "/list/user/privilege")
-    public AjaxResponse<AssignVo<TreeVoExtend>> listUserPrivilege(@RequestParam long id) {
-        AssignVo<TreeVoExtend> vo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
+    public AjaxResponse<AssignVo<CheckBoxTree, CheckBoxTree>> listUserPrivilege(@RequestParam long id) {
+        AssignVo<CheckBoxTree, CheckBoxTree> vo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
 
         return AjaxResponse.create(vo);
     }
@@ -106,7 +106,7 @@ public class UserController {
     @GetMapping(value = "/list/role/privilege")
     public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id) {
         List<UserRoleVo> roleUserRefs = userOrgRoleService.findByUserId(id);
-        List<? extends TreeVo> orgRoles = this.getChildNodes("0_1", "Y").getData();
+        List<? extends SimpleTree> orgRoles = this.getChildNodes("0_1", "Y").getData();
 
         Map<String, Object> map = Maps.newHashMap();
         map.put("orgRoles", orgRoles);
@@ -205,11 +205,11 @@ public class UserController {
      * @time Dec 1, 2012 1:45:37 PM
      */
     @GetMapping(value = "/get/child/nodes")
-    public AjaxResponse<List<? extends TreeVo>> getChildNodes(
+    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(
             @RequestParam(value = "treeId", defaultValue = "orgId_1") String treeId,
             @RequestParam(value = "isCheckbox", defaultValue = "0") String isCheckbox) {
 
-        List<? extends TreeVo> asyncTreeList = userService.findNextLevelChildNodes(treeId, isCheckbox);
+        List<? extends SimpleTree> asyncTreeList = userService.findNextLevelChildNodes(treeId, isCheckbox);
 
         logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
 

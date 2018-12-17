@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Map;
 
@@ -51,15 +52,15 @@ public class RoleService {
             privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.value());  //删除用户所拥有操作、行权限
 
             Role role = new Role(roleId, DISABLE);
-            roleMapper.save(role);
+            roleMapper.update(role);
 
-            role = getByRoleId(roleId);
+            role = get(roleId);
             writeLog(role, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
         } else {
             Role role = new Role(roleId, ENABLE);
-            roleMapper.save(role);
+            roleMapper.update(role);
 
-            role = getByRoleId(roleId);
+            role = get(roleId);
             writeLog(role, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
         }
     }
@@ -82,7 +83,7 @@ public class RoleService {
         return roleMapper.findByPage(params, page);
     }
 
-    public Role getByRoleId(long roleId) {
+    public Role get(long roleId) {
         logger.debug("will find Role id is {}", roleId);
 
         return roleMapper.get(roleId);
@@ -90,6 +91,11 @@ public class RoleService {
 
     @Transactional
     public void update(Role role) {
+        Role old = get(role.getRoleId());
+        Assert.notNull(old, "角色不存在!");
+        Assert.state(old.getRoleName().equals(role.getRoleName())
+                || !existByRoleName(role.getRoleName()), "角色[" + role.getRoleName() + "]已存在!");
+
         roleMapper.update(role);
 
         writeLog(role, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
@@ -97,6 +103,9 @@ public class RoleService {
 
     @Transactional
     public void save(Role role) {
+        Assert.state(!existByRoleName(role.getRoleName()), "角色[" + role.getRoleName() + "]已存在!");
+
+        role.setStatus(ENABLE);
         roleMapper.save(role);
 
         writeLog(role, LogLevelEnum.FIRST, OptNameEnum.SAVE);
