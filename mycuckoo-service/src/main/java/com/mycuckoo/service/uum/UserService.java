@@ -16,8 +16,8 @@ import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.UserMapper;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +118,50 @@ public class UserService {
         return userMapper.findByUserNamePy(userNamePy, userId);
     }
 
+    public List<? extends SimpleTree> findChildNodes(Long organId, String isCheckbox) {
+        List<? extends SimpleTree> simpleTrees = organService.findChildNodes(organId, isCheckbox);
+
+        return this.buildTree(simpleTrees, isCheckbox);
+    }
+    private List<? extends CheckBoxTree> buildTree(List<? extends SimpleTree> simpleTrees, String isCheckbox) {
+        List<CheckBoxTree> boxTrees = Lists.newArrayList();
+        for (SimpleTree tree : simpleTrees) {
+            String parentId = "orgId_" + tree.getParentId();
+            CheckBoxTree boxTree = new CheckBoxTree();
+            boxTree.setId("orgId_" + tree.getId());
+            boxTree.setParentId(parentId);
+            boxTree.setText(tree.getText());
+            boxTree.setIcon(tree.getIcon());
+            boxTree.setIconSkin(tree.getIconSkin());
+            boxTree.setIsLeaf(false);
+            boxTree.setCheckBox(null); // 机构无checkbox
+            boxTree.setNocheck(true); // 机构无checkbox
+            boxTree.setChildren(this.buildTree(tree.getChildren(), isCheckbox));
+            boxTrees.add(boxTree);
+
+            List<OrgRoleRef> orgRoleList = organRoleService.findRolesByOrgId(Long.valueOf(tree.getId()));
+            for (OrgRoleRef orgRoleRef : orgRoleList) {
+                Role role = orgRoleRef.getRole();
+                CheckBoxTree roleBoxTree = new CheckBoxTree();
+                roleBoxTree.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
+                roleBoxTree.setParentId(parentId);
+                roleBoxTree.setText(role.getRoleName());
+                roleBoxTree.setIsLeaf(true);
+                if (!Y.equals(isCheckbox)) {// 角色无checkbox
+                    roleBoxTree.setCheckBox(null);
+                    roleBoxTree.setNocheck(true);
+                    roleBoxTree.setIconSkin(ROLE_CSS);
+                } else {
+                    roleBoxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
+                }
+                boxTrees.add(roleBoxTree);
+            }
+        }
+
+        return boxTrees;
+    }
+
+    @Deprecated
     public List<? extends SimpleTree> findNextLevelChildNodes(String treeId, String isCheckbox) {
         int index = treeId.indexOf("_");
         int orgId = 0;
@@ -147,7 +191,7 @@ public class UserService {
             }
             treeVoExt.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
             treeVoExt.setText(role.getRoleName());
-            treeVoExt.setLeaf(true);
+            treeVoExt.setIsLeaf(true);
             vos.add(treeVoExt);
         }
 
@@ -218,15 +262,14 @@ public class UserService {
         User user = userMapper.get(userId);
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user, vo);
+        vo.setUserPassword(CommonUtils.decrypt(user.getUserPassword()));
 
         List<UserRoleVo> roleUserVos = userOrgRoleService.findByUserId(user.getUserId());
         for (UserRoleVo refVo : roleUserVos) {
             if (Y.equals(refVo.getIsDefault())) {
-                long orgRoleId = refVo.getOrganRoleId();
-                String roleName = refVo.getRoleName();
-
-                vo.setOrgRoleId(orgRoleId);
-                vo.setRoleName(roleName);
+                vo.setOrgRoleId(refVo.getOrgRoleId());
+                vo.setOrgName(refVo.getOrgName());
+                vo.setRoleName(refVo.getRoleName());
                 break;
             }
         }

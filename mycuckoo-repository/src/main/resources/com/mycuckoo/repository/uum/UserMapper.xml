@@ -200,7 +200,7 @@
         left join
             cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
         left join
-            cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+            cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
         left join
             cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
         left join
@@ -222,7 +222,7 @@
         left join
             cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
         left join
-            cuckoo.uum_role_user_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+            cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
         left join
             cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
         left join
@@ -233,7 +233,7 @@
                 <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">#{orgId}</foreach>
             </if>
             <if test="orgRoleId != null">
-                and t1.user_id in (select st1.user_id from cuckoo.uum_role_user_ref st1 where st1.org_role_id = #{orgRoleId})
+                and t1.user_id in (select st1.user_id from cuckoo.uum_user_org_role_ref st1 where st1.org_role_id = #{orgRoleId})
             </if>
             <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
             <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>

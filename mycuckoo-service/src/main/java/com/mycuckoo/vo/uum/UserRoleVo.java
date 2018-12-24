@@ -13,9 +13,9 @@ package com.mycuckoo.vo.uum;
  * @time Sept 29, 2017 17:55:43 PM
  */
 public class UserRoleVo {
-    private Long organRoleId;
-    private Long organId;
-    private String organName;
+    private Long orgRoleId;
+    private Long orgId;
+    private String orgName;
     private Long roleId;
     private String roleName;
     private Long userId;
@@ -23,28 +23,28 @@ public class UserRoleVo {
     private String userPhotoUrl;
     private String isDefault; // 默认角色
 
-    public Long getOrganRoleId() {
-        return organRoleId;
+    public Long getOrgRoleId() {
+        return orgRoleId;
     }
 
-    public void setOrganRoleId(Long organRoleId) {
-        this.organRoleId = organRoleId;
+    public void setOrgRoleId(Long orgRoleId) {
+        this.orgRoleId = orgRoleId;
     }
 
-    public Long getOrganId() {
-        return organId;
+    public Long getOrgId() {
+        return orgId;
     }
 
-    public void setOrganId(Long organId) {
-        this.organId = organId;
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
-    public String getOrganName() {
-        return organName;
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setOrganName(String organName) {
-        this.organName = organName;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public Long getRoleId() {

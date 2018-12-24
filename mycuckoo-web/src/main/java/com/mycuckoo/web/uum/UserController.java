@@ -15,8 +15,8 @@ import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.uum.RowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
-import com.mycuckoo.vo.uum.UserRowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,7 +68,7 @@ public class UserController {
     private PlatformServiceFacade platformServiceFacade;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<UserVo>> list(
             @RequestParam(value = "treeId", defaultValue = "-1") String treeId,
             @RequestParam(value = "userCode", defaultValue = "") String userCode,
@@ -89,9 +91,9 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 1:05:30 PM
      */
-    @GetMapping(value = "/list/user/privilege")
-    public AjaxResponse<AssignVo<CheckBoxTree, CheckBoxTree>> listUserPrivilege(@RequestParam long id) {
-        AssignVo<CheckBoxTree, CheckBoxTree> vo = privilegeService.findSelectAndUnselectModOptByOwnIdAOwnType(id, OWNER_TYPE_USR);
+    @GetMapping("/{id}/user-privilege")
+    public AjaxResponse<AssignVo<CheckBoxTree, Long>> listUserPrivilege(@PathVariable long id) {
+        AssignVo<CheckBoxTree, Long> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OWNER_TYPE_USR);
 
         return AjaxResponse.create(vo);
     }
@@ -103,14 +105,14 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 4:53:00 PM
      */
-    @GetMapping(value = "/list/role/privilege")
-    public AjaxResponse<Map<String, Object>> listRolePrivilege(@RequestParam long id) {
-        List<UserRoleVo> roleUserRefs = userOrgRoleService.findByUserId(id);
-        List<? extends SimpleTree> orgRoles = this.getChildNodes("0_1", "Y").getData();
+    @GetMapping("/{id}/role-privilege")
+    public AjaxResponse<Map<String, Object>> listRolePrivilege(@PathVariable long id) {
+        List<UserRoleVo> userRoles = userOrgRoleService.findByUserId(id);
+        List<? extends SimpleTree> orgRoles = this.getChildNodes(0L, "Y").getData();
 
         Map<String, Object> map = Maps.newHashMap();
+        map.put("userRoles", userRoles);
         map.put("orgRoles", orgRoles);
-        map.put("roleUserRefs", roleUserRefs);
 
         return AjaxResponse.create(map);
     }
@@ -123,9 +125,9 @@ public class UserController {
      * @author rutine
      * @time Oct 20, 2013 3:03:59 PM
      */
-    @GetMapping(value = "/list/row/privilege")
-    public AjaxResponse<UserRowPrivilegeVo> listRowPrivilege(@RequestParam long id) {
-        UserRowPrivilegeVo vo = privilegeService.findSelectRowPrivilegeByUserId(id);
+    @GetMapping("/{id}/row-privilege")
+    public AjaxResponse<RowPrivilegeVo> listRowPrivilege(@PathVariable long id) {
+        RowPrivilegeVo vo = privilegeService.findRowPrivilegeByUserId(id);
 
         return AjaxResponse.create(vo);
     }
@@ -137,8 +139,8 @@ public class UserController {
      * @author rutine
      * @time Oct 6, 2013 8:26:57 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody UserVo user) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody UserVo user) {
         logger.debug(JsonUtils.toJson(user));
 
         Assert.hasText(user.getUserCode(), "用户编码必填");
@@ -150,9 +152,8 @@ public class UserController {
         Assert.isTrue(StringUtils.isNumeric(user.getUserFamilyTel()), "必须有效电话号");
         Assert.isTrue(StringUtils.isNumeric(user.getUserOfficeTel()), "必须有效电话号");
         Assert.notNull(user.getUserAvidate(), "用户有效期不能为空");
-        Assert.hasText(user.getRoleName(), "角色不能为空");
         Assert.notNull(user.getOrgRoleId(), "角色不能为空");
-        Assert.notNull(user.getUserBelongtoOrg(), "角色不能为空");
+        Assert.hasText(user.getRoleName(), "角色不能为空");
 
 
         user.setCreator(SessionUtil.getUserCode());
@@ -164,6 +165,21 @@ public class UserController {
         return AjaxResponse.create("保存用户成功");
     }
 
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody UserVo user) {
+        user.setUserNamePy(FirstLetter.getFirstLetters(user.getUserName()));
+        userService.update(user);
+
+        return AjaxResponse.create("修改用户成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<User> get(@PathVariable long id) {
+        User user = userService.getUserByUserId(id);
+
+        return AjaxResponse.create(user);
+    }
+
     /**
      * 功能说明 : 停用启用用户
      *
@@ -172,10 +188,10 @@ public class UserController {
      * @author rutine
      * @time Oct 6, 2013 9:16:06 PM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         userService.disEnable(id, disEnableFlag);
 
@@ -189,7 +205,7 @@ public class UserController {
      * @author rutine
      * @time Oct 20, 2013 3:07:34 PM
      */
-    @GetMapping(value = "query/users")
+    @GetMapping("/query/users")
     public AjaxResponse<List<UserVo>> queryUsersByUserName(@RequestParam(defaultValue = "") String userName) {
         List<UserVo> vos = userService.findByUserName(userName);
 
@@ -199,36 +215,21 @@ public class UserController {
     /**
      * 功能说明 : 查找指定节点的下一级子节点
      *
-     * @param treeId     机构角色树id
+     * @param orgId         机构id
      * @param isCheckbox
      * @author rutine
      * @time Dec 1, 2012 1:45:37 PM
      */
-    @GetMapping(value = "/get/child/nodes")
+    @GetMapping("/{orgId}/child/nodes")
     public AjaxResponse<List<? extends SimpleTree>> getChildNodes(
-            @RequestParam(value = "treeId", defaultValue = "orgId_1") String treeId,
-            @RequestParam(value = "isCheckbox", defaultValue = "0") String isCheckbox) {
+            @PathVariable Long orgId,
+            @RequestParam(value = "isCheckbox", defaultValue = "N") String isCheckbox) {
 
-        List<? extends SimpleTree> asyncTreeList = userService.findNextLevelChildNodes(treeId, isCheckbox);
+        List<? extends SimpleTree> asyncTreeList = userService.findChildNodes(orgId, isCheckbox);
 
-        logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
+        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
 
         return AjaxResponse.create(asyncTreeList);
-    }
-
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody UserVo user) {
-        user.setUserNamePy(FirstLetter.getFirstLetters(user.getUserName()));
-        userService.update(user);
-
-        return AjaxResponse.create("修改用户成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<User> getView(@RequestParam long id) {
-        User user = userService.getUserByUserId(id);
-
-        return AjaxResponse.create(user);
     }
 
     /**
@@ -241,10 +242,10 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 2:13:42 PM
      */
-    @GetMapping(value = "/save/operation/privilege")
-    public AjaxResponse<String> saveOperationPrivilege(@RequestParam long id,
-                                                       @RequestParam String privilegeScope,
-                                                       @RequestParam Set<String> operationIds) {
+    @PostMapping("/{id}/operation-privilege/{privilegeScope}")
+    public AjaxResponse<String> saveOperationPrivilege(@PathVariable long id,
+                                                       @PathVariable String privilegeScope,
+                                                       @RequestBody Set<String> operationIds) {
 
         List<String> list = Lists.newArrayList(operationIds);
         privilegeService.save(list, id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_USR, privilegeScope);
@@ -261,11 +262,11 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 9:17:05 PM
      */
-    @GetMapping(value = "/save/role/privilege")
+    @PostMapping("/{id}/role-privilege/{defaultRoleId}")
     public AjaxResponse<String> saveRolePrivilege(
-            @RequestParam long id,
-            @RequestParam long defaultRoleId,
-            @RequestParam Set<Long> roleIds) {
+            @PathVariable long id,
+            @PathVariable long defaultRoleId,
+            @RequestBody Set<Long> roleIds) {
 
         List<Long> list = new ArrayList<>(roleIds);
         userOrgRoleService.save(id, list, defaultRoleId);
@@ -277,19 +278,19 @@ public class UserController {
      * 功能说明 : 保存为用户分配的行权限
      *
      * @param id
-     * @param rowPrivilege
+     * @param privilegeScope
      * @param rowIds
      * @author rutine
      * @time Oct 20, 2013 4:25:02 PM
      */
-    @GetMapping(value = "/save/row/privilege")
+    @PostMapping("/{id}/row-privilege/{privilegeScope}")
     public AjaxResponse<String> saveRowPrivilege(
-            @RequestParam long id,
-            @RequestParam String rowPrivilege,
-            @RequestParam Set<String> rowIds) {
+            @PathVariable long id,
+            @PathVariable String privilegeScope,
+            @RequestBody Set<String> rowIds) {
 
         List<String> list = new ArrayList<>(rowIds);
-        privilegeService.save(list, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_USR, rowPrivilege);
+        privilegeService.save(list, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_USR, privilegeScope);
 
         return AjaxResponse.create("为用户分配行权限成功");
     }
@@ -301,10 +302,10 @@ public class UserController {
      * @author rutine
      * @time Oct 20, 2013 4:48:55 PM
      */
-    @GetMapping(value = "/reset/password")
+    @PutMapping("/{id}/reset-password")
     public AjaxResponse<String> resetPwd(
-            @RequestParam long id,
-            @RequestParam String userName) {
+            @PathVariable long id,
+            @RequestBody String userName) {
 
         // 系统参数用户默认密码
         String userDefaultPwd = platformServiceFacade.findSystemParaByParaName(USER_DEFAULT_PWD);
@@ -321,7 +322,7 @@ public class UserController {
      * @author rutine
      * @time Nov 6, 2014 9:13:20 PM
      */
-    @PutMapping(value = "/update/password")
+    @PutMapping("/update/password")
     public AjaxResponse<String> putUpdatePassword(@RequestBody UserPasswordUvo vo) {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
@@ -342,7 +343,7 @@ public class UserController {
      * @author rutine
      * @time Nov 1, 2014 8:28:55 AM
      */
-    @PutMapping(value = "/update/photo")
+    @PutMapping("/update/photo")
     public AjaxResponse<String> putUpdatePhoto(@RequestBody UserPhotoUvo vo, HttpServletRequest request) {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 

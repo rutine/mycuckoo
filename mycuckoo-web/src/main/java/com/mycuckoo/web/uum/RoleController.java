@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.mycuckoo.common.constant.Common.*;
 import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
@@ -74,7 +73,7 @@ public class RoleController {
      * @author rutine
      * @time Jul 14, 2013 4:27:11 PM
      */
-    @GetMapping(value = "/{id}/row/privilege")
+    @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
         AssignVo<CheckBoxTree, Long> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OWNER_TYPE_ROL);
 
@@ -159,17 +158,13 @@ public class RoleController {
      * @author rutine
      * @time Sep 15, 2013 9:47:05 AM
      */
-    @PostMapping("/{id}/save/operation/privilege/{privilegeScope}")
+    @PostMapping("/{id}/operation-privilege/{privilegeScope}")
     public AjaxResponse<String> saveOptPrivilege(
             @PathVariable long id,
             @PathVariable String privilegeScope,
             @RequestBody Set<String> operationIds) {
 
-        List<String> list = operationIds.parallelStream()
-                .map(mapper -> { return Long.valueOf(mapper) - 1000L; })
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-        privilegeService.save(list, id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_ROL, privilegeScope);
+        privilegeService.save(Lists.newArrayList(operationIds), id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_ROL, privilegeScope);
 
         return AjaxResponse.create("分配角色操作权限成功");
     }
@@ -183,10 +178,10 @@ public class RoleController {
      * @author rutine
      * @time Sep 15, 2013 1:18:53 PM
      */
-    @PostMapping("/{id}/save/row/privilege")
+    @PostMapping("/{id}/row-privilege/{rowPrivilege}")
     public AjaxResponse saveRowPrivilege(
             @PathVariable long id,
-            @RequestBody String rowPrivilege) {
+            @PathVariable String rowPrivilege) {
 
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
         privilegeService.save(optIdList, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_ROL, rowPrivilege);

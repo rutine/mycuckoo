@@ -94,7 +94,7 @@ public class LoginController {
             Iterator<UserRoleVo> it = vos.iterator();
             while (it.hasNext()) {
                 UserRoleVo vo = it.next();
-                if (vo.getOrganRoleId() == 0) {
+                if (vo.getOrgRoleId() == 0) {
                     if (len == 1) {
                         throw new ApplicationException(4, "用户为无角色用户没有使用权限");
                     }
@@ -147,9 +147,9 @@ public class LoginController {
          * 用户ID及名称、用户机构ID及名称、用户角色ID及名称角色级别、放入session
          * ID 均为Long
          */
-        Long organId = role.getOrganId() == null ? -1L : role.getOrganId();
-        String organName = role.getOrganName() == null ? ADMIN_ORGNAME : role.getOrganName();
-        Long organRoleId = role.getOrganRoleId() == null ? -1L : role.getOrganRoleId();
+        Long organId = role.getOrgId() == null ? -1L : role.getOrgId();
+        String organName = role.getOrgName() == null ? ADMIN_ORGNAME : role.getOrgName();
+        Long organRoleId = role.getOrgRoleId() == null ? -1L : role.getOrgRoleId();
         Long roleId = role.getRoleId() == null ? -1L : role.getRoleId();
         String roleName = role.getRoleName() == null ? ADMIN_ROLENAME : role.getRoleName();
 

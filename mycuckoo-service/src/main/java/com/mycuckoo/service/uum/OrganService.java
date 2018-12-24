@@ -15,8 +15,8 @@ import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.platform.SystemOptLogService;
-import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +125,7 @@ public class OrganService {
         return orgIds;
     }
 
-    public List<? super SimpleTree> findChildNodes(long organId) {
+    public List<? extends SimpleTree> findChildNodes(long organId, String isCheckbox) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
         Organ parent = new Organ(organId, null);
         parent.setParentId(organId);
@@ -133,11 +133,12 @@ public class OrganService {
         List<Organ> tempList = Lists.newArrayList();
         tempList.addAll(all);
         tempList.remove(parent); //删除根元素
-        SimpleTree vo = this.buildTree(parent, tempList);
+        SimpleTree vo = this.buildTree(parent, tempList, isCheckbox);
 
         return vo.getChildren();
     }
 
+    @Deprecated
     public List<CheckBoxTree> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
         List<Organ> list = organMapper.findByParentIdAndFilterOutOrgId(organId, filterOutOrgId);
         List<CheckBoxTree> treeVoList = new ArrayList<>();
@@ -295,15 +296,16 @@ public class OrganService {
     /**
      * 根据父级机构构建机构树
      *
-     * @param parent    父级机构
+     * @param parent      父级机构
      * @param children    所有子机构
+     * @param isCheckbox  Y:带复选框 N:无复选框
      * @return 机构树
      * @author rutine
      * @time Dec 7, 2018 11:29:15 AM
      */
-    private SimpleTree buildTree(Organ parent, List<Organ> children) {
+    private SimpleTree buildTree(Organ parent, List<Organ> children, String isCheckbox) {
         long id = parent.getOrgId();
-        List<? super SimpleTree> childNodes = Lists.newArrayList();
+        List childNodes = Lists.newArrayList();
         Iterator<Organ> it = children.iterator();
         while (it.hasNext()) {
             Organ item = it.next();
@@ -311,18 +313,28 @@ public class OrganService {
                 it.remove();
                 List<Organ> others = Lists.newArrayList();
                 others.addAll(children);
-                childNodes.add(this.buildTree(item, others));
+                childNodes.add(this.buildTree(item, others, isCheckbox));
             }
         }
 
-        SimpleTree vo = new SimpleTree();
-        vo.setId(parent.getOrgId().toString());
-        vo.setText(parent.getOrgSimpleName());
-        vo.setChildren(childNodes);
+        SimpleTree tree = null;
+        if (Y.equals(isCheckbox)) {
+            tree = new CheckBoxTree();
+            CheckBoxTree boxTree = (CheckBoxTree) tree;
+            boxTree.setNocheck(false);
+            boxTree.setChecked(false);
+            boxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
+        } else {
+            tree = new SimpleTree();
+        }
+        tree.setId(parent.getOrgId().toString());
+        tree.setParentId(parent.getParentId().toString());
+        tree.setText(parent.getOrgSimpleName());
+        tree.setChildren(childNodes);
         if (ModuleLevelEnum.TWO.value().equals(parent.getOrgType())) {
-            vo.setIsLeaf(true);
+            tree.setIsLeaf(true);
         }
 
-        return vo;
+        return tree;
     }
 }

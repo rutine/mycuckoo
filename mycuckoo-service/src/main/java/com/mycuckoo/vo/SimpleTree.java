@@ -1,6 +1,5 @@
 package com.mycuckoo.vo;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,8 +9,7 @@ import java.util.List;
  * @version 2.0.0
  * @time Sep 23, 2014 10:59:14 AM
  */
-public class SimpleTree implements Serializable {
-    private static final long serialVersionUID = 7272863933090319635L;
+public class SimpleTree<T extends SimpleTree> implements Tree {
 
     private String id;
     private String parentId;
@@ -19,12 +17,8 @@ public class SimpleTree implements Serializable {
     private String icon; // 图片
     private String iconSkin; // css样式className
     private Boolean isLeaf;
-    private List<? super SimpleTree> children;
-
-    @Deprecated
-    private Boolean leaf;
-    @Deprecated
-    private Boolean isParent;
+    private Boolean spread = true;
+    private List<T> children;
 
     public String getId() {
         return id;
@@ -66,6 +60,22 @@ public class SimpleTree implements Serializable {
         this.iconSkin = iconSkin;
     }
 
+    public Boolean getLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(Boolean leaf) {
+        isLeaf = leaf;
+    }
+
+    public Boolean getSpread() {
+        return spread;
+    }
+
+    public void setSpread(Boolean spread) {
+        this.spread = spread;
+    }
+
     public Boolean getIsLeaf() {
         return isLeaf;
     }
@@ -74,31 +84,11 @@ public class SimpleTree implements Serializable {
         this.isLeaf = isLeaf;
     }
 
-    public List<? super SimpleTree> getChildren() {
+    public List<T> getChildren() {
         return children;
     }
 
-    public void setChildren(List<? super SimpleTree> children) {
+    public void setChildren(List<T> children) {
         this.children = children;
-    }
-
-    @Deprecated
-    public Boolean isLeaf() {
-        return leaf;
-    }
-
-    @Deprecated
-    public void setLeaf(Boolean leaf) {
-        this.leaf = leaf;
-    }
-
-    @Deprecated
-    public Boolean getIsParent() {
-        return isParent;
-    }
-
-    @Deprecated
-    public void setIsParent(Boolean isParent) {
-        this.isParent = isParent;
     }
 }

@@ -76,9 +76,9 @@ public class UserOrgRoleService {
             User user = userOrgRoleRef.getUser();
 
             UserRoleVo vo = new UserRoleVo();
-            vo.setOrganRoleId(orgRoleRef.getOrgRoleId());
-            vo.setOrganId(organ.getOrgId());
-            vo.setOrganName(organ.getOrgSimpleName());
+            vo.setOrgRoleId(orgRoleRef.getOrgRoleId());
+            vo.setOrgId(organ.getOrgId());
+            vo.setOrgName(organ.getOrgSimpleName());
             vo.setRoleId(role.getRoleId());
             vo.setRoleName(role.getRoleName());
             vo.setUserId(user.getUserId());

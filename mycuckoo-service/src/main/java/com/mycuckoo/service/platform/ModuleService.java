@@ -282,7 +282,7 @@ public class ModuleService {
             treeVo.setText(mod.getModName());
             treeVo.setIconSkin(mod.getModImgCls());
             if (ModuleLevelEnum.of(mod.getModLevel()) != ModuleLevelEnum.THREE) {
-                treeVo.setIsParent(true); // 模块菜单级别为3是叶子
+//                treeVo.setIsParent(true); // 模块菜单级别为3是叶子
             }
             treeVoList.add(treeVo);
         }
