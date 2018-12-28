@@ -164,7 +164,7 @@ public class OrganService {
         if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("orgIds", idList);
+        params.put("filterOrgIds", idList);
         params.put("orgCode", orgCode);
         params.put("orgName", orgName);
         Page<Organ> entityPage = organMapper.findByPage(params, page);

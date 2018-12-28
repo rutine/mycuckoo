@@ -10,21 +10,13 @@ import java.util.List;
  * @time 2017-09-09 09:43
  */
 public class RowPrivilegeVo {
-    private List<RowVo> privileges;
     private String privilegeScope;
+    private List<RowVo> privileges;
 
     public RowPrivilegeVo() {}
 
     public RowPrivilegeVo(String privilegeScope, List<RowVo> privileges) {
         this.privilegeScope = privilegeScope;
-        this.privileges = privileges;
-    }
-
-    public List<RowVo> getPrivileges() {
-        return privileges;
-    }
-
-    public void setPrivileges(List<RowVo> privileges) {
         this.privileges = privileges;
     }
 
@@ -35,6 +27,15 @@ public class RowPrivilegeVo {
     public void setPrivilegeScope(String privilegeScope) {
         this.privilegeScope = privilegeScope;
     }
+
+    public List<RowVo> getPrivileges() {
+        return privileges;
+    }
+
+    public void setPrivileges(List<RowVo> privileges) {
+        this.privileges = privileges;
+    }
+
 
     public static class RowVo {
         private Long id;

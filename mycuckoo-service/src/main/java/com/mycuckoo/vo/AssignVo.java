@@ -10,34 +10,34 @@ import java.util.List;
  * @time Jul 2, 2017 6:32:38 PM
  */
 public class AssignVo<O, T> {
-    private List<O> assign;
-    private List<T> unassign;
+    private List<O> source;
+    private List<T> assign;
     private String privilegeScope;
 
-    public AssignVo(List<O> assign, List<T> unassign) {
-        this(assign, unassign, null);
+    public AssignVo(List<O> source, List<T> assign) {
+        this(source, assign, null);
     }
 
-    public AssignVo(List<O> assign, List<T> unassign, String privilegeScope) {
+    public AssignVo(List<O> source, List<T> assign, String privilegeScope) {
+        this.source = source;
         this.assign = assign;
-        this.unassign = unassign;
         this.privilegeScope = privilegeScope;
     }
 
-    public List<O> getAssign() {
+    public List<O> getSource() {
+        return source;
+    }
+
+    public void setSource(List<O> source) {
+        this.source = source;
+    }
+
+    public List<T> getAssign() {
         return assign;
     }
 
-    public void setAssign(List<O> assign) {
+    public void setAssign(List<T> assign) {
         this.assign = assign;
-    }
-
-    public List<T> getUnassign() {
-        return unassign;
-    }
-
-    public void setUnassign(List<T> unassign) {
-        this.unassign = unassign;
     }
 
     public String getPrivilegeScope() {

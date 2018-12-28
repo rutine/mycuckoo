@@ -7,6 +7,7 @@ import com.mycuckoo.service.platform.DistrictService;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.service.platform.SystemParameterService;
 import com.mycuckoo.vo.HierarchyModuleVo;
+import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class PlatformServiceFacade {
     @Autowired
     private DistrictService districtService;
 
+
+    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations, boolean isCheckbox) {
+        return moduleService.buildTree(menus, checkedOperations, isCheckbox);
+    }
 
     public HierarchyModuleVo filterModule(List<ModuleMenuVo> list) {
         return moduleService.filterModule(list);

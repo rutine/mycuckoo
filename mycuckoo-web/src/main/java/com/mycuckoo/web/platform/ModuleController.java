@@ -3,11 +3,11 @@ package com.mycuckoo.web.platform;
 
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.vo.AssignVo;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.web.util.JsonUtils;
@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +58,7 @@ public class ModuleController {
      * @author rutine
      * @time Dec 2, 2012 8:22:41 PM
      */
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(value = "treeId", defaultValue = "-1") long treeId,
                                                  @RequestParam(value = "modName", defaultValue = "") String modName,
                                                  @RequestParam(value = "modEnId", defaultValue = "") String modEnId,
@@ -72,18 +74,15 @@ public class ModuleController {
     /**
      * 功能说明 : 获得模块已经分配和未分配的操作列表
      *
-     * @param modName
      * @param id
      * @return
      * @author rutine
      * @time May 9, 2013 8:52:56 PM
      */
-    @GetMapping(value = "/list/operation")
-    public AjaxResponse<AssignVo<Operate, Operate>> listOperation(
-            @RequestParam(value = "moduleId") long id,
-            @RequestParam(value = "modName") String modName) {
+    @GetMapping(value = "/{id}/operation")
+    public AjaxResponse<AssignVo<CheckBoxTree, Long>> listOperation(@PathVariable long id) {
 
-        AssignVo<Operate, Operate> vo = moduleService.findAssignedAndUnAssignedOperatesByModuleId(id);
+        AssignVo<CheckBoxTree, Long> vo = moduleService.findOperationTreeByModId(id);
 
         return AjaxResponse.create(vo);
     }
@@ -95,34 +94,56 @@ public class ModuleController {
      * @author rutine
      * @time Jun 1, 2013 9:13:49 AM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody ModuleMenu moduleMemu) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody ModuleMenu modMenu) {
 
-        logger.debug(JsonUtils.toJson(moduleMemu));
+        logger.debug(JsonUtils.toJson(modMenu));
 
-        moduleMemu.setCreateDate(new Date());
-        moduleMemu.setCreator(SessionUtil.getUserCode());
-        moduleService.save(moduleMemu);
+        modMenu.setCreateDate(new Date());
+        modMenu.setCreator(SessionUtil.getUserCode());
+        moduleService.save(modMenu);
 
         return AjaxResponse.create("保存模块成功");
     }
 
+    /**
+     * 功能说明 : 修改模块
+     *
+     * @return
+     * @author rutine
+     * @time Jun 1, 2013 3:45:56 PM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody ModuleMenu modMenu) {
+        moduleService.update(modMenu);
+
+        return AjaxResponse.create("修改模块成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<ModuleMenuVo> get(@PathVariable long id) {
+        ModuleMenuVo moduleMenu = moduleService.get(id);
+        ModuleMenuVo parentMenu = moduleService.get(moduleMenu.getParentId());
+        moduleMenu.setParentName(parentMenu.getModName());
+
+        return AjaxResponse.create(moduleMenu);
+    }
 
     /**
      * 功能说明 : 保存模块操作关系
      *
-     * @param id         模块ID
-     * @param operateIds 模块操作列表
+     * @param id      模块ID
+     * @param optIds  模块操作列表
      * @return
      * @author rutine
      * @time May 12, 2013 5:44:16 PM
      */
-    @GetMapping(value = "/create/module/operation/ref")
-    public AjaxResponse<String> putCreateModuleOptRefs(
-            @RequestParam(value = "moduleId") long id,
-            @RequestParam(value = "operateIds") List<Long> operateIds) {
+    @PostMapping(value = "/{id}/module-opt-ref")
+    public AjaxResponse<String> createModuleOptRefs(
+            @PathVariable long id,
+            @RequestBody List<Long> optIds) {
 
-        moduleService.saveModuleOptRefs(id, operateIds);
+        moduleService.saveModuleOptRefs(id, optIds);
 
         return AjaxResponse.create("分配模块权限成功");
     }
@@ -135,8 +156,8 @@ public class ModuleController {
      * @author rutine
      * @time Jun 2, 2013 11:09:30 AM
      */
-    @DeleteMapping(value = "/delete")
-    public AjaxResponse<String> delete(@RequestParam long id) {
+    @DeleteMapping("/{id}")
+    public AjaxResponse<String> delete(@PathVariable long id) {
 
         moduleService.delete(id);
 
@@ -152,10 +173,10 @@ public class ModuleController {
      * @author rutine
      * @time Jun 2, 2013 1:53:04 PM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         boolean disEnableBol = moduleService.disEnable(id, disEnableFlag);
 
@@ -166,42 +187,16 @@ public class ModuleController {
      * 功能说明 : 获取模块的下级模块
      *
      * @param id             模块id
-     * @param filterOutModId
      * @author rutine
      * @time Dec 1, 2012 1:45:37 PM
      */
-    @GetMapping(value = "/get/child/nodes")
-    public AjaxResponse<List<SimpleTree>> getChildNodes(
-            @RequestParam(value = "treeId", defaultValue = "0") long id,
-            @RequestParam(value = "filterModId", defaultValue = "0") long filterOutModId) {
+    @GetMapping("/{id}/child/nodes")
+    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable long id) {
 
-        List<SimpleTree> asyncTreeList = moduleService.findByParentIdAndFilterOutModuleIds(id, filterOutModId);
+        List<? extends SimpleTree> asyncTreeList = moduleService.findChildNodes(id, false);
 
-        logger.debug("json --> " + JsonUtils.toJson(asyncTreeList));
+        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
 
         return AjaxResponse.create(asyncTreeList);
-    }
-
-    /**
-     * 功能说明 : 修改模块
-     *
-     * @return
-     * @author rutine
-     * @time Jun 1, 2013 3:45:56 PM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody ModuleMenu moduleMemu) {
-        moduleService.update(moduleMemu);
-
-        return AjaxResponse.create("修改模块成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<ModuleMenuVo> getView(@RequestParam long id) {
-        ModuleMenuVo moduleMemu = moduleService.get(id);
-        ModuleMenuVo parentMemu = moduleService.get(moduleMemu.getParentId());
-        moduleMemu.setParentName(parentMemu.getModName());
-
-        return AjaxResponse.create(moduleMemu);
     }
 }

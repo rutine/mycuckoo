@@ -19,6 +19,7 @@ import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.vo.AssignVo;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +68,34 @@ public class ModuleService {
     @Autowired
     private UumServiceFacade uumServiceFacade;
 
+
+    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations, boolean isCheckbox) {
+        List<ModuleMenuVo> firstList = Lists.newArrayList();
+        List<ModuleMenuVo> otherList = Lists.newArrayList();
+
+        // 过滤分类一级、二级、三级菜单
+        for (ModuleMenuVo vo : menus) {
+            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
+            switch (modLevel) {
+                case ONE:
+                    firstList.add(vo);
+                    break;
+                case TWO:
+                case THREE:
+                case FOUR:
+                    otherList.add(vo);
+                    break;
+            }
+        }
+
+        List<SimpleTree> trees = Lists.newArrayList();
+        for (ModuleMenuVo vo : firstList) {
+            SimpleTree tree = this.buildTree(vo, otherList, checkedOperations, new CheckedHolder(null), isCheckbox);
+            trees.add(tree);
+        }
+
+        return trees;
+    }
 
     @Transactional
     public void deleteModOptRefByOperateId(long operateId) {
@@ -191,13 +221,38 @@ public class ModuleService {
         return new HierarchyModuleVo(firstList, secondMap, thirdMap);
     }
 
+    public List<? extends SimpleTree> findChildNodes(long modId, boolean isCheckbox) {
+        List<ModuleMenuVo> all = this.findAll();
+        ModuleMenuVo parent = new ModuleMenuVo(modId);
+        parent.setParentId(modId);
+
+        List<ModuleMenuVo> tempList = Lists.newArrayList();
+        tempList.addAll(all);
+        tempList.remove(parent); //删除根元素
+
+        List<? extends SimpleTree> trees = this.buildTree(tempList, Lists.newArrayList(), isCheckbox);
+
+        return trees;
+    }
+
     public List<ModuleMenuVo> findAll() {
         Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
         List<ModuleMenu> list = moduleMenuMapper.findByPage(null, pageRequest).getContent();
         List<ModuleMenuVo> vos = Lists.newArrayList();
         list.forEach(item -> {
             ModuleMenuVo vo = new ModuleMenuVo();
-            BeanUtils.copyProperties(item, vo);
+            vo.setModuleId(item.getModuleId());
+            vo.setParentId(item.getParentId());
+            vo.setModEnId(item.getModEnId());
+            vo.setModName(item.getModName());
+            vo.setModImgCls(item.getModImgCls());
+            vo.setModLevel(item.getModLevel());
+            vo.setModOrder(item.getModOrder());
+            vo.setModPageType(item.getModPageType());
+            vo.setBelongToSys(item.getBelongToSys());
+            vo.setStatus(item.getStatus());
+            vo.setCreator(item.getCreator());
+            vo.setCreateDate(item.getCreateDate());
             vos.add(vo);
         });
 
@@ -209,15 +264,31 @@ public class ModuleService {
         return modOptRefMapper.findByPage(null, pageRequest).getContent();
     }
 
-    public AssignVo<Operate, Operate> findAssignedAndUnAssignedOperatesByModuleId(long moduleId) {
-        List<Operate> allOperateList = operateService.findAll(); // 所有操作
-        List<Operate> assignedOperateList = findAssignedOperatesByModuleId(moduleId); // 已经分配的操作
+    public AssignVo<CheckBoxTree, Long> findOperationTreeByModId(long moduleId) {
+        List<Operate> allOperateList = operateService.findAll(); //所有操作
+        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId); //已经分配的操作
+        List<Long> optIds = modOptRefList.parallelStream()
+                .map(ModOptRef::getOperate)
+                .map(Operate::getOperateId)
+                .collect(Collectors.toList());
 
-        List<Operate> tempList = Lists.newArrayList(allOperateList);
-        tempList.removeAll(assignedOperateList); // 删除已经分配
-        List<Operate> unAssignedOperateList = tempList; // 未分配的操作
+        List<CheckBoxTree> trees = Lists.newArrayList();
+        allOperateList.forEach(consumer -> {
+            boolean checked = optIds.contains(consumer.getOperateId());
 
-        return new AssignVo<>(assignedOperateList, unAssignedOperateList);
+            CheckBoxTree tree = new CheckBoxTree();
+            tree.setId(consumer.getOperateId().toString());
+            tree.setParentId("0");
+            tree.setText(consumer.getOperateName());
+            tree.setIconSkin(consumer.getOptImgLink());
+            tree.setIsLeaf(true);
+            tree.setChildren(null);
+            tree.setChecked(checked);
+            tree.setCheckBox(new CheckBoxTree.CheckBox(checked ? 1 : 0));
+            trees.add(tree);
+        });
+
+        return new AssignVo<>(trees, optIds);
     }
 
     public List<ModOptRef> findModOptRefsByModOptRefIds(Long[] modOptRefIds) {
@@ -232,12 +303,7 @@ public class ModuleService {
         logger.debug("start={} limit={} treeId={} modName={} modEnId={}",
                 page.getOffset(), page.getPageSize(), treeId, modName, modEnId);
 
-        List<Long> idList = new ArrayList<Long>();
-        if (treeId > 0) {
-            idList = this.findChildNodeList(treeId, 0); // 过滤出所有下级
-        }
         Map<String, Object> params = Maps.newHashMap();
-        params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
         params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
         params.put("modEnId", isNullOrEmpty(modEnId) ? null : "%" + modEnId + "%");
         Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(params, page);
@@ -273,28 +339,11 @@ public class ModuleService {
         return false;
     }
 
-    public List<SimpleTree> findByParentIdAndFilterOutModuleIds(long moduleId, long filterModuleId) {
-        List<ModuleMenu> list = moduleMenuMapper.findByParentIdAndFilterOutModuleIds(moduleId, new long[]{0L, filterModuleId});
-        List<SimpleTree> treeVoList = new ArrayList<SimpleTree>();
-        for (ModuleMenu mod : list) {
-            SimpleTree treeVo = new SimpleTree();
-            treeVo.setId(mod.getModuleId().toString());
-            treeVo.setText(mod.getModName());
-            treeVo.setIconSkin(mod.getModImgCls());
-            if (ModuleLevelEnum.of(mod.getModLevel()) != ModuleLevelEnum.THREE) {
-//                treeVo.setIsParent(true); // 模块菜单级别为3是叶子
-            }
-            treeVoList.add(treeVo);
-        }
-
-        return treeVoList;
-    }
-
     @Transactional
-    public void update(ModuleMenu moduelMemu) {
-        moduleMenuMapper.update(moduelMemu);
+    public void update(ModuleMenu modMenu) {
+        moduleMenuMapper.update(modMenu);
 
-        writeLog(moduelMemu, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(modMenu, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
     }
 
     @Transactional
@@ -313,19 +362,19 @@ public class ModuleService {
     }
 
     @Transactional
-    public void save(ModuleMenu moduleMemu) {
-        moduleMenuMapper.save(moduleMemu);
+    public void save(ModuleMenu modMenu) {
+        moduleMenuMapper.save(modMenu);
 
-        writeLog(moduleMemu, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(modMenu, LogLevelEnum.FIRST, OptNameEnum.SAVE);
     }
 
 
     @Transactional
-    public void saveModuleOptRefs(long moduleId, List<Long> operateIdList) {
+    public void saveModuleOptRefs(long modId, List<Long> optIdList) {
         // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId);
+        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(modId);
         if (modOptRefList.isEmpty()) {
-            saveModuleOptRefSingle(moduleId, operateIdList);
+            saveModuleOptRefSingle(modId, optIdList);
         }
         else {
             /*
@@ -337,7 +386,7 @@ public class ModuleService {
             List<Long> repeatOperateIdList = new ArrayList<Long>();
             for (ModOptRef modOptRef : modOptRefList) {
                 Long oldOperateId = modOptRef.getOperate().getOperateId();
-                for (Long newOperateId : operateIdList) {
+                for (Long newOperateId : optIdList) {
                     if (newOperateId == oldOperateId) {
                         repeatModOptRefList.add(modOptRef);
                         repeatOperateIdList.add(newOperateId);
@@ -346,7 +395,7 @@ public class ModuleService {
                 }
             }
             modOptRefList.removeAll(repeatModOptRefList); //删除重复的模块操作
-            operateIdList.removeAll(repeatOperateIdList); //删除重复的ID
+            optIdList.removeAll(repeatOperateIdList); //删除重复的ID
 
             modOptRefList.forEach(modOptRef -> {
                 modOptRefMapper.delete(modOptRef.getModOptId()); //进行模块操作关系删除
@@ -360,7 +409,7 @@ public class ModuleService {
             uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
 
             // 删除权限操作 modOptRefList 模块操作关系
-            this.saveModuleOptRefSingle(moduleId, operateIdList); // 保存新分配的模块操作关系
+            this.saveModuleOptRefSingle(modId, optIdList); // 保存新分配的模块操作关系
         }
     }
 
@@ -368,126 +417,87 @@ public class ModuleService {
     // --------------------------- 私有方法 -------------------------------
 
 
-    /**
-     * <b>注意：</b>返回的Operate对象只有部分属性有值
-     */
-    private List<Operate> findAssignedOperatesByModuleId(long moduleId) {
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId);
-        List<Operate> operationList = new ArrayList<Operate>();
-        for (ModOptRef modOptRef : modOptRefList) {
-            operationList.add(operateService.get(modOptRef.getOperate().getOperateId()));
+    private SimpleTree buildTree(ModuleMenuVo parentMenu, List<ModuleMenuVo> otherMenus, List<Long> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
+        Long parentId = parentMenu.getModuleId();
+        List<? super SimpleTree> subMenuVos = Lists.newArrayList();
+        Iterator<ModuleMenuVo> it = otherMenus.iterator();
+        while (it.hasNext()) {
+            ModuleMenuVo vo = it.next();
+            if (vo.getParentId().equals(parentId)) {
+                it.remove();
+                List<ModuleMenuVo> others = Lists.newArrayList();
+                others.addAll(otherMenus);
+                subMenuVos.add(this.buildTree(vo, others, checkedOperations, new CheckedHolder(checked), isCheckbox));
+            }
         }
 
-        return operationList;
-    }
-
-    private List<Long> findChildNodeList(long moduleId, int flag) {
-        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-        List<ModuleMenu> allList = moduleMenuMapper.findByPage(null, pageRequest).getContent();
-
-        List<ModuleMenu> filterList = Lists.newArrayList();
-        List<ModuleMenu> tempList = Lists.newArrayList();
-        tempList.addAll(allList);
-        tempList.remove(new ModuleMenu(0L)); //删除根元素
-        //过滤出所有下级元素
-        filterList = getFilterList(filterList, tempList, moduleId);
-        if (flag == 1) {
-            filterList.add(new ModuleMenu(moduleId));  //本元素
-            allList.removeAll(filterList);
-            filterList = allList;
+        checked.checked = checked.checked || checkedOperations.contains(parentId);
+        if (checked.parent != null && !checked.parent.checked) {
+            checked.parent.checked = checked.checked;
         }
 
-        return filterList.stream().map(ModuleMenu::getModuleId).collect(Collectors.toList());
+        SimpleTree tree = null;
+        if (isCheckbox) {
+            tree = new CheckBoxTree();
+            CheckBoxTree boxTree = (CheckBoxTree) tree;
+            boxTree.setNocheck(false);
+            boxTree.setChecked(checked.checked);
+            boxTree.setCheckBox(new CheckBoxTree.CheckBox(checked.checked ? 1 : 0));
+        } else {
+            tree = new SimpleTree();
+        }
+        tree.setId(parentId.toString());
+        tree.setParentId(parentMenu.getParentId().toString());
+        tree.setText(parentMenu.getModName());
+        tree.setIconSkin(parentMenu.getModImgCls());
+        tree.setIsLeaf(parentMenu.getIsLeaf());
+        tree.setChildren(subMenuVos);
+
+        return tree;
     }
+
 
     /**
      * 公用模块写日志
      *
-     * @param moduleMemu 模块对象
+     * @param moduleMenu 模块对象
      * @param logLevel
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */
-    private void writeLog(ModuleMenu moduleMemu, LogLevelEnum logLevel,
-                          OptNameEnum opt) {
+    private void writeLog(ModuleMenu moduleMenu, LogLevelEnum logLevel, OptNameEnum opt) {
+        String optContent = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnId() + SPLIT;
 
-        String optContent = moduleMemu.getModName() + SPLIT
-                + moduleMemu.getModEnId() + SPLIT;
-
-        sysOptLogService.saveLog(logLevel, opt, SYS_MOD_MGR, optContent, moduleMemu.getModuleId() + "");
+        sysOptLogService.saveLog(logLevel, opt, SYS_MOD_MGR, optContent, moduleMenu.getModuleId() + "");
     }
 
     /**
      * 对系统菜单进行排序
      *
      * @param moduleList 菜单列表
-     * @param moduleMemu 菜单对象
+     * @param moduleMenu 菜单对象
      * @author rutine
      * @time Oct 11, 2012 8:58:30 PM
      */
-    private void sortModule(List<ModuleMenuVo> moduleList, ModuleMenuVo moduleMemu) {
+    private void sortModule(List<ModuleMenuVo> moduleList, ModuleMenuVo moduleMenu) {
         // 根据操作顺序进行排序
         int index = 0; // 元素索引
         boolean isAppend = true; // 是否追加元素
         for (ModuleMenuVo mod : moduleList) {
             int listModOrder = mod.getModOrder(); // 已经有的操作顺序
-            int currModOrder = moduleMemu.getModOrder(); // 当前操作顺序
+            int currModOrder = moduleMenu.getModOrder(); // 当前操作顺序
             if (listModOrder > currModOrder) {
-                moduleList.add(index, moduleMemu); // 顺序小的插在前
+                moduleList.add(index, moduleMenu); // 顺序小的插在前
                 isAppend = false;
                 break;
             }
             index++;
         }
         if (isAppend) {
-            moduleList.add(moduleMemu); //加到操作list中
+            moduleList.add(moduleMenu); //加到操作list中
         }
-    }
-
-    /**
-     * 根据上级模块id递归过滤结点
-     *
-     * @param filterList 过滤得到的子节点
-     * @param listAll    所有模块结果集
-     * @param moduleId   上级模块id
-     * @return 所有子结点
-     * @author rutine
-     * @time Oct 13, 2012 10:08:25 AM
-     */
-    private List<ModuleMenu> getFilterList(List<ModuleMenu> filterList,
-                                           List<ModuleMenu> listAll, long moduleId) {
-
-        List<ModuleMenu> subList = getSubList(listAll, moduleId);
-        if (subList.size() > 0) {
-            filterList.addAll(subList);
-        }
-        for (ModuleMenu module : subList) {
-            getFilterList(filterList, listAll, module.getModuleId());
-        }
-
-        return filterList;
-    }
-
-    /**
-     * 根据模块id获得所有子结点
-     *
-     * @param listAll  所有模块结果集
-     * @param moduleId 上级模块id
-     * @return 所有子结点
-     * @author rutine
-     * @time Oct 13, 2012 10:04:42 AM
-     */
-    private List<ModuleMenu> getSubList(List<ModuleMenu> listAll, long moduleId) {
-        List<ModuleMenu> newList = new ArrayList<ModuleMenu>();
-        for (ModuleMenu module : listAll) {
-            if (module.getParentId() == moduleId) {
-                newList.add(module);
-            }
-        }
-
-        return newList;
     }
 
     /**
@@ -517,4 +527,12 @@ public class ModuleService {
                 optContent, moduleId + "");
     }
 
+    private class CheckedHolder {
+        CheckedHolder parent;
+        boolean checked = false;
+
+        public CheckedHolder(CheckedHolder parent) {
+            this.parent = parent;
+        }
+    }
 }

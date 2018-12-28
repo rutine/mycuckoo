@@ -80,8 +80,8 @@ public class RoleController {
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getPrivilegeScope(),
                 privilegeService.findRowPrivilegeByRoleIdAPriType(id),
-                baseVo.getAssign(),
-                baseVo.getUnassign());
+                baseVo.getSource(),
+                baseVo.getAssign());
 
         return AjaxResponse.create(vo);
     }

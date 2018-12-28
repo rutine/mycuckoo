@@ -127,7 +127,6 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("array", new Long[]{0l, 11l, 12l, 13l, 14l, 15l, 16l, 17l, 18l, 19l, 20l});
         params.put("modName", "%管理%");
         params.put("modEnId", "%Group%");
         Page<ModuleMenu> page = mapper.findByPage(params, new PageRequest(0, 10));

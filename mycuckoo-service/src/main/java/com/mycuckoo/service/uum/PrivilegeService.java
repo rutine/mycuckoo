@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -137,10 +136,10 @@ public class PrivilegeService {
         //将操作转化成列表数据
         List<ModuleMenuVo> allModMenuList = this.filterModOpt(allModOptList, true).getModuleMenu();
 
-        List<CheckBoxTree> trees = this.buildTree(allModMenuList, checkedOperations);
+        List<? extends SimpleTree> trees = platformServiceFacade.buildTree(allModMenuList, checkedOperations, true);
 
         //将已分配和未分配的模块操作放入
-        return new AssignVo<>(trees, checkedOperations, privilegeScope);
+        return new AssignVo(trees, checkedOperations, privilegeScope);
     }
 
     public RowPrivilegeVo findRowPrivilegeByUserId(long userId) {
@@ -523,74 +522,6 @@ public class PrivilegeService {
         Collections.sort(moduleMenuVoList, new ModuleMenu());
 
         return new ModuleOperationVo(moduleMenuVoList, modOptMap);
-    }
-
-    private List<CheckBoxTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations) {
-        List<ModuleMenuVo> firstList = Lists.newArrayList();
-        List<ModuleMenuVo> otherList = Lists.newArrayList();
-
-        // 过滤分类一级、二级、三级菜单
-        for (ModuleMenuVo vo : menus) {
-            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
-            switch (modLevel) {
-                case ONE:
-                    firstList.add(vo);
-                    break;
-                case TWO:
-                case THREE:
-                case FOUR:
-                    otherList.add(vo);
-                    break;
-            }
-        }
-
-        List<CheckBoxTree> trees = Lists.newArrayList();
-        for (ModuleMenuVo vo : firstList) {
-            CheckBoxTree tree = this.buildTree(vo, otherList, checkedOperations, new CheckedHolder(null));
-            trees.add(tree);
-        }
-
-        return trees;
-    }
-    private CheckBoxTree buildTree(ModuleMenuVo parentMenu, List<ModuleMenuVo> otherMenus, List<Long> checkedOperations, CheckedHolder checked) {
-        Long parentId = parentMenu.getModuleId();
-        List<? super SimpleTree> subMenuVos = Lists.newArrayList();
-        Iterator<ModuleMenuVo> it = otherMenus.iterator();
-        while (it.hasNext()) {
-            ModuleMenuVo vo = it.next();
-            if (vo.getParentId().equals(parentId)) {
-                it.remove();
-                List<ModuleMenuVo> others = Lists.newArrayList();
-                others.addAll(otherMenus);
-                subMenuVos.add(this.buildTree(vo, others, checkedOperations, new CheckedHolder(checked)));
-            }
-        }
-
-        checked.checked = checked.checked || checkedOperations.contains(parentId);
-        if (checked.parent != null && !checked.parent.checked) {
-            checked.parent.checked = checked.checked;
-        }
-
-        CheckBoxTree tree = new CheckBoxTree();
-        tree.setId(parentId.toString());
-        tree.setParentId(parentMenu.getParentId().toString());
-        tree.setText(parentMenu.getModName());
-        tree.setIconSkin(parentMenu.getModImgCls());
-        tree.setIsLeaf(parentMenu.getIsLeaf());
-        tree.setChildren(subMenuVos);
-        tree.setChecked(checked.checked);
-        tree.setCheckBox(new CheckBoxTree.CheckBox(checked.checked ? 1 : 0));
-
-        return tree;
-    }
-
-    private class CheckedHolder {
-        CheckedHolder parent;
-        boolean checked = false;
-
-        public CheckedHolder(CheckedHolder parent) {
-            this.parent = parent;
-        }
     }
 
     /**

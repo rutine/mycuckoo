@@ -241,8 +241,8 @@
             <if test="simpleName != null and simpleName != ''">
                 and org_simple_name like #{simpleName}
             </if>
-            <if test="orgIds != null"> and org_id in
-                <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+            <if test="filterOrgIds != null"> and org_id in
+                <foreach collection="filterOrgIds" item="orgId" open="(" separator="," close=")">
                     #{orgId}
                 </foreach>
             </if>

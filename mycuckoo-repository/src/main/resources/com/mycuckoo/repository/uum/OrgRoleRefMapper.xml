@@ -155,7 +155,7 @@
           where
             t1.role_id = t2.role_id
           and
-            t1.org_id = #{id}
+            t1.org_id = #{orgId}
         )
     </select>
     

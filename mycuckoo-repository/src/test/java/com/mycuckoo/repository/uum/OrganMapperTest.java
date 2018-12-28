@@ -55,7 +55,7 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testFindByPage2() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("orgIds", new Long[]{0L, 1L, 2L, 3L, 4L, 8L, 9L, 10L});
+        params.put("filterOrgIds", new Long[]{0L, 1L, 2L, 3L, 4L, 8L, 9L, 10L});
         params.put("orgCode", "%2%");
         params.put("orgName", "%董事%");
         Page<Organ> page = organMapper.findByPage(params, new PageRequest(0, 5));

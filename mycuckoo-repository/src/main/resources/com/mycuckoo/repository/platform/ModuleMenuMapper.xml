@@ -131,12 +131,6 @@
         <if test="modEnId != null">
             and mod_en_id like #{modEnId}
         </if>
-        <if test="array != null">
-            and module_id in
-            <foreach item="id" collection="array" open="(" separator="," close=")">
-                #{id}
-            </foreach>
-        </if>
         order by 
             module_id desc
     </select>

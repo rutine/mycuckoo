@@ -11,8 +11,9 @@ import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,22 +43,22 @@ public class OperateController {
     /**
      * 功能说明 : 操作按钮管理界面入口
      *
-     * @param operateName 操作名称
+     * @param optName     操作名称
      * @param pageNo      页码
      * @param pageSize    每页大小
      * @return
      * @author rutine
      * @time Jun 2, 2013 5:52:09 PM
      */
-    @GetMapping(value = "/list")
-    public AjaxResponse<Page<Operate>> operateMgr(
-            @RequestParam(value = "operateName", defaultValue = "") String operateName,
+    @GetMapping
+    public AjaxResponse<Page<Operate>> list(
+            @RequestParam(value = "optName", defaultValue = "") String optName,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
         logger.info("---------------- 请求操作按钮管理界面 -----------------");
 
-        Page<Operate> page = optService.findByPage(operateName, new PageRequest(pageNo - 1, pageSize));
+        Page<Operate> page = optService.findByPage(optName, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -70,9 +71,8 @@ public class OperateController {
      * @author rutine
      * @time Jun 2, 2013 8:30:06 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody Operate operate) {
-
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody Operate operate) {
         logger.debug(JsonUtils.toJson(operate));
 
         operate.setCreateDate(new Date());
@@ -80,26 +80,6 @@ public class OperateController {
         optService.save(operate);
 
         return AjaxResponse.create("保存成功");
-    }
-
-
-    /**
-     * 功能说明 : 停用/启用模块操作
-     *
-     * @param id
-     * @param disEnableFlag 停用/启用标志
-     * @return
-     * @author rutine
-     * @time Jun 2, 2013 9:00:07 PM
-     */
-    @GetMapping(value = "/disEnable")
-    public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
-
-        optService.disEnable(id, disEnableFlag);
-
-        return AjaxResponse.create("操作成功");
     }
 
     /**
@@ -110,18 +90,36 @@ public class OperateController {
      * @author rutine
      * @time Jun 2, 2013 8:52:32 PM
      */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody Operate operate) {
-
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody Operate operate) {
         optService.update(operate);
 
         return AjaxResponse.create("保存成功");
     }
 
-    @GetMapping(value = "/view")
-    public AjaxResponse<Operate> getView(@RequestParam long id, Model model) {
+    @GetMapping("/{id}")
+    public AjaxResponse<Operate> get(@PathVariable long id) {
         Operate operate = optService.get(id);
+
         return AjaxResponse.create(operate);
     }
 
+    /**
+     * 功能说明 : 停用/启用模块操作
+     *
+     * @param id
+     * @param disEnableFlag 停用/启用标志
+     * @return
+     * @author rutine
+     * @time Jun 2, 2013 9:00:07 PM
+     */
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
+    public AjaxResponse<String> disEnable(
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
+
+        optService.disEnable(id, disEnableFlag);
+
+        return AjaxResponse.create("操作成功");
+    }
 }
