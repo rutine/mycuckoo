@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -33,16 +33,16 @@ public class AccessoryController {
     /**
      * 功能说明 : 根据附件ID删除附件
      *
-     * @param fileNameOrId
+     * @param filenameOrId
      * @return
      * @author rutine
      * @time Jul 1, 2013 8:58:27 PM
      */
-    @DeleteMapping(value = "/delete")
-    public AjaxResponse<String> delete(@RequestParam String fileNameOrId) {
-        long id = NumberUtils.toLong(fileNameOrId, -1L);
+    @DeleteMapping("/{filenameOrId}")
+    public AjaxResponse<String> delete(@PathVariable String filenameOrId) {
+        long id = NumberUtils.toLong(filenameOrId, -1L);
         if (id == -1L) {
-            CommonUtils.deleteFile("", fileNameOrId);
+            CommonUtils.deleteFile("", filenameOrId);
         } else {
             accessoryService.deleteByIds(Arrays.asList(id));
         }

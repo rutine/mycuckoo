@@ -86,10 +86,10 @@ public class AfficheService {
                 continue;
             }
 
-            String newFileName = acc.getAccessoryName();
+            String newFilename = acc.getAccessoryName();
             Accessory accessory = new Accessory();
             accessory.setInfoId(affiche.getAfficheId());
-            accessory.setAccessoryName(newFileName);
+            accessory.setAccessoryName(newFilename);
             accessoryService.save(accessory);
         }
 
@@ -111,10 +111,10 @@ public class AfficheService {
         // 2. 保存附件信息
         if (affiche.getAccessories() != null) {
             for (Accessory acc : affiche.getAccessories()) {
-                String newFileName = acc.getAccessoryName();
+                String newFilename = acc.getAccessoryName();
                 Accessory accessory = new Accessory();
                 accessory.setInfoId(affiche.getAfficheId());
-                accessory.setAccessoryName(newFileName);
+                accessory.setAccessoryName(newFilename);
                 accessoryService.save(accessory);
             }
         }

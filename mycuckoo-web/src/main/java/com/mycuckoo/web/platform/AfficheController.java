@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,7 @@ public class AfficheController {
     @Autowired
     private AfficheService afficheService;
 
-    @RequestMapping(value = "/list")
+    @RequestMapping
     public AjaxResponse<Page<Affiche>> list(
             @RequestParam(value = "afficheTitle", defaultValue = "") String afficheTitle,
             @RequestParam(value = "affichePulish", defaultValue = "0") Short affichePulish,
@@ -62,14 +64,39 @@ public class AfficheController {
      * @author rutine
      * @time Jun 29, 2013 8:39:57 AM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody Affiche affiche) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody Affiche affiche) {
 
         logger.debug(JsonUtils.toJson(affiche));
 
         afficheService.save(affiche);
 
         return AjaxResponse.create("保存公告成功");
+    }
+
+    /**
+     * 功能说明 : 修改公告
+     *
+     * @param affiche
+     * @return
+     * @author rutine
+     * @time Jun 29, 2013 8:55:38 AM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody Affiche affiche) {
+
+        afficheService.update(affiche);
+
+        return AjaxResponse.create("修改公告成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<Affiche> get(@PathVariable long id) {
+        Affiche affiche = afficheService.get(id);
+
+        logger.debug(JsonUtils.toJson(affiche));
+
+        return AjaxResponse.create(affiche);
     }
 
 
@@ -81,37 +108,11 @@ public class AfficheController {
      * @author rutine
      * @time Jun 25, 2013 8:59:46 PM
      */
-    @DeleteMapping(value = "/delete")
-    public AjaxResponse<String> delete(@RequestParam(value = "ids") List<Long> afficheIdList) {
+    @DeleteMapping("/{ids}")
+    public AjaxResponse<String> delete(@PathVariable(value = "ids") List<Long> afficheIdList) {
 
         afficheService.deleteByIds(afficheIdList);
 
         return AjaxResponse.create("删除公告成功");
     }
-
-    /**
-     * 功能说明 : 修改公告
-     *
-     * @param affiche
-     * @return
-     * @author rutine
-     * @time Jun 29, 2013 8:55:38 AM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody Affiche affiche) {
-
-        afficheService.update(affiche);
-
-        return AjaxResponse.create("修改公告成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<Affiche> getView(@RequestParam long id) {
-        Affiche affiche = afficheService.get(id);
-
-        logger.debug(JsonUtils.toJson(affiche));
-
-        return AjaxResponse.create(affiche);
-    }
-
 }

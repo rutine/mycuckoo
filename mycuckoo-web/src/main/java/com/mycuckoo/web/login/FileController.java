@@ -49,19 +49,19 @@ public class FileController {
      * @time Sept 30, 2017 13:57:41 PM
      */
     @PostMapping
-    public AjaxResponse<FileMeta> postFile(@RequestParam BusinessType business,
-                                           @RequestParam MultipartFile file) {
+    public AjaxResponse<FileMeta> upload(@RequestParam BusinessType business,
+                                         @RequestParam MultipartFile file) {
         FileMeta fileMeta = new FileMeta();
         try {
-            String originalFileName = file.getOriginalFilename();
-            int index = originalFileName.lastIndexOf('.');
+            String originFilename = file.getOriginalFilename();
+            int index = originFilename.lastIndexOf('.');
 
             StringBuilder nameBuilder = new StringBuilder();
-            nameBuilder.append(originalFileName.substring(0, index)).append("_");
+            nameBuilder.append(originFilename.substring(0, index)).append("_");
             for (int i = 0; i < 6; i++) {
                 nameBuilder.append(CommonUtils.getRandomChar());
             }
-            nameBuilder.append(".").append(originalFileName.substring(index + 1));
+            nameBuilder.append(".").append(originFilename.substring(index + 1));
             String fileName = nameBuilder.toString();
 
             String dirPath = StringUtils.cleanPath(basePath) + business.name();
@@ -91,16 +91,16 @@ public class FileController {
      * 功能说明 : 下载文件
      *
      * @param business 业务名称
-     * @param fileName 文件名
+     * @param filename 文件名
      * @param isOnline 是否在线打开
      * @param response 响应
      * @author rutine
      * @time Jun 30, 2013 6:22:03 PM
      */
-    @GetMapping(value = "/download")
+    @GetMapping
     public void download(
             @RequestParam BusinessType business,
-            @RequestParam String fileName,
+            @RequestParam String filename,
             @RequestParam(required = false, defaultValue = "N") String isOnline,
             HttpServletResponse response) {
 
@@ -108,9 +108,9 @@ public class FileController {
 
         try {
             String dirPath = StringUtils.cleanPath(basePath) + business.name();
-            CommonUtils.downloadFile(dirPath, fileName, "Y".equals(isOnline), response);
+            CommonUtils.downloadFile(dirPath, filename, "Y".equals(isOnline), response);
         } catch (SystemException e) {
-            logger.error("下载文件失败: {}/{}", business.name(), fileName, e);
+            logger.error("下载文件失败: {}/{}", business.name(), filename, e);
         }
     }
 
@@ -118,16 +118,16 @@ public class FileController {
      * 功能说明 : 根据文件名删除文件
      *
      * @param business 业务名称
-     * @param fileName 文件名
+     * @param filename 文件名
      * @return
      * @author rutine
      * @time Sept 30, 2017 14:37:41 PM
      */
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping
     public AjaxResponse<String> delete(@RequestParam BusinessType business,
-                                       @RequestParam String fileName) {
+                                       @RequestParam String filename) {
         String dirPath = StringUtils.cleanPath(basePath) + business.name();
-        CommonUtils.deleteFile(dirPath, fileName);
+        CommonUtils.deleteFile(dirPath, filename);
 
         return AjaxResponse.create("附件删除成功");
     }
