@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +44,7 @@ public class CodeController {
     private CodeService codeService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<Code>> list(
             @RequestParam(value = "codeName", defaultValue = "") String codeName,
             @RequestParam(value = "codeEngName", defaultValue = "") String codeEngName,
@@ -68,8 +70,8 @@ public class CodeController {
      * @author rutine
      * @time Jun 25, 2013 8:48:33 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody Code code) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody Code code) {
 
         logger.debug(JsonUtils.toJson(code));
 
@@ -81,6 +83,30 @@ public class CodeController {
     }
 
     /**
+     * 功能说明 : 修改编码
+     *
+     * @param code
+     * @return
+     * @author rutine
+     * @time Jun 25, 2013 8:53:05 PM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody Code code) {
+        codeService.update(code);
+
+        return AjaxResponse.create("修改系统编码成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<Code> get(@PathVariable long id) {
+        Code code = codeService.get(id);
+
+        logger.debug(JsonUtils.toJson(code));
+
+        return AjaxResponse.create(code);
+    }
+
+    /**
      * 功能说明 : 删除系统编码
      *
      * @param id
@@ -88,8 +114,8 @@ public class CodeController {
      * @author rutine
      * @time Jun 25, 2013 8:59:46 PM
      */
-    @DeleteMapping(value = "/delete")
-    public AjaxResponse<String> delete(@RequestParam long id) {
+    @DeleteMapping("/{id}")
+    public AjaxResponse<String> delete(@PathVariable long id) {
 
         throw new ApplicationException("找不到删除记录的方法!");
 
@@ -105,38 +131,14 @@ public class CodeController {
      * @author rutine
      * @time Jun 25, 2013 8:57:53 PM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         boolean disEnableBol = codeService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.create("操作成功");
-    }
-
-    /**
-     * 功能说明 : 修改编码
-     *
-     * @param code
-     * @return
-     * @author rutine
-     * @time Jun 25, 2013 8:53:05 PM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody Code code) {
-        codeService.update(code);
-
-        return AjaxResponse.create("修改系统编码成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<Code> getView(@RequestParam long id) {
-        Code code = codeService.get(id);
-
-        logger.debug(JsonUtils.toJson(code));
-
-        return AjaxResponse.create(code);
     }
 
 }
