@@ -71,13 +71,7 @@ public class DictionaryController {
     public AjaxResponse<String> create(@RequestBody DicBigType dicBigType) {
         logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
 
-        boolean success = true;
         dictionaryService.saveDicBigType(dicBigType);
-
-        for (DicSmallType dicSmallType : dicBigType.getSmallTypes()) {
-            dicSmallType.setBigTypeId(dicBigType.getBigTypeId());
-        }
-        dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
 
         return AjaxResponse.create("保存成功");
     }
@@ -95,11 +89,6 @@ public class DictionaryController {
         logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
 
         dictionaryService.updateDicBigType(dicBigType);
-
-        for (DicSmallType smallType : dicBigType.getSmallTypes()) {
-            smallType.setBigTypeId(dicBigType.getBigTypeId());
-        }
-        dictionaryService.saveDicSmallTypes(dicBigType.getSmallTypes());
 
         return AjaxResponse.create("修改字典成功");
     }
@@ -140,7 +129,7 @@ public class DictionaryController {
      * @author rutine
      * @time Dec 15, 2012 4:21:10 PM
      */
-    @GetMapping("/{bigTypeCode}/small/type")
+    @GetMapping("/{bigTypeCode}/small-type")
     public AjaxResponse<List<DicSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
 
         List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(bigTypeCode);

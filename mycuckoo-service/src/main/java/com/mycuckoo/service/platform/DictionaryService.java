@@ -4,6 +4,7 @@ import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.platform.DicBigType;
 import com.mycuckoo.domain.platform.DicSmallType;
+import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
@@ -12,6 +13,7 @@ import com.mycuckoo.repository.platform.DicSmallTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
@@ -76,15 +78,32 @@ public class DictionaryService {
 
     @Transactional
     public void updateDicBigType(DicBigType dicBigType) {
+        DicBigType old = getDicBigTypeByBigTypeId(dicBigType.getBigTypeId());
+        Assert.notNull(old, "字典不存在!");
+        Assert.state(old.getBigTypeCode().equals(dicBigType.getBigTypeCode())
+                || !existDicBigTypeByBigTypeCode(dicBigType.getBigTypeCode()), "编码[" + dicBigType.getBigTypeCode() + "]已存在!");
+
         dicSmallTypeMapper.deleteByBigTypeId(dicBigType.getBigTypeId());
         dicBigTypeMapper.update(dicBigType);
+
+        for (DicSmallType smallType : dicBigType.getSmallTypes()) {
+            smallType.setBigTypeId(dicBigType.getBigTypeId());
+        }
+        this.saveDicSmallTypes(dicBigType.getSmallTypes());
 
         writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
     }
 
     @Transactional
     public void saveDicBigType(DicBigType dicBigType) {
+        Assert.state(!existDicBigTypeByBigTypeCode(dicBigType.getBigTypeCode()), "编码[" + dicBigType.getBigTypeCode() + "]已存在!");
+
         dicBigTypeMapper.save(dicBigType);
+
+        for (DicSmallType dicSmallType : dicBigType.getSmallTypes()) {
+            dicSmallType.setBigTypeId(dicBigType.getBigTypeId());
+        }
+        this.saveDicSmallTypes(dicBigType.getSmallTypes());
 
         writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.SAVE);
     }
