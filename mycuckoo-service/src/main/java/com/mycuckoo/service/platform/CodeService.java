@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,6 +109,11 @@ public class CodeService {
 
     @Transactional
     public void update(Code code) {
+        Code old = get(code.getCodeId());
+        Assert.notNull(old, "编码不存在!");
+        Assert.state(old.getCodeEngName().equals(code.getCodeEngName())
+                || !existByCodeEngName(code.getCodeEngName()), "编码[" + code.getCodeEngName() + "]已存在!");
+
         codeMapper.update(code);
 
         StringBuilder optContent = new StringBuilder();
@@ -174,6 +180,8 @@ public class CodeService {
 
     @Transactional
     public void saveCode(Code code) throws ApplicationException {
+        Assert.state(!existByCodeEngName(code.getCodeEngName()), "编码[" + code.getCodeEngName() + "]已存在!");
+
         codeMapper.save(code);
 
         StringBuilder optContent = new StringBuilder();

@@ -158,6 +158,7 @@ public class DistrictController {
             SimpleTree treeVo = new SimpleTree();
             treeVo.setId("0");
             treeVo.setText("中国");
+            treeVo.setChildren(districtService.findChildNodes(0));
             asyncTreeList.add(treeVo);
         } else {
             asyncTreeList = districtService.findChildNodes(id);
