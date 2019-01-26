@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,12 @@ public class SchedulerService {
 
     @Transactional
     public void update(SchedulerJob schedulerJob) {
+        SchedulerJob old = get(schedulerJob.getJobId());
+        Assert.notNull(old, "任务不存在!");
+        Assert.state(old.getJobId().equals(schedulerJob.getJobId())
+                || !existsByJobName(schedulerJob.getJobName()), "任务名称[" + schedulerJob.getJobName() + "]已存在!");
+
+
         schedulerJobMapper.update(schedulerJob);
 
         StringBuilder optContent = new StringBuilder();
@@ -84,6 +91,9 @@ public class SchedulerService {
 
     @Transactional
     public void save(SchedulerJob schedulerJob) throws SystemException {
+        Assert.state(!existsByJobName(schedulerJob.getJobName()), "任务名称[" + schedulerJob.getJobName() + "]已存在!");
+
+        schedulerJob.setStatus(ENABLE);
         schedulerJobMapper.save(schedulerJob);
         if (ENABLE.equals(schedulerJob.getStatus())) { //增加任务且状态为启用将任务加入调度
             SchedulerHandle.getInstance().startJob(schedulerJob);
@@ -146,8 +156,9 @@ public class SchedulerService {
     }
 
     @Transactional
-    public void stopJob(long jobId, String jobName) throws SystemException {
-        SchedulerHandle.getInstance().stopJob(jobName);
+    public void stopJob(long jobId) throws SystemException {
+        SchedulerJob schedulerJob = get(jobId);
+        SchedulerHandle.getInstance().stopJob(schedulerJob.getJobName());
         schedulerJobMapper.updateStatus(jobId, DISABLE); //  更改状态
 
         sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.STOP_JOB, SYS_SCHEDULER, "停止job", jobId + "");

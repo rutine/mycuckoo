@@ -363,6 +363,7 @@ public class ModuleService {
 
     @Transactional
     public void save(ModuleMenu modMenu) {
+        modMenu.setStatus(ENABLE);
         moduleMenuMapper.save(modMenu);
 
         writeLog(modMenu, LogLevelEnum.FIRST, OptNameEnum.SAVE);

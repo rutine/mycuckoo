@@ -182,6 +182,7 @@ public class CodeService {
     public void saveCode(Code code) throws ApplicationException {
         Assert.state(!existByCodeEngName(code.getCodeEngName()), "编码[" + code.getCodeEngName() + "]已存在!");
 
+        code.setStatus(ENABLE);
         codeMapper.save(code);
 
         StringBuilder optContent = new StringBuilder();

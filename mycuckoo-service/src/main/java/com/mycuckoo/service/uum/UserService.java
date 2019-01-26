@@ -399,6 +399,7 @@ public class UserService {
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId());
         user.setUserBelongtoOrg(orgRoleRef.getOrgan().getOrgId());
         user.setUserPassword(CommonUtils.encrypt(user.getUserPassword())); // 加密
+        user.setStatus(ENABLE);
         userMapper.save(user);
 
         UserOrgRoleRef roleUserRef = new UserOrgRoleRef(null, orgRoleRef, user); // 默认角色

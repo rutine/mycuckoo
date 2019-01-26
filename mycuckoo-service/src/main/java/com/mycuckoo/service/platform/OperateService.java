@@ -103,6 +103,7 @@ public class OperateService {
 
     @Transactional
     public void save(Operate operate) {
+        operate.setStatus(ENABLE);
         operateMapper.save(operate);
 
         writeLog(operate, LogLevelEnum.FIRST, OptNameEnum.SAVE);

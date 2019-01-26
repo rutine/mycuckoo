@@ -221,6 +221,7 @@ public class OrganService {
     public void save(Organ organ) {
         Assert.state(!existByOrganName(organ.getOrgSimpleName()), "机构[" + organ.getOrgSimpleName() + "]已存在!");
 
+        organ.setStatus(ENABLE);
         organMapper.save(organ);
 
         writeLog(organ, LogLevelEnum.FIRST, OptNameEnum.SAVE);

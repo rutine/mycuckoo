@@ -156,6 +156,7 @@ public class DistrictService {
 
     @Transactional
     public void save(District district) {
+        district.setStatus(ENABLE);
         districtMapper.save(district);
 
         writeLog(district, LogLevelEnum.FIRST, OptNameEnum.SAVE);

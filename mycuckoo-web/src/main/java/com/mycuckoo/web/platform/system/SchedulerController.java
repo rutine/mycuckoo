@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +46,7 @@ public class SchedulerController {
     private SchedulerService schedulerService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<SchedulerJob>> list(
             @RequestParam(value = "jobName", defaultValue = "") String jobName,
             @RequestParam(value = "triggerType", defaultValue = "") String triggerType,
@@ -67,18 +69,14 @@ public class SchedulerController {
      * @author rutine
      * @time Jun 2, 2013 8:30:06 PM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody SchedulerJob schedulerJob) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody SchedulerJob schedulerJob) throws SystemException {
 
         logger.debug(JsonUtils.toJson(schedulerJob));
 
         schedulerJob.setCreateDate(new Date());
         schedulerJob.setCreator(SessionUtil.getUserCode());
-        try {
-            schedulerService.save(schedulerJob);
-        } catch (SystemException e) {
-            return AjaxResponse.create("任务保存失败");
-        }
+        schedulerService.save(schedulerJob);
 
         return AjaxResponse.create("任务保存成功");
     }
@@ -86,18 +84,14 @@ public class SchedulerController {
     /**
      * 功能说明 : 根据id删除任务
      *
-     * @param jobId 任务id
+     * @param id 任务id
      * @return
      * @author rutine
      * @time Jun 25, 2013 8:59:46 PM
      */
-    @DeleteMapping(value = "/delete")
-    public AjaxResponse<String> delete(@RequestParam(value = "id") Long jobId) {
-        try {
-            schedulerService.delete(jobId);
-        } catch (SystemException e) {
-            return AjaxResponse.create("删除任务失败");
-        }
+    @DeleteMapping("/{id}")
+    public AjaxResponse<String> delete(@PathVariable Long id) throws SystemException {
+        schedulerService.delete(id);
 
         return AjaxResponse.create("成功删除任务");
     }
@@ -110,20 +104,51 @@ public class SchedulerController {
      * @author rutine
      * @time Jun 29, 2013 8:55:38 AM
      */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody SchedulerJob scheduler) {
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody SchedulerJob scheduler) {
         schedulerService.update(scheduler);
 
         return AjaxResponse.create("修改任务成功");
     }
 
-    @GetMapping(value = "/view")
-    public AjaxResponse<SchedulerJob> getViewForm(@RequestParam long id) {
+    @GetMapping("/{id}")
+    public AjaxResponse<SchedulerJob> get(@PathVariable long id) {
         SchedulerJob scheduler = schedulerService.get(id);
 
         logger.debug(JsonUtils.toJson(scheduler));
 
         return AjaxResponse.create(scheduler);
+    }
+
+    /**
+     * 功能说明 : 启动job
+     *
+     * @param id
+     * @return
+     * @author rutine
+     * @time Nov 24, 2013 4:48:25 PM
+     */
+    @PutMapping("/{id}/start-job")
+    public AjaxResponse<String> startJob(@PathVariable Long id) throws SystemException {
+        schedulerService.startJob(id);
+
+        return AjaxResponse.create("任务调度启动成功");
+    }
+
+    /**
+     * 功能说明 :停止job
+     *
+     * @param id
+     * @return
+     * @author rutine
+     * @time Nov 24, 2013 4:48:25 PM
+     */
+    @PutMapping("/{id}/stop-job")
+    public AjaxResponse<String> stopJob(@PathVariable Long id) throws SystemException {
+
+        schedulerService.stopJob(id);
+
+        return AjaxResponse.create("任务调度停止成功");
     }
 
     /**
@@ -133,13 +158,9 @@ public class SchedulerController {
      * @author rutine
      * @time Nov 24, 2013 4:48:25 PM
      */
-    @GetMapping("/start/scheduler")
-    public AjaxResponse<String> startScheduler() {
-        try {
-            schedulerService.startScheduler();
-        } catch (SystemException e) {
-            return AjaxResponse.create("启动调度器失败");
-        }
+    @PostMapping("/start-scheduler")
+    public AjaxResponse<String> startScheduler() throws SystemException {
+        schedulerService.startScheduler();
 
         return AjaxResponse.create("启动调度器成功");
     }
@@ -151,57 +172,11 @@ public class SchedulerController {
      * @author rutine
      * @time Nov 24, 2013 4:48:25 PM
      */
-    @GetMapping("/stop/scheduler")
-    public AjaxResponse<String> stopScheduler() {
-        try {
-            schedulerService.stopScheduler();
-        } catch (SystemException e) {
-            return AjaxResponse.create("停止调度器失败");
-        }
+    @PostMapping("/stop-scheduler")
+    public AjaxResponse<String> stopScheduler() throws SystemException {
+        schedulerService.stopScheduler();
 
         return AjaxResponse.create("停止调度器成功");
-    }
-
-    /**
-     * 功能说明 : 启动job
-     *
-     * @param jobId
-     * @return
-     * @author rutine
-     * @time Nov 24, 2013 4:48:25 PM
-     */
-    @GetMapping("/start/job")
-    public AjaxResponse<String> startJob(@RequestParam Long jobId) {
-        try {
-            schedulerService.startJob(jobId);
-        } catch (SystemException e) {
-            return AjaxResponse.create("任务调度启动失败");
-        }
-
-        return AjaxResponse.create("任务调度启动成功");
-    }
-
-    /**
-     * 功能说明 :停止job
-     *
-     * @param jobId
-     * @param jobName
-     * @return
-     * @author rutine
-     * @time Nov 24, 2013 4:48:25 PM
-     */
-    @GetMapping("/stop/job")
-    public AjaxResponse<String> stopJob(
-            @RequestParam Long jobId,
-            @RequestParam String jobName) {
-
-        try {
-            schedulerService.stopJob(jobId, jobName);
-        } catch (SystemException e) {
-            return AjaxResponse.create("任务调度停止失败");
-        }
-
-        return AjaxResponse.create("任务调度停止成功");
     }
 
     /**
@@ -211,7 +186,7 @@ public class SchedulerController {
      * @author rutine
      * @time Nov 24, 2013 5:17:38 PM
      */
-    @GetMapping("/scheduler/status")
+    @GetMapping("/scheduler-status")
     public boolean schedulerStatus() {
         if (SchedulerHandle.getInstance() == null) {
             return false;

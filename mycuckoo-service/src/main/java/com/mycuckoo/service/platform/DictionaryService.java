@@ -4,7 +4,6 @@ import com.mycuckoo.common.constant.LogLevelEnum;
 import com.mycuckoo.common.constant.OptNameEnum;
 import com.mycuckoo.domain.platform.DicBigType;
 import com.mycuckoo.domain.platform.DicSmallType;
-import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
@@ -98,6 +97,7 @@ public class DictionaryService {
     public void saveDicBigType(DicBigType dicBigType) {
         Assert.state(!existDicBigTypeByBigTypeCode(dicBigType.getBigTypeCode()), "编码[" + dicBigType.getBigTypeCode() + "]已存在!");
 
+        dicBigType.setStatus(ENABLE);
         dicBigTypeMapper.save(dicBigType);
 
         for (DicSmallType dicSmallType : dicBigType.getSmallTypes()) {

@@ -242,7 +242,7 @@ public class SchedulerHandle {
         Date startTime = schedulerJob.getStartTime() == null ? new Date() : schedulerJob.getStartTime();
         Date endTime = schedulerJob.getEndTime();
         int repeatCount = schedulerJob.getRepeatCount() == null ? 0 : schedulerJob.getRepeatCount();
-        long intervalTime = schedulerJob.getIntervalTime() == null ? 0 : schedulerJob.getIntervalTime();
+        long intervalTime = schedulerJob.getIntervalTime() == null ? 0L : schedulerJob.getIntervalTime();
         Class<? extends Job> clazz = null;
         try {
             clazz = (Class<? extends Job>) Class.forName(jobClassName);
@@ -259,7 +259,7 @@ public class SchedulerHandle {
                         .withIdentity(jobName + TRIGGER_NAME, Scheduler.DEFAULT_GROUP)
                         .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                                 .withRepeatCount(repeatCount)
-                                .withIntervalInMilliseconds(intervalTime)
+                                .withIntervalInMilliseconds(intervalTime * 1000L)
                         )
                         .startAt(startTime)
                         .endAt(endTime)
