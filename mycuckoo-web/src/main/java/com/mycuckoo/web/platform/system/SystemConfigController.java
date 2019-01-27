@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,13 +52,13 @@ public class SystemConfigController {
      * @author rutine
      * @time Nov 23, 2013 11:03:33 PM
      */
-    @GetMapping(value = "/list")
+    @GetMapping("/users")
     public AjaxResponse<Page<UserVo>> list(
-            @RequestParam(value = "userCode", defaultValue = "") String userCode,
-            @RequestParam(value = "userName", defaultValue = "") String userName,
+            @RequestParam(defaultValue = "") String userCode,
+            @RequestParam(defaultValue = "") String userName,
             @RequestParam String userAddDelFlag,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         Page<UserVo> page = null;
         if ("add".equalsIgnoreCase(userAddDelFlag)) {
@@ -77,8 +78,8 @@ public class SystemConfigController {
      * @author rutine
      * @time Nov 23, 2013 9:36:00 PM
      */
-    @PutMapping(value = "update")
-    public AjaxResponse<String> putUpdate(@RequestBody SystemConfigBean systemConfig) {
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody SystemConfigBean systemConfig) {
 
         try {
             systemConfigService.setSystemConfigInfo(systemConfig, systemConfig.getUserAddDelFlag());
@@ -89,8 +90,8 @@ public class SystemConfigController {
         return AjaxResponse.create("设置成功");
     }
 
-    @GetMapping(value = "/view")
-    public AjaxResponse<SystemConfigBean> getView() {
+    @GetMapping
+    public AjaxResponse<SystemConfigBean> get() {
         SystemConfigBean systemConfigBean = systemConfigService.getSystemConfigInfo();
 
         return AjaxResponse.create(systemConfigBean);
@@ -102,11 +103,11 @@ public class SystemConfigController {
      * @author rutine
      * @time Nov 24, 2013 1:20:00 PM
      */
-    @GetMapping(value = "/start/jconsole")
-    public AjaxResponse<String> startJconsole() {
+    @PostMapping("/start-jconsole")
+    public AjaxResponse<String> startJConsole() {
         try {
             Runtime runtime = Runtime.getRuntime();
-            runtime.exec("cmd.exe /c jconsole ");
+            runtime.exec("cmd.exe /c JConsole ");
         } catch (IOException e) {
             logger.error("启动tomcat监控失败!", e);
             AjaxResponse.create(500, "启动失败");
