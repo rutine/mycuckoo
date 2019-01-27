@@ -66,6 +66,7 @@ public class SystemParameterService {
 
     @Transactional
     public void update(SysParameter systemParameter) {
+        systemParameter.setParaKeyName(null); //参数键不可修改
         sysParameterMapper.update(systemParameter);
 
         writeLog(systemParameter, LogLevelEnum.SECOND, OptNameEnum.MODIFY);

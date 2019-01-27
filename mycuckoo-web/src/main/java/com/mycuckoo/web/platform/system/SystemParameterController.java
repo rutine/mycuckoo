@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,12 +43,12 @@ public class SystemParameterController {
     private SystemParameterService systemParameterService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<SysParameter>> list(
-            @RequestParam(value = "paraName", defaultValue = "") String paraName,
-            @RequestParam(value = "paraKeyName", defaultValue = "") String paraKeyName,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+            @RequestParam(defaultValue = "") String paraName,
+            @RequestParam(defaultValue = "") String paraKeyName,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("paraName", StringUtils.isBlank(paraName)
@@ -66,8 +68,8 @@ public class SystemParameterController {
      * @author rutine
      * @time Jul 2, 2013 10:10:06 AM
      */
-    @PutMapping(value = "/create")
-    public AjaxResponse<String> putCreate(@RequestBody SysParameter sysParameter) {
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody SysParameter sysParameter) {
 
         logger.debug(JsonUtils.toJson(sysParameter));
 
@@ -79,6 +81,28 @@ public class SystemParameterController {
     }
 
     /**
+     * 功能说明 : 修改系统参数
+     *
+     * @param sysParameter
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 10:21:10 AM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody SysParameter sysParameter) {
+        systemParameterService.update(sysParameter);
+
+        return AjaxResponse.create("修改系统参数成功");
+    }
+
+    @GetMapping("/{id}")
+    public AjaxResponse<SysParameter> get(@PathVariable long id) {
+        SysParameter sysParameter = systemParameterService.get(id);
+
+        return AjaxResponse.create(sysParameter);
+    }
+
+    /**
      * 功能说明 : 停用/启用系统参数
      *
      * @param id
@@ -87,35 +111,13 @@ public class SystemParameterController {
      * @author rutine
      * @time Jul 2, 2013 10:14:48 AM
      */
-    @GetMapping(value = "/disEnable")
+    @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
-            @RequestParam long id,
-            @RequestParam String disEnableFlag) {
+            @PathVariable long id,
+            @PathVariable String disEnableFlag) {
 
         systemParameterService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.create("操作成功");
-    }
-
-    /**
-     * 功能说明 : 修改系统参数
-     *
-     * @param sysParameter
-     * @return
-     * @author rutine
-     * @time Jul 2, 2013 10:21:10 AM
-     */
-    @PutMapping(value = "/update")
-    public AjaxResponse<String> putUpdate(@RequestBody SysParameter sysParameter) {
-        systemParameterService.update(sysParameter);
-
-        return AjaxResponse.create("修改系统参数成功");
-    }
-
-    @GetMapping(value = "/view")
-    public AjaxResponse<SysParameter> getView(@RequestParam long id) {
-        SysParameter sysParameter = systemParameterService.get(id);
-
-        return AjaxResponse.create(sysParameter);
     }
 }
