@@ -19,6 +19,7 @@ public class UserRoleVo {
     private Long roleId;
     private String roleName;
     private Long userId;
+    private String userCode;
     private String userName;
     private String userPhotoUrl;
     private String isDefault; // 默认角色
@@ -69,6 +70,14 @@ public class UserRoleVo {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
     }
 
     public String getUserName() {

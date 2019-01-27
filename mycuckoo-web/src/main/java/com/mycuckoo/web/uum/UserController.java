@@ -323,14 +323,14 @@ public class UserController {
      * @time Nov 6, 2014 9:13:20 PM
      */
     @PutMapping("/update/password")
-    public AjaxResponse<String> putUpdatePassword(@RequestBody UserPasswordUvo vo) {
+    public AjaxResponse<String> updatePassword(@RequestBody UserPasswordUvo vo) {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
-        String password = CommonUtils.encrypt(vo.getPassword());
+        String password = vo.getPassword();
         User user = userService.getUserByUserId(SessionUtil.getUserId());
         Assert.state(password.equals(user.getUserPassword()), "密码错误");
 
-        user.setUserPassword(CommonUtils.encrypt(vo.getNewPassword()));
+        user.setUserPassword(vo.getNewPassword());
         userService.updateUserInfo(user);
 
         return AjaxResponse.create("修改成功");
@@ -344,7 +344,7 @@ public class UserController {
      * @time Nov 1, 2014 8:28:55 AM
      */
     @PutMapping("/update/photo")
-    public AjaxResponse<String> putUpdatePhoto(@RequestBody UserPhotoUvo vo, HttpServletRequest request) {
+    public AjaxResponse<String> updatePhoto(@RequestBody UserPhotoUvo vo, HttpServletRequest request) {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
         userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());

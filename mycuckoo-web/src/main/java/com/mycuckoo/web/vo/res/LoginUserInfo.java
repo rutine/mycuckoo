@@ -1,6 +1,7 @@
 package com.mycuckoo.web.vo.res;
 
 import com.mycuckoo.vo.HierarchyModuleVo;
+import com.mycuckoo.vo.uum.UserRoleVo;
 
 /**
  * 功能说明:
@@ -11,7 +12,7 @@ import com.mycuckoo.vo.HierarchyModuleVo;
  */
 public class LoginUserInfo {
     private HierarchyModuleVo menu;
-    private UserInfo user;
+    private UserRoleVo user;
 
     public HierarchyModuleVo getMenu() {
         return menu;
@@ -21,41 +22,11 @@ public class LoginUserInfo {
         this.menu = menu;
     }
 
-    public UserInfo getUser() {
+    public UserRoleVo getUser() {
         return user;
     }
 
-    public void setUser(UserInfo user) {
+    public void setUser(UserRoleVo user) {
         this.user = user;
-    }
-
-    public static class UserInfo {
-        private String userCode;
-        private String userName;
-        private String userPhotoUrl;
-
-        public String getUserCode() {
-            return userCode;
-        }
-
-        public void setUserCode(String userCode) {
-            this.userCode = userCode;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getUserPhotoUrl() {
-            return userPhotoUrl;
-        }
-
-        public void setUserPhotoUrl(String userPhotoUrl) {
-            this.userPhotoUrl = userPhotoUrl;
-        }
     }
 }

@@ -121,6 +121,7 @@
             t4.org_type                as org_org_type,
             t4.status                  as org_status,
             t5.user_id                 as user_user_id,
+            t5.user_code               as user_user_code,
             t5.user_name               as user_user_name,
             t5.user_photo_url          as user_user_photo_url
         from 

@@ -37,10 +37,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=UTF-8");
-            response.addHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-            response.addHeader("Access-Control-Allow-Credentials", "true");
-            response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
+//            response.addHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+//            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//            response.addHeader("Access-Control-Allow-Credentials", "true");
+//            response.addHeader("Access-Control-Allow-Headers", "Origin, Content-Type");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             PrintWriter writer = response.getWriter();
             writer.write(JsonUtils.toJson(AjaxResponse.create(HttpStatus.UNAUTHORIZED.value(), "未登录")));

@@ -82,6 +82,7 @@ public class UserOrgRoleService {
             vo.setRoleId(role.getRoleId());
             vo.setRoleName(role.getRoleName());
             vo.setUserId(user.getUserId());
+            vo.setUserCode(user.getUserCode());
             vo.setUserName(user.getUserName());
             vo.setUserPhotoUrl(user.getUserPhotoUrl());
             vo.setIsDefault(userOrgRoleRef.getIsDefault());

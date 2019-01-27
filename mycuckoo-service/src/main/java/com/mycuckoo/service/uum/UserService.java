@@ -27,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -349,6 +350,12 @@ public class UserService {
     }
 
     public void update(UserVo user) {
+        User old = userMapper.get(user.getUserId());
+        Assert.notNull(old, "用户不存在!");
+        Assert.state(old.getUserCode().equals(user.getUserCode())
+                || !existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
+
+
         // 设置用户所属机构
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId() == null ? 0 : user.getOrgRoleId());
         user.setUserBelongtoOrg(orgRoleRef.getOrgan().getOrgId());
@@ -366,12 +373,13 @@ public class UserService {
         userMapper.update(user);
     }
 
+    @Transactional
     public void updateUserInfo(User user) {
         User user2 = new User();
         user2.setUserId(user.getUserId());
         user2.setUserCode(user.getUserCode());
         user2.setUserName(user.getUserName());
-        user2.setUserPassword(user.getUserPassword());
+        user2.setUserPassword(CommonUtils.encrypt(user.getUserPassword()));
         userMapper.update(user2); // 保存用户
     }
 
@@ -395,6 +403,8 @@ public class UserService {
     }
 
     public void save(UserVo user) {
+        Assert.state(!existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
+
         // 设置用户所属机构
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId());
         user.setUserBelongtoOrg(orgRoleRef.getOrgan().getOrgId());

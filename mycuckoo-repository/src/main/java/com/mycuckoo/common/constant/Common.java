@@ -11,6 +11,10 @@ public class Common {
     //web.xml web根目录名称
     public final static String WEB_APP_ROOT_KEY = "mycuckoo.root";
 
+    //用户信息
+    public final static String USER_INFO = "userInfo";
+    public final static String USER_ROLES = "userRoles";
+
     //机构名称 ID
     public final static String ORGAN_NAME = "organName";
     public final static String ORGAN_ID = "organId";

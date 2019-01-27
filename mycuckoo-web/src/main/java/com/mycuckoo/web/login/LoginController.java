@@ -66,8 +66,8 @@ public class LoginController {
             @RequestParam String password,
             HttpSession session) {
 
-        logger.debug("userCode --> " + userCode);
-        logger.debug("password --> " + password);
+        logger.debug("userCode --> {}", userCode);
+        logger.debug("password --> {}", password);
         
         /*
          * 1. 验证用户是否存在 并得到用户对象
@@ -107,9 +107,9 @@ public class LoginController {
             }
         }
 
-        logger.debug("json --> " + JsonUtils.toJson(vos));
+        logger.debug("json --> {}", JsonUtils.toJson(vos));
         session.setAttribute(USER_CODE, userCode);
-        session.setAttribute("loginRoles", vos);
+        session.setAttribute(USER_ROLES, vos);
 
         return AjaxResponse.create(vos);
     }
@@ -134,11 +134,12 @@ public class LoginController {
          * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
          */
         Long userId = null;
-        String userCode = (String) session.getAttribute(USER_CODE);
+        String userCode = null;
         String userName = null;
         String userPhotoUrl = null;
         if (role != null) {
             userId = role.getUserId();
+            userCode = role.getUserCode();
             userName = role.getUserName();
             userPhotoUrl = role.getUserPhotoUrl();
         }
@@ -153,16 +154,13 @@ public class LoginController {
         Long roleId = role.getRoleId() == null ? -1L : role.getRoleId();
         String roleName = role.getRoleName() == null ? ADMIN_ROLENAME : role.getRoleName();
 
+        role.setOrgId(organId);
+        role.setOrgName(organName);
+        role.setOrgRoleId(organRoleId);
+        role.setRoleId(roleId);
+        role.setRoleName(roleName);
 
-        session.setAttribute(ORGAN_ID, organId);
-        session.setAttribute(ORGAN_NAME, organName);
-        session.setAttribute(ORGAN_ROLE_ID, organRoleId);
-        session.setAttribute(ROLE_ID, roleId);
-        session.setAttribute(ROLE_NAME, roleName);
-        session.setAttribute(USER_ID, userId);
-        session.setAttribute(USER_CODE, userCode);
-        session.setAttribute(USER_NAME, userName);
-        session.setAttribute(USER_PHOTO_URL, userPhotoUrl);
+        session.setAttribute(USER_INFO, role);
 
         logger.info("organId :      {}  -  organName : {}", organId, organName);
         logger.info("organRoleId :  {}  -  roleId :    {}  -  roleName : {}", organRoleId, roleId, roleName);
@@ -185,36 +183,34 @@ public class LoginController {
          *  9 模块权限过滤，用户是否有特殊权限，并过滤特殊权限
          * 10 portal?
          */
-        Long userId = (Long) session.getAttribute(USER_ID);
-        Long roleId = (Long) session.getAttribute(ROLE_ID);
-        Long organRoleId = (Long) session.getAttribute(ORGAN_ROLE_ID);
-        Long organId = (Long) session.getAttribute(ORGAN_ID);
-        String userCode = (String) session.getAttribute(USER_CODE);
-        String userName = (String) session.getAttribute(USER_NAME);
-        String userPhotoUrl = (String) session.getAttribute(USER_PHOTO_URL);
+        UserRoleVo userRole = (UserRoleVo) session.getAttribute(USER_INFO);
+        Long organId = userRole.getOrgId();
+        Long organRoleId = userRole.getOrgRoleId();
+        Long roleId = userRole.getRoleId();
+        Long userId = userRole.getUserId();
+        String userCode = userRole.getUserCode();
 
-        // 加载用户菜单
-        HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode);
-        logger.info("user row privilege : 【{}】", moduleVo.getRow());
+        HierarchyModuleVo moduleVo = (HierarchyModuleVo) session.getAttribute(MODULE_MENU);
+        if (moduleVo == null) {
+            // 加载用户菜单
+            moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode);
+            logger.info("user row privilege : 【{}】", moduleVo.getRow());
 
-        session.setAttribute(MODULE_MENU, moduleVo);
+            session.setAttribute(MODULE_MENU, moduleVo);
 
-        // 记录登录日志
-        StringBuilder optContent = new StringBuilder();
-        optContent.append(session.getAttribute(ORGAN_NAME) + "-")
-                .append(session.getAttribute(ROLE_NAME) + "-")
-                .append(session.getAttribute(USER_NAME));
+            // 记录登录日志
+            StringBuilder optContent = new StringBuilder();
+            optContent.append(session.getAttribute(ORGAN_NAME) + "-")
+                    .append(session.getAttribute(ROLE_NAME) + "-")
+                    .append(session.getAttribute(USER_NAME));
 
-        loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN,
-                OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
+            loginService.saveLog(LogLevelEnum.THIRD, OptNameEnum.USER_LOGIN,
+                    OptNameEnum.USER_LOGIN.value(), optContent.toString(), "");
+        }
 
-        LoginUserInfo.UserInfo info = new LoginUserInfo.UserInfo();
-        info.setUserCode(userCode);
-        info.setUserName(userName);
-        info.setUserPhotoUrl(userPhotoUrl);
         LoginUserInfo userInfo = new LoginUserInfo();
         userInfo.setMenu(moduleVo);
-        userInfo.setUser(info);
+        userInfo.setUser(userRole);
 
         return AjaxResponse.create(userInfo);
     }
