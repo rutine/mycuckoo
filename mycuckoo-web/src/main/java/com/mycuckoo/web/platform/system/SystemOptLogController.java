@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,13 +37,13 @@ public class SystemOptLogController {
     private SystemOptLogService systemOptLogService;
 
 
-    @GetMapping(value = "/list")
+    @GetMapping
     public AjaxResponse<Page<SysOptLog>> list(
             @RequestParam(required = false) String optModName,
             @RequestParam(required = false) String optName,
             @RequestParam(required = false) String optUserName,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("optModName", StringUtils.isBlank(optModName) ? null : "%" + optModName + "%");
@@ -62,8 +63,8 @@ public class SystemOptLogController {
      * @author rutine
      * @time Jun 22, 2013 2:27:06 PM
      */
-    @GetMapping(value = "/view")
-    public AjaxResponse<String> getView(@RequestParam long id) {
+    @GetMapping("/{id}")
+    public AjaxResponse<String> get(@PathVariable long id) {
         String logContent = systemOptLogService.getOptContentById(id);
 
         return AjaxResponse.create(logContent);
