@@ -348,7 +348,7 @@ public class UserController {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
         userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
-        request.getSession().setAttribute(USER_PHOTO_URL, vo.getPhoto());
+        SessionUtil.getUserInfo().setUserPhotoUrl(vo.getPhoto());
 
         return AjaxResponse.create("上传头像成功");
     }

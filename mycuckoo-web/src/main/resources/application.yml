@@ -27,4 +27,5 @@ spring:
     max-open-prepared-statements: 20
 
 mycuckoo:
-  basePath: mycuckoo/upload/
+  url: http://localhost:8080
+  basePath: /mycuckoo/upload

@@ -32,6 +32,8 @@ import java.io.IOException;
 public class FileController {
     private static Logger logger = LoggerFactory.getLogger(FileController.class);
 
+    @Value("${mycuckoo.url}")
+    private String url;
     @Value("${mycuckoo.basePath}")
     private String basePath;
 
@@ -69,7 +71,7 @@ public class FileController {
 
             logger.debug("filename : {}, size : {}", fileName, file.getSize());
 
-            fileMeta.setUrl(dirPath + "/" + fileName);
+            fileMeta.setUrl(url + dirPath + "/" + fileName);
             fileMeta.setName(fileName);
             fileMeta.setSize(file.getSize());
             fileMeta.setType(file.getContentType());
