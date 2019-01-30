@@ -66,7 +66,7 @@ public class FileController {
             nameBuilder.append(".").append(originFilename.substring(index + 1));
             String fileName = nameBuilder.toString();
 
-            String dirPath = StringUtils.cleanPath(basePath) + business.name();
+            String dirPath = StringUtils.cleanPath(basePath) + "/" + business.name();
             String path = CommonUtils.saveFile(dirPath, fileName, file.getInputStream());
 
             logger.debug("filename : {}, size : {}", fileName, file.getSize());

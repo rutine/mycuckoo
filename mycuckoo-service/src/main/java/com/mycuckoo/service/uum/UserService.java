@@ -75,6 +75,7 @@ public class UserService {
      * 1 移除用户角色
      * 2 移除用户操作行权限
      */
+    @Transactional
     public boolean disEnable(long userId, String disEnableFlag) {
         if (DISABLE.equals(disEnableFlag)) {
             User user = new User(userId, DISABLE);
@@ -349,12 +350,14 @@ public class UserService {
         return userMapper.existsByUserCode(userCode);
     }
 
+    @Transactional
     public void update(UserVo user) {
-        User old = userMapper.get(user.getUserId());
-        Assert.notNull(old, "用户不存在!");
-        Assert.state(old.getUserCode().equals(user.getUserCode())
-                || !existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
+//        User old = userMapper.get(user.getUserId());
+//        Assert.notNull(old, "用户不存在!");
+//        Assert.state(old.getUserCode().equals(user.getUserCode())
+//                || !existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
 
+        user.setUserCode(null); //用户号不更改
 
         // 设置用户所属机构
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId() == null ? 0 : user.getOrgRoleId());
@@ -402,6 +405,7 @@ public class UserService {
         sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.RESET_PWD, USER_MGR, optContent, userId + "");
     }
 
+    @Transactional
     public void save(UserVo user) {
         Assert.state(!existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
 
