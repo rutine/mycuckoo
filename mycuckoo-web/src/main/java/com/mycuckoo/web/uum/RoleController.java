@@ -178,10 +178,10 @@ public class RoleController {
      * @author rutine
      * @time Sep 15, 2013 1:18:53 PM
      */
-    @PostMapping("/{id}/row-privilege/{rowPrivilege}")
+    @PostMapping("/{id}/row-privilege")
     public AjaxResponse saveRowPrivilege(
             @PathVariable long id,
-            @PathVariable String rowPrivilege) {
+            @RequestBody String rowPrivilege) {
 
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
         privilegeService.save(optIdList, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_ROL, rowPrivilege);

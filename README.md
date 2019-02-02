@@ -15,11 +15,31 @@ mycuckoo
 4. 存储业务操作日志
 5. 登录拦截器`LoginInterceptor`, 权限控制, 跨域请求
 6. 全局异常建议`MycuckooExceptionHandler`, 统一异常处理
-7. MySQL数据库, 数据库名为`cuckoo`, 附带结构和数据sql脚本
+7. MySQL数据库, 数据库名为`cuckoo`, 附带结构和数据SQL脚本
 8. RESTFul接口
 9. 搭配前端`mycuckoo-front`, 实现前后端分离
+
+# 安装流程
+1. 下载`mycuckoo`、`mycuckoo-front`两个项目源码
+2. 请自行网上找MySQL安装, 新建数据库`cuckoo`
+3. 打开`mycuckoo`项目, 在里面找到`cuckoo-*.sql`SQL脚本, 导入该脚本到MySQL
+4. 然后在MySQL中执行`update.sql`脚本, 注意跟上面步骤顺序
+5. 启动`mycuckoo`, 主类是`Mycuckoo`, 默认端口: 8080
+6. 打开`mycuckoo-front`前端项目, 找到`public/static/mycuckoo.api.js`文件, 
+   修改`host`指向的后台接口地址
+7. 浏览器打开`login.html`, 账号密码: `admin/123456`
 
 
 # 示例:
 
-![示例](demo.png)
+登录页:
+![登录页](demo/login.png)
+
+主页:
+![主页](demo/index.png)
+
+菜单管理:
+![菜单管理](demo/menuMgr.png)
+
+系统配置:
+![系统配置](demo/systemConfig.png)
