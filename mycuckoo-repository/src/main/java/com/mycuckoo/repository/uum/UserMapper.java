@@ -18,14 +18,6 @@ import java.util.List;
 public interface UserMapper extends Repository<User, Long> {
 
     /**
-     * <p>根据机构ID查询用户</p>
-     *
-     * @param belongOrgId 用户属于的机构ID
-     * @return 机构关联的所有用户
-     */
-    List<User> findByOrgId(Long belongOrgId);
-
-    /**
      * <p>通过用户代码和用户名称进行模糊查询用户记录</p>
      *
      * @param userCode 用户代码 like '%keyword%'

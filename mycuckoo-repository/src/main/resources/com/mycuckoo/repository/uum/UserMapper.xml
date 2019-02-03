@@ -181,16 +181,6 @@
             <include refid="table" />
     </select>
 
-    <!-- 以所属机构ID查询用户, 演示: 1.输出直接映射对象 -->
-    <select id="findByOrgId" parameterType="long" resultMap="baseMap">
-        select
-            <include refid="colums"/>
-        from
-            <include refid="table" />
-        where
-            user_belongto_org = #{id}
-    </select>
-
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByCodeAndName" resultMap="baseMap">
         select

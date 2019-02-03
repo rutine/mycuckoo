@@ -163,43 +163,6 @@ public class UserService {
         return boxTrees;
     }
 
-    @Deprecated
-    public List<? extends SimpleTree> findNextLevelChildNodes(String treeId, String isCheckbox) {
-        int index = treeId.indexOf("_");
-        int orgId = 0;
-        if (index != -1) {
-            orgId = Integer.parseInt(treeId.substring(index + 1));
-        }
-
-        List<CheckBoxTree> vos = Lists.newArrayList();
-        List<CheckBoxTree> orgList = organService.findNextLevelChildNodesWithCheckbox(orgId, 0);
-        for (SimpleTree treeVo : orgList) {
-            CheckBoxTree treeVoExt = new CheckBoxTree();
-            BeanUtils.copyProperties(treeVo, treeVoExt);
-            // 机构无checkbox
-            treeVoExt.setNocheck(true);
-            treeVoExt.setId("orgId_" + treeVoExt.getId());
-            vos.add(treeVoExt);
-        }
-
-        List<OrgRoleRef> orgRoleList = organRoleService.findRolesByOrgId(orgId);
-        for (OrgRoleRef orgRoleRef : orgRoleList) {
-            Role role = orgRoleRef.getRole();
-            CheckBoxTree treeVoExt = new CheckBoxTree();
-            if (!Y.equals(isCheckbox)) {
-                // 角色无checkbox
-                treeVoExt.setNocheck(true);
-                treeVoExt.setIconSkin(ROLE_CSS);
-            }
-            treeVoExt.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
-            treeVoExt.setText(role.getRoleName());
-            treeVoExt.setIsLeaf(true);
-            vos.add(treeVoExt);
-        }
-
-        return vos;
-    }
-
     public Page<UserVo> findByPage(String treeId, String userName, String userCode, Pageable page) {
         Long orgRoleId = null;
         String flag = null;
@@ -229,18 +192,6 @@ public class UserService {
         });
 
         return new PageImpl<>(vos, page, page2.getTotalElements());
-    }
-
-    public List<UserVo> findByOrgId(long organId) {
-        List<User> list = userMapper.findByOrgId(organId);
-        List<UserVo> vos = Lists.newArrayList();
-        list.forEach(entity -> {
-            UserVo vo = new UserVo();
-            BeanUtils.copyProperties(entity, vo);
-            vos.add(vo);
-        });
-
-        return vos;
     }
 
     public UserVo getUserByUserCodeAndPwd(String userCode, String password) {
@@ -286,33 +237,6 @@ public class UserService {
     }
 
     public Page<UserVo> findUsersForSetAdmin(String userName, String userCode, Pageable page) {
-//        Map<String, Object> map = new WeakHashMap<String, Object>();
-//        Page<User> page2 = userMapper.findByPage2(null, null, userCode, userName, page);
-//        List<User> userList = page2.getContent();
-//        int count = (int) page2.getTotalElements();
-//        List<User> systemAdminUserList = Lists.newArrayList();
-//        List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
-//        int systemAdminUserCount = 0;
-//        for (User user : userList) {
-//            for (String adminCode : systemAdminCode) {
-//                if (user.getUserCode().equals(adminCode)) {
-//                    systemAdminUserList.add(user);
-//                    systemAdminUserCount++;
-//                }
-//            }
-//        }
-//        userList.removeAll(systemAdminUserList);
-//        count = count - systemAdminUserCount;
-//        // 可分配为管理员的用户
-//        map.put("userList", userList);
-//        map.put("userCount", count);
-//
-//        // 已分配为管理员的用户
-//        map.put("systemAdminUserList", systemAdminUserList);
-//        map.put("systemAdminUserCount", systemAdminUserCount);
-//
-//        return map;
-
         Page<User> page2 = userMapper.findByPage2(null, null, userCode, userName, page);
         List<UserVo> vos = Lists.newArrayList();
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
@@ -352,11 +276,6 @@ public class UserService {
 
     @Transactional
     public void update(UserVo user) {
-//        User old = userMapper.get(user.getUserId());
-//        Assert.notNull(old, "用户不存在!");
-//        Assert.state(old.getUserCode().equals(user.getUserCode())
-//                || !existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
-
         user.setUserCode(null); //用户号不更改
 
         // 设置用户所属机构

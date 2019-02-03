@@ -299,7 +299,7 @@ public class PrivilegeService {
             String resourceId = privilege.getResourceId();
             resourceIdList.add(Long.parseLong(resourceId));
             if (null == privilegeScope) {
-                PrivilegeScope.of(privilege.getPrivilegeScope());
+                privilegeScope = PrivilegeScope.of(privilege.getPrivilegeScope());
             }
         }
         List<ModOptRef> modOptRefList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
@@ -339,8 +339,11 @@ public class PrivilegeService {
                     ownerTypeFlag = OwnerType.USR;
                     privilegeScopeFlag = privilegeScopeRow;
                 }
-                ownerTypeAndUserPriBuilder = ownerTypeAndUserPriBuilder.length() == 0
-                        ? ownerTypeAndUserPriBuilder.append(resourceId) : ownerTypeAndUserPriBuilder.append("," + resourceId);
+                if(ownerTypeAndUserPriBuilder.length() == 0) {
+                    ownerTypeAndUserPriBuilder.append(resourceId);
+                } else {
+                    ownerTypeAndUserPriBuilder.append("," + resourceId);
+                }
             }
         }
         // 行权限条件sql
