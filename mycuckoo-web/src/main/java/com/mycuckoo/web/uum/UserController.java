@@ -72,11 +72,11 @@ public class UserController {
 
     @GetMapping
     public AjaxResponse<Page<UserVo>> list(
-            @RequestParam(value = "treeId", defaultValue = "-1") String treeId,
-            @RequestParam(value = "userCode", defaultValue = "") String userCode,
-            @RequestParam(value = "userName", defaultValue = "") String userName,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+            @RequestParam(defaultValue = "-1") String treeId,
+            @RequestParam(defaultValue = "") String userCode,
+            @RequestParam(defaultValue = "") String userName,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         userCode = StringUtils.isBlank(userCode) ? null : "%" + userCode + "%";
         userName = StringUtils.isBlank(userName) ? null : "%" + userName + "%";
@@ -150,7 +150,6 @@ public class UserController {
                         || StringUtils.isAlphanumeric(user.getUserCode()),
                 "用户编码长度最大10的字符或数字");
         Assert.isTrue(StringUtils.isNumeric(user.getUserMobile()), "必须有效电话号");
-        Assert.isTrue(StringUtils.isNumeric(user.getUserMobile2()), "必须有效电话号");
         Assert.isTrue(StringUtils.isNumeric(user.getUserFamilyTel()), "必须有效电话号");
         Assert.isTrue(StringUtils.isNumeric(user.getUserOfficeTel()), "必须有效电话号");
         Assert.notNull(user.getUserAvidate(), "用户有效期不能为空");

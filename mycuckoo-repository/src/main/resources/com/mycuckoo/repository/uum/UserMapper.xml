@@ -21,15 +21,13 @@
         <result property="userPosition" column="user_position" />
         <result property="userPhotoUrl" column="user_photo_url" />
         <result property="userQq" column="user_qq" />
-        <result property="userMsn" column="user_msn" />
+        <result property="userWechat" column="user_wechat" />
         <result property="userMobile" column="user_mobile" />
-        <result property="userMobile2" column="user_mobile2" />
         <result property="userOfficeTel" column="user_office_tel" />
         <result property="userFamilyTel" column="user_family_tel" />
         <result property="userAddress" column="user_address" />
         <result property="userEmail" column="user_email" />
         <result property="userAvidate" column="user_avidate" />
-        <result property="userIsAgent" column="user_is_agent" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
         <result property="creator" column="creator" />
@@ -43,8 +41,8 @@
     <sql id="colums">
         user_id, user_belongto_org, user_code, user_name_py, user_name, 
         user_password, user_gender, user_position, user_photo_url, user_qq, 
-        user_msn, user_mobile, user_mobile2, user_office_tel, user_family_tel, 
-        user_address, user_email, user_avidate, user_is_agent, memo, 
+        user_wechat, user_mobile, user_office_tel, user_family_tel,
+        user_address, user_email, user_avidate, memo,
         status, creator, create_date
     </sql>
 
@@ -67,15 +65,13 @@
             user_position,
             user_photo_url,
             user_qq,
-            user_msn,
+            user_wechat,
             user_mobile,
-            user_mobile2,
             user_office_tel,
             user_family_tel,
             user_address,
             user_email,
             user_avidate,
-            user_is_agent,
             memo,
             status,
             creator,
@@ -92,15 +88,13 @@
             #{userPosition},
             #{userPhotoUrl},
             #{userQq},
-            #{userMsn},
+            #{userWechat},
             #{userMobile},
-            #{userMobile2},
             #{userOfficeTel},
             #{userFamilyTel},
             #{userAddress},
             #{userEmail},
             #{userAvidate},
-            #{userIsAgent},
             #{memo},
             #{status},
             #{creator},
@@ -122,15 +116,13 @@
             <if test="userPosition != null">user_position = #{userPosition}, </if>
             <if test="userPhotoUrl != null">user_photo_url = #{userPhotoUrl}, </if>
             <if test="userQq != null">user_qq = #{userQq}, </if>
-            <if test="userMsn != null">user_msn = #{userMsn}, </if>
+            <if test="userWechat != null">user_msn = #{userWechat}, </if>
             <if test="userMobile != null">user_mobile = #{userMobile}, </if>
-            <if test="userMobile2 != null">user_mobile2 = #{userMobile2}, </if>
             <if test="userOfficeTel != null">user_office_tel = #{userOfficeTel}, </if>
             <if test="userFamilyTel != null">user_family_tel = #{userFamilyTel}, </if>
             <if test="userAddress != null">user_address = #{userAddress}, </if>
             <if test="userEmail != null">user_email = #{userEmail}, </if>
             <if test="userAvidate != null">user_avidate = #{userAvidate}, </if>
-            <if test="userIsAgent != null">user_is_agent = #{userIsAgent}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
