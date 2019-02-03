@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
@@ -66,12 +67,12 @@ public class OperateService {
         return operateMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
     }
 
-    public Page<Operate> findByPage(String modOptName, Pageable page) {
-        logger.debug("start={} limit={} modOptName={}", page.getOffset(), page.getPageSize(), modOptName);
+    public Page<Operate> findByPage(String optName, Pageable page) {
+        logger.debug("start={} limit={} optName={}", page.getOffset(), page.getPageSize(), optName);
 
         Map<String, Object> params = Maps.newHashMap();
-        if (!CommonUtils.isNullOrEmpty(modOptName)) {
-            params.put("modOptName", "%" + modOptName + "%");
+        if (!CommonUtils.isNullOrEmpty(optName)) {
+            params.put("optName", "%" + optName + "%");
         }
 
         return operateMapper.findByPage(params, page);
@@ -96,6 +97,11 @@ public class OperateService {
 
     @Transactional
     public void update(Operate operate) {
+        Operate old = get(operate.getOperateId());
+        Assert.notNull(old, "操作不存在!");
+        Assert.state(old.getOptName().equals(operate.getOptName())
+                || !existsByName(operate.getOptName()), "操作名[" + operate.getOptName() + "]已存在!");
+
         operateMapper.update(operate);
 
         writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
@@ -103,6 +109,8 @@ public class OperateService {
 
     @Transactional
     public void save(Operate operate) {
+        Assert.state(!existsByName(operate.getOptName()), "操作名[" + operate.getOptName() + "]已存在!");
+
         operate.setStatus(ENABLE);
         operateMapper.save(operate);
 
@@ -124,9 +132,9 @@ public class OperateService {
      */
     private void writeLog(Operate operate, LogLevelEnum logLevel, OptNameEnum opt) {
         StringBuilder optContent = new StringBuilder();
-        optContent.append(operate.getOperateName()).append(SPLIT)
-                .append(operate.getOptImgLink()).append(SPLIT)
-                .append(operate.getOptFunLink()).append(SPLIT);
+        optContent.append(operate.getOptName()).append(SPLIT)
+                .append(operate.getOptIconCls()).append(SPLIT)
+                .append(operate.getOptLink()).append(SPLIT);
 
         sysOptLogService.saveLog(logLevel, opt, SYS_MODOPT_MGR,
                 optContent.toString(), operate.getOperateId() + "");

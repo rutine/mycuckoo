@@ -12,9 +12,9 @@
 <mapper namespace="com.mycuckoo.repository.platform.OperateMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Operate">
         <id property="operateId" column="operate_id" />
-        <result property="operateName" column="operate_name" />
-        <result property="optFunLink" column="opt_fun_link" />
-        <result property="optImgLink" column="opt_img_link" />
+        <result property="optName" column="opt_name" />
+        <result property="optLink" column="opt_link" />
+        <result property="optIconCls" column="opt_icon_cls" />
         <result property="optOrder" column="opt_order" />
         <result property="optGroup" column="opt_group" />
         <result property="memo" column="memo" />
@@ -24,7 +24,7 @@
     </resultMap>
     
     <sql id="colums">
-        operate_id, operate_name, opt_img_link, opt_order, opt_group, memo, status, creator, create_date, opt_fun_link
+        operate_id, opt_name, opt_link, opt_icon_cls, opt_order, opt_group, memo, status, creator, create_date
     </sql>
     
     <sql id="table">
@@ -37,9 +37,9 @@
         insert into <include refid="table" />
         (
             operate_id,
-            operate_name,
-            opt_fun_link,
-            opt_img_link,
+            opt_name,
+            opt_link,
+            opt_icon_cls,
             opt_order,
             opt_group,
             memo,
@@ -49,9 +49,9 @@
         )
         values (
             #{operateId},
-            #{operateName},
-            #{optFunLink},
-            #{optImgLink},
+            #{optName},
+            #{optLink},
+            #{optIconCls},
             #{optOrder},
             #{optGroup},
             #{memo},
@@ -66,9 +66,9 @@
         update 
             <include refid="table" />
         <set>
-            <if test="operateName != null">operate_name = #{operateName}, </if>
-            <if test="optFunLink != null">opt_fun_link = #{optFunLink}, </if>
-            <if test="optImgLink != null">opt_img_link = #{optImgLink}, </if>
+            <if test="optName != null">opt_name = #{optName}, </if>
+            <if test="optLink != null">opt_link = #{optLink}, </if>
+            <if test="optIconCls != null">opt_icon_cls = #{optIconCls}, </if>
             <if test="optOrder != null">opt_order = #{optOrder}, </if>
             <if test="optGroup != null">opt_group = #{optGroup}, </if>
             <if test="memo != null">memo = #{memo}, </if>
@@ -112,8 +112,8 @@
         from 
             <include refid="table" />
         <where>
-            <if test="operateName != null">
-                operate_name like #{operateName}
+            <if test="optName != null">
+                opt_name like #{optName}
             </if>
         </where>
         order by 
@@ -135,7 +135,7 @@
         from 
             <include refid="table" />
         where
-            operate_name = #{operateName}
+            opt_name = #{optName}
     </select>
     
 </mapper> 

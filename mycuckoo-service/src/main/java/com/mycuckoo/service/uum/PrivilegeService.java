@@ -212,9 +212,9 @@ public class PrivilegeService {
             // 操作按钮
             ModuleMenuVo modOptVo = new ModuleMenuVo();
             modOptVo.setModuleId(modOptRef.getModOptId() + 1000); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setModName(operate.getOperateName());
-            modOptVo.setModIconCls(operate.getOptImgLink());
-            modOptVo.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
+            modOptVo.setModName(operate.getOptName());
+            modOptVo.setModIconCls(operate.getOptIconCls());
+            modOptVo.setOptLink(operate.getOptLink()); // 为操作准备功能链接
             modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
             modOptVo.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
             modOptVo.setIsLeaf(true);
@@ -468,9 +468,9 @@ public class PrivilegeService {
             ModuleMenuVo modOptVo = new ModuleMenuVo();
             modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
             modOptVo.setModuleId(modOptRef.getModOptId() + optIdMode); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setModName(operate.getOperateName());
-            modOptVo.setModIconCls(operate.getOptImgLink());
-            modOptVo.setOptFunLink(operate.getOptFunLink()); // 为操作准备功能链接
+            modOptVo.setModName(operate.getOptName());
+            modOptVo.setModIconCls(operate.getOptIconCls());
+            modOptVo.setOptLink(operate.getOptLink()); // 为操作准备功能链接
             modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
             modOptVo.setModLevel(ModuleLevelEnum.FOUR.value().toString());
             modOptVo.setIsLeaf(true);

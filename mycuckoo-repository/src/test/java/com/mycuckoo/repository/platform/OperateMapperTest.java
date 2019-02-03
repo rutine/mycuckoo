@@ -36,9 +36,9 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         operate.setCreateDate(Calendar.getInstance().getTime());
         operate.setCreator("rutine");
         operate.setMemo("测试");
-        operate.setOperateName("增加");
-        operate.setOptFunLink("no-resource");
-        operate.setOptImgLink("no-img");
+        operate.setOptName("增加");
+        operate.setOptLink("no-resource");
+        operate.setOptIconCls("no-img");
         operate.setOptOrder(3);
         operate.setStatus("enabel");
 
@@ -53,9 +53,9 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         operate.setCreateDate(Calendar.getInstance().getTime());
         operate.setCreator("rutine");
         operate.setMemo("测试");
-        operate.setOperateName("增加");
-        operate.setOptFunLink("no-resource");
-        operate.setOptImgLink("no-img");
+        operate.setOptName("增加");
+        operate.setOptLink("no-resource");
+        operate.setOptIconCls("no-img");
         operate.setOptOrder(3);
         operate.setStatus("enabel");
         operate.setOperateId(5L);
@@ -75,7 +75,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         Operate operate = mapper.get(2L);
 
         Assert.assertNotNull(operate);
-        Assert.assertEquals("技术", operate.getOperateName());
+        Assert.assertEquals("技术", operate.getOptName());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("operateName", "%删%");
+        params.put("optName", "%删%");
         Page<Operate> page = mapper.findByPage(params, new PageRequest(0, 10));
 
         for (Operate entity : page.getContent()) {

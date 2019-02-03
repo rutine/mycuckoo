@@ -11,7 +11,7 @@ import com.mycuckoo.domain.platform.ModuleMenu;
  */
 public class ModuleMenuVo extends ModuleMenu {
     private String parentName; //上级模块名称
-    private String optFunLink;//为操作准备功能链接
+    private String optLink;//为操作准备功能链接
     private boolean isLeaf;
 
     /**
@@ -35,12 +35,12 @@ public class ModuleMenuVo extends ModuleMenu {
         this.parentName = parentName;
     }
 
-    public String getOptFunLink() {
-        return optFunLink;
+    public String getOptLink() {
+        return optLink;
     }
 
-    public void setOptFunLink(String optFunLink) {
-        this.optFunLink = optFunLink;
+    public void setOptLink(String optLink) {
+        this.optLink = optLink;
     }
 
     public boolean getIsLeaf() {

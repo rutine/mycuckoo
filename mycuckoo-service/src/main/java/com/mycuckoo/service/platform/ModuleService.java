@@ -31,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -279,8 +280,8 @@ public class ModuleService {
             CheckBoxTree tree = new CheckBoxTree();
             tree.setId(consumer.getOperateId().toString());
             tree.setParentId("0");
-            tree.setText(consumer.getOperateName());
-            tree.setIconSkin(consumer.getOptImgLink());
+            tree.setText(consumer.getOptName());
+            tree.setIconSkin(consumer.getOptIconCls());
             tree.setIsLeaf(true);
             tree.setChildren(null);
             tree.setChecked(checked);
@@ -341,6 +342,11 @@ public class ModuleService {
 
     @Transactional
     public void update(ModuleMenu modMenu) {
+        ModuleMenu old = get(modMenu.getModuleId());
+        Assert.notNull(old, "模块不存在!");
+        Assert.state(old.getModEnName().equals(modMenu.getModEnName())
+                || !existsByModEnName(modMenu.getModEnName()), "英文名[" + modMenu.getModEnName() + "]已存在!");
+
         moduleMenuMapper.update(modMenu);
 
         writeLog(modMenu, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
@@ -363,6 +369,7 @@ public class ModuleService {
 
     @Transactional
     public void save(ModuleMenu modMenu) {
+        Assert.state(!existsByModEnName(modMenu.getModEnName()), "英文名[" + modMenu.getModEnName() + "]已存在!");
         modMenu.setStatus(ENABLE);
         moduleMenuMapper.save(modMenu);
 

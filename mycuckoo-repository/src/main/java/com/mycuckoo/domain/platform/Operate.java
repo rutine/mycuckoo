@@ -16,9 +16,9 @@ import java.util.Date;
 public class Operate implements Serializable {
 
     private Long operateId; //模块操作ID
-    private String operateName; //模块操作名称
-    private String optFunLink; //模块操作功能链接
-    private String optImgLink; //模块图片
+    private String optName; //模块操作名称
+    private String optLink; //模块操作功能链接
+    private String optIconCls; //模块图片
     private Integer optOrder; //模块操作顺序
     private Integer optGroup; //模块操作组
     private String memo; //备注
@@ -44,13 +44,13 @@ public class Operate implements Serializable {
     /**
      * full constructor
      */
-    public Operate(Long operateId, String operateName, String optFunLink, String optImgLink,
+    public Operate(Long operateId, String optName, String optLink, String optIconCls,
                    Integer optOrder, Integer optGroup, String memo, String status,
                    String creator, Date createDate) {
         this.operateId = operateId;
-        this.operateName = operateName;
-        this.optFunLink = optFunLink;
-        this.optImgLink = optImgLink;
+        this.optName = optName;
+        this.optLink = optLink;
+        this.optIconCls = optIconCls;
         this.optOrder = optOrder;
         this.optGroup = optGroup;
         this.memo = memo;
@@ -67,28 +67,28 @@ public class Operate implements Serializable {
         this.operateId = operateId;
     }
 
-    public String getOperateName() {
-        return this.operateName;
+    public String getOptName() {
+        return optName;
     }
 
-    public void setOperateName(String operateName) {
-        this.operateName = operateName;
+    public void setOptName(String optName) {
+        this.optName = optName;
     }
 
-    public String getOptFunLink() {
-        return this.optFunLink;
+    public String getOptLink() {
+        return optLink;
     }
 
-    public void setOptFunLink(String optFunLink) {
-        this.optFunLink = optFunLink;
+    public void setOptLink(String optLink) {
+        this.optLink = optLink;
     }
 
-    public String getOptImgLink() {
-        return this.optImgLink;
+    public String getOptIconCls() {
+        return optIconCls;
     }
 
-    public void setOptImgLink(String optImgLink) {
-        this.optImgLink = optImgLink;
+    public void setOptIconCls(String optIconCls) {
+        this.optIconCls = optIconCls;
     }
 
     public Integer getOptOrder() {

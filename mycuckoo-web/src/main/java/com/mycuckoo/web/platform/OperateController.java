@@ -43,7 +43,7 @@ public class OperateController {
     /**
      * 功能说明 : 操作按钮管理界面入口
      *
-     * @param operateName     操作名称
+     * @param optName     操作名称
      * @param pageNo      页码
      * @param pageSize    每页大小
      * @return
@@ -52,13 +52,13 @@ public class OperateController {
      */
     @GetMapping
     public AjaxResponse<Page<Operate>> list(
-            @RequestParam(value = "operateName", defaultValue = "") String operateName,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+            @RequestParam(defaultValue = "") String optName,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         logger.info("---------------- 请求操作按钮管理界面 -----------------");
 
-        Page<Operate> page = optService.findByPage(operateName, new PageRequest(pageNo - 1, pageSize));
+        Page<Operate> page = optService.findByPage(optName, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
