@@ -49,23 +49,23 @@ public class ModuleController {
     /**
      * 功能说明 : 列表展示页面
      *
-     * @param treeId   查找指定节点下的模块`
-     * @param modName  模块名称
-     * @param modEnId  模块id
-     * @param pageNo   第几页
-     * @param pageSize 页面大小, 暂时没有使用
+     * @param treeId     查找指定节点下的模块`
+     * @param modName    模块名称
+     * @param modEnName  模块英文名
+     * @param pageNo     第几页
+     * @param pageSize   页面大小, 暂时没有使用
      * @return
      * @author rutine
      * @time Dec 2, 2012 8:22:41 PM
      */
     @GetMapping
-    public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(value = "treeId", defaultValue = "-1") long treeId,
-                                                 @RequestParam(value = "modName", defaultValue = "") String modName,
-                                                 @RequestParam(value = "modEnId", defaultValue = "") String modEnId,
-                                                 @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-                                                 @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
+    public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(defaultValue = "-1") long treeId,
+                                                 @RequestParam(defaultValue = "") String modName,
+                                                 @RequestParam(defaultValue = "") String modEnName,
+                                                 @RequestParam(defaultValue = "1") int pageNo,
+                                                 @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
-        Page<ModuleMenuVo> page = moduleService.findByPage(treeId, modName, modEnId,
+        Page<ModuleMenuVo> page = moduleService.findByPage(treeId, modName, modEnName,
                 new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);

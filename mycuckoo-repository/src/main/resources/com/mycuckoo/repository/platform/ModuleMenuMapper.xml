@@ -14,8 +14,8 @@
         <id property="moduleId" column="module_id" />
         <result property="parentId" column="mod_parent_id" />
         <result property="modName" column="mod_name" />
-        <result property="modEnId" column="mod_en_id" />
-        <result property="modImgCls" column="mod_img_cls" />
+        <result property="modEnName" column="mod_en_name" />
+        <result property="modIconCls" column="mod_icon_cls" />
         <result property="modLevel" column="mod_level" />
         <result property="modOrder" column="mod_order" />
         <result property="belongToSys" column="belong_to_sys" />
@@ -27,7 +27,7 @@
     </resultMap>
     
     <sql id="colums">
-        module_id, mod_parent_id, mod_name, mod_en_id, mod_img_cls, mod_level, 
+        module_id, mod_parent_id, mod_name, mod_en_name, mod_icon_cls, mod_level,
         mod_order, belong_to_sys, mod_page_type, memo, status, creator, create_date
     </sql>
     
@@ -42,8 +42,8 @@
             module_id,
             mod_parent_id,
             mod_name,
-            mod_en_id,
-            mod_img_cls,
+            mod_en_name,
+            mod_icon_cls,
             mod_level,
             mod_order,
             belong_to_sys,
@@ -57,8 +57,8 @@
             #{moduleId},
             #{parentId},
             #{modName},
-            #{modEnId},
-            #{modImgCls},
+            #{modEnName},
+            #{modIconCls},
             #{modLevel},
             #{modOrder},
             #{belongToSys},
@@ -77,8 +77,8 @@
         <set>
             <if test="parentId != null">mod_parent_id = #{parentId}, </if>
             <if test="modName != null">mod_name = #{modName}, </if>
-            <if test="modEnId != null">mod_en_id = #{modEnId}, </if>
-            <if test="modImgCls != null">mod_img_cls = #{modImgCls}, </if>
+            <if test="modEnName != null">mod_en_name = #{modEnName}, </if>
+            <if test="modIconCls != null">mod_icon_cls = #{modIconCls}, </if>
             <if test="modLevel != null">mod_level = #{modLevel}, </if>
             <if test="modOrder != null">mod_order = #{modOrder}, </if>
             <if test="belongToSys != null">belong_to_sys = #{belongToSys}, </if>
@@ -86,7 +86,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
+        where
             module_id = #{moduleId}
     </update>
     
@@ -103,7 +103,7 @@
             <include refid="colums" />
         from 
             <include refid="table" />
-        where 
+        where
             module_id = #{id}
     </select>
     
@@ -113,7 +113,7 @@
             count(1) > 0 
         from 
             <include refid="table" />
-        where 
+        where
             module_id = #{id}
     </select>
 
@@ -123,15 +123,15 @@
             <include refid="colums" />
         from 
             <include refid="table" />
-        where 
+        where
             module_id != 0
         <if test="modName != null">
             and mod_name like #{modName}
         </if>
-        <if test="modEnId != null">
-            and mod_en_id like #{modEnId}
+        <if test="modEnName != null">
+            and mod_en_name like #{modEnName}
         </if>
-        order by 
+        order by
             module_id desc
     </select>
     
@@ -154,26 +154,26 @@
     </select>
     
     <!-- 判断模块名称是否存在 -->
-    <select id="countByModuleName" parameterType="string" resultType="int">
+    <select id="countByModEnName" parameterType="string" resultType="int">
         select 
             count(1)
         from 
             <include refid="table" />
-        where 
-            mod_name = #{modName}
+        where
+          mod_en_name = #{modEnName}
     </select>
     
     <!-- 根据父模块ID查询下级模块 -->
-    <select id="findByParentIdAndFilterOutModuleIds" parameterType="map" resultMap ="baseMap">
+    <select id="findByParentIdAndIgnoreModuleIds" parameterType="map" resultMap ="baseMap">
         select 
             <include refid="colums" />
         from 
             <include refid="table" />
         where 
             mod_parent_id = #{parentId}
-        and 
+        and
             module_id not in
-            <foreach item="id" collection="filterOutModuleIds" open="(" separator="," close=")">
+            <foreach item="id" collection="ignoreModuleIds" open="(" separator="," close=")">
                 #{id}
             </foreach>
     </select>

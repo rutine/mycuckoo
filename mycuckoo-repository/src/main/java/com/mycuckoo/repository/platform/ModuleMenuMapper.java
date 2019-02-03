@@ -24,21 +24,21 @@ public interface ModuleMenuMapper extends Repository<ModuleMenu, Long> {
     int countByParentId(long parentId);
 
     /**
-     * 判断模块名称是否存在
+     * 判断模块英文名称是否存在
      *
-     * @param moduleName 模块名称
+     * @param modEnName 模块英文名称
      * @return
      */
-    int countByModuleName(String moduleName);
+    int countByModEnName(String modEnName);
 
     /**
      * 根据模块ID查询下级模块
      *
      * @param parentId
-     * @param filterOutModuleIds
+     * @param ignoreModuleIds
      * @return
      */
-    List<ModuleMenu> findByParentIdAndFilterOutModuleIds(
+    List<ModuleMenu> findByParentIdAndIgnoreModuleIds(
             @Param("parentId") long parentId,
-            @Param("filterOutModuleIds") long[] filterOutModuleIds);
+            @Param("ignoreModuleIds") long[] ignoreModuleIds);
 }

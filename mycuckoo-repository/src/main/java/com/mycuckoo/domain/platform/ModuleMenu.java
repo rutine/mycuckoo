@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 功能说明: 域对象
@@ -20,8 +19,8 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
     private Long moduleId; //模块ID
     private Long parentId; //上级模块
     private String modName; //模块名称
-    private String modEnId; //模块英文ID
-    private String modImgCls; //模块图片样式
+    private String modEnName; //模块英文ID
+    private String modIconCls; //模块图片样式
     private String modLevel; //模块级别
     private Integer modOrder; //模块顺序
     private String modPageType;//页面类型
@@ -48,14 +47,14 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
      * full constructor
      */
     public ModuleMenu(Long moduleId, Long parentId,
-                      String modName, String modEnId, String modImgCls, String modLevel,
+                      String modName, String modEnName, String modIconCls, String modLevel,
                       Integer modOrder, String status,
-                      String memo, String creator, Date createDate, List<ModuleMenu> moduleMemus) {
+                      String memo, String creator, Date createDate) {
         this.moduleId = moduleId;
         this.parentId = parentId;
         this.modName = modName;
-        this.modEnId = modEnId;
-        this.modImgCls = modImgCls;
+        this.modEnName = modEnName;
+        this.modIconCls = modIconCls;
         this.modLevel = modLevel;
         this.modOrder = modOrder;
         this.status = status;
@@ -65,7 +64,7 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
     }
 
     public Long getModuleId() {
-        return this.moduleId;
+        return moduleId;
     }
 
     public void setModuleId(Long moduleId) {
@@ -88,20 +87,20 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
         this.modName = modName;
     }
 
-    public String getModEnId() {
-        return this.modEnId;
+    public String getModEnName() {
+        return modEnName;
     }
 
-    public void setModEnId(String modEnId) {
-        this.modEnId = modEnId;
+    public void setModEnName(String modEnName) {
+        this.modEnName = modEnName;
     }
 
-    public String getModImgCls() {
-        return this.modImgCls;
+    public String getModIconCls() {
+        return modIconCls;
     }
 
-    public void setModImgCls(String modImgCls) {
-        this.modImgCls = modImgCls;
+    public void setModIconCls(String modIconCls) {
+        this.modIconCls = modIconCls;
     }
 
     public String getModLevel() {

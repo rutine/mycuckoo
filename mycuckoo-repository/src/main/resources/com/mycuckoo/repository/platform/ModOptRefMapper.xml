@@ -51,7 +51,7 @@
             <include refid="table" />
         set
             operate_id                = #{operate.operateId},
-            module_id                    = #{moduleMemu.moduleId}
+            module_id                 = #{moduleMemu.moduleId}
         where 
             mod_opt_id = #{modOptId}
     </update>
@@ -77,8 +77,8 @@
             t2.opt_fun_link                   as opt_opt_fun_link,
             t3.mod_parent_id                  as modu_mod_parent_id,
             t3.mod_name                       as modu_mod_name,
-            t3.mod_en_id                      as modu_mod_en_id,
-            t3.mod_img_cls                    as modu_mod_img_cls,
+            t3.mod_en_name                    as modu_mod_en_name,
+            t3.mod_icon_cls                   as modu_mod_icon_cls,
             t3.mod_level                      as modu_mod_level,
             t3.mod_order                      as modu_mod_order,
             t3.belong_to_sys                  as modu_belong_to_sys,
@@ -87,9 +87,9 @@
         from 
             <include refid="table" /> t1
         left join 
-            cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+            cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
         left join 
-            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
         where 
             mod_opt_id = #{id}
     </select>
@@ -118,8 +118,8 @@
             t2.opt_fun_link             as opt_opt_fun_link,
             t3.mod_parent_id            as modu_mod_parent_id,
             t3.mod_name                 as modu_mod_name,
-            t3.mod_en_id                as modu_mod_en_id,
-            t3.mod_img_cls              as modu_mod_img_cls,
+            t3.mod_en_name              as modu_mod_en_name,
+            t3.mod_icon_cls             as modu_mod_icon_cls,
             t3.mod_level                as modu_mod_level,
             t3.mod_order                as modu_mod_order,
             t3.belong_to_sys            as modu_belong_to_sys, 
@@ -128,9 +128,9 @@
         from 
             <include refid="table" /> t1
         left join 
-            cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+            cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
         left join 
-            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
     </select>
     
         <!-- 统计模块操作关系记录总数 -->
@@ -195,8 +195,8 @@
             t2.opt_fun_link             as opt_opt_fun_link,
             t3.mod_parent_id            as modu_mod_parent_id,
             t3.mod_name                 as modu_mod_name,
-            t3.mod_en_id                as modu_mod_en_id,
-            t3.mod_img_cls              as modu_mod_img_cls,
+            t3.mod_en_name              as modu_mod_en_name,
+            t3.mod_icon_cls             as modu_mod_icon_cls,
             t3.mod_level                as modu_mod_level,
             t3.mod_order                as modu_mod_order,
             t3.belong_to_sys            as modu_belong_to_sys,
@@ -205,9 +205,9 @@
         from 
             <include refid="table" /> t1
         left join 
-            cuckoo.syspl_operate t2 on t1.operate_id = t2.operate_id
+            cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
         left join 
-            cuckoo.syspl_module_menu t3 on t1.module_id = t3.module_id
+            cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
         where 
             t1.mod_opt_id in 
             <foreach item="item" index="index" collection="array" open="(" separator="," close=")">

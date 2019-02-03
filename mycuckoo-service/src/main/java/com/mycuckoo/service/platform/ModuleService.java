@@ -243,9 +243,9 @@ public class ModuleService {
             ModuleMenuVo vo = new ModuleMenuVo();
             vo.setModuleId(item.getModuleId());
             vo.setParentId(item.getParentId());
-            vo.setModEnId(item.getModEnId());
+            vo.setModEnName(item.getModEnName());
             vo.setModName(item.getModName());
-            vo.setModImgCls(item.getModImgCls());
+            vo.setModIconCls(item.getModIconCls());
             vo.setModLevel(item.getModLevel());
             vo.setModOrder(item.getModOrder());
             vo.setModPageType(item.getModPageType());
@@ -299,13 +299,13 @@ public class ModuleService {
         return modOptRefMapper.findByIds(modOptRefIds);
     }
 
-    public Page<ModuleMenuVo> findByPage(long treeId, String modName, String modEnId, Pageable page) {
-        logger.debug("start={} limit={} treeId={} modName={} modEnId={}",
-                page.getOffset(), page.getPageSize(), treeId, modName, modEnId);
+    public Page<ModuleMenuVo> findByPage(long treeId, String modName, String modEnName, Pageable page) {
+        logger.debug("start={} limit={} treeId={} modName={} modEnName={}",
+                page.getOffset(), page.getPageSize(), treeId, modName, modEnName);
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
-        params.put("modEnId", isNullOrEmpty(modEnId) ? null : "%" + modEnId + "%");
+        params.put("modEnName", isNullOrEmpty(modEnName) ? null : "%" + modEnName + "%");
         Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(params, page);
 
         List<ModuleMenuVo> vos = Lists.newArrayList();
@@ -328,8 +328,8 @@ public class ModuleService {
         return vo;
     }
 
-    public boolean existsByModuleName(String moduleName) {
-        int totalProperty = moduleMenuMapper.countByModuleName(moduleName);
+    public boolean existsByModEnName(String modEnName) {
+        int totalProperty = moduleMenuMapper.countByModEnName(modEnName);
 
         logger.debug("find module total is {}", totalProperty);
 
@@ -450,7 +450,7 @@ public class ModuleService {
         tree.setId(parentId.toString());
         tree.setParentId(parentMenu.getParentId().toString());
         tree.setText(parentMenu.getModName());
-        tree.setIconSkin(parentMenu.getModImgCls());
+        tree.setIconSkin(parentMenu.getModIconCls());
         tree.setIsLeaf(parentMenu.getIsLeaf());
         tree.setChildren(subMenuVos);
 
@@ -469,7 +469,7 @@ public class ModuleService {
      * @time Oct 10, 2012 11:04:50 PM
      */
     private void writeLog(ModuleMenu moduleMenu, LogLevelEnum logLevel, OptNameEnum opt) {
-        String optContent = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnId() + SPLIT;
+        String optContent = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnName() + SPLIT;
 
         sysOptLogService.saveLog(logLevel, opt, SYS_MOD_MGR, optContent, moduleMenu.getModuleId() + "");
     }

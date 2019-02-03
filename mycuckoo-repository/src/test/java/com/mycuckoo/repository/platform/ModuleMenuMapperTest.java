@@ -43,18 +43,18 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     }
 
     @Test
-    public void testCountByModuleName() {
-        long count = mapper.countByModuleName("系统配置管理");
+    public void testCountByModEnName() {
+        long count = mapper.countByModEnName("systemConfigMgr");
 
-        logger.info("------> countByModuleName: {}", count);
+        logger.info("------> countByModEnName: {}", count);
     }
 
     @Test
-    public void testFindByParentIdAndFilterOutModuleIds() {
-        List<ModuleMenu> list = mapper.findByParentIdAndFilterOutModuleIds(6, new long[]{0L, 3L});
+    public void testFindByParentIdAndIgnoreModuleIds() {
+        List<ModuleMenu> list = mapper.findByParentIdAndIgnoreModuleIds(6, new long[]{0L, 3L});
 
         for (ModuleMenu entity : list) {
-            logger.info("------> findByParentIdAndFilterOutModuleIds: {}", entity);
+            logger.info("------> findByParentIdAndIgnoreModuleIds: {}", entity);
         }
     }
 
@@ -70,8 +70,8 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         moduleMenu.setCreateDate(Calendar.getInstance().getTime());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
-        moduleMenu.setModEnId("en10001");
-        moduleMenu.setModImgCls("no-resource");
+        moduleMenu.setModEnName("en10001");
+        moduleMenu.setModIconCls("no-resource");
         moduleMenu.setModLevel("3");
         moduleMenu.setModName("测试模块");
         moduleMenu.setModOrder(6);
@@ -90,8 +90,8 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         moduleMenu.setCreateDate(Calendar.getInstance().getTime());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
-        moduleMenu.setModEnId("en10001");
-        moduleMenu.setModImgCls("no-resource");
+        moduleMenu.setModEnName("en10001");
+        moduleMenu.setModIconCls("no-resource");
         moduleMenu.setModLevel("3");
         moduleMenu.setModName("测试模块");
         moduleMenu.setModOrder(6);
