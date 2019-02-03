@@ -2,6 +2,8 @@ package com.mycuckoo.web.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mycuckoo.common.constant.OwnerType;
+import com.mycuckoo.common.constant.PrivilegeType;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.common.utils.FirstLetter;
 import com.mycuckoo.common.utils.SessionUtil;
@@ -43,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mycuckoo.common.constant.Common.*;
+import static com.mycuckoo.common.constant.Common.USER_DEFAULT_PWD;
 import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
 
 /**
@@ -93,7 +95,7 @@ public class UserController {
      */
     @GetMapping("/{id}/user-privilege")
     public AjaxResponse<AssignVo<CheckBoxTree, Long>> listUserPrivilege(@PathVariable long id) {
-        AssignVo<CheckBoxTree, Long> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OWNER_TYPE_USR);
+        AssignVo<CheckBoxTree, Long> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
     }
@@ -248,7 +250,7 @@ public class UserController {
                                                        @RequestBody Set<String> operationIds) {
 
         List<String> list = Lists.newArrayList(operationIds);
-        privilegeService.save(list, id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_USR, privilegeScope);
+        privilegeService.save(list, id, PrivilegeType.OPT, OwnerType.USR, privilegeScope);
 
         return AjaxResponse.create("为用户分配操作权限成功");
     }
@@ -290,7 +292,7 @@ public class UserController {
             @RequestBody Set<String> rowIds) {
 
         List<String> list = new ArrayList<>(rowIds);
-        privilegeService.save(list, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_USR, privilegeScope);
+        privilegeService.save(list, id, PrivilegeType.ROW, OwnerType.USR, privilegeScope);
 
         return AjaxResponse.create("为用户分配行权限成功");
     }

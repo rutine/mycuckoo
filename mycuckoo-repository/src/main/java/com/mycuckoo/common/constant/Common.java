@@ -11,22 +11,20 @@ public class Common {
     //web.xml web根目录名称
     public final static String WEB_APP_ROOT_KEY = "mycuckoo.root";
 
+    //机构名称 ID
+    public final static String ORGAN_ID = "organId";
+    public final static String ORGAN_NAME = "organName";
+    //角色名称 ID
+    public final static String ORGAN_ROLE_ID = "organRoleId";
+    public final static String ROLE_ID = "roleId";
+    public final static String ROLE_NAME = "roleName";
+    //用户名称 ID
+    public final static String USER_ID = "userId";
+    public final static String USER_CODE = "userCode";
+    public final static String USER_NAME = "userName";
     //用户信息
     public final static String USER_INFO = "userInfo";
     public final static String USER_ROLES = "userRoles";
-
-    //机构名称 ID
-    public final static String ORGAN_NAME = "organName";
-    public final static String ORGAN_ID = "organId";
-    //角色名称 ID
-    public final static String ROLE_NAME = "roleName";
-    public final static String ROLE_ID = "roleId";
-    public final static String ORGAN_ROLE_ID = "organRoleId";
-    //用户名称 ID
-    public final static String USER_PHOTO_URL = "userPhotoUrl";
-    public final static String USER_NAME = "userName";
-    public final static String USER_CODE = "userCode";
-    public final static String USER_ID = "userId";
 
     //用户菜单
     public final static String MODULE_MENU = "moduleMenu";
@@ -34,10 +32,6 @@ public class Common {
     //日志功能设置
     public final static String SPLIT = ";";
 
-    public final static String PRIVILEGE_TYPE_ROW = "row";
-    public final static String PRIVILEGE_TYPE_OPT = "opt";
-    public final static String OWNER_TYPE_ROL = "rol";
-    public final static String OWNER_TYPE_USR = "usr";
     public final static String USER_DEFAULT_PWD = "userdefaultpassword";
 
     //创建系统文件路径

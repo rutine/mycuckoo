@@ -2,9 +2,9 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.ModuleLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.ModuleLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.constant.PrivilegeScope;
 import com.mycuckoo.common.constant.PrivilegeType;
@@ -73,8 +73,8 @@ public class PrivilegeService {
     private PlatformServiceFacade platformServiceFacade;
 
 
-    public void delete(long ownerId, String ownerType, String privilegeType) {
-        privilegeMapper.deleteByOwnerIdAndPrivilegeType(ownerId, ownerType, privilegeType);
+    public void delete(long ownerId, OwnerType ownerType, PrivilegeType privilegeType) {
+        privilegeMapper.deleteByOwnerIdAndPrivilegeType(ownerId, ownerType.value(), privilegeType.value());
     }
 
     public void deletePrivilegeByModOptId(String[] modOptRefIds) {
@@ -105,10 +105,10 @@ public class PrivilegeService {
         return resourceId;
     }
 
-    public AssignVo<CheckBoxTree, Long> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, String ownerType) {
+    public AssignVo<CheckBoxTree, Long> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
-        String[] ownerTypes = { ownerType };
+        String[] ownerTypes = { ownerType.value() };
         String[] privilegeTypes = { PrivilegeType.OPT.value() };
         List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
 
@@ -387,8 +387,8 @@ public class PrivilegeService {
     }
 
     @Transactional
-    public void save(List<String> modOptIds, long ownerId, String privilegeType,
-                     String ownerType, String privilegeScope) {
+    public void save(List<String> modOptIds, long ownerId, PrivilegeType privilegeType,
+                     OwnerType ownerType, String privilegeScope) {
 
         modOptIds = modOptIds.parallelStream()
                 .map(mapper -> {
@@ -411,8 +411,8 @@ public class PrivilegeService {
             Privilege privilege = new Privilege();
             privilege.setResourceId(PrivilegeScope.ALL.value());
             privilege.setOwnerId(ownerId);
-            privilege.setOwnerType(ownerType);
-            privilege.setPrivilegeType(privilegeType);
+            privilege.setOwnerType(ownerType.value());
+            privilege.setPrivilegeType(privilegeType.value());
             privilege.setPrivilegeScope(privilegeScope);
             privilegeMapper.save(privilege);
         } else {
@@ -422,16 +422,16 @@ public class PrivilegeService {
                     Privilege privilege = new Privilege();
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);
-                    privilege.setOwnerType(ownerType);
-                    privilege.setPrivilegeType(privilegeType);
+                    privilege.setOwnerType(ownerType.value());
+                    privilege.setPrivilegeType(privilegeType.value());
                     privilege.setPrivilegeScope(privilegeScope);
                     privilegeMapper.save(privilege);
 
                     optContent.append(modOptId + SPLIT);
                 }
 
-                sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, MOD_ASSIGN_OPT,
-                        optContent.toString(), ownerId + SPLIT + privilegeType);
+                sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, MOD_ASSIGN_OPT,
+                        optContent.toString(), ownerId + SPLIT + privilegeType.value());
             }
         }
     }
@@ -475,7 +475,7 @@ public class PrivilegeService {
             modOptVo.setModIconCls(operate.getOptIconCls());
             modOptVo.setOptLink(operate.getOptLink()); // 为操作准备功能链接
             modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            modOptVo.setModLevel(ModuleLevelEnum.FOUR.value().toString());
+            modOptVo.setModLevel(ModuleLevel.FOUR.value().toString());
             modOptVo.setIsLeaf(true);
 
             if (isTreeFlag) { // 如果为树则加入模块list

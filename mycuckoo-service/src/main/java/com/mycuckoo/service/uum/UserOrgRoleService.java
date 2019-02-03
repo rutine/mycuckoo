@@ -1,7 +1,7 @@
 package com.mycuckoo.service.uum;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Role;
@@ -133,7 +133,7 @@ public class UserOrgRoleService {
             optContent.append(optContent.length() > 0 ? ", " + orgRoleId : orgRoleId);
         }
 
-        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, USER_ROLE_MGR,
+        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, USER_ROLE_MGR,
                 optContent.toString(), userId + "");
 
         return 1;

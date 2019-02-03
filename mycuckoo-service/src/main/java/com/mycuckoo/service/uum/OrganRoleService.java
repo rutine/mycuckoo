@@ -1,7 +1,7 @@
 package com.mycuckoo.service.uum;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Role;
@@ -62,7 +62,7 @@ public class OrganRoleService {
             optContent.append(roleId).append(SPLIT);
         }
 
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, ROLE_ASSIGN,
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, ROLE_ASSIGN,
                 optContent.toString(), orgId + "");
 
         return roleIds.size();
@@ -134,7 +134,7 @@ public class OrganRoleService {
                 optContent.append("机构id:" + orgId + SPLIT + "角色id:" + roleId + SPLIT);
             }
 
-            sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, ROLE_ASSIGN,
+            sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, ROLE_ASSIGN,
                     optContent.toString(), "");
         }
     }

@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.platform.SysOptLog;
@@ -55,7 +55,7 @@ public class SystemOptLogService {
     }
 
     @Transactional
-    public void saveLog(LogLevelEnum level, OptNameEnum optName, String optModName,
+    public void saveLog(LogLevel level, OptName optName, String optModName,
                         String optContent, String optBusinessId) {
 
         SystemConfigXmlParse.getInstance();

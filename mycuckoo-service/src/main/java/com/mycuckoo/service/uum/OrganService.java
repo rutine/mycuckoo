@@ -2,9 +2,9 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.ModuleLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.ModuleLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
@@ -81,13 +81,13 @@ public class OrganService {
             privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
 
             organ = get(organId);
-            this.writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            this.writeLog(organ, LogLevel.SECOND, OptName.DISABLE);
         } else {
             Organ organ = new Organ(organId, ENABLE);
             organMapper.update(organ);
 
             organ = get(organId);
-            writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(organ, LogLevel.SECOND, OptName.ENABLE);
         }
     }
 
@@ -146,7 +146,7 @@ public class OrganService {
             CheckBoxTree treeVo = new CheckBoxTree();
             treeVo.setId(organ.getOrgId().toString());
             treeVo.setText(organ.getOrgSimpleName());
-            if (ModuleLevelEnum.TWO.value().equals(organ.getOrgType())) {
+            if (ModuleLevel.TWO.value().equals(organ.getOrgType())) {
                 treeVo.setIsLeaf(true);
             }
             treeVoList.add(treeVo);
@@ -214,7 +214,7 @@ public class OrganService {
 
         organMapper.update(organ);
 
-        writeLog(organ, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(organ, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -224,7 +224,7 @@ public class OrganService {
         organ.setStatus(ENABLE);
         organMapper.save(organ);
 
-        writeLog(organ, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(organ, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -240,7 +240,7 @@ public class OrganService {
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Organ organ, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(Organ organ, LogLevel logLevel, OptName opt) {
         StringBuilder optContent = new StringBuilder();
         optContent.append("机构名称 : ").append(organ.getOrgSimpleName()).append(SPLIT);
         optContent.append("机构代码 : ").append(organ.getOrgCode()).append(SPLIT);
@@ -332,7 +332,7 @@ public class OrganService {
         tree.setParentId(parent.getParentId().toString());
         tree.setText(parent.getOrgSimpleName());
         tree.setChildren(childNodes);
-        if (ModuleLevelEnum.TWO.value().equals(parent.getOrgType())) {
+        if (ModuleLevel.TWO.value().equals(parent.getOrgType())) {
             tree.setIsLeaf(true);
         }
 

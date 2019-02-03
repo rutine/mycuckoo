@@ -1,6 +1,8 @@
 package com.mycuckoo.web.uum;
 
 
+import com.mycuckoo.common.constant.OwnerType;
+import com.mycuckoo.common.constant.PrivilegeType;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.repository.Page;
@@ -30,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static com.mycuckoo.common.constant.Common.*;
 import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
 
 /**
@@ -75,7 +76,7 @@ public class RoleController {
      */
     @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
-        AssignVo<CheckBoxTree, Long> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OWNER_TYPE_ROL);
+        AssignVo<CheckBoxTree, Long> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getPrivilegeScope(),
@@ -164,7 +165,7 @@ public class RoleController {
             @PathVariable String privilegeScope,
             @RequestBody Set<String> operationIds) {
 
-        privilegeService.save(Lists.newArrayList(operationIds), id, PRIVILEGE_TYPE_OPT, OWNER_TYPE_ROL, privilegeScope);
+        privilegeService.save(Lists.newArrayList(operationIds), id, PrivilegeType.OPT, OwnerType.ROLE, privilegeScope);
 
         return AjaxResponse.create("分配角色操作权限成功");
     }
@@ -184,7 +185,7 @@ public class RoleController {
             @RequestBody String rowPrivilege) {
 
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
-        privilegeService.save(optIdList, id, PRIVILEGE_TYPE_ROW, OWNER_TYPE_ROL, rowPrivilege);
+        privilegeService.save(optIdList, id, PrivilegeType.ROW, OwnerType.ROLE, rowPrivilege);
 
         return AjaxResponse.create("设置角色行权限成功");
     }

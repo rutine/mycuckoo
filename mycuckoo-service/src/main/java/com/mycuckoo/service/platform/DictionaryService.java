@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.DicBigType;
 import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.exception.ApplicationException;
@@ -45,12 +45,12 @@ public class DictionaryService {
             DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
             dicBigTypeMapper.updateStatus(bigTypeId, DISABLE);
 
-            writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(dicBigType, LogLevel.SECOND, OptName.DISABLE);
         } else {
             DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
             dicBigTypeMapper.updateStatus(bigTypeId, ENABLE);
 
-            writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(dicBigType, LogLevel.SECOND, OptName.ENABLE);
         }
 
         return true;
@@ -90,7 +90,7 @@ public class DictionaryService {
         }
         this.saveDicSmallTypes(dicBigType.getSmallTypes());
 
-        writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(dicBigType, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -105,7 +105,7 @@ public class DictionaryService {
         }
         this.saveDicSmallTypes(dicBigType.getSmallTypes());
 
-        writeLog(dicBigType, LogLevelEnum.SECOND, OptNameEnum.SAVE);
+        writeLog(dicBigType, LogLevel.SECOND, OptName.SAVE);
     }
 
     @Transactional
@@ -127,7 +127,7 @@ public class DictionaryService {
      * @author rutine
      * @time Oct 14, 2012 4:08:38 PM
      */
-    private void writeLog(DicBigType dicBigType, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(DicBigType dicBigType, LogLevel logLevel, OptName opt) {
         String optContent = "字典大类名称：" + dicBigType.getBigTypeName() + SPLIT;
 
         sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dicBigType.getBigTypeId() + "");

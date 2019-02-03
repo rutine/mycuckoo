@@ -1,8 +1,8 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.uum.Role;
@@ -55,13 +55,13 @@ public class RoleService {
             roleMapper.update(role);
 
             role = get(roleId);
-            writeLog(role, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(role, LogLevel.SECOND, OptName.DISABLE);
         } else {
             Role role = new Role(roleId, ENABLE);
             roleMapper.update(role);
 
             role = get(roleId);
-            writeLog(role, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(role, LogLevel.SECOND, OptName.ENABLE);
         }
     }
 
@@ -98,7 +98,7 @@ public class RoleService {
 
         roleMapper.update(role);
 
-        writeLog(role, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(role, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -108,7 +108,7 @@ public class RoleService {
         role.setStatus(ENABLE);
         roleMapper.save(role);
 
-        writeLog(role, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(role, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -124,7 +124,7 @@ public class RoleService {
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Role role, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(Role role, LogLevel logLevel, OptName opt) {
         String optContent = "角色名称 : " + role.getRoleName() + SPLIT;
         sysOptLogService.saveLog(logLevel, opt, ROLE_MGR, optContent, role.getRoleId() + "");
     }

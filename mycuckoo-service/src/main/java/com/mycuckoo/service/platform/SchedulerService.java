@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.repository.Page;
@@ -51,7 +51,7 @@ public class SchedulerService {
         optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
         optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
         optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_SCHEDULER,
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_SCHEDULER,
                 optContent.toString(), schedulerJob.getJobId().toString());
     }
 
@@ -85,7 +85,7 @@ public class SchedulerService {
         optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
         optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
         optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.MODIFY, SYS_SCHEDULER,
+        sysOptLogService.saveLog(LogLevel.SECOND, OptName.MODIFY, SYS_SCHEDULER,
                 optContent.toString(), schedulerJob.getJobId().toString());
     }
 
@@ -104,7 +104,7 @@ public class SchedulerService {
         optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
         optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
         optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_SCHEDULER,
+        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_SCHEDULER,
                 optContent.toString(), schedulerJob.getJobId().toString());
     }
 
@@ -122,7 +122,7 @@ public class SchedulerService {
         scheduler.setJobList(jobList);
         scheduler.startScheduler(true);
 
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.START_SCHEDULER, SYS_SCHEDULER, "启动调度器并初始化任务", "");
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.START_SCHEDULER, SYS_SCHEDULER, "启动调度器并初始化任务", "");
     }
 
     @Transactional
@@ -137,7 +137,7 @@ public class SchedulerService {
 
         schedulerJobMapper.updateStatuses(jobIds.toArray(new Long[jobIds.size()]), DISABLE);
 
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.STOP_SCHEDULER, SYS_SCHEDULER, "停止调度器", "");
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.STOP_SCHEDULER, SYS_SCHEDULER, "停止调度器", "");
     }
 
     @Transactional
@@ -151,7 +151,7 @@ public class SchedulerService {
         optContent.append("启动job::").append(schedulerJob.getJobName()).append(SPLIT);
         optContent.append("job类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
         optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.START_JOB, SYS_SCHEDULER,
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.START_JOB, SYS_SCHEDULER,
                 optContent.toString(), "" + jobId);
     }
 
@@ -161,7 +161,7 @@ public class SchedulerService {
         SchedulerHandle.getInstance().stopJob(schedulerJob.getJobName());
         schedulerJobMapper.updateStatus(jobId, DISABLE); //  更改状态
 
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.STOP_JOB, SYS_SCHEDULER, "停止job", jobId + "");
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.STOP_JOB, SYS_SCHEDULER, "停止job", jobId + "");
     }
 
 

@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.SessionUtil;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.exception.ApplicationException;
@@ -55,7 +55,7 @@ public class CodeService {
             optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
             optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
             optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-            sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.DISABLE, SYS_CODE,
+            sysOptLogService.saveLog(LogLevel.SECOND, OptName.DISABLE, SYS_CODE,
                     optContent.toString(), code.getCodeId().toString());
 
             return true;
@@ -69,7 +69,7 @@ public class CodeService {
             optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
             optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
             optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-            sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.ENABLE, SYS_CODE,
+            sysOptLogService.saveLog(LogLevel.SECOND, OptName.ENABLE, SYS_CODE,
                     optContent.toString(), code.getCodeId().toString());
         }
 
@@ -121,7 +121,7 @@ public class CodeService {
         optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
         optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
         optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.MODIFY, SYS_CODE,
+        sysOptLogService.saveLog(LogLevel.SECOND, OptName.MODIFY, SYS_CODE,
                 optContent.toString(), code.getCodeId().toString());
     }
 
@@ -190,7 +190,7 @@ public class CodeService {
         optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
         optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
         optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_CODE,
+        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_CODE,
                 optContent.toString(), code.getCodeId().toString());
     }
 

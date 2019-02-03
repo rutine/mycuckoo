@@ -2,9 +2,9 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.ModuleLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.ModuleLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.XmlOptUtils;
 import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
@@ -76,7 +76,7 @@ public class ModuleService {
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : menus) {
-            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
+            ModuleLevel modLevel = ModuleLevel.of(vo.getModLevel());
             switch (modLevel) {
                 case ONE:
                     firstList.add(vo);
@@ -113,7 +113,7 @@ public class ModuleService {
         modOptRefMapper.deleteByOperateId(operateId);
 
         String optContent = "根据操作ID删除模块操作关系,级联删除权限";
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_MODOPT_MGR,
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_MODOPT_MGR,
                 optContent, operateId + "");
     }
 
@@ -136,7 +136,7 @@ public class ModuleService {
         modOptRefMapper.deleteByModuleId(moduleId);
         moduleMenuMapper.delete(moduleId);
 
-        this.writeLog(moduleMenu, LogLevelEnum.THIRD, OptNameEnum.DELETE);
+        this.writeLog(moduleMenu, LogLevel.THIRD, OptName.DELETE);
     }
 
     @Transactional
@@ -163,14 +163,14 @@ public class ModuleService {
             modOptRefMapper.deleteByModuleId(moduleId);
             moduleMenuMapper.update(moduleMenu);
 
-            this.writeLog(moduleMenu, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            this.writeLog(moduleMenu, LogLevel.SECOND, OptName.DISABLE);
             return true;
         } else {
             ModuleMenu moduleMenu = get(moduleId);
             moduleMenu.setStatus(ENABLE);
             moduleMenuMapper.update(moduleMenu);
 
-            this.writeLog(moduleMenu, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            this.writeLog(moduleMenu, LogLevel.SECOND, OptName.ENABLE);
             return true;
         }
     }
@@ -182,7 +182,7 @@ public class ModuleService {
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : list) {
-            ModuleLevelEnum modLevel = ModuleLevelEnum.of(vo.getModLevel());
+            ModuleLevel modLevel = ModuleLevel.of(vo.getModLevel());
             if (modLevel == null) { continue; }
 
             switch (modLevel) {
@@ -349,7 +349,7 @@ public class ModuleService {
 
         moduleMenuMapper.update(modMenu);
 
-        writeLog(modMenu, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(modMenu, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -373,7 +373,7 @@ public class ModuleService {
         modMenu.setStatus(ENABLE);
         moduleMenuMapper.save(modMenu);
 
-        writeLog(modMenu, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(modMenu, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -475,7 +475,7 @@ public class ModuleService {
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */
-    private void writeLog(ModuleMenu moduleMenu, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(ModuleMenu moduleMenu, LogLevel logLevel, OptName opt) {
         String optContent = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnName() + SPLIT;
 
         sysOptLogService.saveLog(logLevel, opt, SYS_MOD_MGR, optContent, moduleMenu.getModuleId() + "");
@@ -531,7 +531,7 @@ public class ModuleService {
         }
 
         String optContent = "模块分配操作" + SPLIT + operateIds.toString();
-        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_MODOPT_ASSIGN,
+        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_MODOPT_ASSIGN,
                 optContent, moduleId + "");
     }
 

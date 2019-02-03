@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.repository.Page;
@@ -54,7 +54,7 @@ public class AfficheService {
             }
 
             String optContent = "删除的公告ID：" + afficheIdList;
-            sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_AFFICHE, optContent, "");
+            sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_AFFICHE, optContent, "");
         }
     }
 
@@ -99,7 +99,7 @@ public class AfficheService {
         optContent.append("有效期：").append(affiche.getAfficheInvalidate()).append(SPLIT);
         optContent.append("是否发布：").append(affiche.getAffichePulish()).append(SPLIT);
         optContent.append("修改公告ID：").append(affiche.getAfficheId()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.MODIFY, SYS_AFFICHE,
+        sysOptLogService.saveLog(LogLevel.SECOND, OptName.MODIFY, SYS_AFFICHE,
                 optContent.toString(), affiche.getAfficheId() + "");
     }
 
@@ -123,7 +123,7 @@ public class AfficheService {
         StringBuilder optContent = new StringBuilder();
         optContent.append("保存公告标题：").append(affiche.getAfficheTitle()).append(SPLIT);
         optContent.append("有效期限:").append(affiche.getAfficheInvalidate()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_AFFICHE,
+        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_AFFICHE,
                 optContent.toString(), affiche.getAfficheId() + "");
     }
 }

@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.repository.platform.AccessoryMapper;
@@ -43,7 +43,7 @@ public class AccessoryService {
             }
 
             String optContent = "删除附件ID：" + accessoryIds.toString();
-            systemOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.DELETE, SYS_ACCESSORY, optContent, "");
+            systemOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_ACCESSORY, optContent, "");
         }
     }
 
@@ -60,6 +60,6 @@ public class AccessoryService {
         accessoryMapper.save(accessory);
 
         String optContent = "附件业务表ID：" + accessory.getInfoId() + SPLIT + "附件名称:" + accessory.getAccessoryName();
-        systemOptLogService.saveLog(LogLevelEnum.FIRST, OptNameEnum.SAVE, SYS_ACCESSORY, optContent, accessory.getAccessoryId() + "");
+        systemOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_ACCESSORY, optContent, accessory.getAccessoryId() + "");
     }
 }

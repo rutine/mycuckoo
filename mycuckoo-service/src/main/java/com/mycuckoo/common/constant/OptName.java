@@ -7,7 +7,7 @@ package com.mycuckoo.common.constant;
  * @version 3.0.0
  * @time Jul 2, 2017 10:29:40 AM
  */
-public enum OptNameEnum {
+public enum OptName {
     SAVE("保存"),
     MODIFY("修改"),
     DELETE("删除"),
@@ -23,7 +23,7 @@ public enum OptNameEnum {
 
     private String name;
 
-    OptNameEnum(String name) {
+    OptName(String name) {
         this.name = name;
     }
 

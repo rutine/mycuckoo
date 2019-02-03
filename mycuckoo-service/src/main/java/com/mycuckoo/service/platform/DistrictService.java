@@ -1,8 +1,8 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.exception.ApplicationException;
@@ -62,13 +62,13 @@ public class DistrictService {
             districtMapper.update(district);
 
             district = get(districtId);
-            writeLog(district, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(district, LogLevel.SECOND, OptName.DISABLE);
         } else {
             District district = new District(districtId, ENABLE);
             districtMapper.update(district);
 
             district = get(districtId);
-            writeLog(district, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(district, LogLevel.SECOND, OptName.ENABLE);
         }
 
         return true;
@@ -157,7 +157,7 @@ public class DistrictService {
 
         districtMapper.update(district);
 
-        writeLog(district, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(district, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -166,7 +166,7 @@ public class DistrictService {
         district.setStatus(ENABLE);
         districtMapper.save(district);
 
-        writeLog(district, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(district, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -182,7 +182,7 @@ public class DistrictService {
      * @author rutine
      * @time Oct 16, 2012 7:38:53 PM
      */
-    private void writeLog(District district, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(District district, LogLevel logLevel, OptName opt) {
         String optContent = district.getDistrictName() + SPLIT + district.getDistrictLevel() + SPLIT;
         sysOptLogService.saveLog(logLevel, opt, SYS_DISTRICT, optContent, district.getDistrictId() + "");
     }

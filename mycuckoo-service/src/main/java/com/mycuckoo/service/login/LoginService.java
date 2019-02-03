@@ -1,7 +1,7 @@
 package com.mycuckoo.service.login;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.PwdCrypt;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.uum.User;
@@ -71,7 +71,7 @@ public class LoginService {
     }
 
     @Transactional
-    public void saveLog(LogLevelEnum level, OptNameEnum optModName, String optName,
+    public void saveLog(LogLevel level, OptName optModName, String optName,
                         String optContent, String optBusinessId) throws ApplicationException {
         sysOptLogService.saveLog(level, optModName, optName, optContent, optBusinessId);
     }

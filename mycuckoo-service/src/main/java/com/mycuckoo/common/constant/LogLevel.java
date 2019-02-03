@@ -7,7 +7,7 @@ package com.mycuckoo.common.constant;
  * @version 3.0.0
  * @time Jul 2, 2017 10:03:50 AM
  */
-public enum LogLevelEnum {
+public enum LogLevel {
     WITHOD(0) {
         public Integer value() {
             return 0;
@@ -31,7 +31,7 @@ public enum LogLevelEnum {
 
     private Integer level;
 
-    LogLevelEnum(Integer level) {
+    LogLevel(Integer level) {
         this.level = level;
     }
 

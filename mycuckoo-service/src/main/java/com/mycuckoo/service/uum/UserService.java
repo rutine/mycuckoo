@@ -1,8 +1,8 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.constant.OwnerType;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
@@ -90,14 +90,14 @@ public class UserService {
             userOrgRoleService.save(userOrgRoleRef); // 设置无角色用户
 
             user = userMapper.get(userId);
-            writeLog(user, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(user, LogLevel.SECOND, OptName.DISABLE);
             return true;
         } else {
             User user = new User(userId, ENABLE);
             userMapper.update(user);
 
             user = userMapper.get(userId);
-            writeLog(user, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(user, LogLevel.SECOND, OptName.ENABLE);
             return true;
         }
     }
@@ -285,7 +285,7 @@ public class UserService {
         user.setUserPassword(CommonUtils.encrypt(user.getUserPassword())); // 加密
         userMapper.update(user); // 保存用户
 
-        writeLog(user, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(user, LogLevel.SECOND, OptName.MODIFY);
     }
 
     public void updateBelongOrgIdForAssignRole(long organId, long userId) {
@@ -321,7 +321,7 @@ public class UserService {
         userMapper.update(user);
 
         String optContent = "重置密码用户：" + userName;
-        sysOptLogService.saveLog(LogLevelEnum.SECOND, OptNameEnum.RESET_PWD, USER_MGR, optContent, userId + "");
+        sysOptLogService.saveLog(LogLevel.SECOND, OptName.RESET_PWD, USER_MGR, optContent, userId + "");
     }
 
     @Transactional
@@ -339,7 +339,7 @@ public class UserService {
         roleUserRef.setIsDefault(Y);
         userOrgRoleService.save(roleUserRef); // 保存用户的默认角色
 
-        writeLog(user, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(user, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -355,7 +355,7 @@ public class UserService {
      * @author rutine
      * @time Oct 20, 2012 4:17:57 PM
      */
-    private void writeLog(User user, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(User user, LogLevel logLevel, OptName opt) {
         StringBuilder optContent = new StringBuilder();
         optContent.append("用户编码：").append(user.getUserCode()).append(SPLIT);
         optContent.append("用户名称: ").append(user.getUserName()).append(SPLIT);

@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.SystemConfigXmlParse;
 import com.mycuckoo.common.utils.XmlOptUtils;
 import com.mycuckoo.exception.SystemException;
@@ -86,7 +86,7 @@ public class SystemConfigService {
         XmlOptUtils.writeXML(doc, fileName);
         SystemConfigXmlParse.getInstance().loadSystemConfigDoc();
 
-        sysOptLogService.saveLog(LogLevelEnum.THIRD, OptNameEnum.SAVE, SYS_CONFIG_MGR, optContent.toString(), "");
+        sysOptLogService.saveLog(LogLevel.THIRD, OptName.SAVE, SYS_CONFIG_MGR, optContent.toString(), "");
     }
 
 }

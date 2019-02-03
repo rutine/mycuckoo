@@ -1,8 +1,8 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.common.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.exception.ApplicationException;
@@ -51,13 +51,13 @@ public class OperateService {
             operateMapper.update(operate); //修改模块操作
             moduleService.deleteModOptRefByOperateId(operateId); //根据操作ID删除模块操作关系,级联删除权限
 
-            writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(operate, LogLevel.SECOND, OptName.DISABLE);
         } else {
             Operate operate = get(operateId);
             operate.setStatus(ENABLE);
             operateMapper.update(operate); //修改模块操作
 
-            writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(operate, LogLevel.SECOND, OptName.ENABLE);
         }
 
         return true;
@@ -104,7 +104,7 @@ public class OperateService {
 
         operateMapper.update(operate);
 
-        writeLog(operate, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(operate, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -114,7 +114,7 @@ public class OperateService {
         operate.setStatus(ENABLE);
         operateMapper.save(operate);
 
-        writeLog(operate, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(operate, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -130,7 +130,7 @@ public class OperateService {
      * @author rutine
      * @time Oct 14, 2012 1:17:12 PM
      */
-    private void writeLog(Operate operate, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(Operate operate, LogLevel logLevel, OptName opt) {
         StringBuilder optContent = new StringBuilder();
         optContent.append(operate.getOptName()).append(SPLIT)
                 .append(operate.getOptIconCls()).append(SPLIT)

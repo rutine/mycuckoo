@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevelEnum;
-import com.mycuckoo.common.constant.OptNameEnum;
+import com.mycuckoo.common.constant.LogLevel;
+import com.mycuckoo.common.constant.OptName;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
@@ -41,13 +41,13 @@ public class SystemParameterService {
             sysParameter.setStatus(DISABLE);
             sysParameterMapper.update(sysParameter);
 
-            writeLog(sysParameter, LogLevelEnum.SECOND, OptNameEnum.DISABLE);
+            writeLog(sysParameter, LogLevel.SECOND, OptName.DISABLE);
         } else {
             SysParameter sysParameter = get(paraId);
             sysParameter.setStatus(ENABLE);
             sysParameterMapper.update(sysParameter);
 
-            writeLog(sysParameter, LogLevelEnum.SECOND, OptNameEnum.ENABLE);
+            writeLog(sysParameter, LogLevel.SECOND, OptName.ENABLE);
         }
 
         return true;
@@ -77,7 +77,7 @@ public class SystemParameterService {
         systemParameter.setParaKeyName(null); //参数键不可修改
         sysParameterMapper.update(systemParameter);
 
-        writeLog(systemParameter, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
+        writeLog(systemParameter, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -85,7 +85,7 @@ public class SystemParameterService {
         Assert.state(!countByParaKeyName(systemParameter.getParaKeyName()), "键值[" + systemParameter.getParaKeyName() + "]已存在!");
         sysParameterMapper.save(systemParameter);
 
-        writeLog(systemParameter, LogLevelEnum.FIRST, OptNameEnum.SAVE);
+        writeLog(systemParameter, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -101,7 +101,7 @@ public class SystemParameterService {
      * @author rutine
      * @time Oct 15, 2012 8:20:17 PM
      */
-    private void writeLog(SysParameter systemParameter, LogLevelEnum logLevel, OptNameEnum opt) {
+    private void writeLog(SysParameter systemParameter, LogLevel logLevel, OptName opt) {
         StringBuilder optContent = new StringBuilder();
         optContent.append("参数名称：").append(systemParameter.getParaName()).append(SPLIT);
         optContent.append("参数键值：").append(systemParameter.getParaKeyName()).append(SPLIT);
