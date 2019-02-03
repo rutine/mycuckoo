@@ -10,6 +10,7 @@ import com.mycuckoo.repository.platform.SysParameterMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Map;
 
@@ -52,6 +53,13 @@ public class SystemParameterService {
         return true;
     }
 
+    public boolean countByParaKeyName(String paraKeyName) {
+        int count = sysParameterMapper.countByParaKeyName(paraKeyName);
+        if (count > 0) return true;
+
+        return false;
+    }
+
     public Page<SysParameter> findByPage(Map<String, Object> params, Pageable page) {
         return sysParameterMapper.findByPage(params, page);
     }
@@ -74,6 +82,7 @@ public class SystemParameterService {
 
     @Transactional
     public void save(SysParameter systemParameter) {
+        Assert.state(!countByParaKeyName(systemParameter.getParaKeyName()), "键值[" + systemParameter.getParaKeyName() + "]已存在!");
         sysParameterMapper.save(systemParameter);
 
         writeLog(systemParameter, LogLevelEnum.FIRST, OptNameEnum.SAVE);

@@ -32,10 +32,10 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test
-    public void testCountByDistrictName() {
-        long count = mapper.countByDistrictName("广州");
+    public void testCountByName() {
+        long count = mapper.countByName("广州");
 
-        logger.info("------> countByDistrictName: {}", count);
+        logger.info("------> countByName: {}", count);
     }
 
     @Test
@@ -50,11 +50,11 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test
-    public void testFindByParentIdAndFilterOutIds() {
-        List<District> list = mapper.findByParentIdAndFilterOutIds(7l, new long[]{0L, 9L});
+    public void testFindByParentIdAndIgnoreIds() {
+        List<District> list = mapper.findByParentIdAndIgnoreIds(7l, new long[]{0L, 9L});
 
         for (District entity : list) {
-            logger.info("------> findByParentIdAndFilterOutIds: {}", entity);
+            logger.info("------> findByParentIdAndIgnoreIds: {}", entity);
         }
     }
 

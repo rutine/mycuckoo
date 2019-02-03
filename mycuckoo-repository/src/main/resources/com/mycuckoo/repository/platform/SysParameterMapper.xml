@@ -126,6 +126,16 @@
         from 
             <include refid="table" />
     </select>
+
+    <!-- 判断参数键是否存在 -->
+    <select id="countByParaKeyName" parameterType="string" resultType="int">
+        select
+            count(1)
+        from
+            <include refid="table" />
+        where
+            para_key_name = #{paraKeyName}
+    </select>
     
     <!-- 根据参数名称查找系统参数 -->
     <select id="getByParaName" parameterType="string" resultMap="baseMap">

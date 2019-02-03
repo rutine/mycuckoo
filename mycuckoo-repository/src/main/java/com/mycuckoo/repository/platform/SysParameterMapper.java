@@ -13,6 +13,14 @@ import com.mycuckoo.repository.Repository;
 public interface SysParameterMapper extends Repository<SysParameter, Long> {
 
     /**
+     * 判断参数键是否存在
+     *
+     * @param paraKeyName 参数键
+     * @return 数量
+     */
+    int countByParaKeyName(String paraKeyName);
+
+    /**
      * 根据参数名称获取系统参数
      *
      * @param paraName

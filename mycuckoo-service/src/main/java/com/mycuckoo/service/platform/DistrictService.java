@@ -19,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -74,7 +75,7 @@ public class DistrictService {
     }
 
     public boolean existByName(String districtName) {
-        int count = districtMapper.countByDistrictName(districtName);
+        int count = districtMapper.countByName(districtName);
         if (count > 0) return true;
 
         return false;
@@ -149,6 +150,11 @@ public class DistrictService {
 
     @Transactional
     public void update(District district) {
+        District old = get(district.getDistrictId());
+        Assert.notNull(old, "地区不存在!");
+        Assert.state(old.getDistrictName().equals(district.getDistrictName())
+                || !existByName(district.getDistrictName()), "地区名称[" + district.getDistrictName() + "]已存在!");
+
         districtMapper.update(district);
 
         writeLog(district, LogLevelEnum.SECOND, OptNameEnum.MODIFY);
@@ -156,6 +162,7 @@ public class DistrictService {
 
     @Transactional
     public void save(District district) {
+        Assert.state(!existByName(district.getDistrictName()), "地区名称[" + district.getDistrictName() + "]已存在!");
         district.setStatus(ENABLE);
         districtMapper.save(district);
 
