@@ -1,0 +1,40 @@
+server:
+  servlet:
+    session:
+      timeout: 90m
+
+spring:
+  profiles:
+    active: standalone
+
+  datasource:
+    name: cuckoo
+    default-catalog: cuckoo
+    type: org.apache.commons.dbcp2.BasicDataSource
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/.h2/cuckoo;MODE=Mysql;AUTO_SERVER=FALSE;DB_CLOSE_DELAY=-1;
+    username: cuckoo
+    password: 123456
+    max-active: 20
+    initial-size: 1
+    max-wait: 60000
+    min-idle: 1
+    time-between-eviction-euns-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: select 'x'
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
+
+  h2:
+    console:
+      path: /h2
+      enabled: true
+      settings:
+        web-allow-others: true
+
+mycuckoo:
+  url: http://localhost:8080
+  basePath: /mycuckoo/upload

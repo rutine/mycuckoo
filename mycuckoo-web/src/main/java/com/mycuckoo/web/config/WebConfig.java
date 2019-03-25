@@ -10,6 +10,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.WebAppRootListener;
 
@@ -22,18 +23,22 @@ import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
 public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
     private static Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/front/**")
+                .addResourceLocations("classpath:/front/");
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/**");
-//                .excludePathPatterns("/login/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/front/**", "/webjars/**");
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry
-                .addMapping("/**")
+        registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedHeaders("*")
                 .allowedMethods("POST", "PUT", "GET", "DELETE")

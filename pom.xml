@@ -15,7 +15,7 @@
     <artifactId>mycuckoo</artifactId>
     <packaging>pom</packaging>
     <version>${mycuckoo.version}</version>
-    <name>mycuckoo app</name>
+    <name>mycuckoo:parent</name>
     <url>http://maven.apache.org</url>
     
     <modules>

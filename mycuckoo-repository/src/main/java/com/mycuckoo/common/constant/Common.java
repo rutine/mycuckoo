@@ -33,7 +33,4 @@ public class Common {
     public final static String SPLIT = ";";
 
     public final static String USER_DEFAULT_PWD = "userdefaultpassword";
-
-    //创建系统文件路径
-    public final static String MYCUCKOO_SYSTEM_FILE_DIR = "/home/rutine/upload";
 }

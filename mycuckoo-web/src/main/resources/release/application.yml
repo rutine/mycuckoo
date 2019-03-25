@@ -1,0 +1,32 @@
+server:
+  servlet:
+    session:
+      timeout: 90m
+
+spring:
+  autoconfigure:
+      exclude: org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+  datasource:
+    name: cuckoo
+    default-catalog: cuckoo
+    type: org.apache.commons.dbcp2.BasicDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306?useUnicode=true&characterEncoding=UTF-8
+    username: cuckoo
+    password: 123456
+    max-active: 20
+    initial-size: 1
+    max-wait: 60000
+    min-idle: 1
+    time-between-eviction-euns-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: select 'x'
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
+
+mycuckoo:
+  url: http://localhost:8080
+  basePath: /mycuckoo/upload

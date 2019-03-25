@@ -54,11 +54,11 @@ public class SystemConfigXmlParse {
 
     public void loadSystemConfigDoc() {
         try {
-            String fileName = getClusterResourcePath(SYS_CONFIG_FILE_XML);
+            String fileName = getClusterResourcePath(sysConfigFileXml);
             File systemConfigFile = new File(fileName);
             if (!systemConfigFile.exists()) {
                 try {
-                    FileCopyUtils.copy(new ClassPathResource(SYS_CONFIG_FILE_XML).getFile(), systemConfigFile);
+                    FileCopyUtils.copy(new ClassPathResource(sysConfigFileXml).getFile(), systemConfigFile);
                 } catch (IOException e) {
                     logger.info("加载class系统配置文件错误", e);
                 }

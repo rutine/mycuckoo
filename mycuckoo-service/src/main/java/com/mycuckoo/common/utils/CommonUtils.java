@@ -14,9 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import static com.mycuckoo.common.constant.Common.MYCUCKOO_SYSTEM_FILE_DIR;
-import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
-
 /**
  * 功能说明: 常用工具类
  *
@@ -26,6 +23,9 @@ import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
  */
 public class CommonUtils {
     private static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
+
+
+    public final static String MYCUCKOO_CONFIG_LOCATION = "config";
 
     /**
      * 加密操作
@@ -135,17 +135,15 @@ public class CommonUtils {
      * @time Oct 6, 2012 10:29:18 AM
      */
     public static String getResourcePath() {
-        String resPath = System.getProperty(WEB_APP_ROOT_KEY);
-        if (resPath == null) {
-            resPath = System.getProperty("catalina.home");
-        }
-        if (resPath == null) {
-            resPath = System.getProperty("user.dir");
+        String confPath = System.getProperty("mycuckoo.config.location");
+        if (confPath == null) {
+            String separate = File.separator;
+            confPath = System.getProperty("user.dir") + separate + MYCUCKOO_CONFIG_LOCATION ;
         }
 
-        logger.info("webAppRootKey path ----> {}", resPath);
+        logger.info("mycuckoo config path ----> {}", confPath);
 
-        return resPath == null ? "" : resPath;
+        return confPath == null ? "" : confPath;
     }
 
     /**
@@ -163,9 +161,9 @@ public class CommonUtils {
         if ("\\".equals(separate)) {// windows系统
             rootDir = path.substring(0, 2);
         }
-        String sysConfigPath = rootDir + separate + MYCUCKOO_SYSTEM_FILE_DIR + separate + filename;
-        File sysConfigFile = new File(sysConfigPath);
-        String resourcePath = (sysConfigFile.exists() ? sysConfigPath : (path + filename));
+        String filePath = rootDir + separate + filename;
+        File file = new File(filePath);
+        String resourcePath = (file.exists() ? filePath : (path + separate + filename));
 
         logger.info("mycuckoo cluster resource path --> {}", resourcePath);
 

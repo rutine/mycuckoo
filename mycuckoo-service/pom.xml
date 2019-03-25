@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>mycuckoo-service</artifactId>
-    <name>mycuckoo-service</name>
+    <name>mycuckoo:service</name>
     <packaging>jar</packaging>
 
     <dependencies>

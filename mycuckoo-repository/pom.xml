@@ -11,7 +11,7 @@
     </parent>
     
     <artifactId>mycuckoo-repository</artifactId>
-    <name>mycuckoo-repository</name>
+    <name>mycuckoo:repository</name>
     <packaging>jar</packaging>
     
     <properties>
