@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50723
 File Encoding         : 65001
 
-Date: 2019-02-02 17:55:58
+Date: 2019-03-25 09:43:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -205,8 +205,8 @@ DROP TABLE IF EXISTS `syspl_module_menu`;
 CREATE TABLE `syspl_module_menu` (
   `module_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `mod_name` varchar(10) DEFAULT NULL COMMENT '模块名称',
-  `mod_en_id` varchar(40) DEFAULT NULL COMMENT '模块英文名',
-  `mod_img_cls` varchar(30) DEFAULT NULL COMMENT '模块图标',
+  `mod_en_name` varchar(40) DEFAULT NULL COMMENT '模块英文名',
+  `mod_icon_cls` varchar(30) DEFAULT NULL COMMENT '模块图标',
   `mod_level` varchar(2) DEFAULT NULL COMMENT '模块级别',
   `mod_order` int(11) DEFAULT NULL COMMENT '模块顺序',
   `mod_parent_id` bigint(20) DEFAULT NULL COMMENT '上级模块ID',
@@ -264,7 +264,7 @@ CREATE TABLE `syspl_mod_opt_ref` (
   KEY `fk_syspl_mo_reference_syspl_op` (`operate_id`),
   CONSTRAINT `fk_syspl_mo_reference_syspl_mo` FOREIGN KEY (`module_id`) REFERENCES `syspl_module_menu` (`module_id`),
   CONSTRAINT `fk_syspl_mo_reference_syspl_op` FOREIGN KEY (`operate_id`) REFERENCES `syspl_operate` (`operate_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8mb4 COMMENT='模块操作关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=160 DEFAULT CHARSET=utf8mb4 COMMENT='模块操作关系表';
 
 -- ----------------------------
 -- Records of syspl_mod_opt_ref
@@ -311,7 +311,6 @@ INSERT INTO `syspl_mod_opt_ref` VALUES ('54', '33', '6');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('55', '33', '8');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('56', '35', '9');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('57', '35', '10');
-INSERT INTO `syspl_mod_opt_ref` VALUES ('59', '34', '2');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('60', '34', '4');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('61', '34', '5');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('62', '34', '6');
@@ -333,7 +332,8 @@ INSERT INTO `syspl_mod_opt_ref` VALUES ('111', '53', '19');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('152', '34', '28');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('155', '7', '14');
 INSERT INTO `syspl_mod_opt_ref` VALUES ('156', '7', '3');
-INSERT INTO `syspl_mod_opt_ref` VALUES ('157', '34', '1');
+INSERT INTO `syspl_mod_opt_ref` VALUES ('158', '34', '2');
+INSERT INTO `syspl_mod_opt_ref` VALUES ('159', '34', '1');
 
 -- ----------------------------
 -- Table structure for syspl_operate
@@ -341,11 +341,11 @@ INSERT INTO `syspl_mod_opt_ref` VALUES ('157', '34', '1');
 DROP TABLE IF EXISTS `syspl_operate`;
 CREATE TABLE `syspl_operate` (
   `operate_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `operate_name` varchar(10) DEFAULT NULL COMMENT '操作名',
-  `opt_img_link` varchar(20) DEFAULT NULL COMMENT '图标',
+  `opt_name` varchar(10) DEFAULT NULL COMMENT '操作名',
+  `opt_icon_cls` varchar(20) DEFAULT NULL COMMENT '图标',
   `opt_order` int(11) DEFAULT NULL COMMENT '顺序',
   `opt_group` int(11) DEFAULT NULL COMMENT '所属分组',
-  `opt_fun_link` varchar(20) DEFAULT NULL COMMENT '动作链接',
+  `opt_link` varchar(20) DEFAULT NULL COMMENT '动作链接',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
   `creator` varchar(15) DEFAULT NULL COMMENT '创建人',
@@ -426,7 +426,7 @@ CREATE TABLE `syspl_sys_opt_log` (
   KEY `opt_user_name_index` (`opt_user_name`),
   KEY `opt_user_ogan_index` (`opt_user_ogan`),
   KEY `opt_user_role_index` (`opt_user_role`)
-) ENGINE=InnoDB AUTO_INCREMENT=3360 DEFAULT CHARSET=utf8mb4 COMMENT='系统操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=3370 DEFAULT CHARSET=utf8mb4 COMMENT='系统操作日志表';
 
 -- ----------------------------
 -- Records of syspl_sys_opt_log
@@ -3777,6 +3777,16 @@ INSERT INTO `syspl_sys_opt_log` VALUES ('3356', '系统配置管理', '保存', 
 INSERT INTO `syspl_sys_opt_log` VALUES ('3357', '系统模块操作管理', '修改', '模块标签修改;module-label-icon;moduleLabel;', '14', '2019-01-31 13:37:49.111000', '127.0.0.1', '127.0.0.1', '管理员', '总部 - 管理员(默认)', '总部');
 INSERT INTO `syspl_sys_opt_log` VALUES ('3358', '用户登录', '用户登录', 'null-null-null', '', '2019-02-02 17:44:57.638000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
 INSERT INTO `syspl_sys_opt_log` VALUES ('3359', '用户管理', '修改', '用户编码：null;用户名称: 张军;所属机构: 7;', '21', '2019-02-02 17:53:46.765000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3360', '用户登录', '用户登录', 'null-null-null', '', '2019-02-03 10:06:36.015000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3361', '系统模块管理', '修改', '统一用户;uum;', '2', '2019-02-03 10:06:57.121000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3362', '用户登录', '用户登录', 'null-null-null', '', '2019-02-03 10:37:38.943000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3363', '系统模块操作管理', '修改', '特殊权限分配;assign-icon;optpri;', '28', '2019-02-03 10:37:48.527000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3364', '用户登录', '用户登录', 'null-null-null', '', '2019-02-03 11:51:01.968000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3365', '用户登录', '用户登录', 'null-null-null', '', '2019-02-14 10:11:54.184000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3366', '用户登录', '用户登录', 'null-null-null', '', '2019-03-07 14:14:29.345000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3367', '模块分配操作', '保存', '模块分配操作;', '34', '2019-03-07 14:15:06.842000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3368', '用户登录', '用户登录', 'null-null-null', '', '2019-03-07 14:15:18.000000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
+INSERT INTO `syspl_sys_opt_log` VALUES ('3369', '模块分配操作', '保存', '模块分配操作;2,1', '34', '2019-03-07 14:30:08.747000', '0:0:0:0:0:0:0:1', '0:0:0:0:0:0:0:1', '管理员', '总部 - 管理员(默认)', '总部');
 
 -- ----------------------------
 -- Table structure for syspl_sys_parameter
@@ -3912,7 +3922,6 @@ CREATE TABLE `uum_privilege` (
 -- ----------------------------
 -- Records of uum_privilege
 -- ----------------------------
-INSERT INTO `uum_privilege` VALUES ('900', '59', '3', 'rol', 'inc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('901', '60', '3', 'rol', 'inc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('902', '61', '3', 'rol', 'inc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('903', '62', '3', 'rol', 'inc', 'opt');
@@ -4097,7 +4106,6 @@ INSERT INTO `uum_privilege` VALUES ('1117', '44', '19', 'usr', 'inc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('1118', 'rol', '7', 'rol', 'rol', 'row');
 INSERT INTO `uum_privilege` VALUES ('1119', '6', '15', 'usr', 'org', 'row');
 INSERT INTO `uum_privilege` VALUES ('1120', '14', '15', 'usr', 'org', 'row');
-INSERT INTO `uum_privilege` VALUES ('1122', '59', '15', 'usr', 'exc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('1123', '60', '15', 'usr', 'exc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('1124', '61', '15', 'usr', 'exc', 'opt');
 INSERT INTO `uum_privilege` VALUES ('1125', '62', '15', 'usr', 'exc', 'opt');
@@ -4170,14 +4178,12 @@ CREATE TABLE `uum_user` (
   `user_position` varchar(30) DEFAULT '' COMMENT '用户职位',
   `user_photo_url` varchar(200) DEFAULT '' COMMENT '用户照片',
   `user_qq` varchar(20) DEFAULT '' COMMENT '用户QQ',
-  `user_msn` varchar(20) DEFAULT '' COMMENT '用户MSN',
+  `user_wechat` varchar(20) DEFAULT '' COMMENT '用户微信号',
   `user_mobile` varchar(20) DEFAULT '' COMMENT '用户手机',
-  `user_mobile2` varchar(20) DEFAULT '' COMMENT '用户手机2',
   `user_office_tel` varchar(20) DEFAULT '' COMMENT '办公电话',
   `user_family_tel` varchar(20) DEFAULT '' COMMENT '家庭电话',
   `user_email` varchar(30) DEFAULT '' COMMENT '用户邮件',
   `user_avidate` date DEFAULT NULL COMMENT '用户有效期',
-  `user_is_agent` varchar(2) DEFAULT '' COMMENT '用户是否代理',
   `user_belongto_org` bigint(20) DEFAULT '0' COMMENT '用户所属机构',
   `user_address` varchar(100) DEFAULT '' COMMENT '家庭住址',
   `user_name_py` varchar(20) DEFAULT '' COMMENT '用户名拼音',
@@ -4193,17 +4199,17 @@ CREATE TABLE `uum_user` (
 -- ----------------------------
 -- Records of uum_user
 -- ----------------------------
-INSERT INTO `uum_user` VALUES ('0', 'admin', '管理员', 'UlFQV1ZV', null, null, 'http://localhost:8080/mycuckoo/upload/photo/20171014181342_5pnIdj.jpg', null, null, null, null, null, null, null, null, null, '0', null, 'gly', 'enable', null, 'admin', '2011-02-11 16:57:01');
-INSERT INTO `uum_user` VALUES ('12', 'wangj', '王娟', 'UlFQV1ZV', '1', '', '', '', '', '134444444444444450', '', '', '', '', '2012-06-21', null, '1', '', 'wj', 'enable', '', 'admin', '2011-12-21 10:09:20');
-INSERT INTO `uum_user` VALUES ('13', 'shijh', '石纪红', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '', '2012-07-10', null, '11', '', 'sjh', 'enable', '', 'admin', '2012-01-10 14:55:24');
-INSERT INTO `uum_user` VALUES ('14', 'yangwj', '杨文菊', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '', '2012-08-28', null, '11', '', 'ywj', 'enable', '', 'admin', '2012-02-28 15:23:30');
-INSERT INTO `uum_user` VALUES ('15', 'yuzp', '于志平', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '7', '', 'yzp', 'enable', '', 'admin', '2012-03-06 15:15:09');
-INSERT INTO `uum_user` VALUES ('16', 'zhangsp', '张世鹏', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '2', '', 'zsp', 'enable', '', 'admin', '2012-03-06 15:15:39');
-INSERT INTO `uum_user` VALUES ('17', 'zhangl', '张丽', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '6', '', 'zl', 'enable', '', 'admin', '2012-03-06 15:16:22');
-INSERT INTO `uum_user` VALUES ('18', 'gaoxf', '高晓峰', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '6', '', 'gxf', 'enable', '', 'admin', '2012-03-06 15:21:33');
-INSERT INTO `uum_user` VALUES ('19', 'wangx', '王旭', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '6', '', 'wx', 'enable', '', 'admin', '2012-03-06 15:21:57');
-INSERT INTO `uum_user` VALUES ('20', 'wangxm', '王帅明', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '', '2012-09-06', null, '6', '', 'wsm', 'enable', '', 'admin', '2012-03-06 15:23:09');
-INSERT INTO `uum_user` VALUES ('21', 'zhangj', '张军', 'UlFQV1ZV', '0', '', 'http://localhost:8080/mycuckoo/upload/photo/haha_UPwWAD.jpg', '', '', '', '', '', '', '', '2012-09-06', null, '7', '', 'zj', 'enable', '', 'admin', '2012-03-06 15:23:40');
+INSERT INTO `uum_user` VALUES ('0', 'admin', '管理员', 'UlFQV1ZV', null, null, 'http://localhost:8080/mycuckoo/upload/photo/20171014181342_5pnIdj.jpg', null, null, null, null, null, null, null, '0', null, 'gly', 'enable', null, 'admin', '2011-02-11 16:57:01');
+INSERT INTO `uum_user` VALUES ('12', 'wangj', '王娟', 'UlFQV1ZV', '1', '', '', '', '', '134444444444444450', '', '', '', '2012-06-21', '1', '', 'wj', 'enable', '', 'admin', '2011-12-21 10:09:20');
+INSERT INTO `uum_user` VALUES ('13', 'shijh', '石纪红', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '2012-07-10', '11', '', 'sjh', 'enable', '', 'admin', '2012-01-10 14:55:24');
+INSERT INTO `uum_user` VALUES ('14', 'yangwj', '杨文菊', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '2012-08-28', '11', '', 'ywj', 'enable', '', 'admin', '2012-02-28 15:23:30');
+INSERT INTO `uum_user` VALUES ('15', 'yuzp', '于志平', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '2012-09-06', '7', '', 'yzp', 'enable', '', 'admin', '2012-03-06 15:15:09');
+INSERT INTO `uum_user` VALUES ('16', 'zhangsp', '张世鹏', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '2012-09-06', '2', '', 'zsp', 'enable', '', 'admin', '2012-03-06 15:15:39');
+INSERT INTO `uum_user` VALUES ('17', 'zhangl', '张丽', 'UlFQV1ZV', '1', '', '', '', '', '', '', '', '', '2012-09-06', '6', '', 'zl', 'enable', '', 'admin', '2012-03-06 15:16:22');
+INSERT INTO `uum_user` VALUES ('18', 'gaoxf', '高晓峰', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '2012-09-06', '6', '', 'gxf', 'enable', '', 'admin', '2012-03-06 15:21:33');
+INSERT INTO `uum_user` VALUES ('19', 'wangx', '王旭', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '2012-09-06', '6', '', 'wx', 'enable', '', 'admin', '2012-03-06 15:21:57');
+INSERT INTO `uum_user` VALUES ('20', 'wangxm', '王帅明', 'UlFQV1ZV', '0', '', '', '', '', '', '', '', '', '2012-09-06', '6', '', 'wsm', 'enable', '', 'admin', '2012-03-06 15:23:09');
+INSERT INTO `uum_user` VALUES ('21', 'zhangj', '张军', 'UlFQV1ZV', '0', '', 'http://localhost:8080/mycuckoo/upload/photo/haha_UPwWAD.jpg', '', '', '', '', '', '', '2012-09-06', '7', '', 'zj', 'enable', '', 'admin', '2012-03-06 15:23:40');
 
 -- ----------------------------
 -- Table structure for uum_user_org_role_ref
