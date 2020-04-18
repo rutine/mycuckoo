@@ -25,15 +25,15 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/front/**")
-                .addResourceLocations("classpath:/front/");
+        registry.addResourceHandler("/static/**", "/view/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/", "classpath:/META-INF/resources/webjars/view/");
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/front/**", "/webjars/**");
+                .excludePathPatterns("/**/*.html", "/static/**", "/view/**");
     }
 
     @Override

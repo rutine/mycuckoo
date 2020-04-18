@@ -4,14 +4,15 @@ server:
       timeout: 90m
 
 spring:
-  autoconfigure:
-      exclude: org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+  profiles:
+    active: standalone
+
   datasource:
     name: cuckoo
     default-catalog: cuckoo
     type: org.apache.commons.dbcp2.BasicDataSource
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306?useUnicode=true&characterEncoding=UTF-8
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/.h2/cuckoo;MODE=Mysql;AUTO_SERVER=FALSE;DB_CLOSE_DELAY=-1;
     username: cuckoo
     password: 123456
     max-active: 20
@@ -26,6 +27,16 @@ spring:
     test-on-return: false
     pool-prepared-statements: true
     max-open-prepared-statements: 20
+
+  h2:
+    console:
+      path: /h2
+      enabled: true
+      settings:
+        web-allow-others: true
+
+logging:
+  config: ../config/logback.xml
 
 mycuckoo:
   url: http://localhost:8080
