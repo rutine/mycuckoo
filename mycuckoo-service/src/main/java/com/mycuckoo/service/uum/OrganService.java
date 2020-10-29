@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mycuckoo.common.constant.LogLevel;
 import com.mycuckoo.common.constant.ModuleLevel;
 import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.common.utils.TreeHelper;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -99,43 +99,36 @@ public class OrganService {
 
     public List<Long> findChildIds(long organId, int flag) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
-        List<Organ> filterList = Lists.newArrayList();
-        List<Organ> tempList = Lists.newArrayList();
-        tempList.addAll(all);
-        tempList.remove(new Organ(0L, null)); //删除根元素
 
-        //过滤出所有下级元素
-        filterList = this.filterChildren(filterList, tempList, organId);
+        List<? extends SimpleTree> vos = toTree(all, N);
+        List<SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
+
+        List<String> nodeIds = Lists.newArrayList();
+        TreeHelper.collectNodeIds(nodeIds, trees);
+
+        //过滤出所有下级节点ID
+        List<Long> orgIds = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
         if (organId != 0) {
-            // 加入本元素
-            for (Organ organ : all) {
-                if (organ.getOrgId() == organId) {
-                    filterList.add(organ);
-                }
-            }
-        }
-        if (flag == 1) {
-            all.removeAll(filterList);
-            filterList = all;
+            orgIds.add(organId);
         }
 
-        List<Long> orgIds = filterList.parallelStream()
-                .map(Organ::getOrgId).collect(Collectors.toList());
+        if (flag == 1) {
+            List<Long> allIds = all.stream().map(Organ::getOrgId).collect(Collectors.toList());
+            allIds.remove(0L);  //删除根元素
+            allIds.removeAll(orgIds);
+
+            orgIds = allIds;
+        }
 
         return orgIds;
     }
 
     public List<? extends SimpleTree> findChildNodes(long organId, String isCheckbox) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
-        Organ parent = new Organ(organId, null);
-        parent.setParentId(organId);
 
-        List<Organ> tempList = Lists.newArrayList();
-        tempList.addAll(all);
-        tempList.remove(parent); //删除根元素
-        SimpleTree vo = this.buildTree(parent, tempList, isCheckbox);
+        List<? extends SimpleTree> vos = toTree(all, isCheckbox);
 
-        return vo.getChildren();
+        return TreeHelper.buildTree(vos, String.valueOf(organId));
     }
 
     @Deprecated
@@ -250,92 +243,34 @@ public class OrganService {
     }
 
     /**
-     * 根据机构ID过滤出下级，下下级机构
+     * 转换树vo
      *
-     * @param filterList 存放下级，下下级机构的集合
-     * @param allList    所有机构
-     * @param organId    上级机构ID
-     * @return 下级，下下级机构
-     * @author rutine
-     * @time Oct 17, 2012 7:49:15 PM
-     */
-    private List<Organ> filterChildren(List<Organ> filterList, List<Organ> allList, long organId) {
-        List<Organ> subList = this.filterChildren(allList, organId);
-        if (!subList.isEmpty()) {
-            filterList.addAll(subList);
-        }
-        for (Organ organ : subList) {
-            filterChildren(filterList, allList, organ.getOrgId());
-        }
-
-        return filterList;
-    }
-
-    /**
-     * 根据机构ID过滤出下级机构
-     *
-     * @param allList 所有机构
-     * @param organId 上级机构ID
-     * @return 所有子结点
-     * @author rutine
-     * @time Oct 17, 2012 7:46:36 PM
-     */
-    private List<Organ> filterChildren(List<Organ> allList, long organId) {
-        List<Organ> subList = Lists.newArrayList();
-        Iterator<Organ> it = allList.iterator();
-        while (it.hasNext()) {
-            Organ organ = it.next();
-            if (organ.getParentId() != null && organ.getParentId() == organId) {
-                subList.add(organ);
-                it.remove();
-            }
-        }
-
-        return subList;
-    }
-
-    /**
-     * 根据父级机构构建机构树
-     *
-     * @param parent      父级机构
-     * @param children    所有子机构
+     * @param list 机构
      * @param isCheckbox  Y:带复选框 N:无复选框
-     * @return 机构树
+     * @return
      * @author rutine
-     * @time Dec 7, 2018 11:29:15 AM
+     * @time Oct 29, 2020 17:39:35 PM
      */
-    private SimpleTree buildTree(Organ parent, List<Organ> children, String isCheckbox) {
-        long id = parent.getOrgId();
-        List childNodes = Lists.newArrayList();
-        Iterator<Organ> it = children.iterator();
-        while (it.hasNext()) {
-            Organ item = it.next();
-            if (item.getParentId().equals(id)) {
-                it.remove();
-                List<Organ> others = Lists.newArrayList();
-                others.addAll(children);
-                childNodes.add(this.buildTree(item, others, isCheckbox));
+    private List<? extends SimpleTree> toTree(List<Organ> list, String isCheckbox) {
+        return list.stream().map(mapper -> {
+            SimpleTree tree = null;
+            if (Y.equals(isCheckbox)) {
+                tree = new CheckBoxTree();
+                CheckBoxTree boxTree = (CheckBoxTree) tree;
+                boxTree.setNocheck(false);
+                boxTree.setChecked(false);
+                boxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
+            } else {
+                tree = new SimpleTree();
             }
-        }
+            tree.setId(mapper.getOrgId().toString());
+            tree.setParentId(mapper.getParentId().toString());
+            tree.setText(mapper.getOrgSimpleName());
+            if (ModuleLevel.TWO.value().equals(mapper.getOrgType())) {
+                tree.setIsLeaf(true);
+            }
 
-        SimpleTree tree = null;
-        if (Y.equals(isCheckbox)) {
-            tree = new CheckBoxTree();
-            CheckBoxTree boxTree = (CheckBoxTree) tree;
-            boxTree.setNocheck(false);
-            boxTree.setChecked(false);
-            boxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
-        } else {
-            tree = new SimpleTree();
-        }
-        tree.setId(parent.getOrgId().toString());
-        tree.setParentId(parent.getParentId().toString());
-        tree.setText(parent.getOrgSimpleName());
-        tree.setChildren(childNodes);
-        if (ModuleLevel.TWO.value().equals(parent.getOrgType())) {
-            tree.setIsLeaf(true);
-        }
-
-        return tree;
+            return tree;
+        }).collect(Collectors.toList());
     }
 }

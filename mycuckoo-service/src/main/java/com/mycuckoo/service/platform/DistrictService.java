@@ -3,6 +3,7 @@ package com.mycuckoo.service.platform;
 import com.google.common.collect.Lists;
 import com.mycuckoo.common.constant.LogLevel;
 import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.common.utils.TreeHelper;
 import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.exception.ApplicationException;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -98,17 +98,16 @@ public class DistrictService {
         }
 
         params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
-        Page<District> entityPage = districtMapper.findByPage(params, page);
+        Page<District> pageResult = districtMapper.findByPage(params, page);
         List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
+        Map<String, String> dicSmallTypeMap = dicSmallTypeList.stream()
+                .collect(Collectors.toMap(k -> k.getSmallTypeCode().toLowerCase(), DicSmallType::getSmallTypeName));
 
         List<DistrictVo> vos = Lists.newArrayList();
-        for (District entity : entityPage.getContent()) {
-            String districtLevell = entity.getDistrictLevel();
-            for (DicSmallType dicSmallType : dicSmallTypeList) {
-                if (districtLevell.equalsIgnoreCase(dicSmallType.getSmallTypeCode())) {
-                    entity.setDistrictLevel(dicSmallType.getSmallTypeName());
-                    break;
-                }
+        for (District entity : pageResult.getContent()) {
+            String distLevel = entity.getDistrictLevel().toLowerCase();
+            if (dicSmallTypeMap.containsKey(distLevel)) {
+                entity.setDistrictLevel(dicSmallTypeMap.get(distLevel));
             }
 
             DistrictVo vo = new DistrictVo();
@@ -117,7 +116,7 @@ public class DistrictService {
             vos.add(vo);
         }
 
-        return new PageImpl<>(vos, page, entityPage.getTotalElements());
+        return new PageImpl<>(vos, page, pageResult.getTotalElements());
     }
 
     public DistrictVo get(Long districtId) {
@@ -137,15 +136,9 @@ public class DistrictService {
     public List<? super SimpleTree> findChildNodes(long districtId) {
         List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
-        District parent = new District(districtId, null);
-        parent.setParentId(districtId);
+        List<? extends SimpleTree> vos = toTree(all);
 
-        List<District> tempList = Lists.newArrayList();
-        tempList.addAll(all);
-        tempList.remove(parent); //删除根元素
-        SimpleTree vo = this.buildTree(parent, tempList);
-
-        return vo.getChildren();
+        return TreeHelper.buildTree(vos, String.valueOf(districtId));
     }
 
     @Transactional
@@ -198,109 +191,47 @@ public class DistrictService {
      */
     private List<Long> findChildIds(long districtId, int flag) {
         List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
-        List<District> tempList = new ArrayList<District>();
-        tempList.addAll(all);
 
-        //删除根元素
-        District district = new District(0L, null);
-        tempList.remove(district);
+        List<? extends SimpleTree> vos = toTree(all);
+        List<SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(districtId));
 
-        //过滤出所有下级元素
-        List<District> filterList = new ArrayList<District>();
-        filterList = filterChildren(filterList, tempList, districtId);
+        List<String> nodeIds = Lists.newArrayList();
+        TreeHelper.collectNodeIds(nodeIds, trees);
+
+        //过滤出所有下级节点ID
+        List<Long> ids = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
 
         if (flag == 1) {
-            // 本元素
-            District districtOld = new District();
-            districtOld.setDistrictId(districtId);
-            filterList.add(districtOld);
-            all.removeAll(filterList);
-            filterList = all;
+            List<Long> allIds = all.stream().map(District::getDistrictId).collect(Collectors.toList());
+            allIds.remove(0L);  //删除根元素
+            allIds.remove(districtId);
+            allIds.removeAll(ids);
+
+            ids = allIds;
         }
-
-
-        List<Long> ids = filterList.parallelStream()
-                .map(District::getDistrictId).collect(Collectors.toList());
 
         return ids;
     }
 
     /**
-     * 根据上级地区id递归过滤结点
+     * 转换树vo
      *
-     * @param filterList 过滤的子节点
-     * @param allList    所有地区结果集
-     * @param districtId 上级地区id
-     * @return 所有子结点
+     * @param list 地区
+     * @return
      * @author rutine
-     * @time Oct 16, 2012 7:44:35 PM
+     * @time Oct 29, 2020 17:39:35 PM
      */
-    private List<District> filterChildren(List<District> filterList, List<District> allList, long districtId) {
-        List<District> subList = filterChildren(allList, districtId);
-        if (!subList.isEmpty()) {
-            filterList.addAll(subList);
-        }
-        for (District district : subList) {
-            filterChildren(filterList, allList, district.getDistrictId());
-        }
-
-        return filterList;
-    }
-
-    /**
-     * 根据地区id获得所有子结点
-     *
-     * @param allList    所有地区结果集
-     * @param districtId 上级地区id
-     * @return 所有子结点
-     * @author rutine
-     * @time Oct 16, 2012 7:40:46 PM
-     */
-    private List<District> filterChildren(List<District> allList, long districtId) {
-        List<District> subList = new ArrayList<District>();
-        Iterator<District> it = allList.iterator();
-        while (it.hasNext()) {
-            District district = it.next();
-            if (district.getParentId() != null && district.getParentId() == districtId) {
-                subList.add(district);
-                it.remove();
+    private List<? extends SimpleTree> toTree(List<District> list) {
+        return list.stream().map(mapper -> {
+            SimpleTree tree = new SimpleTree();
+            tree.setId(mapper.getDistrictId().toString());
+            tree.setParentId(mapper.getParentId().toString());
+            tree.setText(mapper.getDistrictName());
+            if (CITY.equalsIgnoreCase(mapper.getDistrictLevel())) {
+                tree.setIsLeaf(true); // 城市节点
             }
-        }
 
-        return subList;
-    }
-
-    /**
-     * 根据父级机构构建机构树
-     *
-     * @param parent    父级机构
-     * @param children    所有子机构
-     * @return 机构树
-     * @author rutine
-     * @time Dec 7, 2018 11:29:15 AM
-     */
-    private SimpleTree buildTree(District parent, List<District> children) {
-        long id = parent.getDistrictId();
-        List<? super SimpleTree> childNodes = Lists.newArrayList();
-        Iterator<District> it = children.iterator();
-        while (it.hasNext()) {
-            District item = it.next();
-            if (item.getParentId().equals(id)) {
-                it.remove();
-                List<District> others = Lists.newArrayList();
-                others.addAll(children);
-                childNodes.add(this.buildTree(item, others));
-            }
-        }
-
-        SimpleTree vo = new SimpleTree();
-        vo.setId(parent.getDistrictId().toString());
-        vo.setText(parent.getDistrictName());
-        vo.setChildren(childNodes);
-        if (CITY.equalsIgnoreCase(parent.getDistrictLevel())) {
-            vo.setIsLeaf(true); // 城市节点
-        }
-
-        return vo;
+            return tree;
+        }).collect(Collectors.toList());
     }
 }

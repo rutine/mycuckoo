@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -71,28 +72,27 @@ public class ModuleService {
 
 
     public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations, boolean isCheckbox) {
-        List<ModuleMenuVo> firstList = Lists.newArrayList();
-        List<ModuleMenuVo> otherList = Lists.newArrayList();
+        List<ModuleMenuVo> firsts = Lists.newArrayList();
+        List<ModuleMenuVo> others = Lists.newArrayList();
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : menus) {
             ModuleLevel modLevel = ModuleLevel.of(vo.getModLevel());
             switch (modLevel) {
                 case ONE:
-                    firstList.add(vo);
+                    firsts.add(vo);
                     break;
                 case TWO:
                 case THREE:
                 case FOUR:
-                    otherList.add(vo);
+                    others.add(vo);
                     break;
             }
         }
 
         List<SimpleTree> trees = Lists.newArrayList();
-        for (ModuleMenuVo vo : firstList) {
-            SimpleTree tree = this.buildTree(vo, otherList, checkedOperations, new CheckedHolder(null), isCheckbox);
-            trees.add(tree);
+        for (ModuleMenuVo vo : firsts) {
+            trees.add(this.buildTree(vo, others, checkedOperations, new CheckedHolder(null), isCheckbox));
         }
 
         return trees;
@@ -101,15 +101,14 @@ public class ModuleService {
     @Transactional
     public void deleteModOptRefByOperateId(long operateId) {
         // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByOperateId(operateId);
-        List<String> modOptRefIdList = new ArrayList<String>();
-        for (ModOptRef modOptRef : modOptRefList) {
-            Long modOptId = modOptRef.getModOptId();
-            modOptRefIdList.add(modOptId.toString());
-        }
+        List<ModOptRef> modOptRefs = modOptRefMapper.findByOperateId(operateId);
+        List<String> modOptRefIds = modOptRefs.stream()
+                .map(ModOptRef::getModOptId)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
 
         // 删除模块时自动删除权限下的模块
-        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
         modOptRefMapper.deleteByOperateId(operateId);
 
         String optContent = "根据操作ID删除模块操作关系,级联删除权限";
@@ -123,15 +122,14 @@ public class ModuleService {
 
         ModuleMenu moduleMenu = get(moduleId);
         // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId);
-        List<String> modOptRefIdList = new ArrayList<String>();
-        for (ModOptRef modOptRef : modOptRefList) {
-            Long modOptId = modOptRef.getModOptId();
-            modOptRefIdList.add(modOptId.toString());
-        }
+        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
+        List<String> modOptRefIds = modOptRefs.stream()
+                .map(ModOptRef::getModOptId)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
 
         // 删除模块时自动删除权限下的模块
-        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
         // 删除模块时自动删除模块下的操作
         modOptRefMapper.deleteByModuleId(moduleId);
         moduleMenuMapper.delete(moduleId);
@@ -150,15 +148,14 @@ public class ModuleService {
             ModuleMenu moduleMenu = get(moduleId);
             moduleMenu.setStatus(DISABLE);
             // 查询当前模块的所有操作
-            List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId);
-            List<String> modOptRefIdList = new ArrayList<String>();
-            for (ModOptRef modOptRef : modOptRefList) {
-                Long modOptId = modOptRef.getModOptId();
-                modOptRefIdList.add(modOptId.toString());
-            }
+            List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
+            List<String> modOptRefIds = modOptRefs.stream()
+                    .map(ModOptRef::getModOptId)
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
 
             // 删除模块时自动删除权限下的模块
-            uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+            uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
             // 停用第三级模块时将自动删除模块下的操作
             modOptRefMapper.deleteByModuleId(moduleId);
             moduleMenuMapper.update(moduleMenu);
@@ -187,7 +184,7 @@ public class ModuleService {
 
             switch (modLevel) {
                 case ONE:
-                    sortModule(firstList, vo);
+                    addModule(firstList, vo);
                     break;
                 case TWO:
                     secondList.add(vo);
@@ -201,16 +198,17 @@ public class ModuleService {
         Map<String, List<ModuleMenuVo>> secondMap = Maps.newHashMap(); // 第二级
         Map<String, List<ModuleMenuVo>> thirdMap = Maps.newHashMap();     // 第三级
 
+        ModuleMenuVo comparator = new ModuleMenuVo();
         // 分类一级包含的二级菜单, 二级包含的三级菜单
         for (ModuleMenuVo firstMod : firstList) { // 1
             List<ModuleMenuVo> firstModChildren = Lists.newArrayList();
             for (ModuleMenuVo secondMod : secondList) { // 2
-                if (secondMod.getParentId() == firstMod.getModuleId()) {
-                    sortModule(firstModChildren, secondMod);
+                if (secondMod.getParentId().equals(firstMod.getModuleId())) {
+                    addModule(firstModChildren, secondMod);
                     List<ModuleMenuVo> secondModChildren = Lists.newArrayList();
                     for (ModuleMenuVo thirdMod : thirdList) { // 3
-                        if (thirdMod.getParentId() == secondMod.getModuleId()) {
-                            sortModule(secondModChildren, thirdMod);
+                        if (thirdMod.getParentId().equals(secondMod.getModuleId())) {
+                            addModule(secondModChildren, thirdMod);
                         }
                     }
                     thirdMap.put(secondMod.getModuleId().toString(), secondModChildren); // 二级包含的三级子菜单
@@ -222,6 +220,7 @@ public class ModuleService {
         return new HierarchyModuleVo(firstList, secondMap, thirdMap);
     }
 
+    //TODO 方法名不能代表其含义了
     public List<? extends SimpleTree> findChildNodes(long modId, boolean isCheckbox) {
         List<ModuleMenuVo> all = this.findAll();
         ModuleMenuVo parent = new ModuleMenuVo(modId);
@@ -266,15 +265,15 @@ public class ModuleService {
     }
 
     public AssignVo<CheckBoxTree, Long> findOperationTreeByModId(long moduleId) {
-        List<Operate> allOperateList = operateService.findAll(); //所有操作
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(moduleId); //已经分配的操作
-        List<Long> optIds = modOptRefList.parallelStream()
+        List<Operate> allOperates = operateService.findAll(); //所有操作
+        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId); //已经分配的操作
+        List<Long> optIds = modOptRefs.parallelStream()
                 .map(ModOptRef::getOperate)
                 .map(Operate::getOperateId)
                 .collect(Collectors.toList());
 
         List<CheckBoxTree> trees = Lists.newArrayList();
-        allOperateList.forEach(consumer -> {
+        allOperates.forEach(consumer -> {
             boolean checked = optIds.contains(consumer.getOperateId());
 
             CheckBoxTree tree = new CheckBoxTree();
@@ -294,7 +293,7 @@ public class ModuleService {
 
     public List<ModOptRef> findModOptRefsByModOptRefIds(Long[] modOptRefIds) {
         if (modOptRefIds == null || modOptRefIds.length == 0) {
-            return new ArrayList<ModOptRef>(0);
+            return new ArrayList<>(0);
         }
 
         return modOptRefMapper.findByIds(modOptRefIds);
@@ -378,46 +377,34 @@ public class ModuleService {
 
 
     @Transactional
-    public void saveModuleOptRefs(long modId, List<Long> optIdList) {
+    public void saveModuleOptRefs(long modId, List<Long> optIds) {
         // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefList = modOptRefMapper.findByModuleId(modId);
-        if (modOptRefList.isEmpty()) {
-            saveModuleOptRefSingle(modId, optIdList);
+        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(modId);
+        if (modOptRefs.isEmpty()) {
+            saveModuleOptRefSingle(modId, optIds);
         }
         else {
             /*
-             * 模块操作关系：首先找出重复的操作ID，
+             * 模块操作关系：首先过滤出已被删除的数据,
              * 原模块操作列表删除重复的之后删除(并级联删除权限操作)
              * 新分配的操作列表删除重复的之后增加
              */
-            List<ModOptRef> repeatModOptRefList = new ArrayList<ModOptRef>();
-            List<Long> repeatOperateIdList = new ArrayList<Long>();
-            for (ModOptRef modOptRef : modOptRefList) {
-                Long oldOperateId = modOptRef.getOperate().getOperateId();
-                for (Long newOperateId : optIdList) {
-                    if (newOperateId == oldOperateId) {
-                        repeatModOptRefList.add(modOptRef);
-                        repeatOperateIdList.add(newOperateId);
-                        break;
-                    }
-                }
-            }
-            modOptRefList.removeAll(repeatModOptRefList); //删除重复的模块操作
-            optIdList.removeAll(repeatOperateIdList); //删除重复的ID
+            List<ModOptRef> deleteModOptRefs = modOptRefs.stream()
+                    .filter(modOptRef -> !optIds.contains(modOptRef.getOperate().getOperateId()))
+                    .collect(Collectors.toList());
 
-            modOptRefList.forEach(modOptRef -> {
+            deleteModOptRefs.forEach(modOptRef -> {
                 modOptRefMapper.delete(modOptRef.getModOptId()); //进行模块操作关系删除
             });
 
-            List<String> modOptRefIdList = new ArrayList<String>();
-            for (ModOptRef modOptRef : modOptRefList) {
-                Long modOptId = modOptRef.getModOptId();
-                modOptRefIdList.add(modOptId.toString());
-            }
-            uumServiceFacade.deletePrivilegeByModOptId(modOptRefIdList.toArray(new String[modOptRefIdList.size()]));
+            List<String> deleteModOptRefIds = deleteModOptRefs.stream()
+                    .map(ModOptRef::getModOptId)
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+            uumServiceFacade.deletePrivilegeByModOptId(deleteModOptRefIds.toArray(new String[deleteModOptRefIds.size()]));
 
             // 删除权限操作 modOptRefList 模块操作关系
-            this.saveModuleOptRefSingle(modId, optIdList); // 保存新分配的模块操作关系
+            this.saveModuleOptRefSingle(modId, optIds); // 保存新分配的模块操作关系
         }
     }
 
@@ -484,27 +471,27 @@ public class ModuleService {
     /**
      * 对系统菜单进行排序
      *
-     * @param moduleList 菜单列表
+     * @param modules 菜单列表
      * @param moduleMenu 菜单对象
      * @author rutine
      * @time Oct 11, 2012 8:58:30 PM
      */
-    private void sortModule(List<ModuleMenuVo> moduleList, ModuleMenuVo moduleMenu) {
+    private void addModule(List<ModuleMenuVo> modules, ModuleMenuVo moduleMenu) {
         // 根据操作顺序进行排序
         int index = 0; // 元素索引
         boolean isAppend = true; // 是否追加元素
-        for (ModuleMenuVo mod : moduleList) {
-            int listModOrder = mod.getModOrder(); // 已经有的操作顺序
-            int currModOrder = moduleMenu.getModOrder(); // 当前操作顺序
-            if (listModOrder > currModOrder) {
-                moduleList.add(index, moduleMenu); // 顺序小的插在前
+        for (ModuleMenuVo mod : modules) {
+            int listOrder = mod.getModOrder(); // 已经有的操作顺序
+            int currOrder = moduleMenu.getModOrder(); // 当前操作顺序
+            if (listOrder > currOrder) {
+                modules.add(index, moduleMenu); // 顺序小的插在前
                 isAppend = false;
                 break;
             }
             index++;
         }
         if (isAppend) {
-            moduleList.add(moduleMenu); //加到操作list中
+            modules.add(moduleMenu); //加到操作list中
         }
     }
 
@@ -517,7 +504,6 @@ public class ModuleService {
      * @time Oct 14, 2012 9:14:00 AM
      */
     private void saveModuleOptRefSingle(long moduleId, List<Long> operateIdList) {
-
         StringBuilder operateIds = new StringBuilder();
         if (operateIdList != null) {
             for (Long operateId : operateIdList) {
