@@ -101,7 +101,7 @@ public class OrganService {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, N);
-        List<SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
+        List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
 
         List<String> nodeIds = Lists.newArrayList();
         TreeHelper.collectNodeIds(nodeIds, trees);
@@ -264,7 +264,7 @@ public class OrganService {
                 tree = new SimpleTree();
             }
             tree.setId(mapper.getOrgId().toString());
-            tree.setParentId(mapper.getParentId().toString());
+            tree.setParentId(mapper.getOrgId() == 0 ? "-1" : mapper.getParentId().toString());
             tree.setText(mapper.getOrgSimpleName());
             if (ModuleLevel.TWO.value().equals(mapper.getOrgType())) {
                 tree.setIsLeaf(true);

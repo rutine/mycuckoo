@@ -7,7 +7,9 @@ import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.DistrictService;
+import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.Tree;
 import com.mycuckoo.vo.platform.DistrictVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -152,21 +155,24 @@ public class DistrictController {
      * @time Jul 2, 2013 11:27:54 AM
      */
     @GetMapping("/{id}/child/nodes")
-    public AjaxResponse<List<? super SimpleTree>> getChildNodes(@PathVariable long id) {
-        List<? super SimpleTree> asyncTreeList = Lists.newArrayList();
+    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable long id) {
+        List<? extends SimpleTree> trees = Lists.newArrayList();
         if (id == -1L) {
-            SimpleTree treeVo = new SimpleTree();
-            treeVo.setId("0");
-            treeVo.setText("中国");
-            treeVo.setChildren(districtService.findChildNodes(0));
-            asyncTreeList.add(treeVo);
+            List<SimpleTree> tmpTrees = Lists.newArrayList();
+            SimpleTree root = new SimpleTree();
+            root.setId("0");
+            root.setText("中国");
+            root.setChildren(districtService.findChildNodes(0));
+            tmpTrees.add(root);
+
+            trees = tmpTrees;
         } else {
-            asyncTreeList = districtService.findChildNodes(id);
+            trees = districtService.findChildNodes(id);
         }
 
-        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
+        logger.debug("json --> {}", JsonUtils.toJson(trees));
 
-        return AjaxResponse.create(asyncTreeList);
+        return AjaxResponse.create(trees);
     }
 
 }

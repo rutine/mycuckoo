@@ -85,7 +85,7 @@ public class SystemOptLogService {
         sysOptLog.setOptUserRole(SessionUtil.getRoleName());
         sysOptLog.setOptUserOgan(SessionUtil.getOrganName());
 
-//        sysOptLogMapper.save(sysOptLog);
+        sysOptLogMapper.save(sysOptLog);
     }
 
 }

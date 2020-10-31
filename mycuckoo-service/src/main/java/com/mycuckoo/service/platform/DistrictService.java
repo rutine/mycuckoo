@@ -133,7 +133,7 @@ public class DistrictService {
         return vo;
     }
 
-    public List<? super SimpleTree> findChildNodes(long districtId) {
+    public List<? extends SimpleTree> findChildNodes(long districtId) {
         List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
@@ -193,7 +193,7 @@ public class DistrictService {
         List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
-        List<SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(districtId));
+        List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(districtId));
 
         List<String> nodeIds = Lists.newArrayList();
         TreeHelper.collectNodeIds(nodeIds, trees);
