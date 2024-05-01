@@ -7,7 +7,7 @@ package com.mycuckoo.vo;
  * @version 2.0.0
  * @time Sep 23, 2014 10:59:31 AM
  */
-public class CheckBoxTree extends SimpleTree {
+public class CheckBoxTree extends SimpleTree<CheckBoxTree> {
     private Boolean checked;
     private Boolean nocheck;
     private CheckBox checkBox;

@@ -2,15 +2,16 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.ModuleLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.XmlOptUtils;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleLevel;
+import com.mycuckoo.constant.enums.ModuleName;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.exception.SystemException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
@@ -18,6 +19,7 @@ import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
+import com.mycuckoo.utils.XmlOptUtils;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
@@ -34,16 +36,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
-import static com.mycuckoo.common.utils.CommonUtils.getResourcePath;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.utils.CommonUtils.getResourcePath;
+import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 系统模块业务类
@@ -65,8 +68,6 @@ public class ModuleService {
 
     @Autowired
     private OperateService operateService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
     @Autowired
     private UumServiceFacade uumServiceFacade;
 
@@ -92,7 +93,8 @@ public class ModuleService {
 
         List<SimpleTree> trees = Lists.newArrayList();
         for (ModuleMenuVo vo : firsts) {
-            trees.add(this.buildTree(vo, others, checkedOperations, new CheckedHolder(null), isCheckbox));
+            Map<Long, List<ModuleMenuVo>> groupMap = others.stream().collect(Collectors.groupingBy(ModuleMenuVo::getParentId));
+            trees.add(this.buildTree(vo, groupMap, checkedOperations, new CheckedHolder(null), isCheckbox));
         }
 
         return trees;
@@ -111,15 +113,18 @@ public class ModuleService {
         uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
         modOptRefMapper.deleteByOperateId(operateId);
 
-        String optContent = "根据操作ID删除模块操作关系,级联删除权限";
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_MODOPT_MGR,
-                optContent, operateId + "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_MODOPT_MGR)
+                .operate(OptName.DELETE)
+                .id(operateId)
+                .title(null)
+                .content("根据操作ID删除模块操作关系,级联删除权限")
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
     @Transactional
     public void delete(Long moduleId) {
-        logger.debug("will delete module id is {}", moduleId);
-
         ModuleMenu moduleMenu = get(moduleId);
         // 查询当前模块的所有操作
         List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
@@ -184,7 +189,7 @@ public class ModuleService {
 
             switch (modLevel) {
                 case ONE:
-                    addModule(firstList, vo);
+                    firstList.add(vo);
                     break;
                 case TWO:
                     secondList.add(vo);
@@ -195,27 +200,19 @@ public class ModuleService {
             }
         }
 
-        Map<String, List<ModuleMenuVo>> secondMap = Maps.newHashMap(); // 第二级
-        Map<String, List<ModuleMenuVo>> thirdMap = Maps.newHashMap();     // 第三级
+        // 第一级
+        firstList.sort(Comparator.comparingLong(ModuleMenu::getModOrder));
 
-        ModuleMenuVo comparator = new ModuleMenuVo();
-        // 分类一级包含的二级菜单, 二级包含的三级菜单
-        for (ModuleMenuVo firstMod : firstList) { // 1
-            List<ModuleMenuVo> firstModChildren = Lists.newArrayList();
-            for (ModuleMenuVo secondMod : secondList) { // 2
-                if (secondMod.getParentId().equals(firstMod.getModuleId())) {
-                    addModule(firstModChildren, secondMod);
-                    List<ModuleMenuVo> secondModChildren = Lists.newArrayList();
-                    for (ModuleMenuVo thirdMod : thirdList) { // 3
-                        if (thirdMod.getParentId().equals(secondMod.getModuleId())) {
-                            addModule(secondModChildren, thirdMod);
-                        }
-                    }
-                    thirdMap.put(secondMod.getModuleId().toString(), secondModChildren); // 二级包含的三级子菜单
-                }
-            }
-            secondMap.put(firstMod.getModuleId().toString(), firstModChildren); // 一级包含的二级子菜单
-        }
+        // 第二级
+        Map<String, List<ModuleMenuVo>> secondMap = secondList.stream()
+                .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
+                        Collectors.collectingAndThen(Collectors.toList(),
+                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
+        // 第三级
+        Map<String, List<ModuleMenuVo>> thirdMap = thirdList.stream()
+                .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
+                        Collectors.collectingAndThen(Collectors.toList(),
+                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
 
         return new HierarchyModuleVo(firstList, secondMap, thirdMap);
     }
@@ -300,9 +297,6 @@ public class ModuleService {
     }
 
     public Page<ModuleMenuVo> findByPage(long treeId, String modName, String modEnName, Pageable page) {
-        logger.debug("start={} limit={} treeId={} modName={} modEnName={}",
-                page.getOffset(), page.getPageSize(), treeId, modName, modEnName);
-
         Map<String, Object> params = Maps.newHashMap();
         params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
         params.put("modEnName", isNullOrEmpty(modEnName) ? null : "%" + modEnName + "%");
@@ -319,8 +313,6 @@ public class ModuleService {
     }
 
     public ModuleMenuVo get(Long moduleId) {
-        logger.debug("will find module id is {}", moduleId);
-
         ModuleMenu entity = moduleMenuMapper.get(moduleId);
         ModuleMenuVo vo = new ModuleMenuVo();
         BeanUtils.copyProperties(entity, vo);
@@ -412,18 +404,14 @@ public class ModuleService {
     // --------------------------- 私有方法 -------------------------------
 
 
-    private SimpleTree buildTree(ModuleMenuVo parentMenu, List<ModuleMenuVo> otherMenus, List<Long> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
+    private SimpleTree buildTree(ModuleMenuVo parentMenu, Map<Long, List<ModuleMenuVo>> groupMap,
+                                 List<Long> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
         Long parentId = parentMenu.getModuleId();
         List<? super SimpleTree> subMenuVos = Lists.newArrayList();
-        Iterator<ModuleMenuVo> it = otherMenus.iterator();
-        while (it.hasNext()) {
-            ModuleMenuVo vo = it.next();
-            if (vo.getParentId().equals(parentId)) {
-                it.remove();
-                List<ModuleMenuVo> others = Lists.newArrayList();
-                others.addAll(otherMenus);
-                subMenuVos.add(this.buildTree(vo, others, checkedOperations, new CheckedHolder(checked), isCheckbox));
-            }
+        if (groupMap.containsKey(parentId)) {
+            subMenuVos = groupMap.get(parentId).stream()
+                    .map(tree -> buildTree(tree, groupMap, checkedOperations, checked, isCheckbox))
+                    .collect(Collectors.toList());
         }
 
         checked.checked = checked.checked || checkedOperations.contains(parentId);
@@ -456,43 +444,23 @@ public class ModuleService {
      * 公用模块写日志
      *
      * @param moduleMenu 模块对象
-     * @param logLevel
+     * @param level
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */
-    private void writeLog(ModuleMenu moduleMenu, LogLevel logLevel, OptName opt) {
-        String optContent = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnName() + SPLIT;
+    private void writeLog(ModuleMenu moduleMenu, LogLevel level, OptName opt) {
+        String content = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnName() + SPLIT;
 
-        sysOptLogService.saveLog(logLevel, opt, SYS_MOD_MGR, optContent, moduleMenu.getModuleId() + "");
-    }
-
-    /**
-     * 对系统菜单进行排序
-     *
-     * @param modules 菜单列表
-     * @param moduleMenu 菜单对象
-     * @author rutine
-     * @time Oct 11, 2012 8:58:30 PM
-     */
-    private void addModule(List<ModuleMenuVo> modules, ModuleMenuVo moduleMenu) {
-        // 根据操作顺序进行排序
-        int index = 0; // 元素索引
-        boolean isAppend = true; // 是否追加元素
-        for (ModuleMenuVo mod : modules) {
-            int listOrder = mod.getModOrder(); // 已经有的操作顺序
-            int currOrder = moduleMenu.getModOrder(); // 当前操作顺序
-            if (listOrder > currOrder) {
-                modules.add(index, moduleMenu); // 顺序小的插在前
-                isAppend = false;
-                break;
-            }
-            index++;
-        }
-        if (isAppend) {
-            modules.add(moduleMenu); //加到操作list中
-        }
+        LogOperator.begin()
+                .module(ModuleName.SYS_MOD_MGR)
+                .operate(opt)
+                .id(moduleMenu.getModuleId())
+                .title(null)
+                .content(content)
+                .level(level)
+                .emit();
     }
 
     /**
@@ -516,9 +484,15 @@ public class ModuleService {
             }
         }
 
-        String optContent = "模块分配操作" + SPLIT + operateIds.toString();
-        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_MODOPT_ASSIGN,
-                optContent, moduleId + "");
+        String content = "模块分配操作" + SPLIT + operateIds.toString();
+        LogOperator.begin()
+                .module(ModuleName.SYS_MODOPT_ASSIGN)
+                .operate(OptName.SAVE)
+                .id(moduleId)
+                .title(null)
+                .content(content)
+                .level(LogLevel.FIRST)
+                .emit();
     }
 
     private class CheckedHolder {

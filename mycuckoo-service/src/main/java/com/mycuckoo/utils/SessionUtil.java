@@ -1,4 +1,4 @@
-package com.mycuckoo.common.utils;
+package com.mycuckoo.utils;
 
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.vo.HierarchyModuleVo;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static com.mycuckoo.common.constant.Common.*;
+import static com.mycuckoo.constant.BaseConst.*;
 
 /**
  * 功能说明: 取会话信息工具类，主要是统一获取会话中的信息

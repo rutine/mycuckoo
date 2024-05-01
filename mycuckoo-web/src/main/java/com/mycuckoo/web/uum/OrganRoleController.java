@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
+import static com.mycuckoo.web.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 角色机构Controller

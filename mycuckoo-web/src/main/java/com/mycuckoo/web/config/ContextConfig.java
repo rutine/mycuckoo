@@ -3,6 +3,7 @@ package com.mycuckoo.web.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycuckoo.repository.PageInterceptor;
+import com.mycuckoo.web.filter.CommonsRequestLoggingFilter;
 import com.mycuckoo.web.util.JsonUtils;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -19,6 +20,11 @@ import java.text.SimpleDateFormat;
 @ComponentScan("com.mycuckoo.service")
 @MapperScan("com.mycuckoo.repository")
 public class ContextConfig {
+
+    @Bean
+    public CommonsRequestLoggingFilter requestLoggingFilter() {
+        return new CommonsRequestLoggingFilter();
+    }
 
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {

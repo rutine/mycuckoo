@@ -2,11 +2,11 @@ package com.mycuckoo.web.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.OwnerType;
-import com.mycuckoo.common.constant.PrivilegeType;
-import com.mycuckoo.common.utils.CommonUtils;
-import com.mycuckoo.common.utils.FirstLetter;
-import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.constant.enums.OwnerType;
+import com.mycuckoo.constant.enums.PrivilegeType;
+import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.FirstLetter;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -45,8 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mycuckoo.common.constant.Common.USER_DEFAULT_PWD;
-import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
+import static com.mycuckoo.constant.BaseConst.USER_DEFAULT_PWD;
+import static com.mycuckoo.web.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 用户管理Controller

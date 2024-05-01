@@ -2,14 +2,12 @@ package com.mycuckoo.web.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.DistrictService;
-import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
-import com.mycuckoo.vo.Tree;
 import com.mycuckoo.vo.platform.DistrictVo;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
@@ -26,12 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
+import static com.mycuckoo.web.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 地区Controller

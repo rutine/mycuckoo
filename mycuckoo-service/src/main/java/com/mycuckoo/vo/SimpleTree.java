@@ -9,7 +9,7 @@ import java.util.List;
  * @version 2.0.0
  * @time Sep 23, 2014 10:59:14 AM
  */
-public class SimpleTree<T extends SimpleTree> implements Tree {
+public class SimpleTree<T extends SimpleTree<T>> implements Tree {
 
     private String id;
     private String parentId;

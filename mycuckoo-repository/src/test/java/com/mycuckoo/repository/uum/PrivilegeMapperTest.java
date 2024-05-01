@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
-import com.mycuckoo.common.constant.OwnerType;
-import com.mycuckoo.common.constant.PrivilegeScope;
-import com.mycuckoo.common.constant.PrivilegeType;
+import com.mycuckoo.constant.enums.OwnerType;
+import com.mycuckoo.constant.enums.PrivilegeScope;
+import com.mycuckoo.constant.enums.PrivilegeType;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;

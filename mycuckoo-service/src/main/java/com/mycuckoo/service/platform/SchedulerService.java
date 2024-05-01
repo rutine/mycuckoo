@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.repository.Page;
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
  * 功能说明: 任务业务类

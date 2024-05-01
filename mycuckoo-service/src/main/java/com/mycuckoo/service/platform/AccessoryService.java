@@ -1,8 +1,8 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.CommonUtils;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.repository.platform.AccessoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_ACCESSORY;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.SYS_ACCESSORY;
 
 /**
  * 功能说明: 附件业务类

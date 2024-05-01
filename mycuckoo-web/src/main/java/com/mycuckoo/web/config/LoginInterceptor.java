@@ -1,6 +1,6 @@
 package com.mycuckoo.web.config;
 
-import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;

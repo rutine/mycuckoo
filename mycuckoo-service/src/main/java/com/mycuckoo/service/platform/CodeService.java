@@ -1,8 +1,8 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
@@ -21,9 +21,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 编码管理业务类

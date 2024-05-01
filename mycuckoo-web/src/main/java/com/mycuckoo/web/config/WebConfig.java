@@ -17,7 +17,7 @@ import org.springframework.web.util.WebAppRootListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import static com.mycuckoo.common.constant.Common.WEB_APP_ROOT_KEY;
+import static com.mycuckoo.constant.BaseConst.WEB_APP_ROOT_KEY;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
@@ -33,7 +33,16 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/**/*.html", "/static/**", "/view/**");
+                .excludePathPatterns(
+                        "/static/**",
+                        "/view/**",
+                        "/swagger-resources/**",
+                        "/v2/api-docs/**",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js",
+                        "/**/*.png"
+                );
     }
 
     @Override

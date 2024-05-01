@@ -1,6 +1,6 @@
 package com.mycuckoo.web.platform;
 
-import com.mycuckoo.common.utils.CommonUtils;
+import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.service.platform.AccessoryService;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.apache.commons.lang3.math.NumberUtils;

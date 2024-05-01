@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.DicBigType;
 import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.exception.ApplicationException;
@@ -17,8 +17,8 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
  * 功能说明: 字典大小类业务类

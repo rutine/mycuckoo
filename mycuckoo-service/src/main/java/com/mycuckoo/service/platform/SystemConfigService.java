@@ -1,9 +1,9 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.SystemConfigXmlParse;
-import com.mycuckoo.common.utils.XmlOptUtils;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.utils.SystemConfigXmlParse;
+import com.mycuckoo.utils.XmlOptUtils;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.vo.SystemConfigBean;
 import org.dom4j.Document;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_CONFIG_MGR;
-import static com.mycuckoo.common.utils.CommonUtils.getClusterResourcePath;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.SYS_CONFIG_MGR;
+import static com.mycuckoo.utils.CommonUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件维护业务类

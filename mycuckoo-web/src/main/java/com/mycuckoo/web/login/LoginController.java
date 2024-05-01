@@ -1,7 +1,7 @@
 package com.mycuckoo.web.login;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.service.login.LoginService;
@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.*;
-import static com.mycuckoo.common.constant.ServiceVariable.DISABLE;
+import static com.mycuckoo.constant.BaseConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
 
 /**
  * 功能说明: 登陆系统Controller

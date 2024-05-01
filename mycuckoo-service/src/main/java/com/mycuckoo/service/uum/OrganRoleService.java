@@ -1,7 +1,7 @@
 package com.mycuckoo.service.uum;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Role;
@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.ROLE_ASSIGN;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.ROLE_ASSIGN;
 
 /**
  * 功能说明: 机构角色业务类

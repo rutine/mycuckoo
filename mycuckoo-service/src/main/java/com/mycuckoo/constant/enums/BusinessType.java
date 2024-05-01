@@ -1,4 +1,4 @@
-package com.mycuckoo.common.constant;
+package com.mycuckoo.constant.enums;
 
 /**
  * 功能说明: 文件对应的业务类型

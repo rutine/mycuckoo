@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.repository.Page;
@@ -17,8 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.SYS_AFFICHE;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.SYS_AFFICHE;
 
 /**
  * 功能说明: 公告业务类

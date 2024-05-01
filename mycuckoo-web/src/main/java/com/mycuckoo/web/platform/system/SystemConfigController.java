@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
+import static com.mycuckoo.web.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统配置Controller

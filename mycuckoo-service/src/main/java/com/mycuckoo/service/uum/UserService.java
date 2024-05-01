@@ -1,11 +1,11 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.constant.OwnerType;
-import com.mycuckoo.common.utils.CommonUtils;
-import com.mycuckoo.common.utils.SystemConfigXmlParse;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.constant.enums.OwnerType;
+import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.User;
@@ -32,8 +32,8 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
  * 功能说明: 用户业务类

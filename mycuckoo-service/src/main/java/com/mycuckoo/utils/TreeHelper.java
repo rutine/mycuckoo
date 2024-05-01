@@ -1,4 +1,4 @@
-package com.mycuckoo.common.utils;
+package com.mycuckoo.utils;
 
 import com.mycuckoo.vo.SimpleTree;
 

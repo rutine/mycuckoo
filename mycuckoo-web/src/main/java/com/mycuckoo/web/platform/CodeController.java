@@ -1,7 +1,7 @@
 package com.mycuckoo.web.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.utils.SessionUtil;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.Map;
 
-import static com.mycuckoo.web.constant.ActionVariable.LIMIT;
+import static com.mycuckoo.web.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统编码Controller

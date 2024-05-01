@@ -1,14 +1,15 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.SessionUtil;
-import com.mycuckoo.common.utils.SystemConfigXmlParse;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
+import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.SysOptLogMapper;
+import com.mycuckoo.utils.SessionUtil;
+import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.vo.SystemConfigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import static com.mycuckoo.common.utils.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: TODO(这里用一句话描述这个类的作用)
@@ -52,6 +53,11 @@ public class SystemOptLogService {
 
     public String getOptContentById(long optId) {
         return sysOptLogMapper.getOptContentById(optId);
+    }
+
+    @Transactional
+    public void save(ModuleName module, OptName operate, String busiId, String title, String content, LogLevel level) {
+        this.saveLog(level, operate, module.value(), content, busiId);
     }
 
     @Transactional

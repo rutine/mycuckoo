@@ -2,10 +2,10 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.common.constant.LogLevel;
-import com.mycuckoo.common.constant.ModuleLevel;
-import com.mycuckoo.common.constant.OptName;
-import com.mycuckoo.common.utils.TreeHelper;
+import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleLevel;
+import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.common.constant.Common.SPLIT;
-import static com.mycuckoo.common.constant.ServiceVariable.*;
+import static com.mycuckoo.constant.BaseConst.SPLIT;
+import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
  * 功能说明: 机构业务类
