@@ -1,13 +1,15 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.CodeMapper;
+import com.mycuckoo.utils.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
 
 /**
@@ -39,39 +41,31 @@ public class CodeService {
 
     @Autowired
     private CodeMapper codeMapper;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
-    public boolean disEnable(long codeId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
-            Code code = new Code(codeId, DISABLE);
-            codeMapper.update(code);
-
-            code = get(codeId);
-            StringBuilder optContent = new StringBuilder();
-            optContent.append("编码停用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-            optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-            optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-            optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-            sysOptLogService.saveLog(LogLevel.SECOND, OptName.DISABLE, SYS_CODE,
-                    optContent.toString(), code.getCodeId().toString());
-
-            return true;
+    public boolean disEnable(long id, String disEnableFlag) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
+            codeMapper.update(new Code(id, DISABLE));
         } else {
-            Code code = new Code(codeId, ENABLE);
-            codeMapper.update(code);
-
-            code = get(codeId);
-            StringBuilder optContent = new StringBuilder();
-            optContent.append("编码启用：编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-            optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-            optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-            optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-            sysOptLogService.saveLog(LogLevel.SECOND, OptName.ENABLE, SYS_CODE,
-                    optContent.toString(), code.getCodeId().toString());
+            codeMapper.update(new Code(id, ENABLE));
         }
+
+        Code entity = get(id);
+        LogOperator.begin()
+                .module(ModuleName.SYS_CODE)
+                .operate(enable ? OptName.ENABLE : OptName.DISABLE)
+                .id(entity.getCodeId())
+                .title(null)
+                .content("编码%s, 英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
+                        enable ? "启用" : "停用",
+                        entity.getCodeEngName(),
+                        entity.getCodeName(),
+                        entity.getModuleName(),
+                        entity.getCodeEffect())
+                .level(LogLevel.SECOND)
+                .emit();
 
         return true;
     }
@@ -86,8 +80,8 @@ public class CodeService {
         return count > 0;
     }
 
-    public Code get(Long codeId) {
-        Code code = codeMapper.get(codeId);
+    public Code get(Long id) {
+        Code code = codeMapper.get(id);
 
         List<String> partList = new ArrayList<String>();
         partList.add(code.getPart1());
@@ -108,21 +102,26 @@ public class CodeService {
     }
 
     @Transactional
-    public void update(Code code) {
-        Code old = get(code.getCodeId());
+    public void update(Code entity) {
+        Code old = get(entity.getCodeId());
         Assert.notNull(old, "编码不存在!");
-        Assert.state(old.getCodeEngName().equals(code.getCodeEngName())
-                || !existByCodeEngName(code.getCodeEngName()), "编码[" + code.getCodeEngName() + "]已存在!");
+        Assert.state(old.getCodeEngName().equals(entity.getCodeEngName())
+                || !existByCodeEngName(entity.getCodeEngName()), "编码[" + entity.getCodeEngName() + "]已存在!");
 
-        codeMapper.update(code);
+        codeMapper.update(entity);
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-        optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-        optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-        optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.SECOND, OptName.MODIFY, SYS_CODE,
-                optContent.toString(), code.getCodeId().toString());
+        LogOperator.begin()
+                .module(ModuleName.SYS_CODE)
+                .operate(OptName.MODIFY)
+                .id(entity.getCodeId())
+                .title(null)
+                .content("英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
+                        entity.getCodeEngName(),
+                        entity.getCodeName(),
+                        entity.getModuleName(),
+                        entity.getCodeEffect())
+                .level(LogLevel.SECOND)
+                .emit();
     }
 
     /**
@@ -179,19 +178,24 @@ public class CodeService {
     }
 
     @Transactional
-    public void saveCode(Code code) throws ApplicationException {
-        Assert.state(!existByCodeEngName(code.getCodeEngName()), "编码[" + code.getCodeEngName() + "]已存在!");
+    public void saveCode(Code entity) throws ApplicationException {
+        Assert.state(!existByCodeEngName(entity.getCodeEngName()), "编码[" + entity.getCodeEngName() + "]已存在!");
 
-        code.setStatus(ENABLE);
-        codeMapper.save(code);
+        entity.setStatus(ENABLE);
+        codeMapper.save(entity);
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("编码英文名称：").append(code.getCodeEngName()).append(SPLIT);
-        optContent.append("编码中文名称: ").append(code.getCodeName()).append(SPLIT);
-        optContent.append("编码所属模块名称: ").append(code.getCodeName()).append(SPLIT);
-        optContent.append("编码效果: ").append(code.getCodeEffect()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_CODE,
-                optContent.toString(), code.getCodeId().toString());
+        LogOperator.begin()
+                .module(ModuleName.SYS_CODE)
+                .operate(OptName.SAVE)
+                .id(entity.getCodeId())
+                .title(null)
+                .content("英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
+                        entity.getCodeEngName(),
+                        entity.getCodeName(),
+                        entity.getModuleName(),
+                        entity.getCodeEffect())
+                .level(LogLevel.FIRST)
+                .emit();
     }
 
 

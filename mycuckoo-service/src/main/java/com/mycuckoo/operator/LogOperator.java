@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public final class LogOperator {
+    public final static String COMMA = ",";
+    public final static String DUNHAO = "、";
+
     private static ApplicationEventMulticaster multicaster;
     private static Object[] EMPTY = new Object[0];
 

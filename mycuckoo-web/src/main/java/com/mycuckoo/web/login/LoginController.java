@@ -1,9 +1,11 @@
 package com.mycuckoo.web.login;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
@@ -13,13 +15,7 @@ import com.mycuckoo.web.vo.res.LoginUserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -199,13 +195,17 @@ public class LoginController {
             session.setAttribute(MODULE_MENU, moduleVo);
 
             // 记录登录日志
-            StringBuilder optContent = new StringBuilder();
-            optContent.append(session.getAttribute(ORGAN_NAME) + "-")
-                    .append(session.getAttribute(ROLE_NAME) + "-")
-                    .append(session.getAttribute(USER_NAME));
-
-            loginService.saveLog(LogLevel.THIRD, OptName.USER_LOGIN,
-                    OptName.USER_LOGIN.value(), optContent.toString(), "");
+            LogOperator.begin()
+                    .module(ModuleName.USER_LOGIN)
+                    .operate(OptName.USER_LOGIN)
+                    .id(userId)
+                    .title(null)
+                    .content("组织：%s, 角色：%s, 用户: %s",
+                            session.getAttribute(ORGAN_NAME),
+                            session.getAttribute(ROLE_NAME),
+                            session.getAttribute(USER_NAME))
+                    .level(LogLevel.THIRD)
+                    .emit();
         }
 
         LoginUserInfo userInfo = new LoginUserInfo();

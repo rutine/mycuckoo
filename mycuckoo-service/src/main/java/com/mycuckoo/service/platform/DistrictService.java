@@ -2,16 +2,18 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.DictSmallType;
-import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.DistrictMapper;
+import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.DistrictVo;
 import org.slf4j.Logger;
@@ -27,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
 import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
@@ -46,30 +47,25 @@ public class DistrictService {
     private DistrictMapper districtMapper;
     @Autowired
     private DictionaryService dictionaryService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
     public boolean disEnable(long districtId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
             int count = districtMapper.countByParentId(districtId);
             if (count > 0) { //有下级地区
                 throw new ApplicationException("存在下级地区, 停用失败!");
             }
 
-            District district = new District(districtId, DISABLE);
-            districtMapper.update(district);
-
-            district = get(districtId);
-            writeLog(district, LogLevel.SECOND, OptName.DISABLE);
+            districtMapper.update(new District(districtId, DISABLE));
         } else {
-            District district = new District(districtId, ENABLE);
-            districtMapper.update(district);
+            districtMapper.update(new District(districtId, ENABLE));
 
-            district = get(districtId);
-            writeLog(district, LogLevel.SECOND, OptName.ENABLE);
         }
+
+        District district = get(districtId);
+        writeLog(district, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
 
         return true;
     }
@@ -99,7 +95,7 @@ public class DistrictService {
 
         params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
         Page<District> pageResult = districtMapper.findByPage(params, page);
-        List<DictSmallType> dictSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
+        List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
         Map<String, String> dicSmallTypeMap = dictSmallTypeList.stream()
                 .collect(Collectors.toMap(k -> k.getSmallTypeCode().toLowerCase(), DictSmallType::getSmallTypeName));
 
@@ -123,8 +119,6 @@ public class DistrictService {
         if (districtId == null) {
             return null;
         }
-
-        logger.debug("will find district id is {}", districtId);
 
         District district = districtMapper.get(districtId);
         DistrictVo vo = new DistrictVo();
@@ -175,9 +169,15 @@ public class DistrictService {
      * @author rutine
      * @time Oct 16, 2012 7:38:53 PM
      */
-    private void writeLog(District district, LogLevel logLevel, OptName opt) {
-        String optContent = district.getDistrictName() + SPLIT + district.getDistrictLevel() + SPLIT;
-        sysOptLogService.saveLog(logLevel, opt, SYS_DISTRICT, optContent, district.getDistrictId() + "");
+    private void writeLog(District entity, LogLevel logLevel, OptName opt) {
+        LogOperator.begin()
+                .module(ModuleName.SYS_DISTRICT)
+                .operate(opt)
+                .id(entity.getDistrictId())
+                .title(null)
+                .content("地区名称：%s, 地区级别：%s", entity.getDistrictName(), entity.getDistrictLevel())
+                .level(logLevel)
+                .emit();
     }
 
     /**

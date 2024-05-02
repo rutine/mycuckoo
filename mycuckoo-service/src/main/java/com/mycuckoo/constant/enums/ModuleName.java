@@ -24,9 +24,9 @@ public enum ModuleName {
     ORGAN_MGR("机构管理"),
     ROLE_MGR("角色管理"),
     ROLE_ASSIGN("角色分配"),
-    ROLE_CSS("rolemgr"),
     USER_MGR("用户管理"),
-    USER_ROLE_MGR("用户分配角色");
+    USER_ROLE_MGR("用户分配角色"),
+    USER_LOGIN("用户登录");
 
 
     private String name;

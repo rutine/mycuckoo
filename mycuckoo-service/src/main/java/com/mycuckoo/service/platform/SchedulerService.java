@@ -1,9 +1,11 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.exception.SystemException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
@@ -19,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明: 任务业务类
@@ -36,23 +38,23 @@ public class SchedulerService {
 
     @Autowired
     private SchedulerJobMapper schedulerJobMapper;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
     public void delete(Long jobId) throws SystemException {
-        SchedulerJob schedulerJob = get(jobId);
+        SchedulerJob old = get(jobId);
         schedulerJobMapper.delete(jobId);
-        SchedulerHandle.getInstance().stopJob(schedulerJob.getJobName());
+        SchedulerHandle.getInstance().stopJob(old.getJobName());
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("任务名称：").append(schedulerJob.getJobName()).append(SPLIT);
-        optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
-        optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
-        optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_SCHEDULER,
-                optContent.toString(), schedulerJob.getJobId().toString());
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.DELETE)
+                .id(old.getJobId())
+                .title(null)
+                .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
+                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCronExpression())
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
     public Page<SchedulerJob> findByPage(Map<String, Object> params, Pageable page) {
@@ -71,41 +73,44 @@ public class SchedulerService {
     }
 
     @Transactional
-    public void update(SchedulerJob schedulerJob) {
-        SchedulerJob old = get(schedulerJob.getJobId());
+    public void update(SchedulerJob entity) {
+        SchedulerJob old = get(entity.getJobId());
         Assert.notNull(old, "任务不存在!");
-        Assert.state(old.getJobId().equals(schedulerJob.getJobId())
-                || !existsByJobName(schedulerJob.getJobName()), "任务名称[" + schedulerJob.getJobName() + "]已存在!");
+        Assert.state(old.getJobId().equals(entity.getJobId())
+                || !existsByJobName(entity.getJobName()), "任务名称[" + entity.getJobName() + "]已存在!");
 
+        schedulerJobMapper.update(entity);
 
-        schedulerJobMapper.update(schedulerJob);
-
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("任务名称：").append(schedulerJob.getJobName()).append(SPLIT);
-        optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
-        optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
-        optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.SECOND, OptName.MODIFY, SYS_SCHEDULER,
-                optContent.toString(), schedulerJob.getJobId().toString());
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.MODIFY)
+                .id(old.getJobId())
+                .title(null)
+                .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
+                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCronExpression())
+                .level(LogLevel.SECOND)
+                .emit();
     }
 
     @Transactional
-    public void save(SchedulerJob schedulerJob) throws SystemException {
-        Assert.state(!existsByJobName(schedulerJob.getJobName()), "任务名称[" + schedulerJob.getJobName() + "]已存在!");
+    public void save(SchedulerJob entity) throws SystemException {
+        Assert.state(!existsByJobName(entity.getJobName()), "任务名称[" + entity.getJobName() + "]已存在!");
 
-        schedulerJob.setStatus(ENABLE);
-        schedulerJobMapper.save(schedulerJob);
-        if (ENABLE.equals(schedulerJob.getStatus())) { //增加任务且状态为启用将任务加入调度
-            SchedulerHandle.getInstance().startJob(schedulerJob);
+        entity.setStatus(ENABLE);
+        schedulerJobMapper.save(entity);
+        if (ENABLE.equals(entity.getStatus())) { //增加任务且状态为启用将任务加入调度
+            SchedulerHandle.getInstance().startJob(entity);
         }
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("任务名称：").append(schedulerJob.getJobName()).append(SPLIT);
-        optContent.append("任务类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
-        optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
-        optContent.append("时间表达式:").append(schedulerJob.getCronExpression()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_SCHEDULER,
-                optContent.toString(), schedulerJob.getJobId().toString());
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.SAVE)
+                .id(entity.getJobId())
+                .title(null)
+                .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
+                        entity.getJobName(), entity.getJobClass(), entity.getTriggerType(), entity.getCronExpression())
+                .level(LogLevel.FIRST)
+                .emit();
     }
 
     @Transactional
@@ -122,7 +127,14 @@ public class SchedulerService {
         scheduler.setJobList(jobList);
         scheduler.startScheduler(true);
 
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.START_SCHEDULER, SYS_SCHEDULER, "启动调度器并初始化任务", "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.START_SCHEDULER)
+                .id("")
+                .title(null)
+                .content("启动调度器并初始化任务")
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
     @Transactional
@@ -137,31 +149,48 @@ public class SchedulerService {
 
         schedulerJobMapper.updateStatuses(jobIds.toArray(new Long[jobIds.size()]), DISABLE);
 
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.STOP_SCHEDULER, SYS_SCHEDULER, "停止调度器", "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.STOP_SCHEDULER)
+                .id("")
+                .title(null)
+                .content("停止调度器")
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
     @Transactional
     public void startJob(long jobId) throws SystemException {
-        SchedulerJob schedulerJob = get(jobId);
-        SchedulerHandle.getInstance().startJob(schedulerJob);
+        SchedulerJob entity = get(jobId);
+        SchedulerHandle.getInstance().startJob(entity);
 
         schedulerJobMapper.updateStatus(jobId, ENABLE); // 更改状态
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("启动job::").append(schedulerJob.getJobName()).append(SPLIT);
-        optContent.append("job类描述:").append(schedulerJob.getJobClass()).append(SPLIT);
-        optContent.append("触发器类型:").append(schedulerJob.getTriggerType()).append(SPLIT);
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.START_JOB, SYS_SCHEDULER,
-                optContent.toString(), "" + jobId);
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.START_JOB)
+                .id(entity.getJobId())
+                .title(null)
+                .content("启动job：%s, job类描述：%s, 触发器类型: %s",
+                        entity.getJobName(), entity.getJobClass(), entity.getTriggerType())
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
     @Transactional
     public void stopJob(long jobId) throws SystemException {
-        SchedulerJob schedulerJob = get(jobId);
-        SchedulerHandle.getInstance().stopJob(schedulerJob.getJobName());
+        SchedulerJob entity = get(jobId);
+        SchedulerHandle.getInstance().stopJob(entity.getJobName());
         schedulerJobMapper.updateStatus(jobId, DISABLE); //  更改状态
 
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.STOP_JOB, SYS_SCHEDULER, "停止job", jobId + "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_SCHEDULER)
+                .operate(OptName.STOP_JOB)
+                .id(entity.getJobId())
+                .title(null)
+                .content("停止job：%s", entity.getJobName())
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
 

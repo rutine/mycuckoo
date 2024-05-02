@@ -2,13 +2,7 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.constant.enums.LogLevel;
-import com.mycuckoo.constant.enums.ModuleLevel;
-import com.mycuckoo.constant.enums.ModuleName;
-import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.constant.enums.PrivilegeScope;
-import com.mycuckoo.constant.enums.PrivilegeType;
+import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
@@ -21,12 +15,7 @@ import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.utils.SystemConfigXmlParse;
-import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.CheckBoxTree;
-import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.ModuleOperationVo;
-import com.mycuckoo.vo.SimpleTree;
-import com.mycuckoo.vo.SystemConfigBean;
+import com.mycuckoo.vo.*;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.uum.RowPrivilegeVo;
 import org.apache.commons.lang3.StringUtils;
@@ -37,14 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.BaseConst.*;
+import static com.mycuckoo.operator.LogOperator.DUNHAO;
 
 /**
  * 功能说明: 权限业务类
@@ -383,8 +369,6 @@ public class PrivilegeService {
         // 删除角色或用戶拥有操作权限
         delete(ownerId, ownerType, privilegeType);
 
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("模块操作关系ID: ");
         if (PrivilegeScope.ALL.value().equals(privilegeScope)) {
             Privilege privilege = new Privilege();
             privilege.setResourceId(PrivilegeScope.ALL.value());
@@ -404,16 +388,15 @@ public class PrivilegeService {
                     privilege.setPrivilegeType(privilegeType.value());
                     privilege.setPrivilegeScope(privilegeScope);
                     privilegeMapper.save(privilege);
-
-                    optContent.append(modOptId + SPLIT);
                 }
 
                 LogOperator.begin()
                         .module(ModuleName.SYS_MOD_ASSIGN_OPT)
                         .operate(OptName.SAVE)
-                        .id(ownerId + SPLIT + privilegeType.value())
+                        .id(ownerId + ":" + privilegeType.value())
                         .title(null)
-                        .content(optContent.toString())
+                        .content("模块操作关系IDs: %s",
+                                modOptIds.stream().collect(Collectors.joining(DUNHAO)))
                         .level(LogLevel.FIRST)
                         .emit();
             }

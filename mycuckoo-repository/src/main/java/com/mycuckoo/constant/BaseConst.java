@@ -29,8 +29,5 @@ public class BaseConst {
     //用户菜单
     public final static String MODULE_MENU = "moduleMenu";
 
-    //日志功能设置
-    public final static String SPLIT = ";";
-
     public final static String USER_DEFAULT_PWD = "userdefaultpassword";
 }

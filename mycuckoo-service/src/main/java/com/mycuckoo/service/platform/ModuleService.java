@@ -37,14 +37,13 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.operator.LogOperator.DUNHAO;
 import static com.mycuckoo.utils.CommonUtils.getResourcePath;
 import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
 
@@ -443,22 +442,20 @@ public class ModuleService {
     /**
      * 公用模块写日志
      *
-     * @param moduleMenu 模块对象
+     * @param entity 模块对象
      * @param level
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */
-    private void writeLog(ModuleMenu moduleMenu, LogLevel level, OptName opt) {
-        String content = moduleMenu.getModName() + SPLIT + moduleMenu.getModEnName() + SPLIT;
-
+    private void writeLog(ModuleMenu entity, LogLevel level, OptName opt) {
         LogOperator.begin()
                 .module(ModuleName.SYS_MOD_MGR)
                 .operate(opt)
-                .id(moduleMenu.getModuleId())
+                .id(entity.getModuleId())
                 .title(null)
-                .content(content)
+                .content("模块名称：%s, 英文: %s", entity.getModName(), entity.getModEnName())
                 .level(level)
                 .emit();
     }
@@ -472,25 +469,24 @@ public class ModuleService {
      * @time Oct 14, 2012 9:14:00 AM
      */
     private void saveModuleOptRefSingle(long moduleId, List<Long> operateIdList) {
-        StringBuilder operateIds = new StringBuilder();
-        if (operateIdList != null) {
-            for (Long operateId : operateIdList) {
-                Operate operate = new Operate(operateId, null);
-                ModuleMenu moduleMemu = new ModuleMenu(moduleId);
-                ModOptRef modOptRef = new ModOptRef(null, operate, moduleMemu);
-                modOptRefMapper.save(modOptRef);
-
-                operateIds.append(operateIds.length() > 0 ? "," + operateId : operateId);
-            }
+        if (operateIdList == null || operateIdList.isEmpty()) {
+            return;
         }
 
-        String content = "模块分配操作" + SPLIT + operateIds.toString();
+        for (Long operateId : operateIdList) {
+            Operate operate = new Operate(operateId, null);
+            ModuleMenu moduleMemu = new ModuleMenu(moduleId);
+            ModOptRef modOptRef = new ModOptRef(null, operate, moduleMemu);
+            modOptRefMapper.save(modOptRef);
+        }
+
         LogOperator.begin()
                 .module(ModuleName.SYS_MODOPT_ASSIGN)
                 .operate(OptName.SAVE)
                 .id(moduleId)
                 .title(null)
-                .content(content)
+                .content("模块分配操作: %s",
+                        operateIdList.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
                 .level(LogLevel.FIRST)
                 .emit();
     }

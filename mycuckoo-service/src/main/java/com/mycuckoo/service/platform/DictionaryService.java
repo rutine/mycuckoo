@@ -1,10 +1,11 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.domain.platform.DictSmallType;
-import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
@@ -17,8 +18,8 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明: 字典大小类业务类
@@ -35,82 +36,78 @@ public class DictionaryService {
     private DictBigTypeMapper dictBigTypeMapper;
     @Autowired
     private DictSmallTypeMapper dictSmallTypeMapper;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
-    public boolean disEnableDicBigType(long bigTypeId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
-            DictBigType dictBigType = getDicBigTypeByBigTypeId(bigTypeId);
+    public boolean disEnableBigType(long bigTypeId, String disEnableFlag) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
             dictBigTypeMapper.updateStatus(bigTypeId, DISABLE);
-
-            writeLog(dictBigType, LogLevel.SECOND, OptName.DISABLE);
         } else {
-            DictBigType dictBigType = getDicBigTypeByBigTypeId(bigTypeId);
             dictBigTypeMapper.updateStatus(bigTypeId, ENABLE);
-
-            writeLog(dictBigType, LogLevel.SECOND, OptName.ENABLE);
         }
+
+        DictBigType entity = getBigTypeByBigTypeId(bigTypeId);
+        writeLog(entity, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
 
         return true;
     }
 
-    public boolean existDicBigTypeByBigTypeCode(String bigTypeCode) {
+    public boolean existBigTypeByBigTypeCode(String bigTypeCode) {
         int count = dictBigTypeMapper.countByBigTypeCode(bigTypeCode);
         if (count > 0) return true;
 
         return false;
     }
 
-    public List<DictSmallType> findDicSmallTypesByBigTypeCode(String bigTypeCode) {
+    public List<DictSmallType> findSmallTypesByBigTypeCode(String bigTypeCode) {
         return dictSmallTypeMapper.findByBigTypeCode(bigTypeCode);
     }
 
-    public DictBigType getDicBigTypeByBigTypeId(long bigTypeId) {
+    public DictBigType getBigTypeByBigTypeId(long bigTypeId) {
         return dictBigTypeMapper.get(bigTypeId);
     }
 
-    public Page<DictBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
+    public Page<DictBigType> findBigTypesByPage(Map<String, Object> params, Pageable page) {
         return dictBigTypeMapper.findByPage(params, page);
     }
 
     @Transactional
-    public void updateDicBigType(DictBigType dictBigType) {
-        DictBigType old = getDicBigTypeByBigTypeId(dictBigType.getBigTypeId());
+    public void updateBigType(DictBigType entity) {
+        DictBigType old = getBigTypeByBigTypeId(entity.getBigTypeId());
         Assert.notNull(old, "字典不存在!");
-        Assert.state(old.getBigTypeCode().equals(dictBigType.getBigTypeCode())
-                || !existDicBigTypeByBigTypeCode(dictBigType.getBigTypeCode()), "编码[" + dictBigType.getBigTypeCode() + "]已存在!");
+        Assert.state(old.getBigTypeCode().equals(entity.getBigTypeCode())
+                || !existBigTypeByBigTypeCode(entity.getBigTypeCode()), "编码[" + entity.getBigTypeCode() + "]已存在!");
 
-        dictSmallTypeMapper.deleteByBigTypeId(dictBigType.getBigTypeId());
-        dictBigTypeMapper.update(dictBigType);
+        dictSmallTypeMapper.deleteByBigTypeId(entity.getBigTypeId());
+        dictBigTypeMapper.update(entity);
 
-        for (DictSmallType smallType : dictBigType.getSmallTypes()) {
-            smallType.setBigTypeId(dictBigType.getBigTypeId());
+        for (DictSmallType smallType : entity.getSmallTypes()) {
+            smallType.setBigTypeId(entity.getBigTypeId());
         }
-        this.saveDicSmallTypes(dictBigType.getSmallTypes());
+        this.saveDicSmallTypes(entity.getSmallTypes());
 
-        writeLog(dictBigType, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
-    public void saveDicBigType(DictBigType dictBigType) {
-        Assert.state(!existDicBigTypeByBigTypeCode(dictBigType.getBigTypeCode()), "编码[" + dictBigType.getBigTypeCode() + "]已存在!");
+    public void saveBigType(DictBigType entity) {
+        Assert.state(!existBigTypeByBigTypeCode(entity.getBigTypeCode()), "编码[" + entity.getBigTypeCode() + "]已存在!");
 
-        dictBigType.setStatus(ENABLE);
-        dictBigTypeMapper.save(dictBigType);
+        entity.setStatus(ENABLE);
+        dictBigTypeMapper.save(entity);
 
-        for (DictSmallType dictSmallType : dictBigType.getSmallTypes()) {
-            dictSmallType.setBigTypeId(dictBigType.getBigTypeId());
+        for (DictSmallType dictSmallType : entity.getSmallTypes()) {
+            dictSmallType.setBigTypeId(entity.getBigTypeId());
         }
-        this.saveDicSmallTypes(dictBigType.getSmallTypes());
+        this.saveDicSmallTypes(entity.getSmallTypes());
 
-        writeLog(dictBigType, LogLevel.SECOND, OptName.SAVE);
+        writeLog(entity, LogLevel.SECOND, OptName.SAVE);
     }
 
     @Transactional
-    public void saveDicSmallTypes(List<DictSmallType> dictSmallTypes) {
-        dictSmallTypes.forEach(dicSmallType -> {
+    public void saveDicSmallTypes(List<DictSmallType> smallTypes) {
+        smallTypes.forEach(dicSmallType -> {
             dictSmallTypeMapper.save(dicSmallType);
         });
     }
@@ -120,16 +117,21 @@ public class DictionaryService {
     /**
      * 公用模块写日志
      *
-     * @param dictBigType 字典大类
+     * @param entity     字典大类
      * @param logLevel   日志级别
      * @param opt        操作名称
-     * @throws ApplicationException
      * @author rutine
      * @time Oct 14, 2012 4:08:38 PM
      */
-    private void writeLog(DictBigType dictBigType, LogLevel logLevel, OptName opt) {
-        String optContent = "字典大类名称：" + dictBigType.getBigTypeName() + SPLIT;
+    private void writeLog(DictBigType entity, LogLevel logLevel, OptName opt) {
 
-        sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dictBigType.getBigTypeId() + "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_TYPEDIC)
+                .operate(opt)
+                .id(entity.getBigTypeId())
+                .title(null)
+                .content("字典大类名称：%s", entity.getBigTypeName())
+                .level(logLevel)
+                .emit();
     }
 }

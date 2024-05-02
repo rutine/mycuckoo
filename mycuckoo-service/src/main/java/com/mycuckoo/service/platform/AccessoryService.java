@@ -1,18 +1,20 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.domain.platform.Accessory;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.platform.AccessoryMapper;
+import com.mycuckoo.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.SYS_ACCESSORY;
+import static com.mycuckoo.operator.LogOperator.DUNHAO;
 
 /**
  * 功能说明: 附件业务类
@@ -27,23 +29,27 @@ public class AccessoryService {
 
     @Autowired
     private AccessoryMapper accessoryMapper;
-    @Autowired
-    private SystemOptLogService systemOptLogService;
-
 
     @Transactional
-    public void deleteByIds(List<Long> accessoryIds) {
-        if (!accessoryIds.isEmpty()) {
+    public void deleteByIds(List<Long> ids) {
+        if (!ids.isEmpty()) {
             // 删除文件
-            for (long id : accessoryIds) {
-                Accessory accessory = this.get(id);
-                CommonUtils.deleteFile("", accessory.getAccessoryName());
+            for (long id : ids) {
+                Accessory entity = this.get(id);
+                CommonUtils.deleteFile("", entity.getAccessoryName());
 
                 accessoryMapper.delete(id);
             }
 
-            String optContent = "删除附件ID：" + accessoryIds.toString();
-            systemOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, SYS_ACCESSORY, optContent, "");
+            LogOperator.begin()
+                    .module(ModuleName.SYS_ACCESSORY)
+                    .operate(OptName.DELETE)
+                    .id("")
+                    .title(null)
+                    .content("删除附件ID：%s",
+                            ids.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                    .level(LogLevel.THIRD)
+                    .emit();
         }
     }
 
@@ -56,10 +62,16 @@ public class AccessoryService {
     }
 
     @Transactional
-    public void save(Accessory accessory) {
-        accessoryMapper.save(accessory);
+    public void save(Accessory entity) {
+        accessoryMapper.save(entity);
 
-        String optContent = "附件业务表ID：" + accessory.getInfoId() + SPLIT + "附件名称:" + accessory.getAccessoryName();
-        systemOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, SYS_ACCESSORY, optContent, accessory.getAccessoryId() + "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_ACCESSORY)
+                .operate(OptName.SAVE)
+                .id(entity.getAccessoryId())
+                .title(null)
+                .content("附件业务表ID：%s, 附件名称: %s", entity.getInfoId(), entity.getAccessoryName())
+                .level(LogLevel.FIRST)
+                .emit();
     }
 }

@@ -4,18 +4,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.OrganVo;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
 import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
@@ -56,13 +56,12 @@ public class OrganService {
     private PrivilegeService privilegeService;
     @Autowired
     private PlatformServiceFacade platformServiceFacade;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
     public void disEnable(long organId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
             /**
              * 1、机构有下级
              * 2、机构下有角色
@@ -76,19 +75,14 @@ public class OrganService {
             int roleCount = organRoleService.countByOrgId(organId);
             if (roleCount > 0) throw new ApplicationException("机构下有角色");
 
-            Organ organ = new Organ(organId, DISABLE);
-            organMapper.update(organ);
+            organMapper.update(new Organ(organId, DISABLE));
             privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
-
-            organ = get(organId);
-            this.writeLog(organ, LogLevel.SECOND, OptName.DISABLE);
         } else {
-            Organ organ = new Organ(organId, ENABLE);
-            organMapper.update(organ);
-
-            organ = get(organId);
-            writeLog(organ, LogLevel.SECOND, OptName.ENABLE);
+            organMapper.update(new Organ(organId, ENABLE));
         }
+
+        Organ organ = get(organId);
+        writeLog(organ, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
     }
 
     public boolean existByOrganName(String organName) {
@@ -149,9 +143,6 @@ public class OrganService {
     }
 
     public Page<OrganVo> findByPage(String orgCode, String orgName, Pageable page) {
-        logger.debug("start={} limit={} orgName={} orgCode={}",
-                page.getOffset(), page.getPageSize(), orgName, orgCode);
-
         Integer organId = 0; //最顶级机构
         List<Long> idList = this.findChildIds(organId, 0);
         if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
@@ -176,7 +167,6 @@ public class OrganService {
         if (organId == null) {
             return null;
         }
-        logger.debug("will find organ id is {}", organId);
 
         Organ organ = organMapper.get(organId);
         Organ parentOrgan = organMapper.get(organ.getParentId());
@@ -226,20 +216,23 @@ public class OrganService {
     /**
      * 公用模块写日志
      *
-     * @param organ    机构对象
+     * @param entity    机构对象
      * @param logLevel
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Organ organ, LogLevel logLevel, OptName opt) {
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("机构名称 : ").append(organ.getOrgSimpleName()).append(SPLIT);
-        optContent.append("机构代码 : ").append(organ.getOrgCode()).append(SPLIT);
-        optContent.append("上级机构 : ").append(organ.getParentId()).append(SPLIT);
-
-        sysOptLogService.saveLog(logLevel, opt, ORGAN_MGR, optContent.toString(), organ.getOrgId() + "");
+    private void writeLog(Organ entity, LogLevel logLevel, OptName opt) {
+        LogOperator.begin()
+                .module(ModuleName.ORGAN_MGR)
+                .operate(opt)
+                .id(entity.getOrgId())
+                .title(null)
+                .content("机构名称：%s, 机构代码：%s, 上级机构: %s",
+                        entity.getOrgSimpleName(), entity.getOrgCode(), entity.getParentId())
+                .level(logLevel)
+                .emit();
     }
 
     /**

@@ -1,20 +1,20 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.exception.SystemException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.utils.XmlOptUtils;
-import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.vo.SystemConfigBean;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.SYS_CONFIG_MGR;
+import static com.mycuckoo.operator.LogOperator.COMMA;
 import static com.mycuckoo.utils.CommonUtils.getClusterResourcePath;
 
 /**
@@ -26,10 +26,6 @@ import static com.mycuckoo.utils.CommonUtils.getClusterResourcePath;
  */
 @Service
 public class SystemConfigService {
-
-    @Autowired
-    private SystemOptLogService sysOptLogService;
-
 
     public SystemConfigBean getSystemConfigInfo() {
         return SystemConfigXmlParse.getInstance().getSystemConfigBean();
@@ -49,14 +45,14 @@ public class SystemConfigService {
         if (systemName != null) { // 系统名称
             Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemName");
             el.setText(systemName);
-            optContent.append("设置系统名称: " + systemName + SPLIT);
+            optContent.append("设置系统名称: " + systemName + COMMA);
         } else if (systemMgr != null) {
             if ("add".equals(userAddDelFlag)) { // 增加
                 Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemMgr");
                 for (String userCode : systemMgr) {
                     Element userCodeEl = el.addElement("userCode");
                     userCodeEl.setText(userCode);
-                    optContent.append("增加管理员:" + userCode + SPLIT);
+                    optContent.append("增加管理员:" + userCode + COMMA);
                 }
             } else if ("delete".equals(userAddDelFlag)) { // 删除
                 Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemMgr");
@@ -67,26 +63,33 @@ public class SystemConfigService {
                             el.remove(userCodeEl);
                         }
                     }
-                    optContent.append("删除管理员:" + userCode + SPLIT);
+                    optContent.append("删除管理员:" + userCode + COMMA);
                 }
             }
         } else if (loggerLevel != null) {
             Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/loggerLevel");
             el.setText(loggerLevel);
-            optContent.append("设置日志级别:" + loggerLevel + SPLIT);
+            optContent.append("设置日志级别:" + loggerLevel + COMMA);
         } else if (rowPrivilegeLevel != null) {
             Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/rowPrivilegeLevel");
             el.setText(rowPrivilegeLevel);
-            optContent.append("设置权限级别:" + rowPrivilegeLevel + SPLIT);
+            optContent.append("设置权限级别:" + rowPrivilegeLevel + COMMA);
         } else if (logRecordKeepDays != null) {
             Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/logRecordKeepDays");
             el.setText(logRecordKeepDays);
-            optContent.append("设置日志保留天数:" + logRecordKeepDays + SPLIT);
+            optContent.append("设置日志保留天数:" + logRecordKeepDays + COMMA);
         }
         XmlOptUtils.writeXML(doc, fileName);
         SystemConfigXmlParse.getInstance().loadSystemConfigDoc();
 
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.SAVE, SYS_CONFIG_MGR, optContent.toString(), "");
+        LogOperator.begin()
+                .module(ModuleName.SYS_CONFIG_MGR)
+                .operate(OptName.SAVE)
+                .id("")
+                .title(null)
+                .content(optContent.toString())
+                .level(LogLevel.THIRD)
+                .emit();
     }
 
 }

@@ -1,9 +1,11 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.SysParameterMapper;
@@ -14,8 +16,8 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明: 系统参数业务类
@@ -30,25 +32,21 @@ public class SystemParameterService {
 
     @Autowired
     private SysParameterMapper sysParameterMapper;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
-    public boolean disEnable(long paraId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
-            SysParameter sysParameter = get(paraId);
-            sysParameter.setStatus(DISABLE);
-            sysParameterMapper.update(sysParameter);
-
-            writeLog(sysParameter, LogLevel.SECOND, OptName.DISABLE);
+    public boolean disEnable(long id, String disEnableFlag) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        SysParameter old = get(id);
+        if (!enable) {
+            old.setStatus(DISABLE);
+            sysParameterMapper.update(old);
         } else {
-            SysParameter sysParameter = get(paraId);
-            sysParameter.setStatus(ENABLE);
-            sysParameterMapper.update(sysParameter);
-
-            writeLog(sysParameter, LogLevel.SECOND, OptName.ENABLE);
+            old.setStatus(ENABLE);
+            sysParameterMapper.update(old);
         }
+
+        writeLog(old, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
 
         return true;
     }
@@ -73,19 +71,19 @@ public class SystemParameterService {
     }
 
     @Transactional
-    public void update(SysParameter systemParameter) {
-        systemParameter.setParaKeyName(null); //参数键不可修改
-        sysParameterMapper.update(systemParameter);
+    public void update(SysParameter entity) {
+        entity.setParaKeyName(null); //参数键不可修改
+        sysParameterMapper.update(entity);
 
-        writeLog(systemParameter, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
-    public void save(SysParameter systemParameter) {
-        Assert.state(!countByParaKeyName(systemParameter.getParaKeyName()), "键值[" + systemParameter.getParaKeyName() + "]已存在!");
-        sysParameterMapper.save(systemParameter);
+    public void save(SysParameter entity) {
+        Assert.state(!countByParaKeyName(entity.getParaKeyName()), "键值[" + entity.getParaKeyName() + "]已存在!");
+        sysParameterMapper.save(entity);
 
-        writeLog(systemParameter, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -94,21 +92,23 @@ public class SystemParameterService {
     /**
      * 公用模块写日志
      *
-     * @param systemParameter 系统参数对象
+     * @param entity 系统参数对象
      * @param logLevel
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 15, 2012 8:20:17 PM
      */
-    private void writeLog(SysParameter systemParameter, LogLevel logLevel, OptName opt) {
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("参数名称：").append(systemParameter.getParaName()).append(SPLIT);
-        optContent.append("参数键值：").append(systemParameter.getParaKeyName()).append(SPLIT);
-        optContent.append("参数值：").append(systemParameter.getParaValue()).append(SPLIT);
-        optContent.append("参数类型：").append(systemParameter.getParaType()).append(SPLIT);
-        sysOptLogService.saveLog(logLevel, opt, SYS_PARAMETER,
-                optContent.toString(), systemParameter.getParaId() + "");
+    private void writeLog(SysParameter entity, LogLevel logLevel, OptName opt) {
+        LogOperator.begin()
+                .module(ModuleName.SYS_PARAMETER)
+                .operate(opt)
+                .id(entity.getParaId())
+                .title(null)
+                .content("参数名称：%s, 参数键值：%s, 参数值: %s, 参数类型: %s",
+                        entity.getParaName(), entity.getParaKeyName(), entity.getParaValue(), entity.getParaType())
+                .level(logLevel)
+                .emit();
     }
 
 }

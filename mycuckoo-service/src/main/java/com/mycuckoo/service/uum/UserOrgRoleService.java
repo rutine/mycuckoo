@@ -1,14 +1,11 @@
 package com.mycuckoo.service.uum;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.Organ;
-import com.mycuckoo.domain.uum.Role;
-import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.domain.uum.UserOrgRoleRef;
+import com.mycuckoo.domain.uum.*;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.uum.UserOrgRoleRefMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.uum.UserOrgRoleRefVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import org.assertj.core.util.Lists;
@@ -20,8 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.N;
+import static com.mycuckoo.constant.ServiceConst.Y;
+import static com.mycuckoo.operator.LogOperator.DUNHAO;
 
 /**
  * 功能说明: 角色用户业务类
@@ -41,8 +41,6 @@ public class UserOrgRoleService {
     private OrganRoleService organRoleService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     public int countByOrgRoleId(long orgRoleId) {
@@ -115,7 +113,6 @@ public class UserOrgRoleService {
     }
 
     public int doSave(long userId, List<Long> orgRoleIds, long defaultOrgRoleId) {
-        StringBuilder optContent = new StringBuilder();
         for (Long orgRoleId : orgRoleIds) {
             User user = new User(userId, null);
             OrgRoleRef orgRoleRef = new OrgRoleRef(orgRoleId);
@@ -130,11 +127,17 @@ public class UserOrgRoleService {
                 userOrgRoleRef.setIsDefault(N);
             }
             userOrgRoleRefMapper.save(userOrgRoleRef);
-            optContent.append(optContent.length() > 0 ? ", " + orgRoleId : orgRoleId);
         }
 
-        sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, USER_ROLE_MGR,
-                optContent.toString(), userId + "");
+        LogOperator.begin()
+                .module(ModuleName.USER_ROLE_MGR)
+                .operate(OptName.SAVE)
+                .id(userId)
+                .title(null)
+                .content("角色IDs：%s",
+                        orgRoleIds.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                .level(LogLevel.FIRST)
+                .emit();
 
         return 1;
     }

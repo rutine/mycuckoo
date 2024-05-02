@@ -54,7 +54,7 @@ public class DictionaryController {
         params.put("dictCode", StringUtils.isBlank(dictCode) ? null : "%" + dictCode + "%");
         params.put("dictName", StringUtils.isBlank(dictName) ? null : "%" + dictName + "%");
 
-        Page<DictBigType> page = dictionaryService.findDicBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
+        Page<DictBigType> page = dictionaryService.findBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -71,7 +71,7 @@ public class DictionaryController {
     public AjaxResponse<String> create(@RequestBody DictBigType dictBigType) {
         logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
-        dictionaryService.saveDicBigType(dictBigType);
+        dictionaryService.saveBigType(dictBigType);
 
         return AjaxResponse.create("保存成功");
     }
@@ -88,16 +88,16 @@ public class DictionaryController {
     public AjaxResponse<String> update(@RequestBody DictBigType dictBigType) {
         logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
-        dictionaryService.updateDicBigType(dictBigType);
+        dictionaryService.updateBigType(dictBigType);
 
         return AjaxResponse.create("修改字典成功");
     }
 
     @GetMapping("/{id}")
     public AjaxResponse<DictBigType> get(@PathVariable long id) {
-        DictBigType dictBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
+        DictBigType dictBigType = dictionaryService.getBigTypeByBigTypeId(id);
         List<DictSmallType> smallTypes = dictionaryService
-                .findDicSmallTypesByBigTypeCode(dictBigType.getBigTypeCode());
+                .findSmallTypesByBigTypeCode(dictBigType.getBigTypeCode());
         dictBigType.setSmallTypes(smallTypes);
 
         return AjaxResponse.create(dictBigType);
@@ -117,7 +117,7 @@ public class DictionaryController {
             @PathVariable long id,
             @PathVariable String disEnableFlag) {
 
-        dictionaryService.disEnableDicBigType(id, disEnableFlag);
+        dictionaryService.disEnableBigType(id, disEnableFlag);
 
         return AjaxResponse.create("操作成功");
     }
@@ -132,7 +132,7 @@ public class DictionaryController {
     @GetMapping("/{bigTypeCode}/small-type")
     public AjaxResponse<List<DictSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
 
-        List<DictSmallType> dictSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(bigTypeCode);
+        List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(bigTypeCode);
 
         return AjaxResponse.create(dictSmallTypeList);
     }

@@ -2,15 +2,16 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.RoleMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明:  角色业务类
@@ -41,28 +42,22 @@ public class RoleService {
     private OrganRoleService organRoleService;
     @Autowired
     private PrivilegeService privilegeService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     @Transactional
     public void disEnable(long roleId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
             organRoleService.deleteByRoleId(roleId); //根据角色ID删除机构角色关系记录，为停用角色所用
             privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.value());  //删除用户所拥有操作、行权限
 
-            Role role = new Role(roleId, DISABLE);
-            roleMapper.update(role);
-
-            role = get(roleId);
-            writeLog(role, LogLevel.SECOND, OptName.DISABLE);
+            roleMapper.update(new Role(roleId, DISABLE));
         } else {
-            Role role = new Role(roleId, ENABLE);
-            roleMapper.update(role);
-
-            role = get(roleId);
-            writeLog(role, LogLevel.SECOND, OptName.ENABLE);
+            roleMapper.update(new Role(roleId, ENABLE));
         }
+
+        Role role = get(roleId);
+        writeLog(role, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
     }
 
     public boolean existByRoleName(String roleName) {
@@ -74,9 +69,6 @@ public class RoleService {
     }
 
     public Page<Role> findByPage(String roleName, Pageable page) {
-        logger.debug("start={} limit={} roleName={}",
-                page.getOffset(), page.getPageSize(), roleName);
-
         Map<String, Object> params = Maps.newHashMap();
         params.put("roleName", CommonUtils.isNullOrEmpty(roleName) ? null : "%" + roleName + "%");
 
@@ -84,8 +76,6 @@ public class RoleService {
     }
 
     public Role get(long roleId) {
-        logger.debug("will find Role id is {}", roleId);
-
         return roleMapper.get(roleId);
     }
 
@@ -117,16 +107,22 @@ public class RoleService {
     /**
      * 公用模块写日志
      *
-     * @param role     角色对象
+     * @param entity     角色对象
      * @param logLevel
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Role role, LogLevel logLevel, OptName opt) {
-        String optContent = "角色名称 : " + role.getRoleName() + SPLIT;
-        sysOptLogService.saveLog(logLevel, opt, ROLE_MGR, optContent, role.getRoleId() + "");
+    private void writeLog(Role entity, LogLevel logLevel, OptName opt) {
+        LogOperator.begin()
+                .module(ModuleName.ROLE_MGR)
+                .operate(opt)
+                .id(entity.getRoleId())
+                .title(null)
+                .content("角色名称：%s", entity.getRoleName())
+                .level(logLevel)
+                .emit();
     }
 
 }

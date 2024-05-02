@@ -2,20 +2,21 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.utils.CommonUtils;
-import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserOrgRoleRef;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.UserMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.UserRoleVo;
@@ -32,7 +33,6 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
 import static com.mycuckoo.constant.ServiceConst.*;
 
 /**
@@ -58,8 +58,6 @@ public class UserService {
     private OrganRoleService organRoleService;
     @Autowired
     private PrivilegeService privilegeService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     /**
@@ -77,7 +75,8 @@ public class UserService {
      */
     @Transactional
     public boolean disEnable(long userId, String disEnableFlag) {
-        if (DISABLE.equals(disEnableFlag)) {
+        boolean enable = ENABLE.equals(disEnableFlag);
+        if (!enable) {
             User user = new User(userId, DISABLE);
             user.setUserBelongtoOrg(0L);
             userMapper.update(user); // 更改用户所属机构为0
@@ -88,18 +87,13 @@ public class UserService {
             UserOrgRoleRef userOrgRoleRef = new UserOrgRoleRef(null, orgRoleRef, user);
             userOrgRoleRef.setIsDefault(Y);
             userOrgRoleService.save(userOrgRoleRef); // 设置无角色用户
-
-            user = userMapper.get(userId);
-            writeLog(user, LogLevel.SECOND, OptName.DISABLE);
-            return true;
         } else {
-            User user = new User(userId, ENABLE);
-            userMapper.update(user);
-
-            user = userMapper.get(userId);
-            writeLog(user, LogLevel.SECOND, OptName.ENABLE);
-            return true;
+            userMapper.update(new User(userId, ENABLE));
         }
+
+        User user = userMapper.get(userId);
+        writeLog(user, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        return true;
     }
 
     public List<UserVo> findByUserName(String userName) {
@@ -320,8 +314,14 @@ public class UserService {
         user.setUserPassword(CommonUtils.encrypt(userDefaultPwd));
         userMapper.update(user);
 
-        String optContent = "重置密码用户：" + userName;
-        sysOptLogService.saveLog(LogLevel.SECOND, OptName.RESET_PWD, USER_MGR, optContent, userId + "");
+        LogOperator.begin()
+                .module(ModuleName.ROLE_MGR)
+                .operate(OptName.RESET_PWD)
+                .id(userId)
+                .title(null)
+                .content("重置密码用户：%s", userName)
+                .level(LogLevel.SECOND)
+                .emit();
     }
 
     @Transactional
@@ -348,20 +348,23 @@ public class UserService {
     /**
      * 公用模块写日志
      *
-     * @param user
+     * @param entity
      * @param logLevel
      * @param opt
      * @throws ApplicationException
      * @author rutine
      * @time Oct 20, 2012 4:17:57 PM
      */
-    private void writeLog(User user, LogLevel logLevel, OptName opt) {
-        StringBuilder optContent = new StringBuilder();
-        optContent.append("用户编码：").append(user.getUserCode()).append(SPLIT);
-        optContent.append("用户名称: ").append(user.getUserName()).append(SPLIT);
-        optContent.append("所属机构: ").append(user.getUserBelongtoOrg()).append(SPLIT);
-
-        sysOptLogService.saveLog(logLevel, opt, USER_MGR, optContent.toString(), user.getUserId() + "");
+    private void writeLog(User entity, LogLevel logLevel, OptName opt) {
+        LogOperator.begin()
+                .module(ModuleName.USER_MGR)
+                .operate(opt)
+                .id(entity.getUserId())
+                .title(null)
+                .content("用户编码：%s, 用户名称: %s, 所属机构: %s",
+                        entity.getUserCode(), entity.getUserName(), entity.getUserBelongtoOrg())
+                .level(logLevel)
+                .emit();
     }
 
 }

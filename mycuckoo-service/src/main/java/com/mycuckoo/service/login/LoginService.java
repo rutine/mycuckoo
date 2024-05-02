@@ -1,13 +1,9 @@
 package com.mycuckoo.service.login;
 
-import com.mycuckoo.constant.enums.LogLevel;
-import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.utils.PwdCrypt;
 import com.mycuckoo.utils.SystemConfigXmlParse;
-import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.exception.ApplicationException;
-import com.mycuckoo.service.facade.UumServiceFacade;
-import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +25,6 @@ public class LoginService {
 
     @Autowired
     private UumServiceFacade uumServiceFacade;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     public boolean isAdmin(String userCode) {
@@ -68,11 +62,5 @@ public class LoginService {
         }
 
         return moduleVo;
-    }
-
-    @Transactional
-    public void saveLog(LogLevel level, OptName optModName, String optName,
-                        String optContent, String optBusinessId) throws ApplicationException {
-        sysOptLogService.saveLog(level, optModName, optName, optContent, optBusinessId);
     }
 }

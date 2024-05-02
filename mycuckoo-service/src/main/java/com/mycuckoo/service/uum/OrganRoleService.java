@@ -1,16 +1,17 @@
 package com.mycuckoo.service.uum;
 
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.exception.ApplicationException;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.OrgRoleRefMapper;
-import com.mycuckoo.service.platform.SystemOptLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.SPLIT;
-import static com.mycuckoo.constant.ServiceConst.ROLE_ASSIGN;
+import static com.mycuckoo.operator.LogOperator.DUNHAO;
 
 /**
  * 功能说明: 机构角色业务类
@@ -39,8 +40,6 @@ public class OrganRoleService {
     private OrgRoleRefMapper orgRoleRefMapper;
     @Autowired
     private UserOrgRoleService userOrgRoleService;
-    @Autowired
-    private SystemOptLogService sysOptLogService;
 
 
     public int countByOrgId(long orgId) {
@@ -49,7 +48,6 @@ public class OrganRoleService {
 
     @Transactional
     public int delete(long orgId, List<Long> roleIds) {
-        StringBuilder optContent = new StringBuilder("删除机构下的角色ID：");
         for (long roleId : roleIds) {
             OrgRoleRef orgRoleRef = this.getByOrgRoleId(orgId, roleId);
             int roleUserCount = userOrgRoleService.countByOrgRoleId(orgRoleRef.getOrgRoleId());
@@ -59,11 +57,17 @@ public class OrganRoleService {
                 throw new ApplicationException(
                         String.format("角色[%s]下有用户, 删除失败!", orgRoleRef.getRole().getRoleName()));
             }
-            optContent.append(roleId).append(SPLIT);
         }
 
-        sysOptLogService.saveLog(LogLevel.THIRD, OptName.DELETE, ROLE_ASSIGN,
-                optContent.toString(), orgId + "");
+        LogOperator.begin()
+                .module(ModuleName.ROLE_ASSIGN)
+                .operate(OptName.DELETE)
+                .id(orgId)
+                .title(null)
+                .content("删除机构下的角色ID: %s",
+                        roleIds.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                .level(LogLevel.THIRD)
+                .emit();
 
         return roleIds.size();
     }
@@ -124,18 +128,23 @@ public class OrganRoleService {
     @Transactional
     public void save(long orgId, List<Long> roleIds) {
         if (!roleIds.isEmpty()) {
-            StringBuilder optContent = new StringBuilder();
             Organ organ = new Organ(orgId, null);
             for (Long roleId : roleIds) {
                 Role role = new Role(roleId, null);
                 OrgRoleRef orgRoleRef = new OrgRoleRef(null, role, organ);
                 orgRoleRefMapper.save(orgRoleRef);
-
-                optContent.append("机构id:" + orgId + SPLIT + "角色id:" + roleId + SPLIT);
             }
 
-            sysOptLogService.saveLog(LogLevel.FIRST, OptName.SAVE, ROLE_ASSIGN,
-                    optContent.toString(), "");
+            LogOperator.begin()
+                    .module(ModuleName.ROLE_ASSIGN)
+                    .operate(OptName.SAVE)
+                    .id(orgId)
+                    .title(null)
+                    .content("机构id: %s, 角色ids: %s",
+                            orgId,
+                            roleIds.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                    .level(LogLevel.FIRST)
+                    .emit();
         }
     }
 
