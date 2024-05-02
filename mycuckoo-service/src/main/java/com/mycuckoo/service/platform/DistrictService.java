@@ -3,8 +3,8 @@ package com.mycuckoo.service.platform;
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.utils.TreeHelper;
-import com.mycuckoo.domain.platform.DicSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
@@ -99,9 +99,9 @@ public class DistrictService {
 
         params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
         Page<District> pageResult = districtMapper.findByPage(params, page);
-        List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
-        Map<String, String> dicSmallTypeMap = dicSmallTypeList.stream()
-                .collect(Collectors.toMap(k -> k.getSmallTypeCode().toLowerCase(), DicSmallType::getSmallTypeName));
+        List<DictSmallType> dictSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(DISTRICT);
+        Map<String, String> dicSmallTypeMap = dictSmallTypeList.stream()
+                .collect(Collectors.toMap(k -> k.getSmallTypeCode().toLowerCase(), DictSmallType::getSmallTypeName));
 
         List<DistrictVo> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {

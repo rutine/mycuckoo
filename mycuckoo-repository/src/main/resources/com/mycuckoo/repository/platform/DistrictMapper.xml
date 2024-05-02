@@ -30,7 +30,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_district
+        cuckoo.sys_district
     </sql>
 
     <!-- 

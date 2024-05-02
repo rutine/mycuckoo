@@ -38,7 +38,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_code
+        cuckoo.sys_code
     </sql>
 
     <!-- 插入编码： 1.由数据库生成id并赋值到SysplCode对象 -->

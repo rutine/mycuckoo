@@ -1,6 +1,6 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.DicSmallType;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import org.junit.Assert;
@@ -14,11 +14,11 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import java.util.List;
 
 @SpringBootTest
-public class DicSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
-    private static Logger logger = LoggerFactory.getLogger(DicSmallTypeMapperTest.class);
+public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
+    private static Logger logger = LoggerFactory.getLogger(DictSmallTypeMapperTest.class);
 
     @Autowired
-    private DicSmallTypeMapper mapper;
+    private DictSmallTypeMapper mapper;
 
 
     @Test
@@ -28,42 +28,42 @@ public class DicSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCon
 
     @Test
     public void testFindByBigTypeId() {
-        List<DicSmallType> list = mapper.findByBigTypeId(25l);
+        List<DictSmallType> list = mapper.findByBigTypeId(25l);
 
-        for (DicSmallType entity : list) {
+        for (DictSmallType entity : list) {
             logger.info("------> findByBigTypeId: {}", entity);
         }
     }
 
     @Test
     public void testFindByBigTypeCode() {
-        List<DicSmallType> list = mapper.findByBigTypeCode("modPageType");
+        List<DictSmallType> list = mapper.findByBigTypeCode("modPageType");
 
-        for (DicSmallType entity : list) {
+        for (DictSmallType entity : list) {
             logger.info("------> findByBigTypeCode: {}", entity);
         }
     }
 
     @Test
     public void testSave() {
-        DicSmallType dicSmallType = new DicSmallType();
-        dicSmallType.setBigTypeId(21L);
-        dicSmallType.setSmallTypeCode("小类型code");
-        dicSmallType.setSmallTypeName("字典小类型");
+        DictSmallType dictSmallType = new DictSmallType();
+        dictSmallType.setBigTypeId(21L);
+        dictSmallType.setSmallTypeCode("小类型code");
+        dictSmallType.setSmallTypeName("字典小类型");
 
-        mapper.save(dicSmallType);
+        mapper.save(dictSmallType);
 
-        Assert.assertEquals(new Long(1), dicSmallType.getSmallTypeId(), 20L);
+        Assert.assertEquals(new Long(1), dictSmallType.getSmallTypeId(), 20L);
     }
 
     @Test
     public void testUpdate() {
-        DicSmallType dicSmallType = new DicSmallType();
-        dicSmallType.setSmallTypeCode("小类型code");
-        dicSmallType.setSmallTypeName("字典小类型");
-        dicSmallType.setSmallTypeId(8L);
+        DictSmallType dictSmallType = new DictSmallType();
+        dictSmallType.setSmallTypeCode("小类型code");
+        dictSmallType.setSmallTypeName("字典小类型");
+        dictSmallType.setSmallTypeId(8L);
 
-        int row = mapper.update(dicSmallType);
+        int row = mapper.update(dictSmallType);
 
         Assert.assertEquals(1, row);
     }
@@ -75,10 +75,10 @@ public class DicSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCon
 
     @Test
     public void testGet() {
-        DicSmallType dicSmallType = mapper.get(45L);
+        DictSmallType dictSmallType = mapper.get(45L);
 
-        Assert.assertNotNull(dicSmallType);
-        Assert.assertEquals("技术", dicSmallType.getSmallTypeName());
+        Assert.assertNotNull(dictSmallType);
+        Assert.assertEquals("技术", dictSmallType.getSmallTypeName());
     }
 
     @Test
@@ -90,9 +90,9 @@ public class DicSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCon
 
     @Test
     public void testFindByPage() {
-        Page<DicSmallType> page = mapper.findByPage(null, new PageRequest(0, 10));
+        Page<DictSmallType> page = mapper.findByPage(null, new PageRequest(0, 10));
 
-        for (DicSmallType entity : page.getContent()) {
+        for (DictSmallType entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);
         }
     }

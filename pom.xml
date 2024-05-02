@@ -25,9 +25,11 @@
   </modules>
 
   <properties>
-    <mycuckoo.version>4.0.0-SNAPSHOT</mycuckoo.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
+
+    <mycuckoo.version>4.1.0-SNAPSHOT</mycuckoo.version>
+    
     <mybatis-starter.version>1.3.2</mybatis-starter.version>
     <guava.version>32.0.0-jre</guava.version>
     <quartz.version>2.3.2</quartz.version>

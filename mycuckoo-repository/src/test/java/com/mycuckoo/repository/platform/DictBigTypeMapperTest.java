@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.DicBigType;
+import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import org.junit.Assert;
@@ -16,11 +16,11 @@ import java.util.Calendar;
 import java.util.Map;
 
 @SpringBootTest
-public class DicBigTypeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
-    private static Logger logger = LoggerFactory.getLogger(DicBigTypeMapperTest.class);
+public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
+    private static Logger logger = LoggerFactory.getLogger(DictBigTypeMapperTest.class);
 
     @Autowired
-    private DicBigTypeMapper mapper;
+    private DictBigTypeMapper mapper;
 
 
     @Test
@@ -37,29 +37,29 @@ public class DicBigTypeMapperTest extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     public void testSave() {
-        DicBigType dicBigType = new DicBigType();
-        dicBigType.setBigTypeCode("bigTypeCode");
-        dicBigType.setBigTypeName("大字典类型");
-        dicBigType.setCreateDate(Calendar.getInstance().getTime());
-        dicBigType.setCreator("rutine");
-        dicBigType.setStatus("enable");
+        DictBigType dictBigType = new DictBigType();
+        dictBigType.setBigTypeCode("bigTypeCode");
+        dictBigType.setBigTypeName("大字典类型");
+        dictBigType.setCreateDate(Calendar.getInstance().getTime());
+        dictBigType.setCreator("rutine");
+        dictBigType.setStatus("enable");
 
-        mapper.save(dicBigType);
+        mapper.save(dictBigType);
 
-        Assert.assertEquals(new Long(1), dicBigType.getBigTypeId(), 20L);
+        Assert.assertEquals(new Long(1), dictBigType.getBigTypeId(), 20L);
     }
 
     @Test
     public void testUpdate() {
-        DicBigType dicBigType = new DicBigType();
-        dicBigType.setBigTypeCode("bigTypeCode");
-        dicBigType.setBigTypeName("大字典类型");
-        dicBigType.setCreateDate(Calendar.getInstance().getTime());
-        dicBigType.setCreator("rutine");
-        dicBigType.setStatus("enable");
-        dicBigType.setBigTypeId(5L);
+        DictBigType dictBigType = new DictBigType();
+        dictBigType.setBigTypeCode("bigTypeCode");
+        dictBigType.setBigTypeName("大字典类型");
+        dictBigType.setCreateDate(Calendar.getInstance().getTime());
+        dictBigType.setCreator("rutine");
+        dictBigType.setStatus("enable");
+        dictBigType.setBigTypeId(5L);
 
-        int row = mapper.update(dicBigType);
+        int row = mapper.update(dictBigType);
 
         Assert.assertEquals(1, row);
     }
@@ -71,10 +71,10 @@ public class DicBigTypeMapperTest extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     public void testGet() {
-        DicBigType dicBigType = mapper.get(25L);
+        DictBigType dictBigType = mapper.get(25L);
 
-        Assert.assertNotNull(dicBigType);
-        Assert.assertEquals("技术", dicBigType.getBigTypeCode());
+        Assert.assertNotNull(dictBigType);
+        Assert.assertEquals("技术", dictBigType.getBigTypeCode());
     }
 
     @Test
@@ -89,9 +89,9 @@ public class DicBigTypeMapperTest extends AbstractTransactionalJUnit4SpringConte
         Map<String, Object> params = Maps.newHashMap();
         params.put("bigTypeName", null);
         params.put("bigTypeCode", "%mod%");
-        Page<DicBigType> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<DictBigType> page = mapper.findByPage(params, new PageRequest(0, 10));
 
-        for (DicBigType entity : page.getContent()) {
+        for (DictBigType entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);
         }
     }

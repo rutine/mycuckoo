@@ -32,7 +32,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_scheduler_job
+        cuckoo.sys_scheduler_job
     </sql>
 
     <!-- 插入计划任务： 1.由数据库生成id并赋值到SchedulerJob对象 -->

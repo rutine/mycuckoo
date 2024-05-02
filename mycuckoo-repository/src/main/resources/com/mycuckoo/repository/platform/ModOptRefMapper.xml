@@ -27,7 +27,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_mod_opt_ref
+        cuckoo.sys_mod_opt_ref
     </sql>
 
     <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModOptRef对象 2.嵌套属性输入#{operate.operateId}-->
@@ -83,8 +83,8 @@
             t3.mod_page_type                  as modu_mod_page_type,
             t3.status                         as modu_status
         from <include refid="table" /> t1
-        left join cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
+        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
         where mod_opt_id = #{id}
     </select>
     
@@ -118,8 +118,8 @@
             t3.mod_page_type            as modu_mod_page_type,
             t3.status                   as modu_status
         from <include refid="table" /> t1
-        left join cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
+        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
     </select>
     
         <!-- 统计模块操作关系记录总数 -->
@@ -183,8 +183,8 @@
             t3.mod_page_type            as modu_mod_page_type,
             t3.status                   as modu_status
         from <include refid="table" /> t1
-        left join cuckoo.syspl_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.syspl_module_menu t3 on t3.module_id = t1.module_id
+        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
         where t1.mod_opt_id in
             <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
                 #{item}

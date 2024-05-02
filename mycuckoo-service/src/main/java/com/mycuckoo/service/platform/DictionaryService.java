@@ -2,13 +2,13 @@ package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.DicBigType;
-import com.mycuckoo.domain.platform.DicSmallType;
+import com.mycuckoo.domain.platform.DictBigType;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
-import com.mycuckoo.repository.platform.DicBigTypeMapper;
-import com.mycuckoo.repository.platform.DicSmallTypeMapper;
+import com.mycuckoo.repository.platform.DictBigTypeMapper;
+import com.mycuckoo.repository.platform.DictSmallTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +32,9 @@ import static com.mycuckoo.constant.ServiceConst.*;
 public class DictionaryService {
 
     @Autowired
-    private DicBigTypeMapper dicBigTypeMapper;
+    private DictBigTypeMapper dictBigTypeMapper;
     @Autowired
-    private DicSmallTypeMapper dicSmallTypeMapper;
+    private DictSmallTypeMapper dictSmallTypeMapper;
     @Autowired
     private SystemOptLogService sysOptLogService;
 
@@ -42,76 +42,76 @@ public class DictionaryService {
     @Transactional
     public boolean disEnableDicBigType(long bigTypeId, String disEnableFlag) {
         if (DISABLE.equals(disEnableFlag)) {
-            DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
-            dicBigTypeMapper.updateStatus(bigTypeId, DISABLE);
+            DictBigType dictBigType = getDicBigTypeByBigTypeId(bigTypeId);
+            dictBigTypeMapper.updateStatus(bigTypeId, DISABLE);
 
-            writeLog(dicBigType, LogLevel.SECOND, OptName.DISABLE);
+            writeLog(dictBigType, LogLevel.SECOND, OptName.DISABLE);
         } else {
-            DicBigType dicBigType = getDicBigTypeByBigTypeId(bigTypeId);
-            dicBigTypeMapper.updateStatus(bigTypeId, ENABLE);
+            DictBigType dictBigType = getDicBigTypeByBigTypeId(bigTypeId);
+            dictBigTypeMapper.updateStatus(bigTypeId, ENABLE);
 
-            writeLog(dicBigType, LogLevel.SECOND, OptName.ENABLE);
+            writeLog(dictBigType, LogLevel.SECOND, OptName.ENABLE);
         }
 
         return true;
     }
 
     public boolean existDicBigTypeByBigTypeCode(String bigTypeCode) {
-        int count = dicBigTypeMapper.countByBigTypeCode(bigTypeCode);
+        int count = dictBigTypeMapper.countByBigTypeCode(bigTypeCode);
         if (count > 0) return true;
 
         return false;
     }
 
-    public List<DicSmallType> findDicSmallTypesByBigTypeCode(String bigTypeCode) {
-        return dicSmallTypeMapper.findByBigTypeCode(bigTypeCode);
+    public List<DictSmallType> findDicSmallTypesByBigTypeCode(String bigTypeCode) {
+        return dictSmallTypeMapper.findByBigTypeCode(bigTypeCode);
     }
 
-    public DicBigType getDicBigTypeByBigTypeId(long bigTypeId) {
-        return dicBigTypeMapper.get(bigTypeId);
+    public DictBigType getDicBigTypeByBigTypeId(long bigTypeId) {
+        return dictBigTypeMapper.get(bigTypeId);
     }
 
-    public Page<DicBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
-        return dicBigTypeMapper.findByPage(params, page);
+    public Page<DictBigType> findDicBigTypesByPage(Map<String, Object> params, Pageable page) {
+        return dictBigTypeMapper.findByPage(params, page);
     }
 
     @Transactional
-    public void updateDicBigType(DicBigType dicBigType) {
-        DicBigType old = getDicBigTypeByBigTypeId(dicBigType.getBigTypeId());
+    public void updateDicBigType(DictBigType dictBigType) {
+        DictBigType old = getDicBigTypeByBigTypeId(dictBigType.getBigTypeId());
         Assert.notNull(old, "字典不存在!");
-        Assert.state(old.getBigTypeCode().equals(dicBigType.getBigTypeCode())
-                || !existDicBigTypeByBigTypeCode(dicBigType.getBigTypeCode()), "编码[" + dicBigType.getBigTypeCode() + "]已存在!");
+        Assert.state(old.getBigTypeCode().equals(dictBigType.getBigTypeCode())
+                || !existDicBigTypeByBigTypeCode(dictBigType.getBigTypeCode()), "编码[" + dictBigType.getBigTypeCode() + "]已存在!");
 
-        dicSmallTypeMapper.deleteByBigTypeId(dicBigType.getBigTypeId());
-        dicBigTypeMapper.update(dicBigType);
+        dictSmallTypeMapper.deleteByBigTypeId(dictBigType.getBigTypeId());
+        dictBigTypeMapper.update(dictBigType);
 
-        for (DicSmallType smallType : dicBigType.getSmallTypes()) {
-            smallType.setBigTypeId(dicBigType.getBigTypeId());
+        for (DictSmallType smallType : dictBigType.getSmallTypes()) {
+            smallType.setBigTypeId(dictBigType.getBigTypeId());
         }
-        this.saveDicSmallTypes(dicBigType.getSmallTypes());
+        this.saveDicSmallTypes(dictBigType.getSmallTypes());
 
-        writeLog(dicBigType, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(dictBigType, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
-    public void saveDicBigType(DicBigType dicBigType) {
-        Assert.state(!existDicBigTypeByBigTypeCode(dicBigType.getBigTypeCode()), "编码[" + dicBigType.getBigTypeCode() + "]已存在!");
+    public void saveDicBigType(DictBigType dictBigType) {
+        Assert.state(!existDicBigTypeByBigTypeCode(dictBigType.getBigTypeCode()), "编码[" + dictBigType.getBigTypeCode() + "]已存在!");
 
-        dicBigType.setStatus(ENABLE);
-        dicBigTypeMapper.save(dicBigType);
+        dictBigType.setStatus(ENABLE);
+        dictBigTypeMapper.save(dictBigType);
 
-        for (DicSmallType dicSmallType : dicBigType.getSmallTypes()) {
-            dicSmallType.setBigTypeId(dicBigType.getBigTypeId());
+        for (DictSmallType dictSmallType : dictBigType.getSmallTypes()) {
+            dictSmallType.setBigTypeId(dictBigType.getBigTypeId());
         }
-        this.saveDicSmallTypes(dicBigType.getSmallTypes());
+        this.saveDicSmallTypes(dictBigType.getSmallTypes());
 
-        writeLog(dicBigType, LogLevel.SECOND, OptName.SAVE);
+        writeLog(dictBigType, LogLevel.SECOND, OptName.SAVE);
     }
 
     @Transactional
-    public void saveDicSmallTypes(List<DicSmallType> dicSmallTypes) {
-        dicSmallTypes.forEach(dicSmallType -> {
-            dicSmallTypeMapper.save(dicSmallType);
+    public void saveDicSmallTypes(List<DictSmallType> dictSmallTypes) {
+        dictSmallTypes.forEach(dicSmallType -> {
+            dictSmallTypeMapper.save(dicSmallType);
         });
     }
 
@@ -120,16 +120,16 @@ public class DictionaryService {
     /**
      * 公用模块写日志
      *
-     * @param dicBigType 字典大类
+     * @param dictBigType 字典大类
      * @param logLevel   日志级别
      * @param opt        操作名称
      * @throws ApplicationException
      * @author rutine
      * @time Oct 14, 2012 4:08:38 PM
      */
-    private void writeLog(DicBigType dicBigType, LogLevel logLevel, OptName opt) {
-        String optContent = "字典大类名称：" + dicBigType.getBigTypeName() + SPLIT;
+    private void writeLog(DictBigType dictBigType, LogLevel logLevel, OptName opt) {
+        String optContent = "字典大类名称：" + dictBigType.getBigTypeName() + SPLIT;
 
-        sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dicBigType.getBigTypeId() + "");
+        sysOptLogService.saveLog(logLevel, opt, SYS_TYPEDIC, optContent, dictBigType.getBigTypeId() + "");
     }
 }

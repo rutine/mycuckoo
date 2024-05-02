@@ -28,7 +28,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_operate
+        cuckoo.sys_operate
     </sql>
 
     <!-- 插入操作： 1.由数据库生成id并赋值到 SysplOperate 对象 -->

@@ -21,7 +21,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_accessory
+        cuckoo.sys_accessory
     </sql>
 
     <!-- 插入附件： 1.由数据库生成id并赋值到Accessory对象 -->

@@ -30,7 +30,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_sys_opt_log
+        cuckoo.sys_opt_log
     </sql>
 
     <!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->

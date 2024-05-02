@@ -24,7 +24,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_affiche
+        cuckoo.sys_affiche
     </sql>
 
     <!-- 插入公告： 1.由数据库生成id并赋值到SysplAffiche对象 -->

@@ -27,7 +27,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.syspl_sys_parameter
+        cuckoo.sys_parameter
     </sql>
 
     <!-- 插入系统参数： 1.由数据库生成id并赋值到SysParameter对象 -->

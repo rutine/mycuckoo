@@ -2,8 +2,8 @@ package com.mycuckoo.web.platform.system;
 
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.DicBigType;
-import com.mycuckoo.domain.platform.DicSmallType;
+import com.mycuckoo.domain.platform.DictBigType;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.DictionaryService;
@@ -44,7 +44,7 @@ public class DictionaryController {
 
 
     @GetMapping
-    public AjaxResponse<Page<DicBigType>> list(
+    public AjaxResponse<Page<DictBigType>> list(
             @RequestParam(value = "bigTypeName", defaultValue = "") String dictName,
             @RequestParam(value = "bigTypeCode", defaultValue = "") String dictCode,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
@@ -54,7 +54,7 @@ public class DictionaryController {
         params.put("dictCode", StringUtils.isBlank(dictCode) ? null : "%" + dictCode + "%");
         params.put("dictName", StringUtils.isBlank(dictName) ? null : "%" + dictName + "%");
 
-        Page<DicBigType> page = dictionaryService.findDicBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
+        Page<DictBigType> page = dictionaryService.findDicBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -62,16 +62,16 @@ public class DictionaryController {
     /**
      * 功能说明 : 创建新字典大类
      *
-     * @param dicBigType
+     * @param dictBigType
      * @return
      * @author rutine
      * @time Jun 11, 2013 4:29:28 PM
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody DicBigType dicBigType) {
-        logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
+    public AjaxResponse<String> create(@RequestBody DictBigType dictBigType) {
+        logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
-        dictionaryService.saveDicBigType(dicBigType);
+        dictionaryService.saveDicBigType(dictBigType);
 
         return AjaxResponse.create("保存成功");
     }
@@ -79,28 +79,28 @@ public class DictionaryController {
     /**
      * 功能说明 : 修改字典, 直接删除字典大类关联的字典小类，保存字典小类
      *
-     * @param dicBigType 字典大类对象
+     * @param dictBigType 字典大类对象
      * @return
      * @author rutine
      * @time Jun 11, 2013 5:43:50 PM
      */
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody DicBigType dicBigType) {
-        logger.debug(JsonUtils.toJson(dicBigType.getSmallTypes(), DicSmallType.class));
+    public AjaxResponse<String> update(@RequestBody DictBigType dictBigType) {
+        logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
-        dictionaryService.updateDicBigType(dicBigType);
+        dictionaryService.updateDicBigType(dictBigType);
 
         return AjaxResponse.create("修改字典成功");
     }
 
     @GetMapping("/{id}")
-    public AjaxResponse<DicBigType> get(@PathVariable long id) {
-        DicBigType dicBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
-        List<DicSmallType> smallTypes = dictionaryService
-                .findDicSmallTypesByBigTypeCode(dicBigType.getBigTypeCode());
-        dicBigType.setSmallTypes(smallTypes);
+    public AjaxResponse<DictBigType> get(@PathVariable long id) {
+        DictBigType dictBigType = dictionaryService.getDicBigTypeByBigTypeId(id);
+        List<DictSmallType> smallTypes = dictionaryService
+                .findDicSmallTypesByBigTypeCode(dictBigType.getBigTypeCode());
+        dictBigType.setSmallTypes(smallTypes);
 
-        return AjaxResponse.create(dicBigType);
+        return AjaxResponse.create(dictBigType);
     }
 
     /**
@@ -130,10 +130,10 @@ public class DictionaryController {
      * @time Dec 15, 2012 4:21:10 PM
      */
     @GetMapping("/{bigTypeCode}/small-type")
-    public AjaxResponse<List<DicSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
+    public AjaxResponse<List<DictSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
 
-        List<DicSmallType> dicSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(bigTypeCode);
+        List<DictSmallType> dictSmallTypeList = dictionaryService.findDicSmallTypesByBigTypeCode(bigTypeCode);
 
-        return AjaxResponse.create(dicSmallTypeList);
+        return AjaxResponse.create(dictSmallTypeList);
     }
 }
