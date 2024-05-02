@@ -67,8 +67,7 @@
     
     <!-- 更新门户： 1.输入用对象 -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.Portal">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="portalUserid != null">portal_userid = #{portalUserid}, </if>
             <if test="portlet1 != null">portlet1 = #{portlet1}, </if>
@@ -81,8 +80,7 @@
             <if test="portlet8 != null">portlet8 = #{portlet8}, </if>
             <if test="portlet9 != null">portlet9 = #{portlet9}, </if>
         </set>
-        where 
-            portal_id = #{portalId}
+        where portal_id = #{portalId}
     </update>
     
     <!-- 删除门户 -->
@@ -94,38 +92,30 @@
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            portal_id = #{id}
+        from <include refid="table" />
+        where portal_id = #{id}
     </select>
     
     <!-- 门户记录总数 -->
     <select id="count" resultType="long">
         select
             count(1) 
-        from 
-            <include refid="table" />
+        from <include refid="table" />
     </select>
     
     <!--
         获取门户: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            portal_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where portal_id = #{id}
     </select>
 
     <!-- 查询所有门户, 映射到portal-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
     </select>
     
 </mapper> 

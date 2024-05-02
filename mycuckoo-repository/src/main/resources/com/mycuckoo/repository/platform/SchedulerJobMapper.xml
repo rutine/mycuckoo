@@ -73,8 +73,7 @@
     
     <!-- 更新计划任务： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.SchedulerJob">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="jobName != null">job_name = #{jobName}, </if>
             <if test="jobClass != null">job_class = #{jobClass}, </if>
@@ -87,8 +86,7 @@
             <if test="status != null">status = #{status}, </if>
             <if test="memo != null">memo = #{memo}, </if>
         </set>
-        where 
-            job_id = #{jobId}
+        where job_id = #{jobId}
     </update>
     
     <!-- 删除计划任务 -->
@@ -100,12 +98,9 @@
         获取计划任务: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            job_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where job_id = #{id}
     </select>
     
     
@@ -113,18 +108,14 @@
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            job_id = #{id}
+        from <include refid="table" />
+        where job_id = #{id}
     </select>
     
     <!-- 按条件查询调度任务 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="jobName != null">
                 and job_name like #{jobName}
@@ -133,49 +124,39 @@
                 and trigger_type like #{triggerType}
             </if>
         </where>
-        order by 
-            job_id desc
+        order by job_id desc
     </select>
     
     <!-- 统计计划任务记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 根据任务名称统计任务数量 -->
     <select id="countByJobName" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            job_name = #{jobName}
+        select count(1)
+        from <include refid="table" />
+        where job_name = #{jobName}
     </select>
     
     <!-- 批量修改任务状态 -->
     <update id="updateStatuses">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         set
             status = #{status}
-        where
-            job_id in
-            <foreach item="item" index="index" collection="jobIds" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        where job_id in
+        <foreach item="item" index="index" collection="jobIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     
     <!-- 根据任务id修改任务状态 -->
     <update id="updateStatus">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         set
             status = #{status}
-        where
-            job_id = #{jobId}
+        where job_id = #{jobId}
     </update>
     
 </mapper> 

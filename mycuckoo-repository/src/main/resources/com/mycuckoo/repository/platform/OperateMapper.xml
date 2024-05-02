@@ -63,8 +63,7 @@
     
     <!-- 更新操作： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.Operate">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="optName != null">opt_name = #{optName}, </if>
             <if test="optLink != null">opt_link = #{optLink}, </if>
@@ -74,8 +73,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
-            operate_id = #{operateId}
+        where operate_id = #{operateId}
     </update>
     
     <!-- 删除操作 -->
@@ -87,55 +85,41 @@
         获取操作: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            operate_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where operate_id = #{id}
     </select>
     
     <!-- 判断操作是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            operate_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where operate_id = #{id}
     </select>
 
         <!-- 根据条件分页查询模块操作-->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="optName != null">
                 opt_name like #{optName}
             </if>
         </where>
-        order by 
-            operate_id desc
+        order by operate_id desc
     </select>
     
         <!-- 统计操作记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 根据模块操作名统计模块操作数量-->
     <select id="countByName" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            opt_name = #{optName}
+        select count(1)
+        from <include refid="table" />
+        where opt_name = #{optName}
     </select>
     
 </mapper> 

@@ -72,8 +72,7 @@
     
     <!-- 更新模块菜单： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.ModuleMenu">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="parentId != null">mod_parent_id = #{parentId}, </if>
             <if test="modName != null">mod_name = #{modName}, </if>
@@ -86,8 +85,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where
-            module_id = #{moduleId}
+        where module_id = #{moduleId}
     </update>
     
     <!-- 删除模块菜单 -->
@@ -99,83 +97,61 @@
         获取模块菜单: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            module_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where module_id = #{id}
     </select>
     
     <!-- 判断模块菜单是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where
-            module_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where module_id = #{id}
     </select>
 
     <!-- 根据条件查询模块 -->
     <select id="findByPage" parameterType="map" resultMap ="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            module_id != 0
+        select <include refid="colums" />
+        from <include refid="table" />
+        where module_id != 0
         <if test="modName != null">
             and mod_name like #{modName}
         </if>
         <if test="modEnName != null">
             and mod_en_name like #{modEnName}
         </if>
-        order by
-            module_id desc
+        order by module_id desc
     </select>
     
     <!-- 统计模块菜单记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 根据父级模块ID统计下级模块数 -->
     <select id="countByParentId" parameterType="long" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where 
-            mod_parent_id = #{parentId}
+        select count(1)
+        from <include refid="table" />
+        where mod_parent_id = #{parentId}
     </select>
     
     <!-- 判断模块名称是否存在 -->
     <select id="countByModEnName" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-          mod_en_name = #{modEnName}
+        select count(1)
+        from <include refid="table" />
+        where mod_en_name = #{modEnName}
     </select>
     
     <!-- 根据父模块ID查询下级模块 -->
     <select id="findByParentIdAndIgnoreModuleIds" parameterType="map" resultMap ="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            mod_parent_id = #{parentId}
-        and
-            module_id not in
-            <foreach item="id" collection="ignoreModuleIds" open="(" separator="," close=")">
-                #{id}
-            </foreach>
+        select <include refid="colums" />
+        from <include refid="table" />
+        where mod_parent_id = #{parentId}
+        and module_id not in
+        <foreach item="id" collection="ignoreModuleIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
     
 </mapper> 

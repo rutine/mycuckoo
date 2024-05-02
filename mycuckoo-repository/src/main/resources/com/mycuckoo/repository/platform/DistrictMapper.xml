@@ -69,8 +69,7 @@
     
     <!-- 更新地区： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.District">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="parentId != null">dis_parent_id = #{parentId}, </if>
             <if test="districtName != null">district_name = #{districtName}, </if>
@@ -93,32 +92,24 @@
         获取地区: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            district_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where district_id = #{id}
     </select>
     
     <!-- 判断地区是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            district_id = #{id}
+        from <include refid="table" />
+        where district_id = #{id}
     </select>
 
     <!-- 根据条件分页查询地区 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            district_id != 0
+        select <include refid="colums" />
+        from <include refid="table" />
+        where district_id != 0
         <if test="array != null">
             and district_id in
             <foreach item="id" collection="array" open="(" separator="," close=")">
@@ -131,62 +122,45 @@
         <if test="districtLevel != null">
             and district_level = #{districtLevel}
         </if>
-        order by 
-            district_id
+        order by district_id
     </select>
     
         <!-- 统计地区记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 根据父地区ID统计下级地区数 -->
     <select id="countByParentId" parameterType="long" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            dis_parent_id = #{parentId}
+        select count(1)
+        from <include refid="table" />
+        where dis_parent_id = #{parentId}
     </select>
     
     <!-- 判断地区名称是否存在 -->
     <select id="countByName" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            district_name = #{districtName}
+        select count(1)
+        from <include refid="table" />
+        where district_name = #{districtName}
     </select>
     
     <!-- 根据父地区查询下级地区, 映射到 baseMap -->
     <select id="findByParentId" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            dis_parent_id = #{parentId}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where dis_parent_id = #{parentId}
     </select>
     
     <!-- 根据父地区和过滤条件查询下级地区 -->
     <select id="findByParentIdAndIgnoreIds" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            dis_parent_id = #{parentId}
-        and
-            district_id not in
+        select <include refid="colums" />
+        from <include refid="table" />
+        where dis_parent_id = #{parentId}
+        and district_id not in
         <foreach item="id" collection="ignoreIds" open="(" separator="," close=")">
             #{id}
         </foreach>
-        order by 
-            district_id
+        order by district_id
     </select>
 </mapper> 

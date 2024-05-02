@@ -104,8 +104,7 @@
 
     <!-- 更新用户： 1.输入用对象 -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.User">
-        update
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="userBelongtoOrg != null">user_belongto_org = #{userBelongtoOrg}, </if>
             <if test="userCode != null">user_code = #{userCode}, </if>
@@ -126,8 +125,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where
-            user_id = #{userId}
+        where user_id = #{userId}
     </update>
 
     <!-- 删除单个用户 -->
@@ -139,76 +137,55 @@
         获取用户: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select
-            <include refid="colums" />
-        from
-            <include refid="table" />
-        where
-            user_id=#{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where user_id=#{id}
     </select>
 
     <!-- 判断用户是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(user_id) > 0
-        from
-            <include refid="table" />
-        where
-            user_id=#{id}
+        select count(user_id) > 0
+        from <include refid="table" />
+        where user_id=#{id}
     </select>
 
     <!-- 返回所有用户,映射到'uumUser'-->
     <select id="findByPage" resultMap="baseMap">
-        select
-            <include refid="colums" />
-        from
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
     </select>
 
     <!-- 统计用户记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1)
-        from
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
 
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByCodeAndName" resultMap="baseMap">
         select
             t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
-        from
-            <include refid="table" /> t1
-        left join
-            cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
-        left join
-            cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-        left join
-            cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
-        left join
-            cuckoo.uum_role t5 on t4.role_id = t5.role_id
+        from <include refid="table" /> t1
+        left join cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+        left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
+        left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
         <where>
             <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
             <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
         </where>
-            order by
-                user_id desc
+        order by user_id desc
     </select>
 
     <!-- 根据用户代码、用户名称、机构ids或角色ids查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByPage2" resultMap="baseMap">
         select
             t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
-        from
-            <include refid="table" /> t1
-        left join
-            cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
-        left join
-            cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-        left join
-            cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
-        left join
-            cuckoo.uum_role t5 on t4.role_id = t5.role_id
+        from <include refid="table" /> t1
+        left join cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
+        left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
+        left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
         <where>
             <if test="orgIds != null">
                 and t1.user_belongto_org in
@@ -220,28 +197,21 @@
             <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
             <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
         </where>
-            order by
-                t1.user_id desc
+        order by t1.user_id desc
     </select>
 
     <!-- 判断用户号是否存在 -->
     <select id="existsByUserCode" parameterType="string" resultType="boolean">
-        select
-            count(1) > 0
-        from
-            <include refid="table" />
-        where
-            user_code = #{user_code}
+        select count(1) > 0
+        from <include refid="table" />
+        where user_code = #{user_code}
     </select>
 
         <!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
     <select id="getByUserCode" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
-        select
-            <include refid="colums"/>
-        from
-            <include refid="table" />
-        where
-            user_code = #{userCode}
+        select <include refid="colums"/>
+        from <include refid="table" />
+        where user_code = #{userCode}
     </select>
 
     <!-- 根据拼音代码查询用户信息 -->
@@ -249,12 +219,9 @@
         select
             user_id   as "userId",
             user_name as "userName"
-        from
-            <include refid="table" />
-        where
-            user_name_py like #{userNamePy}
-        and
-            user_id != #{userId}
+        from <include refid="table" />
+        where user_name_py like #{userNamePy}
+        and user_id != #{userId}
     </select>
 
     <!-- 根据指定的用户ID集合查询用户信息 -->
@@ -262,13 +229,11 @@
         select
             user_id,
             user_name
-        from
-            <include refid="table" />
-        <where>
-            user_id in
-            <foreach collection="array" item="userId" open="(" separator="," close=")">
-                #{userId}
-            </foreach>
+        from <include refid="table" />
+        <where> user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
         </where>
     </select>
 

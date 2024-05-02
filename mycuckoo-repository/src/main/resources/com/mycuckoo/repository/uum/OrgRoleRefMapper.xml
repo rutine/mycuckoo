@@ -48,13 +48,11 @@
     
     <!-- 更新数据： 1.输入是对象参数, 嵌套属性表达式如: #{role.roleId}, #{organ.orgId} -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.OrgRoleRef">
-        update 
-            cuckoo.uum_org_role_ref
+        update cuckoo.uum_org_role_ref
         set
             role_id = #{role.roleId},
             org_id  = #{organ.orgId}
-        where 
-            org_role_id = #{orgRoleId}
+        where org_role_id = #{orgRoleId}
     </update>
     
     <!-- 删除数据 -->
@@ -64,7 +62,7 @@
     
     <!-- 获取数据, 映射到uumOrgRoleRef -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
+        select
             t1.org_role_id            as org_role_id,
             t1.role_id                as role_role_id,
             t1.org_id                 as org_org_id,
@@ -76,42 +74,32 @@
             t3.org_code               as org_org_code,
             t3.org_type               as org_org_type,
             t3.status                 as org_status
-        from 
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_role t2  on  t1.role_id = t2.role_id
-        left join 
-            cuckoo.uum_organ t3 on t1.org_id = t3.org_id
-        where 
-            org_role_id = #{id}
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_role t2  on  t1.role_id = t2.role_id
+        left join cuckoo.uum_organ t3 on t1.org_id = t3.org_id
+        where org_role_id = #{id}
     </select>
     
     <!-- 数据记录是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            cuckoo.uum_org_role_ref
-        where 
-            org_role_id = #{id}
+        select count(1) > 0
+        from cuckoo.uum_org_role_ref
+        where org_role_id = #{id}
     </select>
 
     <!-- 查询数据, 映射到baseMap -->
     <select id="findByPage" resultMap="baseMap">
-        select 
+        select
             org_role_id     as org_role_id,
             role_id         as role_role_id,
             org_id          as org_org_id
-        from 
-            cuckoo.uum_org_role_ref
+        from cuckoo.uum_org_role_ref
     </select>
     
     <!-- 统计所有数据记录 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            cuckoo.uum_org_role_ref
+        select count(1)
+        from cuckoo.uum_org_role_ref
     </select>
     
     <!-- 根据orgId查询所有角色记录, 映射到baseMap -->
@@ -125,14 +113,10 @@
             t2.memo             as role_memo,
             t2.creator          as role_creator,
             t2.create_date      as role_create_date
-        from
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_role t2 on  t2.role_id = t1.role_id
-        where 
-            t1.org_id = #{id}
-        order by 
-            org_role_id desc
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_role t2 on  t2.role_id = t1.role_id
+        where t1.org_id = #{id}
+        order by org_role_id desc
     </select>
 
     <!-- 查询不在orgId下的角色记录, 映射到baseMap -->
@@ -145,17 +129,13 @@
             t2.memo             as role_memo,
             t2.creator          as role_creator,
             t2.create_date      as role_create_date
-        from
-            cuckoo.uum_role t2
+        from cuckoo.uum_role t2
         where not exists (
           select
             1
-          from
-            cuckoo.uum_org_role_ref t1
-          where
-            t1.role_id = t2.role_id
-          and
-            t1.org_id = #{orgId}
+          from cuckoo.uum_org_role_ref t1
+          where t1.role_id = t2.role_id
+          and t1.org_id = #{orgId}
         )
     </select>
     
@@ -184,14 +164,10 @@
             t2.memo                 as org_memo,
             t2.creator              as org_creator,
             t2.create_date          as org_create_date
-        from 
-            cuckoo.uum_org_role_ref  t1
-        left join 
-            cuckoo.uum_organ t2 on t2.org_id = t1.org_id
-        where 
-             t1.role_id = #{id}
-        order by 
-            org_role_id desc
+        from cuckoo.uum_org_role_ref  t1
+        left join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
+        where  t1.role_id = #{id}
+        order by org_role_id desc
     </select>
     
     <!-- 根据orgId和roleId获取机构角色, 映射到baseMap -->
@@ -211,16 +187,11 @@
             t3.role_name            as role_role_name,
             t3.role_level           as role_role_level,
             t3.status               as role_status
-        from
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_organ  t2 on t2.org_id = t1.org_id
-        left join 
-            cuckoo.uum_role t3 on  t3.role_id = t1.role_id
-        where 
-             t1.role_id = #{roleId}
-        and
-            t1.org_id = #{orgId}
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_organ  t2 on t2.org_id = t1.org_id
+        left join cuckoo.uum_role t3 on  t3.role_id = t1.role_id
+        where  t1.role_id = #{roleId}
+        and t1.org_id = #{orgId}
     </select>
     
     <!-- 根据orgId和roleName查询所有角色记录, 映射到baseMap -->
@@ -234,39 +205,29 @@
             t2.memo                 as role_memo,
             t2.creator              as role_creator,
             t2.create_date          as role_create_date
-        from
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_role t2 on t1.role_id = t2.role_id
-        where 
-            t1.org_id = #{orgId}
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_role t2 on t1.role_id = t2.role_id
+        where t1.org_id = #{orgId}
         <if test="roleName != null">
             and t2.role_name like #{roleName}
         </if>
-        order by 
-            org_role_id desc
+        order by org_role_id desc
     </select>
     
     <!-- 根据角色ID查询所有机构角色关系ID -->
     <select id="findOrgRoleIdsByRoleId" resultType="long">
         select 
             org_role_id    as "orgRoleId"
-        from 
-            cuckoo.uum_org_role_ref
-        where 
-            role_id = #{roleId}
+        from cuckoo.uum_org_role_ref
+        where role_id = #{roleId}
     </select>
     
     <!-- 根据机构ID统计角色数量 -->
     <select id="countByOrgId" parameterType="long" resultType="int">
-        select 
-            count(1)
-        from 
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_role t2 on t1.role_id = t2.role_id
-        where 
-            t1.org_id = #{orgId}
+        select count(1)
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_role t2 on t1.role_id = t2.role_id
+        where t1.org_id = #{orgId}
     </select>
     
     <!-- 根据角色ID删除机构角色关系记录，为停用角色所用 -->
@@ -288,17 +249,13 @@
             t3.org_code           as org_org_code,
             t3.org_type           as org_org_type,
             t3.status             as org_status
-        from 
-            cuckoo.uum_org_role_ref t1
-        left join 
-            cuckoo.uum_role t2 on  t1.role_id = t2.role_id
-        left join 
-            cuckoo.uum_organ t3 on t1.org_id = t3.org_id
-        where 
-            org_role_id in 
-            <foreach collection="array" item="orgRoleId" open="(" separator="," close=")">
-                #{orgRoleId}
-            </foreach>
+        from cuckoo.uum_org_role_ref t1
+        left join cuckoo.uum_role t2 on  t1.role_id = t2.role_id
+        left join cuckoo.uum_organ t3 on t1.org_id = t3.org_id
+        where org_role_id in
+        <foreach collection="array" item="orgRoleId" open="(" separator="," close=")">
+            #{orgRoleId}
+        </foreach>
     </select>
     
 </mapper> 

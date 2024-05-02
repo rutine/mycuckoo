@@ -47,14 +47,12 @@
     
     <!-- 更新角色用户关系： 1.输入对象参数, 嵌套属性表达式#{orgRoleRef.orgRoleId}, #{user.userId} -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.UserOrgRoleRef">
-        update 
-            cuckoo.uum_user_org_role_ref
+        update cuckoo.uum_user_org_role_ref
         set
             user_id                 = #{user.userId},
             org_role_id             = #{orgRoleRef.orgRoleId},
             is_default              = #{isDefault}
-        where 
-            user_org_role_id = #{userOrgRoleId}
+        where user_org_role_id = #{userOrgRoleId}
     </update>
     
     <!-- 删除角色用户关系 -->
@@ -69,20 +67,16 @@
             user_id,
             org_role_id,
             is_default
-        from 
-            cuckoo.uum_user_org_role_ref
-        where 
-            user_org_role_id = #{id}
+        from cuckoo.uum_user_org_role_ref
+        where user_org_role_id = #{id}
     </select>
     
     <!-- 角色用户关系是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            cuckoo.uum_user_org_role_ref
-        where 
-            user_org_role_id = #{id}
+        from cuckoo.uum_user_org_role_ref
+        where user_org_role_id = #{id}
     </select>
 
     <!-- 查询所有角色用户关系, 输出直接映射到对象 -->
@@ -92,16 +86,14 @@
             user_id,
             org_role_id,
             is_default
-        from 
-            cuckoo.uum_user_org_role_ref
+        from cuckoo.uum_user_org_role_ref
     </select>
     
     <!-- 统计角色用户关系记录 -->
     <select id="count" resultType="long">
         select
             count(1) 
-        from 
-            cuckoo.uum_user_org_role_ref
+        from cuckoo.uum_user_org_role_ref
     </select>
     
     <!-- 根据userId查询角色用户关系, 映射到roleUserRef -->
@@ -124,18 +116,12 @@
             t5.user_code               as user_user_code,
             t5.user_name               as user_user_name,
             t5.user_photo_url          as user_user_photo_url
-        from 
-            cuckoo.uum_user_org_role_ref t1
-        left join
-            cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
-        left join
-            cuckoo.uum_role t3 on t2.role_id = t3.role_id 
-        left join
-            cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
-        left join
-            cuckoo.uum_user t5 on t1.user_id = t5.user_id 
-        where 
-            t1.user_id = #{id}
+        from cuckoo.uum_user_org_role_ref t1
+        left join cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
+        left join cuckoo.uum_role t3 on t2.role_id = t3.role_id
+        left join cuckoo.uum_organ t4 on t2.org_id = t4.org_id
+        left join cuckoo.uum_user t5 on t1.user_id = t5.user_id
+        where t1.user_id = #{id}
     </select>
     
     <!-- 根据userId删除用户的所有角色 -->
@@ -147,22 +133,17 @@
     <select id="countByOrgRoleId" resultType="int">
         select
             count(1)
-        from
-            cuckoo.uum_user_org_role_ref
-        where 
-            org_role_id = #{orgRoleId}
+        from cuckoo.uum_user_org_role_ref
+        where org_role_id = #{orgRoleId}
     </select>
     
     <!-- 根据角色ID统计角色用户关系 -->
     <select id="countByRoleId" resultType="int">
         select
             count(1)
-        from
-            cuckoo.uum_user_org_role_ref t1
-        inner join
-            cuckoo.uum_org_role_ref t2 on t2.org_role_id = t1.org_role_id
-        where
-            t2.role_id = #{roleId}
+        from cuckoo.uum_user_org_role_ref t1
+        inner join cuckoo.uum_org_role_ref t2 on t2.org_role_id = t1.org_role_id
+        where t2.role_id = #{roleId}
     </select>
     
     <!-- 根据用户ID和机构角色ID查找用户的角色 -->
@@ -181,18 +162,12 @@
             t4.org_code                as org_org_code,
             t4.org_type                as org_org_type,
             t4.status                  as org_status
-        from 
-            cuckoo.uum_user_org_role_ref t1
-        left join
-            cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
-        left join 
-            cuckoo.uum_role t3 on t2.role_id = t3.role_id 
-        left join 
-            cuckoo.uum_organ t4 on t2.org_id = t4.org_id 
-        where 
-            t1.user_id = #{userId}
-        and 
-            t1.org_role_id = #{orgRoleId}
+        from cuckoo.uum_user_org_role_ref t1
+        left join cuckoo.uum_org_role_ref t2 on t1.org_role_id = t2.org_role_id
+        left join cuckoo.uum_role t3 on t2.role_id = t3.role_id
+        left join cuckoo.uum_organ t4 on t2.org_id = t4.org_id
+        where t1.user_id = #{userId}
+        and t1.org_role_id = #{orgRoleId}
     </select>
     
     <!-- 根据orgId和roleId查询用户, 映射到uumRoleUserRef -->
@@ -223,16 +198,11 @@
             t2.creator                 as user_creator,
             t2.create_date             as user_createDate
             -->
-        from 
-            cuckoo.uum_user_org_role_ref t1
-        inner join
-            cuckoo.uum_user t2 on t1.user_id = t2.user_id
-        inner join
-            cuckoo.uum_org_role_ref t3 on t3.org_role_id = t1.org_role_id
-        where
-            t3.role_id = #{roleId}
-        and
-            t3.org_id = #{orgId}
+        from cuckoo.uum_user_org_role_ref t1
+        inner join cuckoo.uum_user t2 on t1.user_id = t2.user_id
+        inner join cuckoo.uum_org_role_ref t3 on t3.org_role_id = t1.org_role_id
+        where t3.role_id = #{roleId}
+        and t3.org_id = #{orgId}
     </select>
     
 </mapper> 

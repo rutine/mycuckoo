@@ -53,16 +53,14 @@
     
     <!-- 更新字典大类： 1.输入对象参数  -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.DicBigType">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="bigTypeCode != null">big_type_code = #{bigTypeCode}, </if>
             <if test="bigTypeName != null">big_type_name = #{bigTypeName}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
-            big_type_id = #{bigTypeId}
+        where big_type_id = #{bigTypeId}
     </update>
     
     <!-- 删除字典大类 -->
@@ -74,30 +72,22 @@
         获取字典大类: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            big_type_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where big_type_id = #{id}
     </select>
     
     <!-- 判断字典大类是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            big_type_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where big_type_id = #{id}
     </select>
     
     <!-- 根据字典大类名称及代码分页查询字典大类 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="bigTypeName != null">
                 big_type_name like #{bigTypeName}
@@ -106,36 +96,27 @@
                 and big_type_code like #{bigTypeCode}
             </if>
         </where>
-        order by 
-            big_type_id desc
+        order by big_type_id desc
     </select>
     
     <!-- 统计字典大类记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
         <!-- 根据字典大类编码统计字典大类数量 -->
     <select id="countByBigTypeCode" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            big_type_code = #{bigTypeCode}
+        select count(1)
+        from <include refid="table" />
+        where big_type_code = #{bigTypeCode}
     </select>
     
     <!-- 根据字典大类ID修改字典大类状态 -->
     <update id="updateStatus">
-        update
-            <include refid="table" />
-        set
-            status = #{status}
-        where
-            big_type_id = #{bigTypeId}
+        update <include refid="table" />
+        set status = #{status}
+        where big_type_id = #{bigTypeId}
     </update>
     
 </mapper> 

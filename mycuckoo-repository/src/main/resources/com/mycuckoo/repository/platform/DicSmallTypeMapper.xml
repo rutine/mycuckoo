@@ -44,15 +44,13 @@
     
     <!-- 更新字典小类： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.DicSmallType">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="bigTypeId != null">big_type_id = #{bigTypeId}, </if>
             <if test="smallTypeCode != null">small_type_code = #{smallTypeCode}, </if>
             <if test="smallTypeName != null">small_type_name = #{smallTypeName}, </if>
         </set>
-        where 
-            small_type_id = #{smallTypeId}
+        where small_type_id = #{smallTypeId}
     </update>
     
     <!-- 删除字典小类 -->
@@ -64,74 +62,53 @@
         获取字典小类: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            small_type_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where small_type_id = #{id}
     </select>
     
     <!-- 判断字典小类是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            small_type_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where small_type_id = #{id}
     </select>
 
     <!-- 返回所有字典小类, 映射到 baseMap-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
     </select>
     
     <!-- 统计字典小类记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 根据大类ID删除小类 -->
     <delete id="deleteByBigTypeId" parameterType="long">
         delete 
-        from 
-            <include refid="table" /> 
-        where 
-            big_type_id = #{id}
+        from <include refid="table" />
+        where big_type_id = #{id}
     </delete>
     
     <!-- 根据大类ID查询小类, 映射到 baseMap-->
     <select id="findByBigTypeId" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            big_type_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where big_type_id = #{id}
     </select>
     
     <!-- 根据大类代码查询小类, 映射到 baseMap-->
     <select id="findByBigTypeCode" parameterType="string" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            big_type_id in
+        select <include refid="colums" />
+        from <include refid="table" />
+        where big_type_id in
         (
-            select 
-                big_type_id 
-            from 
-                cuckoo.syspl_dic_big_type
-            where
-                big_type_code = #{bigTypeCode}
+            select big_type_id
+            from cuckoo.syspl_dic_big_type
+            where big_type_code = #{bigTypeCode}
         )
     </select>
     

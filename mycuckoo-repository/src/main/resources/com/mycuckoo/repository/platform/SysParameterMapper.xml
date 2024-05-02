@@ -60,8 +60,7 @@
     
     <!-- 更新系统参数： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.SysParameter">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="paraName != null">para_name = #{paraName}, </if>
             <if test="paraKeyName != null">para_key_name = #{paraKeyName}, </if>
@@ -70,8 +69,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
-            para_id = #{paraId}
+        where para_id = #{paraId}
     </update>
     
     <!-- 删除系统参数 -->
@@ -83,30 +81,22 @@
         获取系统参数: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            para_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where para_id = #{id}
     </select>
     
     <!-- 系统参数是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            para_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where para_id = #{id}
     </select>
 
     <!-- 根据系统参数名称及键值查询系统参数, 映射到 baseMap -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="paraName != null">
                 para_name like #{paraName}
@@ -115,36 +105,27 @@
                 and para_key_name like #{paraKeyName}
             </if>
         </where>
-        order by 
-            para_id desc
+        order by para_id desc
     </select>
     
     <!-- 统计系统参数记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
 
     <!-- 判断参数键是否存在 -->
     <select id="countByParaKeyName" parameterType="string" resultType="int">
-        select
-            count(1)
-        from
-            <include refid="table" />
-        where
-            para_key_name = #{paraKeyName}
+        select count(1)
+        from <include refid="table" />
+        where para_key_name = #{paraKeyName}
     </select>
     
     <!-- 根据参数名称查找系统参数 -->
     <select id="getByParaName" parameterType="string" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            para_name = #{paraName}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where para_name = #{paraName}
     </select>
     
 </mapper> 

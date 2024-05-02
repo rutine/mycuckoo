@@ -61,8 +61,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
-            role_id = #{roleId}
+        where role_id = #{roleId}
     </update>
     
     <!-- 删除数据 -->
@@ -72,55 +71,42 @@
     
     <!-- 获取数据: 输出直接映射到对象 -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            role_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where role_id = #{id}
     </select>
     
         <!-- 数据记录是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            role_id = #{id}
+        from <include refid="table" />
+        where role_id = #{id}
     </select>
     
     <!-- 根据条件查询角色, 映射到'role'-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            role_id != 0
+        select <include refid="colums" />
+        from <include refid="table" />
+        where role_id != 0
         <if test="roleName !=null">
             and role_name like #{roleName}
         </if>
-        order by 
-            role_id desc
+        order by role_id desc
     </select>
     
     <!-- 统计数据记录 -->
     <select id="count" resultType="long">
         select
             count(1) 
-        from 
-            <include refid="table" />
+        from <include refid="table" />
     </select>
     
     <!-- 根据角色名称统计角色记录 -->
     <select id="countByRoleName" parameterType="string" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where 
-            role_name = #{roleName}
+        select count(1)
+        from <include refid="table" />
+        where role_name = #{roleName}
     </select>
     
 </mapper> 

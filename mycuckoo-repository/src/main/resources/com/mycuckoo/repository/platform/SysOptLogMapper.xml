@@ -67,8 +67,7 @@
     
     <!-- 更新系统操作日志： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.SysOptLog">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="optModName != null">opt_mod_name = #{optModName}, </if>
             <if test="optName != null">opt_name = #{optName}, </if>
@@ -81,8 +80,7 @@
             <if test="optUserRole != null">opt_user_role = #{optUserRole}, </if>
             <if test="optUserOgan != null">opt_user_ogan = #{optUserOgan}, </if>
         </set>
-        where 
-            opt_id = #{optId}
+        where opt_id = #{optId}
     </update>
     
     <!-- 删除系统操作日志 -->
@@ -94,30 +92,23 @@
         获取系统操作日志: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            opt_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where opt_id = #{id}
     </select>
     
     <!-- 判断系统操作日志是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            opt_id = #{id}
+        from <include refid="table" />
+        where opt_id = #{id}
     </select>
 
     <!-- 分页查找系统操作日志, 映射到 baseMap -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="optModName != null">
                 opt_mod_name like #{optModName}
@@ -129,34 +120,26 @@
                 and opt_user_name like #{optUserName}
             </if>
         </where>
-        order by 
-            opt_id desc
+        order by opt_id desc
     </select>
     
     <!-- 统计系统操作日志记录总数 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
     
     <!-- 删除日志 -->
     <delete id="deleteLogger" parameterType="date">
-        delete from 
-            <include refid="table" />
-        where
-            opt_time &lt;= #{optTime}
+        delete from <include refid="table" />
+        where opt_time &lt;= #{optTime}
     </delete>
     
     <!-- 根据日志ID获取系统操作日志内容 -->
     <select id="getOptContentById" parameterType="long" resultType="string">
-        select 
-            opt_content
-        from 
-            <include refid="table" />
-        where
-            opt_id = #{id}
+        select opt_content
+        from <include refid="table" />
+        where opt_id = #{id}
     </select>
     
 </mapper> 

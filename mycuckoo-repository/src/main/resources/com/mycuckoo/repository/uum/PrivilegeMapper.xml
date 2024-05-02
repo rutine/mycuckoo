@@ -55,8 +55,7 @@
     
     <!-- 更新数据： 1.输入对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.Privilege">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="resourceId != null">resource_id = #{resourceId}, </if>
             <if test="ownerId != null">owner_id = #{ownerId}, </if>
@@ -64,8 +63,7 @@
             <if test="privilegeScope != null">privilege_scope = #{privilegeScope}, </if>
             <if test="privilegeType != null">privilege_type = #{privilegeType}, </if>
         </set>
-        where 
-            privilege_id = #{privilegeId}
+        where privilege_id = #{privilegeId}
     </update>
     
     <!-- 删除数据 -->
@@ -77,46 +75,36 @@
         获取数据: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            privilege_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where privilege_id = #{id}
     </select>
     
     <!-- 数据记录是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
         select
             count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            privilege_id = #{id}
+        from <include refid="table" />
+        where privilege_id = #{id}
     </select>
 
     <!-- 查询所有数据, 映射到 Privilege-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
     </select>
     
     <!-- 统计所有数据记录 -->
     <select id="count" resultType="long">
         select
             count(1) 
-        from 
-            <include refid="table" />
+        from <include refid="table" />
     </select>
     
     <!-- 根据资源拥有者ID，拥有者类型和权限类型查询权限记录 1.输入map对象-->
     <select id="findByOwnIdAndPrivilegeType" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="ownerIds !=null"> owner_id in
                 <foreach collection="ownerIds" item="ownerId" open="(" separator="," close=")">
@@ -138,14 +126,10 @@
     
     <!-- 统计用户特殊权限记录 -->
     <select id="countByUserIdAndOwnerType" parameterType="long" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where 
-            owner_id = #{userId}
-        and 
-            and owner_type = #{ownerType}
+        select count(1)
+        from <include refid="table" />
+        where owner_id = #{userId}
+        and and owner_type = #{ownerType}
     </select>
     
     <!-- 根据条件删除权限 -->
@@ -195,15 +179,12 @@
     
     <!-- 删除模块操作关系时同时也删除模块操作权限 -->
     <delete id="deleteByModOptId" parameterType="map">
-        delete from 
-            <include refid="table" /> 
-        where
-            resource_id in 
-            <foreach collection="modOptRefIds" item="modOptRefId" open="(" separator="," close=")">
-                #{modOptRefId}
-            </foreach>
-        and 
-            privilege_type = #{privilegeType}
+        delete from <include refid="table" />
+        where resource_id in
+        <foreach collection="modOptRefIds" item="modOptRefId" open="(" separator="," close=")">
+            #{modOptRefId}
+        </foreach>
+        and privilege_type = #{privilegeType}
     </delete>
     
 </mapper> 

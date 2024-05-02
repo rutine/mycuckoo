@@ -56,8 +56,7 @@
             <if test="affichePulish != null">affiche_pulish = #{affichePulish}, </if>
             <if test="afficheContent != null">affiche_content = #{afficheContent}, </if>
         </set>
-        where 
-            affiche_id = #{afficheId}
+        where affiche_id = #{afficheId}
     </update>
     
     <!-- 删除公告 -->
@@ -69,30 +68,22 @@
         获取公告: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            affiche_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where affiche_id = #{id}
     </select>
     
     <!-- 判断公告是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            affiche_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where affiche_id = #{id}
     </select>
 
     <!-- 根据条件分页查询公告 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <where>
             <if test="afficheTitle != null">
                 and affiche_title like #{afficheTitle}
@@ -101,8 +92,7 @@
                 and affiche_pulish = #{affichePulish}
             </if>
         </where>
-        order by 
-            affiche_id desc
+        order by affiche_id desc
     </select>
     
     <!-- 统计公告记录总数 -->
@@ -112,13 +102,9 @@
     
     <!-- 查询有效期内的公告记录 -->
     <select id="findBeforeValidate" parameterType="date" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            affiche_pulish = 0
-        and 
-            affiche_invalidate >= #{afficheInvalidate}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where affiche_pulish = 0
+        and affiche_invalidate >= #{afficheInvalidate}
     </select>
 </mapper> 

@@ -102,8 +102,7 @@
     
     <!-- 更新数据： 1.输入是对象参数 -->
     <update id="update" parameterType="com.mycuckoo.domain.uum.Organ">
-        update 
-            <include refid="table" />
+        update <include refid="table" />
         <set>
             <if test="parentId != null">org_parent = #{parentId}, </if>
             <if test="orgSimpleName != null">org_simple_name = #{orgSimpleName}, </if>
@@ -124,8 +123,7 @@
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
-        where 
-            org_id = #{orgId}
+        where org_id = #{orgId}
     </update>
     
     <!-- 删除数据 -->
@@ -137,99 +135,73 @@
         获取数据: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            org_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where org_id = #{id}
     </select>
     
         <!-- 数据记录是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            org_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where org_id = #{id}
     </select>
     
     <!-- 统计所有数据记录 -->
     <select id="count" resultType="long">
-        select
-            count(1) 
-        from 
-            <include refid="table" />
+        select count(1)
+        from <include refid="table" />
     </select>
 
     <!-- 查询数据, 映射到resultMap-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
         <include refid="whereStatement"/>
-        order by 
-            org_parent, org_id
+        order by org_parent, org_id
     </select>
     
     <!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
     <select id="findByParentId" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            org_parent = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where org_parent = #{id}
     </select>
     
     <!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
     <select id="countByParentId" parameterType="long" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            org_parent = #{id}
+        select count(1)
+        from <include refid="table" />
+        where org_parent = #{id}
     </select>
     
     <select id="countByOrgSimpleName" parameterType="String" resultType="int">
-        select 
-            count(1)
-        from 
-            <include refid="table" />
-        where
-            org_simple_name like #{simpleName}
+        select count(1)
+        from <include refid="table" />
+        where org_simple_name like #{simpleName}
     </select>
     
     <!-- 根据机构ID和过滤ID查询直接下级机构 -->
     <select id="findByParentIdAndFilterOutOrgId" parameterType="map" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where
-            org_parent = #{parentId}
-        and
-            org_id not in (0
-                <if test="filterOutOrgId != null">, #{filterOutOrgId}</if>
-            )
-        order by 
-            org_parent, org_id
+        select <include refid="colums" />
+        from <include refid="table" />
+        where org_parent = #{parentId}
+        and org_id not in (0
+            <if test="filterOutOrgId != null">, #{filterOutOrgId}</if>
+        )
+        order by org_parent, org_id
     </select>
     
     <!-- 根据机构IDs查询机构记录 -->
     <select id="findByOrgIds" resultMap="baseMap">
-        select 
-            org_id, org_simple_name
-        from 
-            <include refid="table" />
-        where 
-            org_id in
-            <foreach collection="array" item="orgId" open="(" separator="," close=")">
-                #{orgId}
-            </foreach>
+        select
+          org_id,
+          org_simple_name
+        from <include refid="table" />
+        where org_id in
+        <foreach collection="array" item="orgId" open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
     </select>
     
     <!-- 分页查询和数量统计条件声明 -->

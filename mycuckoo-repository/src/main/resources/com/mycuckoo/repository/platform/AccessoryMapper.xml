@@ -47,8 +47,7 @@
             <if test="infoId != null">info_id = #{infoId}, </if>
             <if test="accessoryName != null">accessory_name = #{accessoryName}, </if>
         </set>
-        where 
-            accessory_id = #{accessoryId}
+        where accessory_id = #{accessoryId}
     </update>
     
     <!-- 删除附件 -->
@@ -60,30 +59,22 @@
         获取附件: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            accessory_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where accessory_id = #{id}
     </select>
     
     <!-- 判断附件是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from 
-            <include refid="table" />
-        where 
-            accessory_id = #{id}
+        select count(1) > 0
+        from <include refid="table" />
+        where accessory_id = #{id}
     </select>
 
     <!-- 返回所有附件, 映射到 baseMap-->
     <select id="findByPage" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
+        select <include refid="colums" />
+        from <include refid="table" />
     </select>
     
     <!-- 统计附件记录总数 -->
@@ -93,11 +84,8 @@
     
     <!-- 根据公告afficheId查询附件, 映射到 baseMap-->
     <select id="findByAfficheId" parameterType="long" resultMap="baseMap">
-        select 
-            <include refid="colums" />
-        from 
-            <include refid="table" />
-        where 
-            info_id = #{id}
+        select <include refid="colums" />
+        from <include refid="table" />
+        where info_id = #{id}
     </select>
 </mapper> 
