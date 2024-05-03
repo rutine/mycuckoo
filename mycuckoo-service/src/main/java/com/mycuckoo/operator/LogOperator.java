@@ -5,7 +5,6 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.operator.event.LogEvent;
 import org.springframework.context.event.ApplicationEventMulticaster;
-import org.springframework.stereotype.Component;
 
 /**
  * 功能说明: 日志操作器
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
  * @version 4.0.0
  * @time May 1, 2024 8:55:40 AM
  */
-@Component
 public final class LogOperator {
     public final static String COMMA = ",";
     public final static String DUNHAO = "、";
@@ -34,7 +32,7 @@ public final class LogOperator {
 
     public static void setEventMulticaster(ApplicationEventMulticaster multicaster) {
         if (multicaster != null) {
-            multicaster = multicaster;
+            LogOperator.multicaster = multicaster;
         }
 
     }

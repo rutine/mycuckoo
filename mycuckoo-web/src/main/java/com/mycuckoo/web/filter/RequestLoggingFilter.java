@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
  * @see org.springframework.web.filter.CommonsRequestLoggingFilter
  */
 @Order(1)
-public class CommonsRequestLoggingFilter extends AbstractRequestLoggingFilter {
-    private static Logger logger = LoggerFactory.getLogger(CommonsRequestLoggingFilter.class);
+public class RequestLoggingFilter extends AbstractRequestLoggingFilter {
+    private static Logger logger = LoggerFactory.getLogger(RequestLoggingFilter.class);
 
 
     @Override
@@ -44,7 +44,7 @@ public class CommonsRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @Override
     public boolean isIncludePayload() {
-        return false;
+        return true;
     }
 
     @Override

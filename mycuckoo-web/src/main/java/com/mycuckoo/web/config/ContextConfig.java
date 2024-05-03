@@ -2,14 +2,17 @@ package com.mycuckoo.web.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mycuckoo.listener.LogEventListener;
+import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.PageInterceptor;
-import com.mycuckoo.web.filter.CommonsRequestLoggingFilter;
+import com.mycuckoo.web.filter.RequestLoggingFilter;
 import com.mycuckoo.web.util.JsonUtils;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -22,8 +25,15 @@ import java.text.SimpleDateFormat;
 public class ContextConfig {
 
     @Bean
-    public CommonsRequestLoggingFilter requestLoggingFilter() {
-        return new CommonsRequestLoggingFilter();
+    public RequestLoggingFilter requestLoggingFilter() {
+        return new RequestLoggingFilter();
+    }
+
+    @Bean
+    public LogEventListener logEventListener(ApplicationEventMulticaster multicaster) {
+        LogOperator.setEventMulticaster(multicaster);
+
+        return new LogEventListener();
     }
 
     @Bean

@@ -4,7 +4,6 @@ import com.mycuckoo.operator.event.LogEvent;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
 
 /**
  * 功能说明: 日志监听器
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  * @version 4.0.0
  * @time May 1, 2024 8:55:40 AM
  */
-@Component
 public class LogEventListener implements ApplicationListener<LogEvent> {
 
     @Autowired
