@@ -133,7 +133,7 @@ public class OrganService {
             CheckBoxTree treeVo = new CheckBoxTree();
             treeVo.setId(organ.getOrgId().toString());
             treeVo.setText(organ.getOrgSimpleName());
-            if (ModuleLevel.TWO.value().equals(organ.getOrgType())) {
+            if (ModuleLevel.TWO.value().toString().equals(organ.getOrgType())) {
                 treeVo.setIsLeaf(true);
             }
             treeVoList.add(treeVo);
@@ -259,7 +259,7 @@ public class OrganService {
             tree.setId(mapper.getOrgId().toString());
             tree.setParentId(mapper.getOrgId() == 0 ? "-1" : mapper.getParentId().toString());
             tree.setText(mapper.getOrgSimpleName());
-            if (ModuleLevel.TWO.value().equals(mapper.getOrgType())) {
+            if (ModuleLevel.TWO.value().toString().equals(mapper.getOrgType())) {
                 tree.setIsLeaf(true);
             }
 

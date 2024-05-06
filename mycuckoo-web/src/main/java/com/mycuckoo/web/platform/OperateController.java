@@ -1,24 +1,16 @@
 package com.mycuckoo.web.platform;
 
 
-import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.OperateService;
-import com.mycuckoo.web.util.JsonUtils;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -43,7 +35,7 @@ public class OperateController {
     /**
      * 功能说明 : 操作按钮管理界面入口
      *
-     * @param optName     操作名称
+     * @param name        操作名称
      * @param pageNo      页码
      * @param pageSize    每页大小
      * @return
@@ -52,19 +44,17 @@ public class OperateController {
      */
     @GetMapping
     public AjaxResponse<Page<Operate>> list(
-            @RequestParam(defaultValue = "") String optName,
+            @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
-        logger.info("---------------- 请求操作按钮管理界面 -----------------");
-
-        Page<Operate> page = optService.findByPage(optName, new PageRequest(pageNo - 1, pageSize));
+        Page<Operate> page = optService.findByPage(name, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
 
     /**
-     * 功能说明 : 创建模块操作
+     * 功能说明 : 创建操作
      *
      * @param operate
      * @return
@@ -73,8 +63,6 @@ public class OperateController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Operate operate) {
-        logger.debug(JsonUtils.toJson(operate));
-
         operate.setCreateDate(new Date());
         operate.setCreator(SessionUtil.getUserCode());
         optService.save(operate);
@@ -83,7 +71,7 @@ public class OperateController {
     }
 
     /**
-     * 功能说明 : 修改模块操作
+     * 功能说明 : 修改操作
      *
      * @param operate
      * @return
@@ -105,7 +93,7 @@ public class OperateController {
     }
 
     /**
-     * 功能说明 : 停用/启用模块操作
+     * 功能说明 : 停用/启用操作
      *
      * @param id
      * @param disEnableFlag 停用/启用标志

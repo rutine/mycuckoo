@@ -99,7 +99,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
         ModOptRef modOptRef = mapper.get(25L);
 
         Assert.assertNotNull(modOptRef);
-        Assert.assertEquals("技术", modOptRef.getModuleMemu().getModIconCls());
+        Assert.assertEquals("技术", modOptRef.getModuleMemu().getIconCls());
     }
 
     @Test

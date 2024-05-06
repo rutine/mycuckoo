@@ -36,10 +36,10 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         operate.setCreateDate(Calendar.getInstance().getTime());
         operate.setCreator("rutine");
         operate.setMemo("测试");
-        operate.setOptName("增加");
-        operate.setOptLink("no-resource");
-        operate.setOptIconCls("no-img");
-        operate.setOptOrder(3);
+        operate.setName("增加");
+        operate.setCode("no-resource");
+        operate.setIconCls("no-img");
+        operate.setOrder(3);
         operate.setStatus("enabel");
 
         mapper.save(operate);
@@ -53,10 +53,10 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         operate.setCreateDate(Calendar.getInstance().getTime());
         operate.setCreator("rutine");
         operate.setMemo("测试");
-        operate.setOptName("增加");
-        operate.setOptLink("no-resource");
-        operate.setOptIconCls("no-img");
-        operate.setOptOrder(3);
+        operate.setName("增加");
+        operate.setCode("no-resource");
+        operate.setIconCls("no-img");
+        operate.setOrder(3);
         operate.setStatus("enabel");
         operate.setOperateId(5L);
 
@@ -75,7 +75,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         Operate operate = mapper.get(2L);
 
         Assert.assertNotNull(operate);
-        Assert.assertEquals("技术", operate.getOptName());
+        Assert.assertEquals("技术", operate.getName());
     }
 
     @Test

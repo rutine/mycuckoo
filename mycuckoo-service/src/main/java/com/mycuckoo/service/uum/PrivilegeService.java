@@ -198,11 +198,11 @@ public class PrivilegeService {
             ModuleMenuVo modOptVo = new ModuleMenuVo();
             modOptVo.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
             modOptVo.setModuleId(modOptRef.getModOptId() + optIdMode); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setModName(operate.getOptName());
-            modOptVo.setModIconCls(operate.getOptIconCls());
-            modOptVo.setOptLink(operate.getOptLink()); // 为操作准备功能链接
-            modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            modOptVo.setModLevel(ModuleLevel.FOUR.value().toString());
+            modOptVo.setName(operate.getName());
+            modOptVo.setIconCls(operate.getIconCls());
+            modOptVo.setCode(operate.getCode()); // 为操作准备功能链接
+            modOptVo.setOrder(operate.getOrder()); // 操作按钮的顺序
+            modOptVo.setLevel(ModuleLevel.FOUR.value());
             modOptVo.setIsLeaf(true);
             modOptVoList.add(modOptVo);
         }
@@ -211,7 +211,7 @@ public class PrivilegeService {
         Map<Long, List<ModuleMenuVo>> modOptMap = modOptVoList.stream()
                 .collect(Collectors.groupingBy(ModuleMenu::getParentId,
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
         List<ModuleMenuVo> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
         HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
         hierarchyModuleVo.setFourth(modOptMap);
@@ -409,8 +409,8 @@ public class PrivilegeService {
             CheckBoxTree tree = new CheckBoxTree();
             tree.setId(vo.getModuleId().toString());
             tree.setParentId(vo.getParentId().toString());
-            tree.setText(vo.getModName());
-            tree.setIconSkin(vo.getModIconCls());
+            tree.setText(vo.getName());
+            tree.setIconSkin(vo.getIconCls());
             if (!vo.getIsLeaf()) {
 //                tree.setNocheck(true);
             }
@@ -438,11 +438,11 @@ public class PrivilegeService {
             ModuleMenuVo modOptVo = new ModuleMenuVo();
             modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
             modOptVo.setModuleId(modOptRef.getModOptId() + optIdMode); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setModName(operate.getOptName());
-            modOptVo.setModIconCls(operate.getOptIconCls());
-            modOptVo.setOptLink(operate.getOptLink()); // 为操作准备功能链接
-            modOptVo.setModOrder(operate.getOptOrder()); // 操作按钮的顺序
-            modOptVo.setModLevel(ModuleLevel.FOUR.value().toString());
+            modOptVo.setName(operate.getName());
+            modOptVo.setIconCls(operate.getIconCls());
+            modOptVo.setCode(operate.getCode()); // 为操作准备功能链接
+            modOptVo.setOrder(operate.getOrder()); // 操作按钮的顺序
+            modOptVo.setLevel(ModuleLevel.FOUR.value());
             modOptVo.setIsLeaf(true);
             modOptVoList.add(modOptVo);
 
@@ -472,7 +472,7 @@ public class PrivilegeService {
             modOptMap = modOptVoList.stream()
                     .collect(Collectors.groupingBy(ModuleMenu::getParentId,
                             Collectors.collectingAndThen(Collectors.toList(),
-                                    sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
+                                    sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
         }
         Collections.sort(moduleMenuVoList, new ModuleMenu());
 

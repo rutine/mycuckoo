@@ -13,10 +13,18 @@ import com.mycuckoo.repository.Repository;
 public interface OperateMapper extends Repository<Operate, Long> {
 
     /**
-     * 根据名称统计操作按钮数量
+     * 根据编码统计操作按钮数量
      *
-     * @param operateName 操作按钮名称
+     * @param code 操作按钮编码
      * @return
      */
-    int countByName(String operateName);
+    int countByCode(String code);
+
+    /**
+     * 根据名称统计操作按钮数量
+     *
+     * @param name 操作按钮名称
+     * @return
+     */
+    int countByName(String name);
 }

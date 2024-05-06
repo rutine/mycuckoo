@@ -26,4 +26,7 @@ public class ServiceConst extends BaseConst {
     //模块名称
     public final static String ROLE_CSS = "rolemgr";
 
+    //叶子节点前缀
+    public final static String LEAF_ID = "leaf-id-";
+
 }

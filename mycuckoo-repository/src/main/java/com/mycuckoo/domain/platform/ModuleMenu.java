@@ -18,13 +18,13 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
 
     private Long moduleId; //模块ID
     private Long parentId; //上级模块
-    private String modName; //模块名称
-    private String modEnName; //模块英文ID
-    private String modIconCls; //模块图片样式
-    private String modLevel; //模块级别
-    private Integer modOrder; //模块顺序
-    private String modPageType;//页面类型
-    private String belongToSys;//所属系统
+    private String code; //模块编码
+    private String name; //模块名称
+    private String iconCls; //模块图片样式
+    private Integer level; //模块级别
+    private Integer order; //模块顺序
+    private String belongSys;//系统归属
+    private String pageType;//页面类型
     private String status;
     private String memo; //备注
     private String creator; //创建人
@@ -47,16 +47,16 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
      * full constructor
      */
     public ModuleMenu(Long moduleId, Long parentId,
-                      String modName, String modEnName, String modIconCls, String modLevel,
-                      Integer modOrder, String status,
+                      String code, String name, String iconCls,
+                      Integer level, Integer order, String status,
                       String memo, String creator, Date createDate) {
         this.moduleId = moduleId;
         this.parentId = parentId;
-        this.modName = modName;
-        this.modEnName = modEnName;
-        this.modIconCls = modIconCls;
-        this.modLevel = modLevel;
-        this.modOrder = modOrder;
+        this.code = code;
+        this.name = name;
+        this.iconCls = iconCls;
+        this.level = level;
+        this.order = order;
         this.status = status;
         this.memo = memo;
         this.creator = creator;
@@ -79,60 +79,60 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
         this.parentId = parentId;
     }
 
-    public String getModName() {
-        return this.modName;
+    public String getCode() {
+        return this.code;
     }
 
-    public void setModName(String modName) {
-        this.modName = modName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getModEnName() {
-        return modEnName;
+    public String getName() {
+        return name;
     }
 
-    public void setModEnName(String modEnName) {
-        this.modEnName = modEnName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getModIconCls() {
-        return modIconCls;
+    public String getIconCls() {
+        return iconCls;
     }
 
-    public void setModIconCls(String modIconCls) {
-        this.modIconCls = modIconCls;
+    public void setIconCls(String iconCls) {
+        this.iconCls = iconCls;
     }
 
-    public String getModLevel() {
-        return this.modLevel;
+    public Integer getLevel() {
+        return this.level;
     }
 
-    public void setModLevel(String modLevel) {
-        this.modLevel = modLevel;
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
-    public Integer getModOrder() {
-        return this.modOrder;
+    public Integer getOrder() {
+        return this.order;
     }
 
-    public void setModOrder(Integer modOrder) {
-        this.modOrder = modOrder;
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
-    public String getModPageType() {
-        return modPageType;
+    public String getBelongSys() {
+        return belongSys;
     }
 
-    public void setModPageType(String modPageType) {
-        this.modPageType = modPageType;
+    public void setBelongSys(String belongSys) {
+        this.belongSys = belongSys;
     }
 
-    public String getBelongToSys() {
-        return belongToSys;
+    public String getPageType() {
+        return pageType;
     }
 
-    public void setBelongToSys(String belongToSys) {
-        this.belongToSys = belongToSys;
+    public void setPageType(String pageType) {
+        this.pageType = pageType;
     }
 
     public String getStatus() {

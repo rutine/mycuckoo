@@ -1,11 +1,11 @@
 package com.mycuckoo.web.platform;
 
 
-import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
@@ -15,15 +15,7 @@ import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -50,8 +42,8 @@ public class ModuleController {
      * 功能说明 : 列表展示页面
      *
      * @param treeId     查找指定节点下的模块`
-     * @param modName    模块名称
-     * @param modEnName  模块英文名
+     * @param code       模块编码
+     * @param name       模块名称
      * @param pageNo     第几页
      * @param pageSize   页面大小, 暂时没有使用
      * @return
@@ -60,12 +52,12 @@ public class ModuleController {
      */
     @GetMapping
     public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(defaultValue = "-1") long treeId,
-                                                 @RequestParam(defaultValue = "") String modName,
-                                                 @RequestParam(defaultValue = "") String modEnName,
+                                                 @RequestParam(defaultValue = "") String code,
+                                                 @RequestParam(defaultValue = "") String name,
                                                  @RequestParam(defaultValue = "1") int pageNo,
                                                  @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
-        Page<ModuleMenuVo> page = moduleService.findByPage(treeId, modName, modEnName,
+        Page<ModuleMenuVo> page = moduleService.findByPage(treeId, code, name,
                 new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
@@ -124,7 +116,7 @@ public class ModuleController {
     public AjaxResponse<ModuleMenuVo> get(@PathVariable long id) {
         ModuleMenuVo moduleMenu = moduleService.get(id);
         ModuleMenuVo parentMenu = moduleService.get(moduleMenu.getParentId());
-        moduleMenu.setParentName(parentMenu.getModName());
+        moduleMenu.setParentName(parentMenu.getName());
 
         return AjaxResponse.create(moduleMenu);
     }
@@ -194,8 +186,6 @@ public class ModuleController {
     public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable long id) {
 
         List<? extends SimpleTree> asyncTreeList = moduleService.findChildNodes(id, false);
-
-        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
 
         return AjaxResponse.create(asyncTreeList);
     }

@@ -15,12 +15,12 @@ import java.util.Date;
  */
 public class Operate implements Serializable {
 
-    private Long operateId; //模块操作ID
-    private String optName; //模块操作名称
-    private String optLink; //模块操作功能链接
-    private String optIconCls; //模块图片
-    private Integer optOrder; //模块操作顺序
-    private Integer optGroup; //模块操作组
+    private Long operateId; //操作ID
+    private String code; //操作编码
+    private String name; //操作名称
+    private String iconCls; //模块图片
+    private Integer order; //模块操作顺序
+    private Integer group; //模块操作组
     private String memo; //备注
     private String status; //模块操作状态
     private String creator; //创建人
@@ -44,15 +44,15 @@ public class Operate implements Serializable {
     /**
      * full constructor
      */
-    public Operate(Long operateId, String optName, String optLink, String optIconCls,
-                   Integer optOrder, Integer optGroup, String memo, String status,
+    public Operate(Long operateId, String code, String name, String iconCls,
+                   Integer order, Integer group, String memo, String status,
                    String creator, Date createDate) {
         this.operateId = operateId;
-        this.optName = optName;
-        this.optLink = optLink;
-        this.optIconCls = optIconCls;
-        this.optOrder = optOrder;
-        this.optGroup = optGroup;
+        this.code = code;
+        this.name = name;
+        this.iconCls = iconCls;
+        this.order = order;
+        this.group = group;
         this.memo = memo;
         this.status = status;
         this.creator = creator;
@@ -67,44 +67,44 @@ public class Operate implements Serializable {
         this.operateId = operateId;
     }
 
-    public String getOptName() {
-        return optName;
+    public String getCode() {
+        return code;
     }
 
-    public void setOptName(String optName) {
-        this.optName = optName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getOptLink() {
-        return optLink;
+    public String getName() {
+        return name;
     }
 
-    public void setOptLink(String optLink) {
-        this.optLink = optLink;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getOptIconCls() {
-        return optIconCls;
+    public String getIconCls() {
+        return iconCls;
     }
 
-    public void setOptIconCls(String optIconCls) {
-        this.optIconCls = optIconCls;
+    public void setIconCls(String iconCls) {
+        this.iconCls = iconCls;
     }
 
-    public Integer getOptOrder() {
-        return this.optOrder;
+    public Integer getOrder() {
+        return this.order;
     }
 
-    public void setOptOrder(Integer optOrder) {
-        this.optOrder = optOrder;
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
-    public Integer getOptGroup() {
-        return this.optGroup;
+    public Integer getGroup() {
+        return this.group;
     }
 
-    public void setOptGroup(Integer optGroup) {
-        this.optGroup = optGroup;
+    public void setGroup(Integer group) {
+        this.group = group;
     }
 
     public String getMemo() {

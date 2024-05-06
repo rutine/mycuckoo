@@ -25,10 +25,10 @@ public enum ModuleLevel {
         return level;
     }
 
-    public static ModuleLevel of(String level) {
+    public static ModuleLevel of(Integer level) {
         ModuleLevel[] levels = ModuleLevel.values();
         for (ModuleLevel levelEnum : levels) {
-            if (levelEnum.value().toString().equals(level)) {
+            if (levelEnum.value().equals(level)) {
                 return levelEnum;
             }
         }

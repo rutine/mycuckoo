@@ -26,10 +26,10 @@ public interface ModuleMenuMapper extends Repository<ModuleMenu, Long> {
     /**
      * 判断模块英文名称是否存在
      *
-     * @param modEnName 模块英文名称
+     * @param code 模块编码
      * @return
      */
-    int countByModEnName(String modEnName);
+    int countByCode(String code);
 
     /**
      * 根据模块ID查询下级模块

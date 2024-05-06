@@ -12,23 +12,23 @@
 <mapper namespace="com.mycuckoo.repository.platform.ModuleMenuMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.ModuleMenu">
         <id property="moduleId" column="module_id" />
-        <result property="parentId" column="mod_parent_id" />
-        <result property="modName" column="mod_name" />
-        <result property="modEnName" column="mod_en_name" />
-        <result property="modIconCls" column="mod_icon_cls" />
-        <result property="modLevel" column="mod_level" />
-        <result property="modOrder" column="mod_order" />
-        <result property="belongToSys" column="belong_to_sys" />
-        <result property="modPageType" column="mod_page_type" />
+        <result property="parentId" column="parent_id" />
+        <result property="name" column="name" />
+        <result property="code" column="code" />
+        <result property="iconCls" column="icon_cls" />
+        <result property="level" column="level" />
+        <result property="order" column="order" />
+        <result property="belongSys" column="belong_sys" />
+        <result property="pageType" column="page_type" />
         <result property="status" column="status" />
         <result property="memo" column="memo" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
-        module_id, mod_parent_id, mod_name, mod_en_name, mod_icon_cls, mod_level,
-        mod_order, belong_to_sys, mod_page_type, memo, status, creator, create_date
+    <sql id="columns">
+        module_id, parent_id, name, code, icon_cls, level,
+        `order`, belong_sys, page_type, memo, status, creator, create_date
     </sql>
     
     <sql id="table">
@@ -40,14 +40,14 @@
             useGeneratedKeys="true" keyProperty="moduleId" keyColumn="module_id">
         insert into <include refid="table" /> (
             module_id,
-            mod_parent_id,
-            mod_name,
-            mod_en_name,
-            mod_icon_cls,
-            mod_level,
-            mod_order,
-            belong_to_sys,
-            mod_page_type,
+            parent_id,
+            code,
+            name,
+            icon_cls,
+            level,
+            `order`,
+            belong_sys,
+            page_type,
             memo,
             status,
             creator,
@@ -56,13 +56,13 @@
         values (
             #{moduleId},
             #{parentId},
-            #{modName},
-            #{modEnName},
-            #{modIconCls},
-            #{modLevel},
-            #{modOrder},
-            #{belongToSys},
-            #{modPageType},
+            #{code},
+            #{name},
+            #{iconCls},
+            #{level},
+            #{order},
+            #{belongSys},
+            #{pageType},
             #{memo},
             #{status},
             #{creator},
@@ -74,14 +74,14 @@
     <update id="update" parameterType="com.mycuckoo.domain.platform.ModuleMenu">
         update <include refid="table" />
         <set>
-            <if test="parentId != null">mod_parent_id = #{parentId}, </if>
-            <if test="modName != null">mod_name = #{modName}, </if>
-            <if test="modEnName != null">mod_en_name = #{modEnName}, </if>
-            <if test="modIconCls != null">mod_icon_cls = #{modIconCls}, </if>
-            <if test="modLevel != null">mod_level = #{modLevel}, </if>
-            <if test="modOrder != null">mod_order = #{modOrder}, </if>
-            <if test="belongToSys != null">belong_to_sys = #{belongToSys}, </if>
-            <if test="modPageType != null">mod_page_type = #{modPageType}, </if>
+            <if test="parentId != null">parent_id = #{parentId}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="iconCls != null">icon_cls = #{iconCls}, </if>
+            <if test="level != null">level = #{level}, </if>
+            <if test="order != null">`order` = #{order}, </if>
+            <if test="belongSys != null">belong_sys = #{belongSys}, </if>
+            <if test="pageType != null">page_type = #{pageType}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
         </set>
@@ -97,7 +97,7 @@
         获取模块菜单: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where module_id = #{id}
     </select>
@@ -111,14 +111,14 @@
 
     <!-- 根据条件查询模块 -->
     <select id="findByPage" parameterType="map" resultMap ="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where module_id != 0
-        <if test="modName != null">
-            and mod_name like #{modName}
+        <if test="name != null">
+            and name like #{name}
         </if>
-        <if test="modEnName != null">
-            and mod_en_name like #{modEnName}
+        <if test="code != null">
+            and code like #{code}
         </if>
         order by module_id desc
     </select>
@@ -133,21 +133,21 @@
     <select id="countByParentId" parameterType="long" resultType="int">
         select count(1)
         from <include refid="table" />
-        where mod_parent_id = #{parentId}
+        where parent_id = #{parentId}
     </select>
     
     <!-- 判断模块名称是否存在 -->
-    <select id="countByModEnName" parameterType="string" resultType="int">
+    <select id="countByCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
-        where mod_en_name = #{modEnName}
+        where code = #{code}
     </select>
     
     <!-- 根据父模块ID查询下级模块 -->
     <select id="findByParentIdAndIgnoreModuleIds" parameterType="map" resultMap ="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
-        where mod_parent_id = #{parentId}
+        where parent_id = #{parentId}
         and module_id not in
         <foreach item="id" collection="ignoreModuleIds" open="(" separator="," close=")">
             #{id}

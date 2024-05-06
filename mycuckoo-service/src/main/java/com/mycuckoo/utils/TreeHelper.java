@@ -1,10 +1,9 @@
 package com.mycuckoo.utils;
 
+import com.mycuckoo.vo.OrderTree;
 import com.mycuckoo.vo.SimpleTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,13 +20,16 @@ public abstract class TreeHelper {
     /**
      * 构造树形, 返回rootId下的子树
      */
-    public static <T extends SimpleTree<T>> List<T> buildTree(List<T> trees, String rootId) {
+    public static <T extends SimpleTree> List<T> buildTree(List<T> trees, String rootId) {
         //1. 先分组
         Map<String, List<T>> group = trees.stream().collect(Collectors.groupingBy(SimpleTree::getParentId));
 
         //2. 将对应的分组设置到对应的parent
         for (T node : trees) {
             List<T> subNodes = group.get(node.getId());
+            if (subNodes != null && node instanceof OrderTree) {
+                Collections.sort(subNodes, (o1, o2) -> ((OrderTree) o1).getOrder() - ((OrderTree) o2).getOrder());
+            }
             node.setChildren(subNodes);
         }
         List<T> result = group.get(rootId);

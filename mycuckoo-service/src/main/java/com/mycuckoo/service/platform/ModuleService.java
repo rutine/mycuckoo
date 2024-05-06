@@ -77,8 +77,8 @@ public class ModuleService {
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : menus) {
-            ModuleLevel modLevel = ModuleLevel.of(vo.getModLevel());
-            switch (modLevel) {
+            ModuleLevel level = ModuleLevel.of(vo.getLevel());
+            switch (level) {
                 case ONE:
                     firsts.add(vo);
                     break;
@@ -143,14 +143,14 @@ public class ModuleService {
 
     @Transactional
     public boolean disEnable(long moduleId, String disableFlag) {
-        if (DISABLE.equals(disableFlag)) {
+        boolean enable = ENABLE.equals(disableFlag);
+        ModuleMenu updateEntity = new ModuleMenu(moduleId);
+        if (!enable) {
             int count = moduleMenuMapper.countByParentId(moduleId);
             if (count > 0) { // 有下级菜单
                 throw new ApplicationException("存在下级菜单");
             }
 
-            ModuleMenu moduleMenu = get(moduleId);
-            moduleMenu.setStatus(DISABLE);
             // 查询当前模块的所有操作
             List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
             List<String> modOptRefIds = modOptRefs.stream()
@@ -162,18 +162,16 @@ public class ModuleService {
             uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
             // 停用第三级模块时将自动删除模块下的操作
             modOptRefMapper.deleteByModuleId(moduleId);
-            moduleMenuMapper.update(moduleMenu);
 
-            this.writeLog(moduleMenu, LogLevel.SECOND, OptName.DISABLE);
-            return true;
+            updateEntity.setStatus(DISABLE);
         } else {
-            ModuleMenu moduleMenu = get(moduleId);
-            moduleMenu.setStatus(ENABLE);
-            moduleMenuMapper.update(moduleMenu);
-
-            this.writeLog(moduleMenu, LogLevel.SECOND, OptName.ENABLE);
-            return true;
+            updateEntity.setStatus(ENABLE);
         }
+        moduleMenuMapper.update(updateEntity);
+
+        writeLog(get(moduleId), LogLevel.SECOND, enable ?  OptName.ENABLE : OptName.DISABLE);
+
+        return true;
     }
 
     public HierarchyModuleVo filterModule(List<ModuleMenuVo> list) {
@@ -183,10 +181,10 @@ public class ModuleService {
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenuVo vo : list) {
-            ModuleLevel modLevel = ModuleLevel.of(vo.getModLevel());
-            if (modLevel == null) { continue; }
+            ModuleLevel level = ModuleLevel.of(vo.getLevel());
+            if (level == null) { continue; }
 
-            switch (modLevel) {
+            switch (level) {
                 case ONE:
                     firstList.add(vo);
                     break;
@@ -200,18 +198,18 @@ public class ModuleService {
         }
 
         // 第一级
-        firstList.sort(Comparator.comparingLong(ModuleMenu::getModOrder));
+        firstList.sort(Comparator.comparingLong(ModuleMenu::getOrder));
 
         // 第二级
         Map<String, List<ModuleMenuVo>> secondMap = secondList.stream()
                 .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
         // 第三级
         Map<String, List<ModuleMenuVo>> thirdMap = thirdList.stream()
                 .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getModOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
 
         return new HierarchyModuleVo(firstList, secondMap, thirdMap);
     }
@@ -239,13 +237,13 @@ public class ModuleService {
             ModuleMenuVo vo = new ModuleMenuVo();
             vo.setModuleId(item.getModuleId());
             vo.setParentId(item.getParentId());
-            vo.setModEnName(item.getModEnName());
-            vo.setModName(item.getModName());
-            vo.setModIconCls(item.getModIconCls());
-            vo.setModLevel(item.getModLevel());
-            vo.setModOrder(item.getModOrder());
-            vo.setModPageType(item.getModPageType());
-            vo.setBelongToSys(item.getBelongToSys());
+            vo.setCode(item.getCode());
+            vo.setName(item.getName());
+            vo.setIconCls(item.getIconCls());
+            vo.setLevel(item.getLevel());
+            vo.setOrder(item.getOrder());
+            vo.setPageType(item.getPageType());
+            vo.setBelongSys(item.getBelongSys());
             vo.setStatus(item.getStatus());
             vo.setCreator(item.getCreator());
             vo.setCreateDate(item.getCreateDate());
@@ -275,8 +273,8 @@ public class ModuleService {
             CheckBoxTree tree = new CheckBoxTree();
             tree.setId(consumer.getOperateId().toString());
             tree.setParentId("0");
-            tree.setText(consumer.getOptName());
-            tree.setIconSkin(consumer.getOptIconCls());
+            tree.setText(consumer.getName());
+            tree.setIconSkin(consumer.getIconCls());
             tree.setIsLeaf(true);
             tree.setChildren(null);
             tree.setChecked(checked);
@@ -295,10 +293,10 @@ public class ModuleService {
         return modOptRefMapper.findByIds(modOptRefIds);
     }
 
-    public Page<ModuleMenuVo> findByPage(long treeId, String modName, String modEnName, Pageable page) {
+    public Page<ModuleMenuVo> findByPage(long treeId, String code, String name, Pageable page) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("modName", isNullOrEmpty(modName) ? null : "%" + modName + "%");
-        params.put("modEnName", isNullOrEmpty(modEnName) ? null : "%" + modEnName + "%");
+        params.put("code", isNullOrEmpty(code) ? null : "%" + code + "%");
+        params.put("name", isNullOrEmpty(name) ? null : "%" + name + "%");
         Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(params, page);
 
         List<ModuleMenuVo> vos = Lists.newArrayList();
@@ -313,14 +311,18 @@ public class ModuleService {
 
     public ModuleMenuVo get(Long moduleId) {
         ModuleMenu entity = moduleMenuMapper.get(moduleId);
+        if (entity == null) {
+            return null;
+        }
+
         ModuleMenuVo vo = new ModuleMenuVo();
         BeanUtils.copyProperties(entity, vo);
 
         return vo;
     }
 
-    public boolean existsByModEnName(String modEnName) {
-        int totalProperty = moduleMenuMapper.countByModEnName(modEnName);
+    public boolean existsByCode(String code) {
+        int totalProperty = moduleMenuMapper.countByCode(code);
 
         logger.debug("find module total is {}", totalProperty);
 
@@ -331,15 +333,25 @@ public class ModuleService {
     }
 
     @Transactional
-    public void update(ModuleMenu modMenu) {
-        ModuleMenu old = get(modMenu.getModuleId());
+    public void update(ModuleMenu entity) {
+        ModuleMenu old = get(entity.getModuleId());
         Assert.notNull(old, "模块不存在!");
-        Assert.state(old.getModEnName().equals(modMenu.getModEnName())
-                || !existsByModEnName(modMenu.getModEnName()), "英文名[" + modMenu.getModEnName() + "]已存在!");
+        Assert.state(old.getCode().equals(entity.getCode())
+                || !existsByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        moduleMenuMapper.update(modMenu);
+        if (entity.getParentId() != null) {
+            ModuleMenu parent = get(entity.getParentId());
+            Assert.notNull(parent, "请选择父级模块");
 
-        writeLog(modMenu, LogLevel.SECOND, OptName.MODIFY);
+            if (old.getLevel().equals(parent.getLevel() + 1)) {
+                entity.setLevel(null);
+            } else {
+                entity.setLevel(parent.getLevel() + 1);
+            }
+        }
+        moduleMenuMapper.update(entity);
+
+        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
     }
 
     @Transactional
@@ -358,12 +370,15 @@ public class ModuleService {
     }
 
     @Transactional
-    public void save(ModuleMenu modMenu) {
-        Assert.state(!existsByModEnName(modMenu.getModEnName()), "英文名[" + modMenu.getModEnName() + "]已存在!");
-        modMenu.setStatus(ENABLE);
-        moduleMenuMapper.save(modMenu);
+    public void save(ModuleMenu entity) {
+        ModuleMenu parent = get(entity.getParentId());
+        Assert.notNull(parent, "请选择父级模块");
+        Assert.state(!existsByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
+        entity.setStatus(ENABLE);
+        entity.setLevel(parent.getLevel() + 1);
+        moduleMenuMapper.save(entity);
 
-        writeLog(modMenu, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
     }
 
 
@@ -430,8 +445,8 @@ public class ModuleService {
         }
         tree.setId(parentId.toString());
         tree.setParentId(parentMenu.getParentId().toString());
-        tree.setText(parentMenu.getModName());
-        tree.setIconSkin(parentMenu.getModIconCls());
+        tree.setText(parentMenu.getName());
+        tree.setIconSkin(parentMenu.getIconCls());
         tree.setIsLeaf(parentMenu.getIsLeaf());
         tree.setChildren(subMenuVos);
 
@@ -455,7 +470,7 @@ public class ModuleService {
                 .operate(opt)
                 .id(entity.getModuleId())
                 .title(null)
-                .content("模块名称：%s, 英文: %s", entity.getModName(), entity.getModEnName())
+                .content("模块名称：%s, 编码: %s", entity.getName(), entity.getCode())
                 .level(level)
                 .emit();
     }

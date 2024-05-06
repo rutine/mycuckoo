@@ -65,17 +65,28 @@ public class OperateService {
         return operateMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
     }
 
-    public Page<Operate> findByPage(String optName, Pageable page) {
+    public Page<Operate> findByPage(String name, Pageable page) {
         Map<String, Object> params = Maps.newHashMap();
-        if (!CommonUtils.isNullOrEmpty(optName)) {
-            params.put("optName", "%" + optName + "%");
+        if (!CommonUtils.isNullOrEmpty(name)) {
+            params.put("name", "%" + name + "%");
         }
 
         return operateMapper.findByPage(params, page);
     }
 
-    public boolean existsByName(String moduleOptName) {
-        int count = operateMapper.countByName(moduleOptName);
+    public boolean existsByCode(String code) {
+        int count = operateMapper.countByCode(code);
+
+        logger.debug("find module total is {}", count);
+
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean existsByName(String name) {
+        int count = operateMapper.countByName(name);
 
         logger.debug("find module total is {}", count);
 
@@ -93,8 +104,10 @@ public class OperateService {
     public void update(Operate operate) {
         Operate old = get(operate.getOperateId());
         Assert.notNull(old, "操作不存在!");
-        Assert.state(old.getOptName().equals(operate.getOptName())
-                || !existsByName(operate.getOptName()), "操作名[" + operate.getOptName() + "]已存在!");
+        Assert.state(old.getCode().equals(operate.getCode())
+                || !existsByCode(operate.getCode()), "操作编码[" + operate.getCode() + "]已存在!");
+        Assert.state(old.getName().equals(operate.getName())
+                || !existsByName(operate.getName()), "操作名[" + operate.getName() + "]已存在!");
 
         operateMapper.update(operate);
 
@@ -103,7 +116,8 @@ public class OperateService {
 
     @Transactional
     public void save(Operate operate) {
-        Assert.state(!existsByName(operate.getOptName()), "操作名[" + operate.getOptName() + "]已存在!");
+        Assert.state(!existsByCode(operate.getCode()), "操作编码[" + operate.getCode() + "]已存在!");
+        Assert.state(!existsByName(operate.getName()), "操作名[" + operate.getName() + "]已存在!");
 
         operate.setStatus(ENABLE);
         operateMapper.save(operate);
@@ -131,7 +145,7 @@ public class OperateService {
                 .id(entity.getOperateId())
                 .title(null)
                 .content("操作名称：%s, 图标：%s, url: %s",
-                        entity.getOptName(), entity.getOptIconCls(), entity.getOptLink())
+                        entity.getName(), entity.getIconCls(), entity.getCode())
                 .level(logLevel)
                 .emit();
     }

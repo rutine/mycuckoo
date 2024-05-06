@@ -44,9 +44,9 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     public void testCountByModEnName() {
-        long count = mapper.countByModEnName("systemConfigMgr");
+        long count = mapper.countByCode("systemConfigMgr");
 
-        logger.info("------> countByModEnName: {}", count);
+        logger.info("------> countByCode: {}", count);
     }
 
     @Test
@@ -66,16 +66,16 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testSave() {
         ModuleMenu moduleMenu = new ModuleMenu();
-        moduleMenu.setBelongToSys("用户");
+        moduleMenu.setBelongSys("用户");
         moduleMenu.setCreateDate(Calendar.getInstance().getTime());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
-        moduleMenu.setModEnName("en10001");
-        moduleMenu.setModIconCls("no-resource");
-        moduleMenu.setModLevel("3");
-        moduleMenu.setModName("测试模块");
-        moduleMenu.setModOrder(6);
-        moduleMenu.setModPageType("jsp");
+        moduleMenu.setCode("en10001");
+        moduleMenu.setIconCls("no-resource");
+        moduleMenu.setLevel(3);
+        moduleMenu.setName("测试模块");
+        moduleMenu.setOrder(6);
+        moduleMenu.setPageType("jsp");
         moduleMenu.setStatus("enable");
 
         mapper.save(moduleMenu);
@@ -86,16 +86,16 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testUpdate() {
         ModuleMenu moduleMenu = new ModuleMenu();
-        moduleMenu.setBelongToSys("用户");
+        moduleMenu.setBelongSys("用户");
         moduleMenu.setCreateDate(Calendar.getInstance().getTime());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
-        moduleMenu.setModEnName("en10001");
-        moduleMenu.setModIconCls("no-resource");
-        moduleMenu.setModLevel("3");
-        moduleMenu.setModName("测试模块");
-        moduleMenu.setModOrder(6);
-        moduleMenu.setModPageType("jsp");
+        moduleMenu.setCode("en10001");
+        moduleMenu.setIconCls("no-resource");
+        moduleMenu.setLevel(3);
+        moduleMenu.setName("测试模块");
+        moduleMenu.setOrder(6);
+        moduleMenu.setPageType("jsp");
         moduleMenu.setStatus("enable");
         moduleMenu.setModuleId(25L);
 
@@ -114,7 +114,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         ModuleMenu moduleMenu = mapper.get(25L);
 
         Assert.assertNotNull(moduleMenu);
-        Assert.assertEquals("技术", moduleMenu.getModName());
+        Assert.assertEquals("技术", moduleMenu.getCode());
     }
 
     @Test
