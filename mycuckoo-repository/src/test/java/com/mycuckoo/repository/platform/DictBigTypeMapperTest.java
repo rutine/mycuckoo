@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 @SpringBootTest
@@ -25,9 +26,9 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
 
     @Test
     public void testCountByBigTypeCode() {
-        long count = mapper.countByBigTypeCode("modPageType");
+        long count = mapper.countByCode("modPageType");
 
-        logger.info("------> countByBigTypeCode: {}", count);
+        logger.info("------> countByCode: {}", count);
     }
 
     @Test
@@ -38,9 +39,11 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
     @Test
     public void testSave() {
         DictBigType dictBigType = new DictBigType();
-        dictBigType.setBigTypeCode("bigTypeCode");
-        dictBigType.setBigTypeName("大字典类型");
-        dictBigType.setCreateDate(Calendar.getInstance().getTime());
+        dictBigType.setCode("bigTypeCode");
+        dictBigType.setName("大字典类型");
+        dictBigType.setUpdateDate(new Date());
+        dictBigType.setUpdater("rutine");
+        dictBigType.setCreateDate(new Date());
         dictBigType.setCreator("rutine");
         dictBigType.setStatus("enable");
 
@@ -52,9 +55,11 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
     @Test
     public void testUpdate() {
         DictBigType dictBigType = new DictBigType();
-        dictBigType.setBigTypeCode("bigTypeCode");
-        dictBigType.setBigTypeName("大字典类型");
-        dictBigType.setCreateDate(Calendar.getInstance().getTime());
+        dictBigType.setCode("bigTypeCode");
+        dictBigType.setName("大字典类型");
+        dictBigType.setUpdateDate(new Date());
+        dictBigType.setUpdater("rutine");
+        dictBigType.setCreateDate(new Date());
         dictBigType.setCreator("rutine");
         dictBigType.setStatus("enable");
         dictBigType.setBigTypeId(5L);
@@ -74,7 +79,7 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         DictBigType dictBigType = mapper.get(25L);
 
         Assert.assertNotNull(dictBigType);
-        Assert.assertEquals("技术", dictBigType.getBigTypeCode());
+        Assert.assertEquals("技术", dictBigType.getCode());
     }
 
     @Test
@@ -87,8 +92,8 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
     @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("bigTypeName", null);
-        params.put("bigTypeCode", "%mod%");
+        params.put("name", null);
+        params.put("code", "%mod%");
         Page<DictBigType> page = mapper.findByPage(params, new PageRequest(0, 10));
 
         for (DictBigType entity : page.getContent()) {

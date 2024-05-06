@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -48,8 +49,10 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
     public void testSave() {
         DictSmallType dictSmallType = new DictSmallType();
         dictSmallType.setBigTypeId(21L);
-        dictSmallType.setSmallTypeCode("小类型code");
-        dictSmallType.setSmallTypeName("字典小类型");
+        dictSmallType.setCode("小类型code");
+        dictSmallType.setName("字典小类型");
+        dictSmallType.setCreator("rutine");
+        dictSmallType.setCreateDate(new Date());
 
         mapper.save(dictSmallType);
 
@@ -59,8 +62,10 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
     @Test
     public void testUpdate() {
         DictSmallType dictSmallType = new DictSmallType();
-        dictSmallType.setSmallTypeCode("小类型code");
-        dictSmallType.setSmallTypeName("字典小类型");
+        dictSmallType.setCode("小类型code");
+        dictSmallType.setName("字典小类型");
+        dictSmallType.setCreator("rutine");
+        dictSmallType.setCreateDate(new Date());
         dictSmallType.setSmallTypeId(8L);
 
         int row = mapper.update(dictSmallType);
@@ -78,7 +83,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         DictSmallType dictSmallType = mapper.get(45L);
 
         Assert.assertNotNull(dictSmallType);
-        Assert.assertEquals("技术", dictSmallType.getSmallTypeName());
+        Assert.assertEquals("技术", dictSmallType.getName());
     }
 
     @Test

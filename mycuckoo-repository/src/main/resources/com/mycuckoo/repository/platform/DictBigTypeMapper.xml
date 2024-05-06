@@ -12,16 +12,18 @@
 <mapper namespace="com.mycuckoo.repository.platform.DictBigTypeMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictBigType">
         <id property="bigTypeId" column="big_type_id" />
-        <result property="bigTypeName" column="big_type_name" />
-        <result property="bigTypeCode" column="big_type_code" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updater" column="updater" />
+        <result property="updateDate" column="update_date" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
-        big_type_id, big_type_name, big_type_code, memo, status, creator, create_date
+    <sql id="columns">
+        big_type_id, code, name, memo, status, updater, update_date, creator, create_date
     </sql>
     
     <sql id="table">
@@ -33,19 +35,23 @@
             useGeneratedKeys="true" keyProperty="bigTypeId" keyColumn="big_type_id">
         insert into <include refid="table" /> (
             big_type_id,
-            big_type_name,
-            big_type_code,
+            code,
+            name,
             memo,
             status,
+            updater,
+            update_date,
             creator,
             create_date
         )
         values (
             #{bigTypeId},
-            #{bigTypeName},
-            #{bigTypeCode},
+            #{code},
+            #{name},
             #{memo},
             #{status},
+            #{updater},
+            #{updateDate},
             #{creator},
             #{createDate}
         )
@@ -55,10 +61,12 @@
     <update id="update" parameterType="com.mycuckoo.domain.platform.DictBigType">
         update <include refid="table" />
         <set>
-            <if test="bigTypeCode != null">big_type_code = #{bigTypeCode}, </if>
-            <if test="bigTypeName != null">big_type_name = #{bigTypeName}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
         </set>
         where big_type_id = #{bigTypeId}
     </update>
@@ -72,7 +80,7 @@
         获取字典大类: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where big_type_id = #{id}
     </select>
@@ -86,14 +94,14 @@
     
     <!-- 根据字典大类名称及代码分页查询字典大类 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="bigTypeName != null">
-                big_type_name like #{bigTypeName}
+            <if test="code != null">
+                code like #{code}
             </if>
-            <if test="bigTypeCode != null">
-                and big_type_code like #{bigTypeCode}
+            <if test="name != null">
+                and name like #{name}
             </if>
         </where>
         order by big_type_id desc
@@ -109,7 +117,7 @@
     <select id="countByBigTypeCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
-        where big_type_code = #{bigTypeCode}
+        where code = #{code}
     </select>
     
     <!-- 根据字典大类ID修改字典大类状态 -->

@@ -54,7 +54,7 @@ public class DictionaryService {
     }
 
     public boolean existBigTypeByBigTypeCode(String bigTypeCode) {
-        int count = dictBigTypeMapper.countByBigTypeCode(bigTypeCode);
+        int count = dictBigTypeMapper.countByCode(bigTypeCode);
         if (count > 0) return true;
 
         return false;
@@ -76,8 +76,8 @@ public class DictionaryService {
     public void updateBigType(DictBigType entity) {
         DictBigType old = getBigTypeByBigTypeId(entity.getBigTypeId());
         Assert.notNull(old, "字典不存在!");
-        Assert.state(old.getBigTypeCode().equals(entity.getBigTypeCode())
-                || !existBigTypeByBigTypeCode(entity.getBigTypeCode()), "编码[" + entity.getBigTypeCode() + "]已存在!");
+        Assert.state(old.getCode().equals(entity.getCode())
+                || !existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         dictSmallTypeMapper.deleteByBigTypeId(entity.getBigTypeId());
         dictBigTypeMapper.update(entity);
@@ -92,7 +92,7 @@ public class DictionaryService {
 
     @Transactional
     public void saveBigType(DictBigType entity) {
-        Assert.state(!existBigTypeByBigTypeCode(entity.getBigTypeCode()), "编码[" + entity.getBigTypeCode() + "]已存在!");
+        Assert.state(!existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);
         dictBigTypeMapper.save(entity);
@@ -130,7 +130,7 @@ public class DictionaryService {
                 .operate(opt)
                 .id(entity.getBigTypeId())
                 .title(null)
-                .content("字典大类名称：%s", entity.getBigTypeName())
+                .content("字典大类名称：%s", entity.getName())
                 .level(logLevel)
                 .emit();
     }

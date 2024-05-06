@@ -45,14 +45,14 @@ public class DictionaryController {
 
     @GetMapping
     public AjaxResponse<Page<DictBigType>> list(
-            @RequestParam(value = "bigTypeName", defaultValue = "") String dictName,
-            @RequestParam(value = "bigTypeCode", defaultValue = "") String dictCode,
+            @RequestParam(value = "code", defaultValue = "") String code,
+            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("dictCode", StringUtils.isBlank(dictCode) ? null : "%" + dictCode + "%");
-        params.put("dictName", StringUtils.isBlank(dictName) ? null : "%" + dictName + "%");
+        params.put("code", StringUtils.isBlank(code) ? null : "%" + code + "%");
+        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
 
         Page<DictBigType> page = dictionaryService.findBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
 
@@ -97,7 +97,7 @@ public class DictionaryController {
     public AjaxResponse<DictBigType> get(@PathVariable long id) {
         DictBigType dictBigType = dictionaryService.getBigTypeByBigTypeId(id);
         List<DictSmallType> smallTypes = dictionaryService
-                .findSmallTypesByBigTypeCode(dictBigType.getBigTypeCode());
+                .findSmallTypesByBigTypeCode(dictBigType.getCode());
         dictBigType.setSmallTypes(smallTypes);
 
         return AjaxResponse.create(dictBigType);

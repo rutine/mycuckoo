@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -17,8 +18,10 @@ public class DictSmallType implements Serializable {
 
     private Long smallTypeId;
     private Long bigTypeId;
-    private String smallTypeName;
-    private String smallTypeCode;
+    private String code;
+    private String name;
+    private String creator;
+    private Date createDate;
 
     /**
      * default constructor
@@ -37,11 +40,13 @@ public class DictSmallType implements Serializable {
      * full constructor
      */
     public DictSmallType(Long smallTypeId, Long bigTypeId,
-                         String smallTypeName, String smallTypeCode) {
+                         String code, String name, String creator, Date createDate) {
         this.smallTypeId = smallTypeId;
         this.bigTypeId = bigTypeId;
-        this.smallTypeName = smallTypeName;
-        this.smallTypeCode = smallTypeCode;
+        this.code = code;
+        this.name = name;
+        this.creator = creator;
+        this.createDate = createDate;
     }
 
     public Long getSmallTypeId() {
@@ -60,20 +65,36 @@ public class DictSmallType implements Serializable {
         this.bigTypeId = bigTypeId;
     }
 
-    public String getSmallTypeName() {
-        return this.smallTypeName;
+    public String getCode() {
+        return code;
     }
 
-    public void setSmallTypeName(String smallTypeName) {
-        this.smallTypeName = smallTypeName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getSmallTypeCode() {
-        return this.smallTypeCode;
+    public String getName() {
+        return name;
     }
 
-    public void setSmallTypeCode(String smallTypeCode) {
-        this.smallTypeCode = smallTypeCode;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public boolean equals(Object obj) {

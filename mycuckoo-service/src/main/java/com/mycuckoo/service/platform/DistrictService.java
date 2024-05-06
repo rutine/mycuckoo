@@ -97,7 +97,7 @@ public class DistrictService {
         Page<District> pageResult = districtMapper.findByPage(params, page);
         List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
         Map<String, String> dicSmallTypeMap = dictSmallTypeList.stream()
-                .collect(Collectors.toMap(k -> k.getSmallTypeCode().toLowerCase(), DictSmallType::getSmallTypeName));
+                .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictSmallType::getName));
 
         List<DistrictVo> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {
@@ -162,7 +162,7 @@ public class DistrictService {
     /**
      * 公用地区写日志
      *
-     * @param district 地区对象
+     * @param entity 地区对象
      * @param logLevel
      * @param opt
      * @throws ApplicationException

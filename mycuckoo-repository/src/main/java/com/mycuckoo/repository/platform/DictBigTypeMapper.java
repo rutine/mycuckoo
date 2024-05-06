@@ -16,10 +16,10 @@ public interface DictBigTypeMapper extends Repository<DictBigType, Long> {
     /**
      * 根据字典大类编码统计字典大类数量
      *
-     * @param bigTypeCode
+     * @param code
      * @return 数量
      */
-    int countByBigTypeCode(String bigTypeCode);
+    int countByCode(String code);
 
     /**
      * 根据字典大类ID修改字典大类状态

@@ -13,12 +13,14 @@
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictSmallType">
         <id property="smallTypeId" column="small_type_id" />
         <result property="bigTypeId" column="big_type_id" />
-        <result property="smallTypeName" column="small_type_name" />
-        <result property="smallTypeCode" column="small_type_code" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
     </resultMap>
     
     <sql id="colums">
-        small_type_id, big_type_id, small_type_name, small_type_code
+        small_type_id, big_type_id, code, name, creator, create_date
     </sql>
     
     <sql id="table">
@@ -31,14 +33,18 @@
         insert into <include refid="table" /> (
             small_type_id,
             big_type_id,
-            small_type_name,
-            small_type_code
+            code,
+            name,
+            creator,
+            create_date
         )
         values (
             #{smallTypeId},
             #{bigTypeId},
-            #{smallTypeName},
-            #{smallTypeCode}
+            #{code},
+            #{name},
+            #{creator},
+            #{createDate}
         )
     </insert>
     
@@ -47,8 +53,8 @@
         update <include refid="table" />
         <set>
             <if test="bigTypeId != null">big_type_id = #{bigTypeId}, </if>
-            <if test="smallTypeCode != null">small_type_code = #{smallTypeCode}, </if>
-            <if test="smallTypeName != null">small_type_name = #{smallTypeName}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
         </set>
         where small_type_id = #{smallTypeId}
     </update>
@@ -108,7 +114,7 @@
         (
             select big_type_id
             from cuckoo.sys_dict_big_type
-            where big_type_code = #{bigTypeCode}
+            where code = #{bigTypeCode}
         )
     </select>
     

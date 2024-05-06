@@ -18,10 +18,12 @@ import java.util.List;
 public class DictBigType implements Serializable {
 
     private Long bigTypeId;
-    private String bigTypeName;
-    private String bigTypeCode;
+    private String code;
+    private String name;
     private String memo;
     private String status;
+    private String updater;
+    private Date updateDate;
     private String creator;
     private Date createDate;
     private List<DictSmallType> smallTypes = Lists.newArrayList();
@@ -43,13 +45,16 @@ public class DictBigType implements Serializable {
     /**
      * full constructor
      */
-    public DictBigType(Long bigTypeId, String bigTypeName, String bigTypeCode,
-                       String memo, String status, String creator, Date createDate, List<DictSmallType> smallTypes) {
+    public DictBigType(Long bigTypeId, String code, String name,
+                       String memo, String status, String updater, Date updateDate,
+                       String creator, Date createDate, List<DictSmallType> smallTypes) {
         this.bigTypeId = bigTypeId;
-        this.bigTypeName = bigTypeName;
-        this.bigTypeCode = bigTypeCode;
+        this.code = code;
+        this.name = name;
         this.memo = memo;
         this.status = status;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
         this.smallTypes = smallTypes;
@@ -63,20 +68,20 @@ public class DictBigType implements Serializable {
         this.bigTypeId = bigTypeId;
     }
 
-    public String getBigTypeName() {
-        return this.bigTypeName;
+    public String getCode() {
+        return code;
     }
 
-    public void setBigTypeName(String bigTypeName) {
-        this.bigTypeName = bigTypeName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getBigTypeCode() {
-        return this.bigTypeCode;
+    public String getName() {
+        return name;
     }
 
-    public void setBigTypeCode(String bigTypeCode) {
-        this.bigTypeCode = bigTypeCode;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getMemo() {
@@ -93,6 +98,22 @@ public class DictBigType implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {
