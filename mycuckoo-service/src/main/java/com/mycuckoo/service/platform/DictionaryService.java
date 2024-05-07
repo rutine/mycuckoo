@@ -10,11 +10,13 @@ import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
 import com.mycuckoo.repository.platform.DictSmallTypeMapper;
+import com.mycuckoo.utils.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +81,8 @@ public class DictionaryService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
+        entity.setUpdater(SessionUtil.getUserCode());
+        entity.setUpdateDate(new Date());
         dictSmallTypeMapper.deleteByBigTypeId(entity.getBigTypeId());
         dictBigTypeMapper.update(entity);
 
@@ -94,6 +98,10 @@ public class DictionaryService {
     public void saveBigType(DictBigType entity) {
         Assert.state(!existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
+        entity.setUpdater(SessionUtil.getUserCode());
+        entity.setUpdateDate(new Date());
+        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreateDate(new Date());
         entity.setStatus(ENABLE);
         dictBigTypeMapper.save(entity);
 
@@ -108,6 +116,8 @@ public class DictionaryService {
     @Transactional
     public void saveDicSmallTypes(List<DictSmallType> smallTypes) {
         smallTypes.forEach(dicSmallType -> {
+            dicSmallType.setCreator(SessionUtil.getUserCode());
+            dicSmallType.setCreateDate(new Date());
             dictSmallTypeMapper.save(dicSmallType);
         });
     }

@@ -113,8 +113,8 @@
         from <include refid="table" />
     </select>
     
-        <!-- 根据字典大类编码统计字典大类数量 -->
-    <select id="countByBigTypeCode" parameterType="string" resultType="int">
+        <!-- 根据编码统计字典大类数量 -->
+    <select id="countByCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
         where code = #{code}

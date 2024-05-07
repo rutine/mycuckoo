@@ -17,10 +17,10 @@ import java.util.List;
 public class Code implements Serializable {
 
     private Long codeId; //编码ID
-    private String codeEngName; //英文编码名称
-    private String codeName; //中文编码名称
+    private String code; //英文编码名称
+    private String name; //中文编码名称
     private String moduleName; // 模块名称
-    private String delimite; //delimite分隔符
+    private String delimiter; //delimiter分隔符
     private Integer partNum; //段数
     private String part1;
     private String part1Con;
@@ -30,9 +30,11 @@ public class Code implements Serializable {
     private String part3Con;
     private String part4;
     private String part4Con;
-    private String codeEffect; //编码效果
+    private String effect; //编码效果
     private String memo; //备注
     private String status; //状态
+    private String updater; //更新人
+    private Date updateDate; //更新时间
     private String creator; //创建人
     private Date createDate; //创建时间
 
@@ -56,16 +58,17 @@ public class Code implements Serializable {
     /**
      * full constructor
      */
-    public Code(Long codeId, String codeEngName, String codeName,
-                String moduleName, String delimite, Integer partNum, String part1,
+    public Code(Long codeId, String code, String name,
+                String moduleName, String delimiter, Integer partNum, String part1,
                 String part1Con, String part2, String part2Con, String part3,
-                String part3Con, String part4, String part4Con, String codeEffect,
-                String memo, String status, String creator, Date createDate) {
+                String part3Con, String part4, String part4Con, String effect,
+                String memo, String status, String updater, Date updateDate,
+                String creator, Date createDate) {
         this.codeId = codeId;
-        this.codeEngName = codeEngName;
-        this.codeName = codeName;
+        this.code = code;
+        this.name = name;
         this.moduleName = moduleName;
-        this.delimite = delimite;
+        this.delimiter = delimiter;
         this.partNum = partNum;
         this.part1 = part1;
         this.part1Con = part1Con;
@@ -75,9 +78,11 @@ public class Code implements Serializable {
         this.part3Con = part3Con;
         this.part4 = part4;
         this.part4Con = part4Con;
-        this.codeEffect = codeEffect;
+        this.effect = effect;
         this.memo = memo;
         this.status = status;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -90,20 +95,20 @@ public class Code implements Serializable {
         this.codeId = codeId;
     }
 
-    public String getCodeEngName() {
-        return this.codeEngName;
+    public String getCode() {
+        return code;
     }
 
-    public void setCodeEngName(String codeEngName) {
-        this.codeEngName = codeEngName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getCodeName() {
-        return this.codeName;
+    public String getName() {
+        return name;
     }
 
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getModuleName() {
@@ -114,12 +119,12 @@ public class Code implements Serializable {
         this.moduleName = moduleName;
     }
 
-    public String getDelimite() {
-        return this.delimite;
+    public String getDelimiter() {
+        return this.delimiter;
     }
 
-    public void setDelimite(String delimite) {
-        this.delimite = delimite;
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
     }
 
     public Integer getPartNum() {
@@ -194,12 +199,12 @@ public class Code implements Serializable {
         this.part4Con = part4Con;
     }
 
-    public String getCodeEffect() {
-        return this.codeEffect;
+    public String getEffect() {
+        return this.effect;
     }
 
-    public void setCodeEffect(String codeEffect) {
-        this.codeEffect = codeEffect;
+    public void setEffect(String effect) {
+        this.effect = effect;
     }
 
     public String getMemo() {
@@ -216,6 +221,22 @@ public class Code implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {

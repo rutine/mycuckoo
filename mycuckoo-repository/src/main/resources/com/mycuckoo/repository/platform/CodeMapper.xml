@@ -12,10 +12,10 @@
 <mapper namespace="com.mycuckoo.repository.platform.CodeMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Code">
         <id property="codeId" column="code_id" />
-        <result property="codeEngName" column="code_eng_name" />
-        <result property="codeName" column="code_name" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
         <result property="moduleName" column="module_name" />
-        <result property="delimite" column="delimite" />
+        <result property="delimiter" column="delimiter" />
         <result property="partNum" column="part_num" />
         <result property="part1" column="part1" />
         <result property="part1Con" column="part1_con" />
@@ -25,16 +25,19 @@
         <result property="part3Con" column="part3_con" />
         <result property="part4" column="part4" />
         <result property="part4Con" column="part4_con" />
-        <result property="codeEffect" column="code_effect" />
+        <result property="effect" column="effect" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updater" column="updater" />
+        <result property="updateDate" column="update_date" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
     </resultMap>
     
     <sql id="colums">
-        code_id, code_eng_name, code_name, module_name, delimite, part_num, part1, part1_con, part2, 
-        part2_con, part3, part3_con, part4, part4_con, code_effect, memo, status, creator, create_date
+        code_id, code, name, module_name, delimiter, part_num, part1, part1_con, part2,
+        part2_con, part3, part3_con, part4, part4_con, effect, memo, status,
+        updater, update_date, creator, create_date
     </sql>
     
     <sql id="table">
@@ -47,10 +50,10 @@
         insert into <include refid="table" />
         (
             code_id,
-            code_eng_name,
-            code_name,
+            code,
+            name,
             module_name,
-            delimite,
+            delimiter,
             part_num,
             part1,
             part1_con,
@@ -60,18 +63,20 @@
             part3_con,
             part4,
             part4_con,
-            code_effect,
+            effect,
             memo,
             status,
+            updater,
+            update_date,
             creator,
             create_date
         )
         values (
             #{codeId},
-            #{codeEngName},
-            #{codeName},
+            #{code},
+            #{name},
             #{moduleName},
-            #{delimite},
+            #{delimiter},
             #{partNum},
             #{part1},
             #{part1Con},
@@ -81,9 +86,11 @@
             #{part3Con},
             #{part4},
             #{part4Con},
-            #{codeEffect},
+            #{effect},
             #{memo},
             #{status},
+            #{updater},
+            #{updateDate},
             #{creator},
             #{createDate}
         )
@@ -93,10 +100,10 @@
     <update id="update" parameterType="com.mycuckoo.domain.platform.Code">
         update <include refid="table" />
         <set>
-            <if test="codeEngName != null">code_eng_name = #{codeEngName}, </if>
-            <if test="codeName != null">code_name = #{codeName}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
             <if test="moduleName != null">module_name = #{moduleName}, </if>
-            <if test="delimite != null">delimite = #{delimite}, </if>
+            <if test="delimiter != null">delimiter = #{delimiter}, </if>
             <if test="partNum != null">part_num = #{partNum}, </if>
             <if test="part1 != null">part1 = #{part1}, </if>
             <if test="part1Con != null">part1_con = #{part1Con}, </if>
@@ -106,9 +113,11 @@
             <if test="part3Con != null">part3_con = #{part3Con}, </if>
             <if test="part4 != null">part4 = #{part4}, </if>
             <if test="part4Con != null">part4_con = #{part4Con}, </if>
-            <if test="codeEffect != null">code_effect = #{codeEffect}, </if>
+            <if test="effect != null">effect = #{effect}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
         </set>
         where code_id = #{codeId}
     </update>
@@ -140,11 +149,11 @@
         select <include refid="colums" />
         from <include refid="table" />
         <where>
-            <if test="codeEngName != null">
-                and code_eng_name like #{codeEngName}
+            <if test="code != null">
+                and code like #{code}
             </if>
-            <if test="codeName != null">
-                and code_name like #{codeName}
+            <if test="name != null">
+                and name like #{name}
             </if>
             <if test="moduleName != null">
                 and module_name like #{moduleName}
@@ -159,17 +168,17 @@
         from <include refid="table" />
     </select>
     
-        <!-- 根据编码英文名称统计编码是否存在 -->
-    <select id="countByCodeEngName" parameterType="string" resultType="int">
+        <!-- 判断编码是否存在 -->
+    <select id="countByCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
-        where code_eng_name = #{codeEngName}
+        where code = #{code}
     </select>
     
-    <!-- 根据编码英文名称获取编码 -->
-    <select id="getByCodeEngName" parameterType="string" resultMap="baseMap">
+    <!-- 根据编码获取编码 -->
+    <select id="getByCode" parameterType="string" resultMap="baseMap">
         select <include refid="colums" />
         from <include refid="table" />
-        where code_eng_name = #{codeEngName}
+        where code = #{code}
     </select>
 </mapper> 

@@ -46,16 +46,16 @@ public class CodeController {
 
     @GetMapping
     public AjaxResponse<Page<Code>> list(
-            @RequestParam(value = "codeName", defaultValue = "") String codeName,
-            @RequestParam(value = "codeEngName", defaultValue = "") String codeEngName,
+            @RequestParam(value = "code", defaultValue = "") String code,
+            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "moduleName", defaultValue = "") String moduleName,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("codeName", StringUtils.isBlank(codeName) ? null : "%" + codeName + "%");
-        params.put("codeEngName", StringUtils.isBlank(codeEngName) ? null : "%" + codeEngName + "%");
+        params.put("code", StringUtils.isBlank(code) ? null : "%" + code + "%");
+        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
         params.put("moduleName", StringUtils.isBlank(moduleName) ? null : "%" + moduleName + "%");
         Page<Code> page = codeService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 @SpringBootTest
@@ -24,28 +25,26 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 
 
     @Test
-    public void testCountByCodeEngName() {
-        long count = mapper.countByCodeEngName("RKD");
+    public void testCountByCode() {
+        long count = mapper.countByCode("RKD");
 
-        logger.info("------> countByCodeEngName: {}", count);
+        logger.info("------> countByCode: {}", count);
     }
 
     @Test
-    public void testGetByCodeEngName() {
-        Code code = this.mapper.getByCodeEngName("RKD");
+    public void testGetByCode() {
+        Code code = this.mapper.getByCode("RKD");
 
-        logger.info("------> getByCodeEngName: {}", code);
+        logger.info("------> getByCode: {}", code);
     }
 
     @Test
     public void testSave() {
         Code code = new Code();
-        code.setCodeEffect("编码效果");
-        code.setCodeEngName("编码英文名");
-        code.setCodeName("编码名称");
-        code.setCreateDate(Calendar.getInstance().getTime());
-        code.setCreator("rutine");
-        code.setDelimite(",");
+        code.setEffect("编码效果");
+        code.setCode("编码代码");
+        code.setName("编码名称");
+        code.setDelimiter(",");
         code.setMemo("供测试");
         code.setModuleName("属于模块");
         code.setPart1("st");
@@ -56,6 +55,10 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setPart3Con("->");
         code.setPartNum(3);
         code.setStatus("enable");
+        code.setUpdateDate(new Date());
+        code.setUpdater("rutine");
+        code.setCreateDate(new Date());
+        code.setCreator("rutine");
 
         mapper.save(code);
 
@@ -65,12 +68,10 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testUpdate() {
         Code code = new Code();
-        code.setCodeEffect("编码效果");
-        code.setCodeEngName("编码英文名");
-        code.setCodeName("编码名称");
-        code.setCreateDate(Calendar.getInstance().getTime());
-        code.setCreator("rutine");
-        code.setDelimite(",");
+        code.setEffect("编码效果");
+        code.setCode("编码英文名");
+        code.setName("编码名称");
+        code.setDelimiter(",");
         code.setMemo("供测试");
         code.setModuleName("属于模块");
         code.setPart1("st");
@@ -82,6 +83,8 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setPartNum(3);
         code.setStatus("enable");
         code.setCodeId(25L);
+        code.setUpdateDate(new Date());
+        code.setUpdater("rutine");
 
         int row = mapper.update(code);
 
@@ -98,7 +101,7 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         Code code = mapper.get(25L);
 
         Assert.assertNotNull(code);
-        Assert.assertEquals("技术", code.getCodeEngName());
+        Assert.assertEquals("技术", code.getCode());
     }
 
     @Test
@@ -111,8 +114,8 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("codeEngName", "%RKD%");
-        params.put("codeName", null);
+        params.put("code", "%RKD%");
+        params.put("name", null);
         params.put("moduleName", null);
         Page<Code> page = this.mapper.findByPage(params, new PageRequest(0, 10));
 

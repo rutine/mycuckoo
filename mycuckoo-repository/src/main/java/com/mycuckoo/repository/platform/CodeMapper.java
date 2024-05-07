@@ -13,18 +13,18 @@ import com.mycuckoo.repository.Repository;
 public interface CodeMapper extends Repository<Code, Long> {
 
     /**
-     * 根据编码英文名称统计编码是否存在
+     * 根据编码统计编码是否存在
      *
-     * @param codeEngName 编码英文名称
+     * @param code 编码
      * @return
      */
-    int countByCodeEngName(String codeEngName);
+    int countByCode(String code);
 
     /**
-     * 根据编码英文名称获取编码
+     * 根据编码获取编码
      *
-     * @param codeEngName 编码英文名称
+     * @param code 编码
      * @return
      */
-    Code getByCodeEngName(String codeEngName);
+    Code getByCode(String code);
 }

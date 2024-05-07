@@ -58,12 +58,12 @@ public class CodeService {
                 .operate(enable ? OptName.ENABLE : OptName.DISABLE)
                 .id(entity.getCodeId())
                 .title(null)
-                .content("编码%s, 英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
+                .content("%s编码, 编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
                         enable ? "启用" : "停用",
-                        entity.getCodeEngName(),
-                        entity.getCodeName(),
+                        entity.getCode(),
+                        entity.getName(),
                         entity.getModuleName(),
-                        entity.getCodeEffect())
+                        entity.getEffect())
                 .level(LogLevel.SECOND)
                 .emit();
 
@@ -74,8 +74,8 @@ public class CodeService {
         return codeMapper.findByPage(params, page);
     }
 
-    public boolean existByCodeEngName(String codeEngName) {
-        int count = codeMapper.countByCodeEngName(codeEngName);
+    public boolean existByCode(String code) {
+        int count = codeMapper.countByCode(code);
 
         return count > 0;
     }
@@ -105,8 +105,8 @@ public class CodeService {
     public void update(Code entity) {
         Code old = get(entity.getCodeId());
         Assert.notNull(old, "编码不存在!");
-        Assert.state(old.getCodeEngName().equals(entity.getCodeEngName())
-                || !existByCodeEngName(entity.getCodeEngName()), "编码[" + entity.getCodeEngName() + "]已存在!");
+        Assert.state(old.getCode().equals(entity.getCode())
+                || !existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         codeMapper.update(entity);
 
@@ -115,11 +115,11 @@ public class CodeService {
                 .operate(OptName.MODIFY)
                 .id(entity.getCodeId())
                 .title(null)
-                .content("英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
-                        entity.getCodeEngName(),
-                        entity.getCodeName(),
+                .content("编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
+                        entity.getCode(),
+                        entity.getName(),
                         entity.getModuleName(),
-                        entity.getCodeEffect())
+                        entity.getEffect())
                 .level(LogLevel.SECOND)
                 .emit();
     }
@@ -130,7 +130,7 @@ public class CodeService {
     public String getCodeNameByCodeEngName(String codeEngName) {
         String currentCode = "";
 
-        Code code = codeMapper.getByCodeEngName(codeEngName);
+        Code code = codeMapper.getByCode(codeEngName);
         String part1 = code.getPart1();
         String part1Con = code.getPart1Con();
         String part2 = code.getPart2();
@@ -139,7 +139,7 @@ public class CodeService {
         String part3Con = code.getPart3Con();
         String part4 = code.getPart4();
         String part4Con = code.getPart4Con();
-        String delimite = code.getDelimite();
+        String delimite = code.getDelimiter();
 
         part1Con = this.getPartContent(part1, part1Con, currentCode, 1, delimite);
         part2Con = this.getPartContent(part2, part2Con, currentCode, 2, delimite);
@@ -179,7 +179,7 @@ public class CodeService {
 
     @Transactional
     public void saveCode(Code entity) throws ApplicationException {
-        Assert.state(!existByCodeEngName(entity.getCodeEngName()), "编码[" + entity.getCodeEngName() + "]已存在!");
+        Assert.state(!existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);
         codeMapper.save(entity);
@@ -189,11 +189,11 @@ public class CodeService {
                 .operate(OptName.SAVE)
                 .id(entity.getCodeId())
                 .title(null)
-                .content("英文名称：%s, 中文名称：%s, 所属模块名称：%s, 编码效果: %s",
-                        entity.getCodeEngName(),
-                        entity.getCodeName(),
+                .content("编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
+                        entity.getCode(),
+                        entity.getName(),
                         entity.getModuleName(),
-                        entity.getCodeEffect())
+                        entity.getEffect())
                 .level(LogLevel.FIRST)
                 .emit();
     }
