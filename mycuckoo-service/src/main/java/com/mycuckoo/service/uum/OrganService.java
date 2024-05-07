@@ -176,7 +176,7 @@ public class OrganService {
 
         District district = platformServiceFacade.getDistrict(organ.getOrgBelongDist());
         if (district != null) {
-            vo.setOrgBelongDistName(district.getDistrictName());
+            vo.setOrgBelongDistName(district.getName());
         }
 
         return vo;

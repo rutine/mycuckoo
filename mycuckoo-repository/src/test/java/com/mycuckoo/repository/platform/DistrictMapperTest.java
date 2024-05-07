@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,13 +61,15 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testSave() {
         District district = new District();
-        district.setCreateDate(Calendar.getInstance().getTime());
+        district.setCreateDate(new Date());
         district.setCreator("rutine");
-        district.setDistrictCode("020");
-        district.setDistrictLevel("1");
-        district.setDistrictName("广州");
-        district.setDistrictPostal("7333");
-        district.setDistrictTelcode("020");
+        district.setUpdateDate(new Date());
+        district.setUpdater("rutine");
+        district.setCode("020");
+        district.setLevel("1");
+        district.setName("广州");
+        district.setPostal("7333");
+        district.setTelcode("020");
         district.setMemo("测试");
         district.setStatus("enable");
 
@@ -79,13 +81,15 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testUpdate() {
         District district = new District();
-        district.setCreateDate(Calendar.getInstance().getTime());
+        district.setCreateDate(new Date());
         district.setCreator("rutine");
-        district.setDistrictCode("020");
-        district.setDistrictLevel("1");
-        district.setDistrictName("广州");
-        district.setDistrictPostal("7333");
-        district.setDistrictTelcode("020");
+        district.setUpdateDate(new Date());
+        district.setUpdater("rutine");
+        district.setCode("020");
+        district.setLevel("1");
+        district.setName("广州");
+        district.setPostal("7333");
+        district.setTelcode("020");
         district.setMemo("测试");
         district.setStatus("enable");
         district.setDistrictId(2001L);
@@ -105,7 +109,7 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
         District district = mapper.get(2005L);
 
         Assert.assertNotNull(district);
-        Assert.assertEquals("技术", district.getDistrictName());
+        Assert.assertEquals("技术", district.getName());
     }
 
     @Test

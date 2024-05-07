@@ -51,8 +51,8 @@ public class SystemParameterService {
         return true;
     }
 
-    public boolean countByParaKeyName(String paraKeyName) {
-        int count = sysParameterMapper.countByParaKeyName(paraKeyName);
+    public boolean countByKey(String paraKeyName) {
+        int count = sysParameterMapper.countByKey(paraKeyName);
         if (count > 0) return true;
 
         return false;
@@ -66,13 +66,13 @@ public class SystemParameterService {
         return sysParameterMapper.get(paraId);
     }
 
-    public SysParameter getByParaName(String paraName) {
-        return sysParameterMapper.getByParaName(paraName);
+    public SysParameter getByKey(String key) {
+        return sysParameterMapper.getByKey(key);
     }
 
     @Transactional
     public void update(SysParameter entity) {
-        entity.setParaKeyName(null); //参数键不可修改
+        entity.setKey(null); //参数键不可修改
         sysParameterMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -80,7 +80,7 @@ public class SystemParameterService {
 
     @Transactional
     public void save(SysParameter entity) {
-        Assert.state(!countByParaKeyName(entity.getParaKeyName()), "键值[" + entity.getParaKeyName() + "]已存在!");
+        Assert.state(!countByKey(entity.getKey()), "键值[" + entity.getKey() + "]已存在!");
         sysParameterMapper.save(entity);
 
         writeLog(entity, LogLevel.FIRST, OptName.SAVE);
@@ -106,7 +106,7 @@ public class SystemParameterService {
                 .id(entity.getParaId())
                 .title(null)
                 .content("参数名称：%s, 参数键值：%s, 参数值: %s, 参数类型: %s",
-                        entity.getParaName(), entity.getParaKeyName(), entity.getParaValue(), entity.getParaType())
+                        entity.getName(), entity.getKey(), entity.getValue(), entity.getType())
                 .level(logLevel)
                 .emit();
     }

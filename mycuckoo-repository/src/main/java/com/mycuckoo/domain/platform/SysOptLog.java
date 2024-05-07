@@ -16,16 +16,18 @@ import java.util.Date;
 public class SysOptLog implements Serializable {
 
     private Long optId;
-    private String optModName;
-    private String optName;
-    private String optContent;
-    private String optBusinessId;
-    private Date optTime;
-    private String optPcName;
-    private String optPcIp;
-    private String optUserName;
-    private String optUserRole;
-    private String optUserOgan;
+    private String modName;
+    private String name;
+    private String content;
+    private Integer busiType;
+    private String busiId;
+    private String host;
+    private String ip;
+    private String userName;
+    private String userRole;
+    private String userOrgan;
+    private String creator;
+    private Date createDate;
 
     private Date startTime;
     private Date endTime;
@@ -46,21 +48,24 @@ public class SysOptLog implements Serializable {
     /**
      * full constructor
      */
-    public SysOptLog(Long optId, String optModName, String optName,
-                     String optContent, String optBusinessId, Date optTime,
-                     String optPcName, String optPcIp, String optUserName,
-                     String optUserRole, String optUserOgan) {
+    public SysOptLog(Long optId, String modName, String name,
+                     String content, Integer busiType, String busiId,
+                     String host, String ip, String userName,
+                     String userRole, String userOrgan,
+                     String creator, Date createDate) {
         this.optId = optId;
-        this.optModName = optModName;
-        this.optName = optName;
-        this.optContent = optContent;
-        this.optBusinessId = optBusinessId;
-        this.optTime = optTime;
-        this.optPcName = optPcName;
-        this.optPcIp = optPcIp;
-        this.optUserName = optUserName;
-        this.optUserRole = optUserRole;
-        this.optUserOgan = optUserOgan;
+        this.modName = modName;
+        this.name = name;
+        this.content = content;
+        this.busiType = busiType;
+        this.busiId = busiId;
+        this.host = host;
+        this.ip = ip;
+        this.userName = userName;
+        this.userRole = userRole;
+        this.userOrgan = userOrgan;
+        this.creator = creator;
+        this.createDate = createDate;
     }
 
     public Long getOptId() {
@@ -71,84 +76,100 @@ public class SysOptLog implements Serializable {
         this.optId = optId;
     }
 
-    public String getOptModName() {
-        return this.optModName;
+    public String getModName() {
+        return modName;
     }
 
-    public void setOptModName(String optModName) {
-        this.optModName = optModName;
+    public void setModName(String modName) {
+        this.modName = modName;
     }
 
-    public String getOptName() {
-        return this.optName;
+    public String getName() {
+        return name;
     }
 
-    public void setOptName(String optName) {
-        this.optName = optName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getOptContent() {
-        return this.optContent;
+    public String getContent() {
+        return content;
     }
 
-    public void setOptContent(String optContent) {
-        this.optContent = optContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getOptBusinessId() {
-        return this.optBusinessId;
+    public Integer getBusiType() {
+        return busiType;
     }
 
-    public void setOptBusinessId(String optBusinessId) {
-        this.optBusinessId = optBusinessId;
+    public void setBusiType(Integer busiType) {
+        this.busiType = busiType;
     }
 
-    public Date getOptTime() {
-        return this.optTime;
+    public String getBusiId() {
+        return busiId;
     }
 
-    public void setOptTime(Date optTime) {
-        this.optTime = optTime;
+    public void setBusiId(String busiId) {
+        this.busiId = busiId;
     }
 
-    public String getOptPcName() {
-        return this.optPcName;
+    public String getHost() {
+        return host;
     }
 
-    public void setOptPcName(String optPcName) {
-        this.optPcName = optPcName;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public String getOptPcIp() {
-        return this.optPcIp;
+    public String getIp() {
+        return ip;
     }
 
-    public void setOptPcIp(String optPcIp) {
-        this.optPcIp = optPcIp;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
-    public String getOptUserName() {
-        return this.optUserName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setOptUserName(String optUserName) {
-        this.optUserName = optUserName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getOptUserRole() {
-        return this.optUserRole;
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setOptUserRole(String optUserRole) {
-        this.optUserRole = optUserRole;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
-    public String getOptUserOgan() {
-        return this.optUserOgan;
+    public String getUserOrgan() {
+        return userOrgan;
     }
 
-    public void setOptUserOgan(String optUserOgan) {
-        this.optUserOgan = optUserOgan;
+    public void setUserOrgan(String userOrgan) {
+        this.userOrgan = userOrgan;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public Date getStartTime() {

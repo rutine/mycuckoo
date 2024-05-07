@@ -110,7 +110,7 @@ public class CommonUtils {
      * @time Oct 4, 2012 1:09:16 PM
      */
     public static boolean isEmpty(String str) {
-        if ("".equals(str.trim())) return true;
+        if (str == null || "".equals(str.trim())) return true;
         return false;
     }
 

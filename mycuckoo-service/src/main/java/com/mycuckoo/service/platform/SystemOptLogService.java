@@ -57,13 +57,6 @@ public class SystemOptLogService {
 
     @Transactional
     public void save(ModuleName module, OptName operate, String busiId, String title, String content, LogLevel level) {
-        this.saveLog(level, operate, module.value(), content, busiId);
-    }
-
-    @Transactional
-    public void saveLog(LogLevel level, OptName optName, String optModName,
-                        String optContent, String optBusinessId) {
-
         SystemConfigXmlParse.getInstance();
         SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
         String sysConfigLevel = systemConfigBean.getLoggerLevel();
@@ -80,16 +73,18 @@ public class SystemOptLogService {
         }
 
         SysOptLog sysOptLog = new SysOptLog();
-        sysOptLog.setOptModName(optModName);
-        sysOptLog.setOptName(optName.value());
-        sysOptLog.setOptContent(optContent);
-        sysOptLog.setOptBusinessId(optBusinessId);
-        sysOptLog.setOptTime(new Date());
-        sysOptLog.setOptPcName(SessionUtil.getHostName()); //得到计算机名称
-        sysOptLog.setOptPcIp(SessionUtil.getIP());
-        sysOptLog.setOptUserName(SessionUtil.getUserName());
-        sysOptLog.setOptUserRole(SessionUtil.getRoleName());
-        sysOptLog.setOptUserOgan(SessionUtil.getOrganName());
+        sysOptLog.setModName(module.value());
+        sysOptLog.setName(operate.value());
+        sysOptLog.setContent(content);
+//        sysOptLog.setBusiType(module.name());
+        sysOptLog.setBusiId(busiId);
+        sysOptLog.setHost(SessionUtil.getHostName()); //得到计算机名称
+        sysOptLog.setIp(SessionUtil.getIP());
+        sysOptLog.setUserName(SessionUtil.getUserName());
+        sysOptLog.setUserRole(SessionUtil.getRoleName());
+        sysOptLog.setUserOrgan(SessionUtil.getOrganName());
+        sysOptLog.setCreator(SessionUtil.getUserCode());
+        sysOptLog.setCreateDate(new Date());
 
         sysOptLogMapper.save(sysOptLog);
     }

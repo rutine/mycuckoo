@@ -18,13 +18,15 @@ public class District implements Serializable {
 
     private Long districtId;
     private Long parentId;
-    private String districtName;
-    private String districtCode;
-    private String districtPostal;
-    private String districtTelcode;
-    private String districtLevel;
+    private String code;
+    private String name;
+    private String postal;
+    private String telcode;
+    private String level;
     private String memo;
     private String status;
+    private String updater; //更新人
+    private Date updateDate; //更新时间
     private String creator;
     private Date createDate;
 
@@ -46,18 +48,21 @@ public class District implements Serializable {
      * full constructor
      */
     public District(Long districtId, Long parentId,
-                    String districtName, String districtCode, String districtPostal,
-                    String districtTelcode, String districtLevel, String memo,
-                    String status, String creator, Date createDate) {
+                    String code, String name, String postal,
+                    String telcode, String level, String memo,
+                    String status, String updater, Date updateDate,
+                    String creator, Date createDate) {
         this.districtId = districtId;
         this.parentId = parentId;
-        this.districtName = districtName;
-        this.districtCode = districtCode;
-        this.districtPostal = districtPostal;
-        this.districtTelcode = districtTelcode;
-        this.districtLevel = districtLevel;
+        this.code = code;
+        this.name = name;
+        this.postal = postal;
+        this.telcode = telcode;
+        this.level = level;
         this.memo = memo;
         this.status = status;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -78,44 +83,44 @@ public class District implements Serializable {
         this.parentId = parentId;
     }
 
-    public String getDistrictName() {
-        return this.districtName;
+    public String getCode() {
+        return code;
     }
 
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getDistrictCode() {
-        return this.districtCode;
+    public String getName() {
+        return name;
     }
 
-    public void setDistrictCode(String districtCode) {
-        this.districtCode = districtCode;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDistrictPostal() {
-        return this.districtPostal;
+    public String getPostal() {
+        return postal;
     }
 
-    public void setDistrictPostal(String districtPostal) {
-        this.districtPostal = districtPostal;
+    public void setPostal(String postal) {
+        this.postal = postal;
     }
 
-    public String getDistrictTelcode() {
-        return this.districtTelcode;
+    public String getTelcode() {
+        return telcode;
     }
 
-    public void setDistrictTelcode(String districtTelcode) {
-        this.districtTelcode = districtTelcode;
+    public void setTelcode(String telcode) {
+        this.telcode = telcode;
     }
 
-    public String getDistrictLevel() {
-        return this.districtLevel;
+    public String getLevel() {
+        return level;
     }
 
-    public void setDistrictLevel(String districtLevel) {
-        this.districtLevel = districtLevel;
+    public void setLevel(String level) {
+        this.level = level;
     }
 
     public String getMemo() {
@@ -132,6 +137,22 @@ public class District implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {

@@ -42,17 +42,19 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testSave() {
         SysOptLog sysOptLog = new SysOptLog();
-        sysOptLog.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000));
-        sysOptLog.setOptBusinessId("4");
-        sysOptLog.setOptContent("测试");
-        sysOptLog.setOptModName("系统");
-        sysOptLog.setOptPcIp("localhost");
-        sysOptLog.setOptPcName("rutine");
-        sysOptLog.setOptTime(Calendar.getInstance().getTime());
-        sysOptLog.setOptUserName("rutine");
-        sysOptLog.setOptUserOgan("no-organ");
-        sysOptLog.setOptUserRole("admin");
+        sysOptLog.setModName("系统");
+        sysOptLog.setBusiType(null);
+        sysOptLog.setBusiId("4");
+        sysOptLog.setContent("测试");
+        sysOptLog.setIp("127.0.0.1");
+        sysOptLog.setHost("localhost");
+        sysOptLog.setUserName("rutine");
+        sysOptLog.setUserOrgan("no-organ");
+        sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
+        sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
+        sysOptLog.setCreator("rutine");
+        sysOptLog.setCreateDate(new Date());
 
         mapper.save(sysOptLog);
 
@@ -62,17 +64,19 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testUpdate() {
         SysOptLog sysOptLog = new SysOptLog();
-        sysOptLog.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000));
-        sysOptLog.setOptBusinessId("4");
-        sysOptLog.setOptContent("测试");
-        sysOptLog.setOptModName("系统");
-        sysOptLog.setOptPcIp("localhost");
-        sysOptLog.setOptPcName("rutine");
-        sysOptLog.setOptTime(Calendar.getInstance().getTime());
-        sysOptLog.setOptUserName("rutine");
-        sysOptLog.setOptUserOgan("no-organ");
-        sysOptLog.setOptUserRole("admin");
+        sysOptLog.setModName("系统");
+        sysOptLog.setBusiType(null);
+        sysOptLog.setBusiId("4");
+        sysOptLog.setContent("测试");
+        sysOptLog.setIp("127.0.0.1");
+        sysOptLog.setHost("localhost");
+        sysOptLog.setUserName("rutine");
+        sysOptLog.setUserOrgan("no-organ");
+        sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
+        sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
+        sysOptLog.setCreator("rutine");
+        sysOptLog.setCreateDate(new Date());
         sysOptLog.setOptId(4L);
 
         int row = mapper.update(sysOptLog);
@@ -90,7 +94,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         SysOptLog sysOptLog = mapper.get(5L);
 
         Assert.assertNotNull(sysOptLog);
-        Assert.assertEquals("技术", sysOptLog.getOptModName());
+        Assert.assertEquals("技术", sysOptLog.getModName());
     }
 
     @Test
@@ -103,12 +107,12 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testFindByPage() {
         Map<String, Object> params = new HashMap<String, Object>(10);
-        params.put("optModName", "%登录%");
-        params.put("optName", "%登录%");
-        params.put("optUserName", "%平%");
-        params.put("optUserRole", "%经理%");
-        params.put("optPcIp", null); // like
-        params.put("optBusinessId", null);
+        params.put("modName", "%登录%");
+        params.put("name", "%登录%");
+        params.put("userName", "%平%");
+        params.put("userRole", "%经理%");
+        params.put("ip", null); // like
+        params.put("busiId", null);
         params.put("startTime", null);
         params.put("endTime", null);
 

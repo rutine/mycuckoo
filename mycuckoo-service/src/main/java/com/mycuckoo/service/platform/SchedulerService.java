@@ -52,7 +52,7 @@ public class SchedulerService {
                 .id(old.getJobId())
                 .title(null)
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
-                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCronExpression())
+                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCron())
                 .level(LogLevel.THIRD)
                 .emit();
     }
@@ -87,7 +87,7 @@ public class SchedulerService {
                 .id(old.getJobId())
                 .title(null)
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
-                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCronExpression())
+                        old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCron())
                 .level(LogLevel.SECOND)
                 .emit();
     }
@@ -108,7 +108,7 @@ public class SchedulerService {
                 .id(entity.getJobId())
                 .title(null)
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
-                        entity.getJobName(), entity.getJobClass(), entity.getTriggerType(), entity.getCronExpression())
+                        entity.getJobName(), entity.getJobClass(), entity.getTriggerType(), entity.getCron())
                 .level(LogLevel.FIRST)
                 .emit();
     }

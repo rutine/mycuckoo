@@ -36,10 +36,10 @@ public class AfficheMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testSave() {
         Affiche affiche = new Affiche();
-        affiche.setAfficheContent("公告测试");
-        affiche.setAfficheInvalidate(Calendar.getInstance().getTime());
-        affiche.setAffichePulish((short) 6);
-        affiche.setAfficheTitle("公测");
+        affiche.setTitle("公测");
+        affiche.setContent("公告测试");
+        affiche.setInvalidate(Calendar.getInstance().getTime());
+        affiche.setPublish(false);
 
         mapper.save(affiche);
 
@@ -49,10 +49,10 @@ public class AfficheMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testUpdate() {
         Affiche affiche = new Affiche();
-        affiche.setAfficheContent("公告测试");
-        affiche.setAfficheInvalidate(Calendar.getInstance().getTime());
-        affiche.setAffichePulish((short) 6);
-        affiche.setAfficheTitle("公测");
+        affiche.setTitle("公测");
+        affiche.setContent("公告测试");
+        affiche.setInvalidate(Calendar.getInstance().getTime());
+        affiche.setPublish(true);
         affiche.setAfficheId(9L);
 
         int row = mapper.update(affiche);
@@ -72,7 +72,7 @@ public class AfficheMapperTest extends AbstractTransactionalJUnit4SpringContextT
         Affiche affiche = mapper.get(6L);
 
         Assert.assertNotNull(affiche);
-        Assert.assertEquals("技术", affiche.getAfficheContent());
+        Assert.assertEquals("技术", affiche.getContent());
     }
 
     @Test
@@ -85,8 +85,8 @@ public class AfficheMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("afficheTitle", "%工%");
-        params.put("affichePulish", null);
+        params.put("title", "%工%");
+        params.put("publish", null);
         Page<Affiche> page = this.mapper.findByPage(params, new PageRequest(0, 10));
 
         for (Affiche entity : page.getContent()) {

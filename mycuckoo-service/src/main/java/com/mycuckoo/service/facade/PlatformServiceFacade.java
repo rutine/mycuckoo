@@ -62,10 +62,10 @@ public class PlatformServiceFacade {
         return moduleService.findModOptRefsByModOptRefIds(modOptRefIdList.toArray(new Long[modOptRefIdList.size()]));
     }
 
-    public String findSystemParaByParaName(String paraName) {
-        SysParameter sysParameter = systemParameterService.getByParaName(paraName);
+    public String findSystemParaByKey(String key) {
+        SysParameter sysParameter = systemParameterService.getByKey(key);
 
-        return sysParameter == null ? "" : sysParameter.getParaValue();
+        return sysParameter == null ? "" : sysParameter.getValue();
     }
 
 }

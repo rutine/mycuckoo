@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,24 +25,26 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
 
 
     @Test
-    public void testGetByParaName() {
-        SysParameter para = mapper.getByParaName("用户有效期");
+    public void testGetByKey() {
+        SysParameter para = mapper.getByKey("用户有效期");
 
         Assert.assertNotNull(para);
 
-        logger.info("------> getByParaName: {}", para);
+        logger.info("------> getByKey: {}", para);
     }
 
     @Test
     public void testSave() {
         SysParameter sysParameter = new SysParameter();
-        sysParameter.setCreateDate(Calendar.getInstance().getTime());
+        sysParameter.setCreateDate(new Date());
         sysParameter.setCreator("rutine");
+        sysParameter.setUpdateDate(new Date());
+        sysParameter.setUpdater("rutine");
         sysParameter.setMemo("测试");
-        sysParameter.setParaKeyName("no-key-name");
-        sysParameter.setParaName("编号");
-        sysParameter.setParaType("用户");
-        sysParameter.setParaValue("yyyymmdd");
+        sysParameter.setName("编号");
+        sysParameter.setKey("no-key-name");
+        sysParameter.setValue("yyyymmdd");
+        sysParameter.setType("用户");
         sysParameter.setStatus("enable");
 
         mapper.save(sysParameter);
@@ -52,13 +55,13 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testUpdate() {
         SysParameter sysParameter = new SysParameter();
-        sysParameter.setCreateDate(Calendar.getInstance().getTime());
-        sysParameter.setCreator("rutine");
+        sysParameter.setUpdateDate(new Date());
+        sysParameter.setUpdater("rutine");
         sysParameter.setMemo("测试");
-        sysParameter.setParaKeyName("no-key-name");
-        sysParameter.setParaName("编号");
-        sysParameter.setParaType("用户");
-        sysParameter.setParaValue("yyyymmdd");
+        sysParameter.setName("编号");
+        sysParameter.setKey("no-key-name");
+        sysParameter.setValue("yyyymmdd");
+        sysParameter.setType("用户");
         sysParameter.setStatus("enable");
         sysParameter.setParaId(2L);
 
@@ -77,7 +80,7 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
         SysParameter sysParameter = mapper.get(1L);
 
         Assert.assertNotNull(sysParameter);
-        Assert.assertEquals("技术", sysParameter.getParaKeyName());
+        Assert.assertEquals("技术", sysParameter.getName());
     }
 
     @Test
@@ -90,8 +93,8 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testFindByPage() {
         Map<String, Object> params = new HashMap<String, Object>(4);
-        params.put("paraName", null); //like
-        params.put("paraKeyName", "%user%");
+        params.put("name", null); //like
+        params.put("key", "%user%");
         Page<SysParameter> page = mapper.findByPage(params, new PageRequest(0, 10));
 
         for (SysParameter entity : page.getContent()) {

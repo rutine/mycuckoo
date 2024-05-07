@@ -39,16 +39,16 @@ public class SystemOptLogController {
 
     @GetMapping
     public AjaxResponse<Page<SysOptLog>> list(
-            @RequestParam(required = false) String optModName,
-            @RequestParam(required = false) String optName,
-            @RequestParam(required = false) String optUserName,
+            @RequestParam(required = false) String modName,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String userName,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("optModName", StringUtils.isBlank(optModName) ? null : "%" + optModName + "%");
-        params.put("optName", StringUtils.isBlank(optName) ? null : "%" + optName + "%");
-        params.put("optUserName", StringUtils.isBlank(optUserName) ? null : "%" + optUserName + "%");
+        params.put("modName", StringUtils.isBlank(modName) ? null : "%" + modName + "%");
+        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
+        params.put("userName", StringUtils.isBlank(userName) ? null : "%" + userName + "%");
 
         Page<SysOptLog> page = systemOptLogService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 

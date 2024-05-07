@@ -15,16 +15,16 @@ public interface SysParameterMapper extends Repository<SysParameter, Long> {
     /**
      * 判断参数键是否存在
      *
-     * @param paraKeyName 参数键
+     * @param key 参数键
      * @return 数量
      */
-    int countByParaKeyName(String paraKeyName);
+    int countByKey(String key);
 
     /**
-     * 根据参数名称获取系统参数
+     * 根据参数键查找系统参数
      *
-     * @param paraName
+     * @param key
      * @return 系统参数对象
      */
-    SysParameter getByParaName(String paraName);
+    SysParameter getByKey(String key);
 }

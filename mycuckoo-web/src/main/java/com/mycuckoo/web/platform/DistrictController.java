@@ -61,15 +61,15 @@ public class DistrictController {
     @GetMapping
     public AjaxResponse<Page<DistrictVo>> list(
             @RequestParam(value = "treeId", defaultValue = "-1") long treeId,
-            @RequestParam(value = "districtName", defaultValue = "") String districtName,
-            @RequestParam(value = "districtLevel", defaultValue = "") String districtLevel,
+            @RequestParam(value = "name", defaultValue = "") String districtName,
+            @RequestParam(value = "level", defaultValue = "") String districtLevel,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("treeId", treeId);
-        params.put("districtName", StringUtils.isBlank(districtName) ? null : "%" + districtName + "%");
-        params.put("districtLevel", StringUtils.trimToNull(districtLevel));
+        params.put("name", StringUtils.isBlank(districtName) ? null : "%" + districtName + "%");
+        params.put("level", StringUtils.trimToNull(districtLevel));
 
         Page<DistrictVo> page = districtService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 
@@ -86,9 +86,8 @@ public class DistrictController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody District district) {
-
-        logger.debug(JsonUtils.toJson(district));
-
+        district.setUpdateDate(new Date());
+        district.setUpdater(SessionUtil.getUserCode());
         district.setCreateDate(new Date());
         district.setCreator(SessionUtil.getUserCode());
         district.setParentId(district.getParentId());
@@ -107,6 +106,8 @@ public class DistrictController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody District district) {
+        district.setUpdateDate(new Date());
+        district.setUpdater(SessionUtil.getUserCode());
         districtService.update(district);
 
         return AjaxResponse.create("修改地区成功");
@@ -118,7 +119,7 @@ public class DistrictController {
         DistrictVo district = districtService.get(id);
         DistrictVo parentDistrict = districtService.get(district.getParentId());
         district.setParentId(parentDistrict.getDistrictId());
-        district.setParentName(parentDistrict.getDistrictName());
+        district.setParentName(parentDistrict.getName());
 
         return AjaxResponse.create(district);
     }

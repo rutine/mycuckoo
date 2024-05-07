@@ -309,7 +309,7 @@ public class UserController {
             @RequestBody String userName) {
 
         // 系统参数用户默认密码
-        String userDefaultPwd = platformServiceFacade.findSystemParaByParaName(USER_DEFAULT_PWD);
+        String userDefaultPwd = platformServiceFacade.findSystemParaByKey(USER_DEFAULT_PWD);
         userService.resetPwdByUserId(userDefaultPwd, userName, id);
 
         return AjaxResponse.create("重置密码成功");

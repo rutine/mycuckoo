@@ -34,7 +34,7 @@
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
+    <sql id="columns">
         code_id, code, name, module_name, delimiter, part_num, part1, part1_con, part2,
         part2_con, part3, part3_con, part4, part4_con, effect, memo, status,
         updater, update_date, creator, create_date
@@ -131,7 +131,7 @@
         获取编码: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where code_id = #{id}
     </select>
@@ -146,7 +146,7 @@
     
     <!-- 根据条件查询编码 Code-->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         <where>
             <if test="code != null">
@@ -177,7 +177,7 @@
     
     <!-- 根据编码获取编码 -->
     <select id="getByCode" parameterType="string" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where code = #{code}
     </select>

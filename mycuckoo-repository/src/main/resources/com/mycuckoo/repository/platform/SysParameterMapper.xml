@@ -12,18 +12,19 @@
 <mapper namespace="com.mycuckoo.repository.platform.SysParameterMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysParameter">
         <id property="paraId" column="para_id" />
-        <result property="paraName" column="para_name" />
-        <result property="paraKeyName" column="para_key_name" />
-        <result property="paraValue" column="para_value" />
-        <result property="paraType" column="para_type" />
+        <result property="name" column="name" />
+        <result property="key" column="key" />
+        <result property="value" column="value" />
+        <result property="type" column="type" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
-        para_id, para_name, para_key_name, para_value, para_type, memo, status, creator, create_date
+    <sql id="columns">
+        para_id, name, `key`, `value`, type, memo, status,
+        updater, update_date, creator, create_date
     </sql>
     
     <sql id="table">
@@ -36,23 +37,27 @@
         insert into <include refid="table" />
         (
             para_id,
-            para_name,
-            para_key_name,
-            para_value,
-            para_type,
+            name,
+            `key`,
+            `value`,
+            type,
             memo,
             status,
+            updater,
+            update_date,
             creator,
             create_date
         )
         values (
             #{paraId},
-            #{paraName},
-            #{paraKeyName},
-            #{paraValue},
-            #{paraType},
+            #{name},
+            #{key},
+            #{value},
+            #{type},
             #{memo},
             #{status},
+            #{updater},
+            #{updateDate},
             #{creator},
             #{createDate}
         )
@@ -62,12 +67,14 @@
     <update id="update" parameterType="com.mycuckoo.domain.platform.SysParameter">
         update <include refid="table" />
         <set>
-            <if test="paraName != null">para_name = #{paraName}, </if>
-            <if test="paraKeyName != null">para_key_name = #{paraKeyName}, </if>
-            <if test="paraValue != null">para_value = #{paraValue}, </if>
-            <if test="paraType != null">para_type = #{paraType}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="key != null">`key` = #{key}, </if>
+            <if test="value != null">`value` = #{value}, </if>
+            <if test="type != null">type = #{type}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
         </set>
         where para_id = #{paraId}
     </update>
@@ -81,7 +88,7 @@
         获取系统参数: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where para_id = #{id}
     </select>
@@ -95,14 +102,14 @@
 
     <!-- 根据系统参数名称及键值查询系统参数, 映射到 baseMap -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="paraName != null">
-                para_name like #{paraName}
+            <if test="name != null">
+                name like #{name}
             </if>
-            <if test="paraKeyName != null">
-                and para_key_name like #{paraKeyName}
+            <if test="key != null">
+                and `key` like #{key}
             </if>
         </where>
         order by para_id desc
@@ -115,17 +122,17 @@
     </select>
 
     <!-- 判断参数键是否存在 -->
-    <select id="countByParaKeyName" parameterType="string" resultType="int">
+    <select id="countByKey" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
-        where para_key_name = #{paraKeyName}
+        where `key` = #{key}
     </select>
     
-    <!-- 根据参数名称查找系统参数 -->
-    <select id="getByParaName" parameterType="string" resultMap="baseMap">
-        select <include refid="colums" />
+    <!-- 根据参数键查找系统参数 -->
+    <select id="getByKey" parameterType="string" resultMap="baseMap">
+        select <include refid="columns" />
         from <include refid="table" />
-        where para_name = #{paraName}
+        where `key` = #{key}
     </select>
     
 </mapper> 

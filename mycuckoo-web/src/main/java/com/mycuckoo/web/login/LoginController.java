@@ -7,6 +7,7 @@ import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.service.login.LoginService;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.web.util.JsonUtils;
@@ -201,9 +202,7 @@ public class LoginController {
                     .id(userId)
                     .title(null)
                     .content("组织：%s, 角色：%s, 用户: %s",
-                            session.getAttribute(ORGAN_NAME),
-                            session.getAttribute(ROLE_NAME),
-                            session.getAttribute(USER_NAME))
+                            SessionUtil.getOrganName(), SessionUtil.getRoleName(), SessionUtil.getUserName())
                     .level(LogLevel.THIRD)
                     .emit();
         }

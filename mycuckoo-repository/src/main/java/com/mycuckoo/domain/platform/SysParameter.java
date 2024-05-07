@@ -16,12 +16,14 @@ import java.util.Date;
 public class SysParameter implements Serializable {
 
     private Long paraId;
-    private String paraName;
-    private String paraKeyName;
-    private String paraValue;
-    private String paraType;
+    private String name;
+    private String key;
+    private String value;
+    private String type;
     private String memo;
     private String status;
+    private String updater; //更新人
+    private Date updateDate; //更新时间
     private String creator;
     private Date createDate;
 
@@ -42,16 +44,18 @@ public class SysParameter implements Serializable {
     /**
      * full constructor
      */
-    public SysParameter(Long paraId, String paraName, String paraKeyName,
-                        String paraValue, String paraType, String memo, String status,
-                        String creator, Date createDate) {
+    public SysParameter(Long paraId, String name, String key,
+                        String value, String type, String memo, String status,
+                        String updater, Date updateDate, String creator, Date createDate) {
         this.paraId = paraId;
-        this.paraName = paraName;
-        this.paraKeyName = paraKeyName;
-        this.paraValue = paraValue;
-        this.paraType = paraType;
+        this.name = name;
+        this.key = key;
+        this.value = value;
+        this.type = type;
         this.memo = memo;
         this.status = status;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -64,36 +68,36 @@ public class SysParameter implements Serializable {
         this.paraId = paraId;
     }
 
-    public String getParaName() {
-        return this.paraName;
+    public String getName() {
+        return name;
     }
 
-    public void setParaName(String paraName) {
-        this.paraName = paraName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getParaKeyName() {
-        return this.paraKeyName;
+    public String getKey() {
+        return key;
     }
 
-    public void setParaKeyName(String paraKeyName) {
-        this.paraKeyName = paraKeyName;
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public String getParaValue() {
-        return this.paraValue;
+    public String getValue() {
+        return value;
     }
 
-    public void setParaValue(String paraValue) {
-        this.paraValue = paraValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public String getParaType() {
-        return this.paraType;
+    public String getType() {
+        return type;
     }
 
-    public void setParaType(String paraType) {
-        this.paraType = paraType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getMemo() {
@@ -110,6 +114,22 @@ public class SysParameter implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {

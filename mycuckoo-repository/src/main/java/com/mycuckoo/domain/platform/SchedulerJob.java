@@ -19,13 +19,15 @@ public class SchedulerJob implements Serializable {
     private String jobName; //英文调度名称
     private String jobClass; //调度类名称
     private String triggerType; //触发器类型
-    private String cronExpression; //时间表达式
+    private String cron; //时间表达式
     private Date startTime; //开始时间
     private Date endTime; //结束时间
     private Integer repeatCount; //重复次数
     private Long intervalTime; //时间间隔
     private String status; //状态
     private String memo; //备注
+    private String updater; //更新人
+    private Date updateDate; //更新时间
     private String creator; //创建人
     private Date createDate; //创建时间
 
@@ -47,20 +49,22 @@ public class SchedulerJob implements Serializable {
      * full constructor
      */
     public SchedulerJob(Long jobId, String jobName,
-                        String jobClass, String triggerType, String cronExpression,
+                        String jobClass, String triggerType, String cron,
                         Date startTime, Date endTime, Integer repeatCount, Long intervalTime,
-                        String status, String memo, String creator, Date createDate) {
+                        String status, String memo, String updater, Date updateDate, String creator, Date createDate) {
         this.jobId = jobId;
         this.jobName = jobName;
         this.jobClass = jobClass;
         this.triggerType = triggerType;
-        this.cronExpression = cronExpression;
+        this.cron = cron;
         this.startTime = startTime;
         this.endTime = endTime;
         this.repeatCount = repeatCount;
         this.intervalTime = intervalTime;
         this.status = status;
         this.memo = memo;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -97,12 +101,12 @@ public class SchedulerJob implements Serializable {
         this.triggerType = triggerType;
     }
 
-    public String getCronExpression() {
-        return cronExpression;
+    public String getCron() {
+        return cron;
     }
 
-    public void setCronExpression(String cronExpression) {
-        this.cronExpression = cronExpression;
+    public void setCron(String cron) {
+        this.cron = cron;
     }
 
     public Date getStartTime() {
@@ -151,6 +155,22 @@ public class SchedulerJob implements Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {

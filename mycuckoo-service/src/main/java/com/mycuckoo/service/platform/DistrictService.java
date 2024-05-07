@@ -79,11 +79,8 @@ public class DistrictService {
 
     public Page<DistrictVo> findByPage(Map<String, Object> params, Pageable page) {
         long treeId = (Long) params.get("treeId");
-        String districtName = (String) params.get("districtName");
-        String districtLevel = (String) params.get("districtLevel");
-
-        logger.debug("start={} limit={} treeId={} districtName={} districtLevel={}",
-                page.getOffset(), page.getPageSize(), treeId, districtName, districtLevel);
+        String name = (String) params.get("name");
+        String level = (String) params.get("level");
 
         List<Long> idList = new ArrayList<Long>();
         if (treeId >= 0) {
@@ -101,14 +98,14 @@ public class DistrictService {
 
         List<DistrictVo> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {
-            String distLevel = entity.getDistrictLevel().toLowerCase();
+            String distLevel = entity.getLevel().toLowerCase();
             if (dicSmallTypeMap.containsKey(distLevel)) {
-                entity.setDistrictLevel(dicSmallTypeMap.get(distLevel));
+                entity.setLevel(dicSmallTypeMap.get(distLevel));
             }
 
             DistrictVo vo = new DistrictVo();
             BeanUtils.copyProperties(entity, vo);
-            vo.setParentName(get(entity.getParentId()).getDistrictName());//上级地区名称
+            vo.setParentName(get(entity.getParentId()).getName());//上级地区名称
             vos.add(vo);
         }
 
@@ -139,8 +136,8 @@ public class DistrictService {
     public void update(District district) {
         District old = get(district.getDistrictId());
         Assert.notNull(old, "地区不存在!");
-        Assert.state(old.getDistrictName().equals(district.getDistrictName())
-                || !existByName(district.getDistrictName()), "地区名称[" + district.getDistrictName() + "]已存在!");
+        Assert.state(old.getName().equals(district.getName())
+                || !existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
 
         districtMapper.update(district);
 
@@ -149,7 +146,7 @@ public class DistrictService {
 
     @Transactional
     public void save(District district) {
-        Assert.state(!existByName(district.getDistrictName()), "地区名称[" + district.getDistrictName() + "]已存在!");
+        Assert.state(!existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
         district.setStatus(ENABLE);
         districtMapper.save(district);
 
@@ -175,7 +172,7 @@ public class DistrictService {
                 .operate(opt)
                 .id(entity.getDistrictId())
                 .title(null)
-                .content("地区名称：%s, 地区级别：%s", entity.getDistrictName(), entity.getDistrictLevel())
+                .content("地区名称：%s, 地区级别：%s", entity.getName(), entity.getLevel())
                 .level(logLevel)
                 .emit();
     }
@@ -226,8 +223,8 @@ public class DistrictService {
             SimpleTree tree = new SimpleTree();
             tree.setId(mapper.getDistrictId().toString());
             tree.setParentId(mapper.getParentId().toString());
-            tree.setText(mapper.getDistrictName());
-            if (CITY.equalsIgnoreCase(mapper.getDistrictLevel())) {
+            tree.setText(mapper.getName());
+            if (CITY.equalsIgnoreCase(mapper.getLevel())) {
                 tree.setIsLeaf(true); // 城市节点
             }
 

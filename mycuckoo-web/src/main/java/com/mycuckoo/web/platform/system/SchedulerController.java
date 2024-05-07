@@ -74,6 +74,8 @@ public class SchedulerController {
 
         logger.debug(JsonUtils.toJson(schedulerJob));
 
+        schedulerJob.setUpdateDate(new Date());
+        schedulerJob.setUpdater(SessionUtil.getUserCode());
         schedulerJob.setCreateDate(new Date());
         schedulerJob.setCreator(SessionUtil.getUserCode());
         schedulerService.save(schedulerJob);
@@ -106,6 +108,8 @@ public class SchedulerController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody SchedulerJob scheduler) {
+        scheduler.setUpdateDate(new Date());
+        scheduler.setUpdater(SessionUtil.getUserCode());
         schedulerService.update(scheduler);
 
         return AjaxResponse.create("修改任务成功");

@@ -17,10 +17,12 @@ import java.util.List;
 public class Affiche implements Serializable {
 
     private Long afficheId; //公告ID
-    private String afficheTitle; //公告标题
-    private Date afficheInvalidate; //公告有效期
-    private Short affichePulish; //是否发布
-    private String afficheContent; //公告内容
+    private String title; //公告标题
+    private String content; //公告内容
+    private Date invalidate; //公告有效期
+    private Boolean publish; //是否发布
+    private String creator; //创建人
+    private Date createDate; //创建时间
     private List<Accessory> accessories; //公告附件添加
 
     /**
@@ -39,13 +41,15 @@ public class Affiche implements Serializable {
     /**
      * full constructor
      */
-    public Affiche(Long afficheId, String afficheTitle,
-                   Date afficheInvalidate, Short affichePulish, String afficheContent) {
+    public Affiche(Long afficheId, String title, String content,
+                   Date invalidate, Boolean publish, String creator, Date createDate) {
         this.afficheId = afficheId;
-        this.afficheTitle = afficheTitle;
-        this.afficheInvalidate = afficheInvalidate;
-        this.affichePulish = affichePulish;
-        this.afficheContent = afficheContent;
+        this.title = title;
+        this.content = content;
+        this.invalidate = invalidate;
+        this.publish = publish;
+        this.creator = creator;
+        this.createDate = createDate;
     }
 
     public Long getAfficheId() {
@@ -56,36 +60,52 @@ public class Affiche implements Serializable {
         this.afficheId = afficheId;
     }
 
-    public String getAfficheTitle() {
-        return this.afficheTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setAfficheTitle(String afficheTitle) {
-        this.afficheTitle = afficheTitle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Date getAfficheInvalidate() {
-        return this.afficheInvalidate;
+    public String getContent() {
+        return content;
     }
 
-    public void setAfficheInvalidate(Date afficheInvalidate) {
-        this.afficheInvalidate = afficheInvalidate;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public Short getAffichePulish() {
-        return this.affichePulish;
+    public Date getInvalidate() {
+        return invalidate;
     }
 
-    public void setAffichePulish(Short affichePulish) {
-        this.affichePulish = affichePulish;
+    public void setInvalidate(Date invalidate) {
+        this.invalidate = invalidate;
     }
 
-    public String getAfficheContent() {
-        return this.afficheContent;
+    public Boolean getPublish() {
+        return publish;
     }
 
-    public void setAfficheContent(String afficheContent) {
-        this.afficheContent = afficheContent;
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public List<Accessory> getAccessories() {

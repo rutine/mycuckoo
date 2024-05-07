@@ -43,14 +43,14 @@ public class AfficheController {
 
     @RequestMapping
     public AjaxResponse<Page<Affiche>> list(
-            @RequestParam(value = "afficheTitle", defaultValue = "") String afficheTitle,
-            @RequestParam(value = "affichePulish", defaultValue = "0") Short affichePulish,
+            @RequestParam(value = "title", defaultValue = "") String title,
+            @RequestParam(value = "publish", defaultValue = "0") Short publish,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("afficheTitle", StringUtils.isBlank(afficheTitle) ? null : "%" + afficheTitle + "%");
-        params.put("affichePulish", affichePulish);
+        params.put("title", StringUtils.isBlank(title) ? null : "%" + title + "%");
+        params.put("publish", publish);
         Page<Affiche> page = afficheService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);

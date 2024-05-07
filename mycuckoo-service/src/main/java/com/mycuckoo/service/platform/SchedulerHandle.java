@@ -80,7 +80,7 @@ public class SchedulerHandle {
                     job2.setRepeatCount(10);
                     job2.setIntervalTime(5000L);
                     job2.setStartTime(new Date());
-                    job2.setCronExpression("0/3 * * * * ?");
+                    job2.setCron("0/3 * * * * ?");
                     handler.startJob(job2);
                 } else if ("stopJob".equals(command)) {
                     handler.stopJob("testJob2");
@@ -238,7 +238,7 @@ public class SchedulerHandle {
 
         String jobClassName = schedulerJob.getJobClass();
         String triggerType = schedulerJob.getTriggerType();
-        String cronExpression = schedulerJob.getCronExpression();
+        String cron = schedulerJob.getCron();
         Date startTime = schedulerJob.getStartTime() == null ? new Date() : schedulerJob.getStartTime();
         Date endTime = schedulerJob.getEndTime();
         int repeatCount = schedulerJob.getRepeatCount() == null ? 0 : schedulerJob.getRepeatCount();
@@ -268,7 +268,7 @@ public class SchedulerHandle {
                 job = JobBuilder.newJob(clazz).withIdentity(jobName, Scheduler.DEFAULT_GROUP).build();
                 trigger = TriggerBuilder.newTrigger()
                         .withIdentity(jobName + TRIGGER_NAME, Scheduler.DEFAULT_GROUP)
-                        .withSchedule(CronScheduleBuilder.cronSchedule(new CronExpression(cronExpression)))
+                        .withSchedule(CronScheduleBuilder.cronSchedule(new CronExpression(cron)))
                         .startAt(startTime)
                         .endAt(endTime)
                         .build();

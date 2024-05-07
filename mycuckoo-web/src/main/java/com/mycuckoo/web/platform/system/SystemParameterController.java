@@ -45,16 +45,14 @@ public class SystemParameterController {
 
     @GetMapping
     public AjaxResponse<Page<SysParameter>> list(
-            @RequestParam(defaultValue = "") String paraName,
-            @RequestParam(defaultValue = "") String paraKeyName,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String key,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("paraName", StringUtils.isBlank(paraName)
-                ? null : "%" + paraName + "%");
-        params.put("optName", StringUtils.isBlank(paraKeyName)
-                ? null : "%" + paraKeyName + "%");
+        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
+        params.put("key", StringUtils.isBlank(key) ? null : "%" + key + "%");
         Page<SysParameter> page = systemParameterService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
@@ -73,6 +71,8 @@ public class SystemParameterController {
 
         logger.debug(JsonUtils.toJson(sysParameter));
 
+        sysParameter.setUpdateDate(new Date());
+        sysParameter.setUpdater(SessionUtil.getUserCode());
         sysParameter.setCreateDate(new Date());
         sysParameter.setCreator(SessionUtil.getUserCode());
         systemParameterService.save(sysParameter);
@@ -90,6 +90,8 @@ public class SystemParameterController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody SysParameter sysParameter) {
+        sysParameter.setUpdateDate(new Date());
+        sysParameter.setUpdater(SessionUtil.getUserCode());
         systemParameterService.update(sysParameter);
 
         return AjaxResponse.create("修改系统参数成功");

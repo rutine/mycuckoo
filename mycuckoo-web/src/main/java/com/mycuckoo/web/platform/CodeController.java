@@ -75,6 +75,8 @@ public class CodeController {
 
         logger.debug(JsonUtils.toJson(code));
 
+        code.setUpdater(SessionUtil.getUserCode());
+        code.setUpdateDate(new Date());
         code.setCreator(SessionUtil.getUserCode());
         code.setCreateDate(new Date());
         codeService.saveCode(code);
@@ -92,6 +94,8 @@ public class CodeController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Code code) {
+        code.setUpdater(SessionUtil.getUserCode());
+        code.setUpdateDate(new Date());
         codeService.update(code);
 
         return AjaxResponse.create("修改系统编码成功");

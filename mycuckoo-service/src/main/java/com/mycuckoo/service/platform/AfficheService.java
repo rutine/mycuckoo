@@ -107,9 +107,9 @@ public class AfficheService {
                 .title(null)
                 .content("ID：%s, 标题：%s, 有效期限：%s, 是否发布：%s",
                         entity.getAfficheId(),
-                        entity.getAfficheTitle(),
-                        entity.getAfficheInvalidate(),
-                        entity.getAffichePulish())
+                        entity.getTitle(),
+                        entity.getInvalidate(),
+                        entity.getPublish())
                 .level(LogLevel.SECOND)
                 .emit();
     }
@@ -136,7 +136,7 @@ public class AfficheService {
                 .operate(OptName.SAVE)
                 .id(entity.getAfficheId())
                 .title(null)
-                .content("标题：%s, 有效期限：%s", entity.getAfficheTitle(), entity.getAfficheInvalidate())
+                .content("标题：%s, 有效期限：%s", entity.getTitle(), entity.getInvalidate())
                 .level(LogLevel.FIRST)
                 .emit();
     }

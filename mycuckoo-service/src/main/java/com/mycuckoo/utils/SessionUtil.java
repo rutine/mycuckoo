@@ -55,9 +55,7 @@ public final class SessionUtil {
             throw new ApplicationException("request is null.");
         }
 
-        String ipAddr = request.getRemoteAddr();
-
-        return ipAddr;
+        return InetUtils.getIp(request);
     }
 
     /**
