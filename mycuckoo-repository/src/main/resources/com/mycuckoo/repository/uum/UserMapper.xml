@@ -12,38 +12,41 @@
 <mapper namespace="com.mycuckoo.repository.uum.UserMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserExtend">
         <id property="userId" column="user_id" />
-        <result property="userBelongtoOrg" column="user_belongto_org" />
-        <result property="userCode" column="user_code" />
-        <result property="userNamePy" column="user_name_py" />
-        <result property="userName" column="user_name" />
-        <result property="userPassword" column="user_password" />
-        <result property="userGender" column="user_gender" />
-        <result property="userPosition" column="user_position" />
-        <result property="userPhotoUrl" column="user_photo_url" />
-        <result property="userQq" column="user_qq" />
-        <result property="userWechat" column="user_wechat" />
-        <result property="userMobile" column="user_mobile" />
-        <result property="userOfficeTel" column="user_office_tel" />
-        <result property="userFamilyTel" column="user_family_tel" />
-        <result property="userAddress" column="user_address" />
-        <result property="userEmail" column="user_email" />
-        <result property="userAvidate" column="user_avidate" />
+
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="pinyin" column="pinyin" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="gender" column="gender" />
+        <result property="position" column="position" />
+        <result property="photoUrl" column="photo_url" />
+        <result property="qq" column="qq" />
+        <result property="wechat" column="wechat" />
+        <result property="officeTel" column="office_tel" />
+        <result property="familyTel" column="family_tel" />
+        <result property="address" column="address" />
+        <result property="avidate" column="avidate" />
+        <result property="belongOrg" column="belong_org" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updater" column="updater" />
+        <result property="updateDate" column="update_date" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
         <!-- 其他用途 -->
         <result property="orgRoleId" column="org_role_id" />
         <result property="roleName" column="role_name" />
-        <result property="orgName" column="org_simple_name" />
+        <result property="orgName" column="org_name" />
     </resultMap>
 
-    <sql id="colums">
-        user_id, user_belongto_org, user_code, user_name_py, user_name, 
-        user_password, user_gender, user_position, user_photo_url, user_qq, 
-        user_wechat, user_mobile, user_office_tel, user_family_tel,
-        user_address, user_email, user_avidate, memo,
-        status, creator, create_date
+    <sql id="columns">
+        user_id, code, name, pinyin, phone, email,
+        password, gender, position, photo_url,
+        qq, wechat, office_tel, family_tel,
+        address, avidate, belong_org, memo, status,
+        updater, update_date, creator, create_date
     </sql>
 
     <sql id="table">
@@ -56,47 +59,51 @@
         insert into <include refid="table" />
         (
             user_id,
-            user_belongto_org,
-            user_code,
-            user_name_py,
-            user_name,
-            user_password,
-            user_gender,
-            user_position,
-            user_photo_url,
-            user_qq,
-            user_wechat,
-            user_mobile,
-            user_office_tel,
-            user_family_tel,
-            user_address,
-            user_email,
-            user_avidate,
+            code,
+            name,
+            pinyin,
+            phone,
+            email,
+            password,
+            gender,
+            position,
+            photo_url,
+            qq,
+            wechat,
+            office_tel,
+            family_tel,
+            address,
+            avidate,
+            belong_org,
             memo,
             status,
+            updater,
+            update_date,
             creator,
             create_date
         )
         values (
             #{userId},
-            #{userBelongtoOrg},
-            #{userCode},
-            #{userNamePy},
-            #{userName},
-            #{userPassword},
-            #{userGender},
-            #{userPosition},
-            #{userPhotoUrl},
-            #{userQq},
-            #{userWechat},
-            #{userMobile},
-            #{userOfficeTel},
-            #{userFamilyTel},
-            #{userAddress},
-            #{userEmail},
-            #{userAvidate},
+            #{code},
+            #{name},
+            #{pinyin},
+            #{phone},
+            #{email},
+            #{password},
+            #{gender},
+            #{position},
+            #{photoUrl},
+            #{qq},
+            #{wechat},
+            #{officeTel},
+            #{familyTel},
+            #{address},
+            #{avidate},
+            #{belongOrg},
             #{memo},
             #{status},
+            #{updater},
+            #{updateDate},
             #{creator},
             #{createDate}
         )
@@ -106,24 +113,26 @@
     <update id="update" parameterType="com.mycuckoo.domain.uum.User">
         update <include refid="table" />
         <set>
-            <if test="userBelongtoOrg != null">user_belongto_org = #{userBelongtoOrg}, </if>
-            <if test="userCode != null">user_code = #{userCode}, </if>
-            <if test="userNamePy != null">user_name_py = #{userNamePy}, </if>
-            <if test="userName != null">user_name = #{userName}, </if>
-            <if test="userPassword != null">user_password = #{userPassword}, </if>
-            <if test="userGender != null">user_gender = #{userGender}, </if>
-            <if test="userPosition != null">user_position = #{userPosition}, </if>
-            <if test="userPhotoUrl != null">user_photo_url = #{userPhotoUrl}, </if>
-            <if test="userQq != null">user_qq = #{userQq}, </if>
-            <if test="userWechat != null">user_msn = #{userWechat}, </if>
-            <if test="userMobile != null">user_mobile = #{userMobile}, </if>
-            <if test="userOfficeTel != null">user_office_tel = #{userOfficeTel}, </if>
-            <if test="userFamilyTel != null">user_family_tel = #{userFamilyTel}, </if>
-            <if test="userAddress != null">user_address = #{userAddress}, </if>
-            <if test="userEmail != null">user_email = #{userEmail}, </if>
-            <if test="userAvidate != null">user_avidate = #{userAvidate}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="pinyin != null">pinyin = #{pinyin}, </if>
+            <if test="phone != null">phone = #{phone}, </if>
+            <if test="email != null">email = #{email}, </if>
+            <if test="password != null">password = #{password}, </if>
+            <if test="gender != null">gender = #{gender}, </if>
+            <if test="position != null">position = #{position}, </if>
+            <if test="photoUrl != null">photo_url = #{photoUrl}, </if>
+            <if test="qq != null">qq = #{qq}, </if>
+            <if test="wechat != null">wechat = #{wechat}, </if>
+            <if test="officeTel != null">office_tel = #{officeTel}, </if>
+            <if test="familyTel != null">family_tel = #{familyTel}, </if>
+            <if test="address != null">address = #{address}, </if>
+            <if test="avidate != null">avidate = #{avidate}, </if>
+            <if test="belongOrg != null">belong_org = #{belongOrg}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
         </set>
         where user_id = #{userId}
     </update>
@@ -137,7 +146,7 @@
         获取用户: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where user_id=#{id}
     </select>
@@ -151,7 +160,7 @@
 
     <!-- 返回所有用户,映射到'uumUser'-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
     </select>
 
@@ -164,15 +173,18 @@
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByCodeAndName" resultMap="baseMap">
         select
-            t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
+            t1.*,
+            t2.simple_name org_name,
+            t4.org_role_id,
+            t5.name role_name
         from <include refid="table" /> t1
-        left join cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join cuckoo.uum_organ t2 on t1.belong_org = t2.org_id
         left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
         left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
         left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
         <where>
-            <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
-            <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
+            <if test="code != null and code != ''">and t1.code like #{code}</if>
+            <if test="name != null and name != ''">and t1.name like #{name}</if>
         </where>
         order by user_id desc
     </select>
@@ -180,22 +192,25 @@
     <!-- 根据用户代码、用户名称、机构ids或角色ids查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByPage2" resultMap="baseMap">
         select
-            t1.*, t2.org_simple_name, t4.org_role_id, t5.role_name
+            t1.*,
+            t2.simple_name org_name,
+            t4.org_role_id,
+            t5.name role_name
         from <include refid="table" /> t1
-        left join cuckoo.uum_organ t2 on t1.user_belongto_org = t2.org_id
+        left join cuckoo.uum_organ t2 on t1.belong_org = t2.org_id
         left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
         left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
         left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
         <where>
             <if test="orgIds != null">
-                and t1.user_belongto_org in
+                and t1.belong_org in
                 <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">#{orgId}</foreach>
             </if>
             <if test="orgRoleId != null">
                 and t1.user_id in (select st1.user_id from cuckoo.uum_user_org_role_ref st1 where st1.org_role_id = #{orgRoleId})
             </if>
-            <if test="userCode != null and userCode != ''">and t1.user_code like #{userCode}</if>
-            <if test="userName != null and userName != ''">and t1.user_name like #{userName}</if>
+            <if test="code != null and code != ''">and t1.code like #{code}</if>
+            <if test="name != null and name != ''">and t1.name like #{name}</if>
         </where>
         order by t1.user_id desc
     </select>
@@ -204,23 +219,23 @@
     <select id="existsByUserCode" parameterType="string" resultType="boolean">
         select count(1) > 0
         from <include refid="table" />
-        where user_code = #{user_code}
+        where code = #{code}
     </select>
 
         <!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
     <select id="getByUserCode" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
-        select <include refid="colums"/>
+        select <include refid="columns"/>
         from <include refid="table" />
-        where user_code = #{userCode}
+        where code = #{code}
     </select>
 
     <!-- 根据拼音代码查询用户信息 -->
-    <select id="findByUserNamePy" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
+    <select id="findByPinyin" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
         select
             user_id   as "userId",
-            user_name as "userName"
+            name as "name"
         from <include refid="table" />
-        where user_name_py like #{userNamePy}
+        where pinyin like #{pinyin}
         and user_id != #{userId}
     </select>
 
@@ -228,7 +243,7 @@
     <select id="findByUserIds" resultMap="baseMap">
         select
             user_id,
-            user_name
+            name
         from <include refid="table" />
         <where> user_id in
         <foreach collection="array" item="userId" open="(" separator="," close=")">

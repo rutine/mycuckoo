@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +73,13 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testSave() {
         Organ organ = new Organ();
-        organ.setCreateDate(Calendar.getInstance().getTime());
+        organ.setUpdater("rutine");
+        organ.setUpdateDate(new Date());
+        organ.setCreator("rutine");
+        organ.setCreateDate(new Date());
         organ.setMemo("测试");
-        organ.setOrgCode("10010");
-        organ.setOrgSimpleName("技术部");
+        organ.setCode("10010");
+        organ.setSimpleName("技术部");
         organ.setStatus("disable");
 
         organMapper.save(organ);
@@ -87,10 +90,13 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testUpdate() {
         Organ organ = new Organ();
-        organ.setCreateDate(Calendar.getInstance().getTime());
+        organ.setUpdater("rutine");
+        organ.setUpdateDate(new Date());
+        organ.setCreator("rutine");
+        organ.setCreateDate(new Date());
         organ.setMemo("测试");
-        organ.setOrgCode("10010");
-        organ.setOrgSimpleName("技术部");
+        organ.setCode("10010");
+        organ.setSimpleName("技术部");
         organ.setStatus("disable");
         organ.setOrgId(2L);
 
@@ -109,7 +115,7 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
         Organ organ = organMapper.get(2L);
 
         Assert.assertNotNull(organ);
-        Assert.assertEquals("技术", organ.getOrgSimpleName());
+        Assert.assertEquals("技术", organ.getSimpleName());
     }
 
     @Test

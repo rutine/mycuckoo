@@ -151,15 +151,15 @@ public class PrivilegeService {
             userList.forEach(item -> {
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
                 vo.setId(item.getUserId());
-                vo.setName(item.getUserName());
+                vo.setName(item.getName());
                 rowVos.add(vo);
             });
         }
         else if (PrivilegeScope.ROLE == privilegeScope) {
             List<OrgRoleRef> orgRoleRefList = organRoleService.findByOrgRoleIds(resourceIdArray);
             orgRoleRefList.forEach(item -> {
-                String orgName = item.getOrgan().getOrgSimpleName();
-                String roleName = item.getRole().getRoleName();
+                String orgName = item.getOrgan().getSimpleName();
+                String roleName = item.getRole().getName();
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
                 vo.setId(item.getOrgRoleId());
                 vo.setName(orgName + "-" + roleName);
@@ -171,7 +171,7 @@ public class PrivilegeService {
             organList.forEach(item -> {
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
                 vo.setId(item.getOrgId());
-                vo.setName(item.getOrgSimpleName());
+                vo.setName(item.getSimpleName());
                 rowVos.add(vo);
             });
         }

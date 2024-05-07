@@ -12,7 +12,7 @@ import com.mycuckoo.domain.uum.Organ;
 public class OrganVo extends Organ {
     private String parentName;            //上级机构
     private String dataIconCls;
-    private String orgBelongDistName;    // 所属地区
+    private String belongDistName;    // 所属地区
     private boolean isLeaf;
 
     public String getParentName() {
@@ -31,12 +31,12 @@ public class OrganVo extends Organ {
         this.dataIconCls = dataIconCls;
     }
 
-    public String getOrgBelongDistName() {
-        return orgBelongDistName;
+    public String getBelongDistName() {
+        return belongDistName;
     }
 
-    public void setOrgBelongDistName(String orgBelongDistName) {
-        this.orgBelongDistName = orgBelongDistName;
+    public void setBelongDistName(String belongDistName) {
+        this.belongDistName = belongDistName;
     }
 
     public boolean isLeaf() {

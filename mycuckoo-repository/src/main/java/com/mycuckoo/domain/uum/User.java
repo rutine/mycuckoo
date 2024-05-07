@@ -15,24 +15,26 @@ import java.util.Date;
 public class User implements Serializable {
 
     private Long userId; //用户ID
-    private Long userBelongtoOrg;
-    private String userCode; //用户号
-    private String userNamePy;
-    private String userName; //用户名
-    private String userPassword; //用户密码
-    private String userGender; //用户性别
-    private String userPosition; //用户职位
-    private String userPhotoUrl; //用户照片
-    private String userQq; //用户QQ
-    private String userWechat; //用户wechat
-    private String userMobile; //用户手机
-    private String userOfficeTel; //办公电话
-    private String userFamilyTel; //家庭电话
-    private String userEmail; //用户邮件
-    private Date userAvidate; //用户有效期
-    private String userAddress; //家庭住址
+    private String code; //用户号
+    private String name; //用户名
+    private String pinyin;
+    private String phone; //用户手机
+    private String email; //用户邮件
+    private String password; //用户密码
+    private String gender; //用户性别
+    private String position; //用户职位
+    private String photoUrl; //用户照片
+    private String qq; //用户QQ
+    private String wechat; //用户wechat
+    private String officeTel; //办公电话
+    private String familyTel; //家庭电话
+    private Date avidate; //用户有效期
+    private String address; //家庭住址
+    private Long belongOrg;
     private String memo; //备注
     private String status; //用户状态
+    private String updater; //更新人
+    private Date updateDate; //更新时间
     private String creator; //创建人
     private Date createDate; //创建时间
 
@@ -53,31 +55,35 @@ public class User implements Serializable {
     /**
      * full constructor
      */
-    public User(Long userId, Long userBelongtoOrg, String userCode,
-                String userName, String userPassword, String userGender,
-                String userPosition, String userPhotoUrl,
-                String userQq, String userWechat, String userMobile,
-                String userOfficeTel, String userFamilyTel, String userEmail,
-                Date userAvidate, String userAddress, String memo,
-                String status, String creator, Date createDate) {
+    public User(Long userId, String code,
+                String name, String phone, String email,
+                String password, String gender,
+                String position, String photoUrl,
+                String qq, String wechat,
+                String officeTel, String familyTel,
+                Date avidate, String address, Long belongOrg,
+                String memo, String status,
+                String updater, Date updateDate, String creator, Date createDate) {
         this.userId = userId;
-        this.userBelongtoOrg = userBelongtoOrg;
-        this.userCode = userCode;
-        this.userName = userName;
-        this.userPassword = userPassword;
-        this.userGender = userGender;
-        this.userPosition = userPosition;
-        this.userPhotoUrl = userPhotoUrl;
-        this.userQq = userQq;
-        this.userWechat = userWechat;
-        this.userMobile = userMobile;
-        this.userOfficeTel = userOfficeTel;
-        this.userFamilyTel = userFamilyTel;
-        this.userEmail = userEmail;
-        this.userAvidate = userAvidate;
-        this.userAddress = userAddress;
+        this.code = code;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.position = position;
+        this.photoUrl = photoUrl;
+        this.qq = qq;
+        this.wechat = wechat;
+        this.officeTel = officeTel;
+        this.familyTel = familyTel;
+        this.avidate = avidate;
+        this.address = address;
+        this.belongOrg = belongOrg;
         this.memo = memo;
         this.status = status;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -90,132 +96,132 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    public Long getUserBelongtoOrg() {
-        return userBelongtoOrg;
+    public String getCode() {
+        return code;
     }
 
-    public void setUserBelongtoOrg(Long userBelongtoOrg) {
-        this.userBelongtoOrg = userBelongtoOrg;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getUserCode() {
-        return userCode;
+    public String getName() {
+        return name;
     }
 
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getUserNamePy() {
-        return userNamePy;
+    public String getPinyin() {
+        return pinyin;
     }
 
-    public void setUserNamePy(String userNamePy) {
-        this.userNamePy = userNamePy;
+    public void setPinyin(String pinyin) {
+        this.pinyin = pinyin;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getUserPassword() {
-        return userPassword;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getUserGender() {
-        return userGender;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserGender(String userGender) {
-        this.userGender = userGender;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getUserPosition() {
-        return userPosition;
+    public String getGender() {
+        return gender;
     }
 
-    public void setUserPosition(String userPosition) {
-        this.userPosition = userPosition;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getUserPhotoUrl() {
-        return userPhotoUrl;
+    public String getPosition() {
+        return position;
     }
 
-    public void setUserPhotoUrl(String userPhotoUrl) {
-        this.userPhotoUrl = userPhotoUrl;
+    public void setPosition(String position) {
+        this.position = position;
     }
 
-    public String getUserQq() {
-        return userQq;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setUserQq(String userQq) {
-        this.userQq = userQq;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
-    public String getUserWechat() {
-        return userWechat;
+    public String getQq() {
+        return qq;
     }
 
-    public void setUserWechat(String userWechat) {
-        this.userWechat = userWechat;
+    public void setQq(String qq) {
+        this.qq = qq;
     }
 
-    public String getUserMobile() {
-        return userMobile;
+    public String getWechat() {
+        return wechat;
     }
 
-    public void setUserMobile(String userMobile) {
-        this.userMobile = userMobile;
+    public void setWechat(String wechat) {
+        this.wechat = wechat;
     }
 
-    public String getUserOfficeTel() {
-        return userOfficeTel;
+    public String getOfficeTel() {
+        return officeTel;
     }
 
-    public void setUserOfficeTel(String userOfficeTel) {
-        this.userOfficeTel = userOfficeTel;
+    public void setOfficeTel(String officeTel) {
+        this.officeTel = officeTel;
     }
 
-    public String getUserFamilyTel() {
-        return userFamilyTel;
+    public String getFamilyTel() {
+        return familyTel;
     }
 
-    public void setUserFamilyTel(String userFamilyTel) {
-        this.userFamilyTel = userFamilyTel;
+    public void setFamilyTel(String familyTel) {
+        this.familyTel = familyTel;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public Date getAvidate() {
+        return avidate;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setAvidate(Date avidate) {
+        this.avidate = avidate;
     }
 
-    public Date getUserAvidate() {
-        return userAvidate;
+    public String getAddress() {
+        return address;
     }
 
-    public void setUserAvidate(Date userAvidate) {
-        this.userAvidate = userAvidate;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getUserAddress() {
-        return userAddress;
+    public Long getBelongOrg() {
+        return belongOrg;
     }
 
-    public void setUserAddress(String userAddress) {
-        this.userAddress = userAddress;
+    public void setBelongOrg(Long belongOrg) {
+        this.belongOrg = belongOrg;
     }
 
     public String getMemo() {
@@ -232,6 +238,22 @@ public class User implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {
@@ -256,7 +278,7 @@ public class User implements Serializable {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         User user = (User) obj;
-        if (userCode != null && userCode.equals(user.getUserCode()))
+        if (code != null && code.equals(user.getCode()))
             return true;
         return false;
     }
@@ -266,7 +288,7 @@ public class User implements Serializable {
         int hashcode = 7;
 
         hashcode = hashcode * 37 + (userId == null ? 0 : userId.hashCode());
-        hashcode = hashcode * 37 + (userCode == null ? 0 : userCode.hashCode());
+        hashcode = hashcode * 37 + (code == null ? 0 : code.hashCode());
 
         return hashcode;
     }

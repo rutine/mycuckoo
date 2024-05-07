@@ -54,14 +54,12 @@ public class RoleController {
 
     @GetMapping
     public AjaxResponse<Page<Role>> list(
-            @RequestParam(value = "roleName", defaultValue = "") String roleName,
+            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize,
             Model model) {
 
-        logger.info("---------------- 请求角色菜单管理界面 -----------------");
-
-        Page<Role> page = roleService.findByPage(roleName, new PageRequest(pageNo - 1, pageSize));
+        Page<Role> page = roleService.findByPage(name, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -97,9 +95,8 @@ public class RoleController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Role role) {
-
-        logger.debug(JsonUtils.toJson(role));
-
+        role.setUpdateDate(new Date());
+        role.setUpdater(SessionUtil.getUserCode());
         role.setCreateDate(new Date());
         role.setCreator(SessionUtil.getUserCode());
         roleService.save(role);
@@ -118,6 +115,8 @@ public class RoleController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Role role) {
+        role.setUpdateDate(new Date());
+        role.setUpdater(SessionUtil.getUserCode());
         roleService.update(role);
 
         return AjaxResponse.create("修改角色成功");

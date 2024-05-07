@@ -66,13 +66,13 @@
             t1.org_role_id            as org_role_id,
             t1.role_id                as role_role_id,
             t1.org_id                 as org_org_id,
-            t2.role_name              as role_role_name,
-            t2.role_level             as role_role_level,
+            t2.name                   as role_name,
+            t2.level                  as role_level,
             t2.status                 as role_status,
-            t3.org_simple_name        as org_org_simple_name,
-            t3.org_full_name          as org_org_full_name,
-            t3.org_code               as org_org_code,
-            t3.org_type               as org_org_type,
+            t3.simple_name            as org_simple_name,
+            t3.full_name              as org_full_name,
+            t3.code                   as org_code,
+            t3.type                   as org_type,
             t3.status                 as org_status
         from cuckoo.uum_org_role_ref t1
         left join cuckoo.uum_role t2  on  t1.role_id = t2.role_id
@@ -107,8 +107,8 @@
         select 
             t1.org_role_id      as org_role_id,
             t1.role_id          as role_role_id,
-            t2.role_name        as role_role_name,
-            t2.role_level       as role_role_level,
+            t2.name             as role_name,
+            t2.level            as role_level,
             t2.status           as role_status,
             t2.memo             as role_memo,
             t2.creator          as role_creator,
@@ -123,8 +123,8 @@
     <select id="findUnselectedRolesByOrgId" parameterType="long" resultMap="baseMap">
         select
             t2.role_id          as role_role_id,
-            t2.role_name        as role_role_name,
-            t2.role_level       as role_role_level,
+            t2.name             as role_name,
+            t2.level            as role_level,
             t2.status           as role_status,
             t2.memo             as role_memo,
             t2.creator          as role_creator,
@@ -144,22 +144,22 @@
         select 
             t1.org_role_id          as org_role_id,
             t1.org_id               as org_org_id,
-            t2.org_parent           as org_org_parent,
-            t2.org_simple_name      as org_org_simple_name,
-            t2.org_full_name        as org_org_full_name,
-            t2.org_code             as org_org_code,
-            t2.org_address1         as org_org_address1,
-            t2.org_address2         as org_org_address2,
-            t2.org_tel1             as org_org_tel1,
-            t2.org_tel2             as org_org_tel2,
-            t2.org_begin_date       as org_org_begin_date,
-            t2.org_type             as org_org_type,
-            t2.org_fax              as org_org_fax,
-            t2.org_postal           as org_org_postal,
-            t2.org_legal            as org_org_legal,
-            t2.org_tax_no           as org_org_tax_no,
-            t2.org_reg_no           as org_org_reg_no,
-            t2.org_belong_dist      as org_org_belong_dist,
+            t2.parent_id            as org_parent_id,
+            t2.simple_name          as org_simple_name,
+            t2.full_name            as org_full_name,
+            t2.code                 as org_code,
+            t2.address1             as org_address1,
+            t2.address2             as org_address2,
+            t2.tel1                 as org_tel1,
+            t2.tel2                 as org_tel2,
+            t2.begin_date           as org_begin_date,
+            t2.type                 as org_type,
+            t2.fax                  as org_fax,
+            t2.postal               as org_postal,
+            t2.legal                as org_legal,
+            t2.tax_no               as org_tax_no,
+            t2.reg_no               as org_reg_no,
+            t2.belong_dist          as org_belong_dist,
             t2.status               as org_status,
             t2.memo                 as org_memo,
             t2.creator              as org_creator,
@@ -176,16 +176,16 @@
             t1.org_role_id          as org_role_id,
             t1.role_id              as role_role_id,
             t1.org_id               as org_org_id,
-            t2.org_parent           as org_org_parent,
-            t2.org_simple_name      as org_org_simple_name,
-            t2.org_full_name        as org_org_full_name,
-            t2.org_code             as org_org_code,
-            t2.org_begin_date       as org_org_begin_date,
-            t2.org_belong_dist      as org_org_belong_dist,
+            t2.parent_id            as org_parent_id,
+            t2.simple_name          as org_simple_name,
+            t2.full_name            as org_full_name,
+            t2.code                 as org_code,
+            t2.begin_date           as org_begin_date,
+            t2.belong_dist          as org_belong_dist,
             t2.status               as org_status,
             t2.creator              as org_creator,
-            t3.role_name            as role_role_name,
-            t3.role_level           as role_role_level,
+            t3.name                 as role_name,
+            t3.level                as role_level,
             t3.status               as role_status
         from cuckoo.uum_org_role_ref t1
         left join cuckoo.uum_organ  t2 on t2.org_id = t1.org_id
@@ -199,8 +199,8 @@
         select 
             t1.org_role_id          as org_role_id,
             t2.role_id              as role_role_id,
-            t2.role_name            as role_role_name,
-            t2.role_level           as role_role_level,
+            t2.name                 as role_name,
+            t2.level                as role_level,
             t2.status               as role_status,
             t2.memo                 as role_memo,
             t2.creator              as role_creator,
@@ -209,7 +209,7 @@
         left join cuckoo.uum_role t2 on t1.role_id = t2.role_id
         where t1.org_id = #{orgId}
         <if test="roleName != null">
-            and t2.role_name like #{roleName}
+            and t2.name like #{roleName}
         </if>
         order by org_role_id desc
     </select>
@@ -241,13 +241,13 @@
             t1.org_role_id        as org_role_id,
             t1.role_id            as role_role_id,
             t1.org_id             as org_org_id,
-            t2.role_name          as role_role_name,
-            t2.role_level         as role_role_level,
+            t2.name               as role_name,
+            t2.level              as role_level,
             t2.status             as role_status,
-            t3.org_simple_name    as org_org_simple_name,
-            t3.org_full_name      as org_org_full_name,
-            t3.org_code           as org_org_code,
-            t3.org_type           as org_org_type,
+            t3.simple_name        as org_simple_name,
+            t3.full_name          as org_full_name,
+            t3.code               as org_code,
+            t3.type               as org_type,
             t3.status             as org_status
         from cuckoo.uum_org_role_ref t1
         left join cuckoo.uum_role t2 on  t1.role_id = t2.role_id

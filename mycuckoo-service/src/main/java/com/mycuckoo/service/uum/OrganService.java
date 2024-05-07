@@ -132,8 +132,8 @@ public class OrganService {
         for (Organ organ : list) {
             CheckBoxTree treeVo = new CheckBoxTree();
             treeVo.setId(organ.getOrgId().toString());
-            treeVo.setText(organ.getOrgSimpleName());
-            if (ModuleLevel.TWO.value().toString().equals(organ.getOrgType())) {
+            treeVo.setText(organ.getSimpleName());
+            if (ModuleLevel.TWO.value().toString().equals(organ.getType())) {
                 treeVo.setIsLeaf(true);
             }
             treeVoList.add(treeVo);
@@ -142,15 +142,15 @@ public class OrganService {
         return treeVoList;
     }
 
-    public Page<OrganVo> findByPage(String orgCode, String orgName, Pageable page) {
+    public Page<OrganVo> findByPage(String code, String name, Pageable page) {
         Integer organId = 0; //最顶级机构
         List<Long> idList = this.findChildIds(organId, 0);
         if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("filterOrgIds", idList);
-        params.put("orgCode", orgCode);
-        params.put("orgName", orgName);
+        params.put("code", code);
+        params.put("simpleName", name);
         Page<Organ> entityPage = organMapper.findByPage(params, page);
 
         List<OrganVo> vos = Lists.newArrayList();
@@ -172,11 +172,11 @@ public class OrganService {
         Organ parentOrgan = organMapper.get(organ.getParentId());
         OrganVo vo = new OrganVo();
         BeanUtils.copyProperties(organ, vo);
-        vo.setParentName(parentOrgan.getOrgSimpleName());
+        vo.setParentName(parentOrgan.getSimpleName());
 
-        District district = platformServiceFacade.getDistrict(organ.getOrgBelongDist());
+        District district = platformServiceFacade.getDistrict(organ.getBelongDist());
         if (district != null) {
-            vo.setOrgBelongDistName(district.getName());
+            vo.setBelongDistName(district.getName());
         }
 
         return vo;
@@ -192,8 +192,8 @@ public class OrganService {
     public void update(Organ organ) {
         Organ old = get(organ.getOrgId());
         Assert.notNull(old, "机构不存在!");
-        Assert.state(old.getOrgSimpleName().equals(organ.getOrgSimpleName())
-                || !existByOrganName(organ.getOrgSimpleName()), "机构[" + organ.getOrgSimpleName() + "]已存在!");
+        Assert.state(old.getSimpleName().equals(organ.getSimpleName())
+                || !existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
         organMapper.update(organ);
 
@@ -202,7 +202,7 @@ public class OrganService {
 
     @Transactional
     public void save(Organ organ) {
-        Assert.state(!existByOrganName(organ.getOrgSimpleName()), "机构[" + organ.getOrgSimpleName() + "]已存在!");
+        Assert.state(!existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
         organ.setStatus(ENABLE);
         organMapper.save(organ);
@@ -230,7 +230,7 @@ public class OrganService {
                 .id(entity.getOrgId())
                 .title(null)
                 .content("机构名称：%s, 机构代码：%s, 上级机构: %s",
-                        entity.getOrgSimpleName(), entity.getOrgCode(), entity.getParentId())
+                        entity.getSimpleName(), entity.getCode(), entity.getParentId())
                 .level(logLevel)
                 .emit();
     }
@@ -258,8 +258,8 @@ public class OrganService {
             }
             tree.setId(mapper.getOrgId().toString());
             tree.setParentId(mapper.getOrgId() == 0 ? "-1" : mapper.getParentId().toString());
-            tree.setText(mapper.getOrgSimpleName());
-            if (ModuleLevel.TWO.value().toString().equals(mapper.getOrgType())) {
+            tree.setText(mapper.getSimpleName());
+            if (ModuleLevel.TWO.value().toString().equals(mapper.getType())) {
                 tree.setIsLeaf(true);
             }
 

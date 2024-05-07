@@ -55,7 +55,7 @@ public class OrganRoleService {
                 orgRoleRefMapper.delete(orgRoleRef.getOrgRoleId()); //删除所有机构角色
             } else {// 角色下有用户
                 throw new ApplicationException(
-                        String.format("角色[%s]下有用户, 删除失败!", orgRoleRef.getRole().getRoleName()));
+                        String.format("角色[%s]下有用户, 删除失败!", orgRoleRef.getRole().getName()));
             }
         }
 

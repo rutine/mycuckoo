@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import java.util.Date;
+
 @SpringBootTest
 public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
     private static Logger logger = LoggerFactory.getLogger(RoleMapperTest.class);
@@ -29,10 +31,14 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testSave() {
         Role role = new Role();
-        role.setRoleName("admin");
+        role.setName("admin");
         role.setStatus("enable");
         role.setMemo("测试");
-        role.setRoleLevel((short) 3);
+        role.setLevel((short) 3);
+        role.setUpdater("rutine");
+        role.setUpdateDate(new Date());
+        role.setCreator("rutine");
+        role.setCreateDate(new Date());
 
         roleMapper.save(role);
 
@@ -43,11 +49,13 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testUpdate() {
         Role role = new Role();
-        role.setRoleName("admin");
+        role.setName("admin");
         role.setStatus("enable");
         role.setMemo("测试");
-        role.setRoleLevel((short) 3);
+        role.setLevel((short) 3);
         role.setRoleId(3L);
+        role.setUpdater("rutine");
+        role.setUpdateDate(new Date());
 
         int row = roleMapper.update(role);
 
@@ -61,7 +69,7 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         logger.info("------> get: {}", role);
 
         Assert.assertNotNull(role);
-        Assert.assertEquals("技术", role.getRoleName());
+        Assert.assertEquals("技术", role.getName());
     }
 
     @Test

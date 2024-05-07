@@ -81,7 +81,7 @@ public class LoginController {
             throw new ApplicationException(1, "用户不存在");
         } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
             throw new ApplicationException(3, "用户用户已被停用");
-        } else if (!isAdmin && (user.getUserAvidate() == null || (new Date()).after(user.getUserAvidate()))) {
+        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
             throw new ApplicationException(4, "用户过期");
         }
 

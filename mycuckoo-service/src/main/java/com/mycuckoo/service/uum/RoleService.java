@@ -68,9 +68,9 @@ public class RoleService {
         return count > 0;
     }
 
-    public Page<Role> findByPage(String roleName, Pageable page) {
+    public Page<Role> findByPage(String name, Pageable page) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("roleName", CommonUtils.isNullOrEmpty(roleName) ? null : "%" + roleName + "%");
+        params.put("name", CommonUtils.isNullOrEmpty(name) ? null : "%" + name + "%");
 
         return roleMapper.findByPage(params, page);
     }
@@ -83,8 +83,8 @@ public class RoleService {
     public void update(Role role) {
         Role old = get(role.getRoleId());
         Assert.notNull(old, "角色不存在!");
-        Assert.state(old.getRoleName().equals(role.getRoleName())
-                || !existByRoleName(role.getRoleName()), "角色[" + role.getRoleName() + "]已存在!");
+        Assert.state(old.getName().equals(role.getName())
+                || !existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
         roleMapper.update(role);
 
@@ -93,7 +93,7 @@ public class RoleService {
 
     @Transactional
     public void save(Role role) {
-        Assert.state(!existByRoleName(role.getRoleName()), "角色[" + role.getRoleName() + "]已存在!");
+        Assert.state(!existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
         role.setStatus(ENABLE);
         roleMapper.save(role);
@@ -120,7 +120,7 @@ public class RoleService {
                 .operate(opt)
                 .id(entity.getRoleId())
                 .title(null)
-                .content("角色名称：%s", entity.getRoleName())
+                .content("角色名称：%s", entity.getName())
                 .level(logLevel)
                 .emit();
     }

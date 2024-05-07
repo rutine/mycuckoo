@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -75,10 +75,10 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testFindByUserNamePy() {
-        List list = mapper.findByUserNamePy("w", 3L);
+    public void testFindByPinyin() {
+        List list = mapper.findByPinyin("w", 3L);
 
-        logger.info("------> findByUserNamePy: {}", list);
+        logger.info("------> findByPinyin: {}", list);
     }
 
     @Test
@@ -91,10 +91,13 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testSave() {
         User user = new User();
-        user.setCreateDate(Calendar.getInstance().getTime());
+        user.setUpdater("rutine");
+        user.setUpdateDate(new Date());
+        user.setCreator("rutine");
+        user.setCreateDate(new Date());
         user.setMemo("测试");
-        user.setUserCode("10110");
-        user.setUserName("rutine");
+        user.setCode("10110");
+        user.setName("rutine");
         user.setStatus("enable");
 
         mapper.save(user);
@@ -106,10 +109,13 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setCreateDate(Calendar.getInstance().getTime());
+        user.setUpdater("rutine");
+        user.setUpdateDate(new Date());
+        user.setCreator("rutine");
+        user.setCreateDate(new Date());
         user.setMemo("测试");
-        user.setUserCode("10110");
-        user.setUserName("rutine");
+        user.setCode("10110");
+        user.setName("rutine");
         user.setStatus("enable");
         user.setUserId(0L);
 
@@ -127,7 +133,7 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         User user = mapper.get(0L);
 
         Assert.assertNotNull(user);
-        assertEquals("管理员", user.getUserName());
+        assertEquals("管理员", user.getName());
         logger.debug(user.toString());
 
         user = mapper.get(2L);

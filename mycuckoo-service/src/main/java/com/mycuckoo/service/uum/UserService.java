@@ -78,7 +78,7 @@ public class UserService {
         boolean enable = ENABLE.equals(disEnableFlag);
         if (!enable) {
             User user = new User(userId, DISABLE);
-            user.setUserBelongtoOrg(0L);
+            user.setBelongOrg(0L);
             userMapper.update(user); // 更改用户所属机构为0
             userOrgRoleService.deleteByUserId(userId); // 1 移除用户角色
             privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.value()); // 2 移除用户所拥有操作、行权限
@@ -110,8 +110,8 @@ public class UserService {
         return vos;
     }
 
-    public List findByUserNamePy(String userNamePy, long userId) {
-        return userMapper.findByUserNamePy(userNamePy, userId);
+    public List findByPinyin(String userNamePy, long userId) {
+        return userMapper.findByPinyin(userNamePy, userId);
     }
 
     public List<? extends SimpleTree> findChildNodes(Long organId, String isCheckbox) {
@@ -120,6 +120,10 @@ public class UserService {
         return this.buildTree(simpleTrees, isCheckbox);
     }
     private List<? extends CheckBoxTree> buildTree(List<? extends SimpleTree> simpleTrees, String isCheckbox) {
+        if (simpleTrees == null) {
+            return null;
+        }
+
         List<CheckBoxTree> boxTrees = Lists.newArrayList();
         for (SimpleTree tree : simpleTrees) {
             String parentId = "orgId_" + tree.getParentId();
@@ -141,7 +145,7 @@ public class UserService {
                 CheckBoxTree roleBoxTree = new CheckBoxTree();
                 roleBoxTree.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
                 roleBoxTree.setParentId(parentId);
-                roleBoxTree.setText(role.getRoleName());
+                roleBoxTree.setText(role.getName());
                 roleBoxTree.setIsLeaf(true);
                 if (!Y.equals(isCheckbox)) {// 角色无checkbox
                     roleBoxTree.setCheckBox(null);
@@ -157,7 +161,7 @@ public class UserService {
         return boxTrees;
     }
 
-    public Page<UserVo> findByPage(String treeId, String userName, String userCode, Pageable page) {
+    public Page<UserVo> findByPage(String treeId, String code, String name, Pageable page) {
         Long orgRoleId = null;
         String flag = null;
         if (!CommonUtils.isNullOrEmpty(treeId) && treeId.indexOf("_") != -1) {
@@ -168,13 +172,13 @@ public class UserService {
 
         Page<User> page2 = null;
         if (flag == null) { // 根据用户代码和用户名称模糊、分页查询用户记录
-            page2 = userMapper.findByPage2(null, null, userCode, userName, page);
+            page2 = userMapper.findByPage2(null, null, code, name, page);
         } else if (StringUtils.equals(flag, "orgId")) { // 分页查询属于机构ids的用户记录
             List<Long> orgIds = organService.findChildIds(orgRoleId, 0);
             Long[] arr = orgIds.isEmpty() ? null : orgIds.toArray(new Long[]{});
-            page2 = userMapper.findByPage2(null, arr, userCode, userName, page);
+            page2 = userMapper.findByPage2(null, arr, code, name, page);
         } else { // 分页查询属于某个角色id的用户记录
-            page2 = userMapper.findByPage2(orgRoleId, null, userCode, userName, page);
+            page2 = userMapper.findByPage2(orgRoleId, null, code, name, page);
         }
 
 
@@ -195,7 +199,7 @@ public class UserService {
         if (user == null) {
             throw new ApplicationException("用户不存在错误!");
         }
-        if (!user.getUserPassword().equals(password)) {
+        if (!user.getPassword().equals(password)) {
             throw new ApplicationException("用户密码不正确!");
         }
 
@@ -209,7 +213,7 @@ public class UserService {
         User user = userMapper.get(userId);
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user, vo);
-        vo.setUserPassword(CommonUtils.decrypt(user.getUserPassword()));
+        vo.setPassword(CommonUtils.decrypt(user.getPassword()));
 
         List<UserRoleVo> roleUserVos = userOrgRoleService.findByUserId(user.getUserId());
         for (UserRoleVo refVo : roleUserVos) {
@@ -236,7 +240,7 @@ public class UserService {
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         int count = 0;
         for (User user : page2.getContent()) {
-            if (!systemAdminCode.contains(user.getUserCode())) {
+            if (!systemAdminCode.contains(user.getCode())) {
                 count++;
                 UserVo vo = new UserVo();
                 BeanUtils.copyProperties(user, vo);
@@ -270,13 +274,13 @@ public class UserService {
 
     @Transactional
     public void update(UserVo user) {
-        user.setUserCode(null); //用户号不更改
+        user.setCode(null); //用户号不更改
 
         // 设置用户所属机构
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId() == null ? 0 : user.getOrgRoleId());
-        user.setUserBelongtoOrg(orgRoleRef.getOrgan().getOrgId());
+        user.setBelongOrg(orgRoleRef.getOrgan().getOrgId());
 
-        user.setUserPassword(CommonUtils.encrypt(user.getUserPassword())); // 加密
+        user.setPassword(CommonUtils.encrypt(user.getPassword())); // 加密
         userMapper.update(user); // 保存用户
 
         writeLog(user, LogLevel.SECOND, OptName.MODIFY);
@@ -285,7 +289,7 @@ public class UserService {
     public void updateBelongOrgIdForAssignRole(long organId, long userId) {
         User user = new User();
         user.setUserId(userId);
-        user.setUserBelongtoOrg(organId);
+        user.setBelongOrg(organId);
         userMapper.update(user);
     }
 
@@ -293,9 +297,9 @@ public class UserService {
     public void updateUserInfo(User user) {
         User user2 = new User();
         user2.setUserId(user.getUserId());
-        user2.setUserCode(user.getUserCode());
-        user2.setUserName(user.getUserName());
-        user2.setUserPassword(CommonUtils.encrypt(user.getUserPassword()));
+        user2.setCode(user.getCode());
+        user2.setName(user.getName());
+        user2.setPassword(CommonUtils.encrypt(user.getPassword()));
         userMapper.update(user2); // 保存用户
     }
 
@@ -303,7 +307,7 @@ public class UserService {
     public void updateUserPhotoUrl(String photoUrl, long userId) {
         User user = new User();
         user.setUserId(userId);
-        user.setUserPhotoUrl(photoUrl);
+        user.setPhotoUrl(photoUrl);
         userMapper.update(user);
     }
 
@@ -311,7 +315,7 @@ public class UserService {
     public void resetPwdByUserId(String userDefaultPwd, String userName, long userId) {
         User user = new User();
         user.setUserId(userId);
-        user.setUserPassword(CommonUtils.encrypt(userDefaultPwd));
+        user.setPassword(CommonUtils.encrypt(userDefaultPwd));
         userMapper.update(user);
 
         LogOperator.begin()
@@ -326,12 +330,12 @@ public class UserService {
 
     @Transactional
     public void save(UserVo user) {
-        Assert.state(!existsByUserCode(user.getUserCode()), "用户编码[" + user.getUserCode() + "]已存在!");
+        Assert.state(!existsByUserCode(user.getCode()), "用户编码[" + user.getCode() + "]已存在!");
 
         // 设置用户所属机构
         OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId());
-        user.setUserBelongtoOrg(orgRoleRef.getOrgan().getOrgId());
-        user.setUserPassword(CommonUtils.encrypt(user.getUserPassword())); // 加密
+        user.setBelongOrg(orgRoleRef.getOrgan().getOrgId());
+        user.setPassword(CommonUtils.encrypt(user.getPassword())); // 加密
         user.setStatus(ENABLE);
         userMapper.save(user);
 
@@ -362,7 +366,7 @@ public class UserService {
                 .id(entity.getUserId())
                 .title(null)
                 .content("用户编码：%s, 用户名称: %s, 所属机构: %s",
-                        entity.getUserCode(), entity.getUserName(), entity.getUserBelongtoOrg())
+                        entity.getCode(), entity.getName(), entity.getBelongOrg())
                 .level(logLevel)
                 .emit();
     }

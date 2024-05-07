@@ -76,13 +76,13 @@ public class UserOrgRoleService {
             UserRoleVo vo = new UserRoleVo();
             vo.setOrgRoleId(orgRoleRef.getOrgRoleId());
             vo.setOrgId(organ.getOrgId());
-            vo.setOrgName(organ.getOrgSimpleName());
+            vo.setOrgName(organ.getSimpleName());
             vo.setRoleId(role.getRoleId());
-            vo.setRoleName(role.getRoleName());
+            vo.setRoleName(role.getName());
             vo.setUserId(user.getUserId());
-            vo.setUserCode(user.getUserCode());
-            vo.setUserName(user.getUserName());
-            vo.setUserPhotoUrl(user.getUserPhotoUrl());
+            vo.setUserCode(user.getCode());
+            vo.setUserName(user.getName());
+            vo.setUserPhotoUrl(user.getPhotoUrl());
             vo.setIsDefault(userOrgRoleRef.getIsDefault());
             vos.add(vo);
         }

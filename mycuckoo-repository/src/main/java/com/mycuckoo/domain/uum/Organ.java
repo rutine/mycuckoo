@@ -16,23 +16,25 @@ public class Organ implements java.io.Serializable {
 
     private Long orgId;            // 主键
     private Long parentId;            // 上一级
-    private String orgSimpleName;    // 机构简称
-    private String orgFullName;    // 机构全称
-    private String orgCode;        // 机构代码
-    private String orgAddress1;    // 联系地址1
-    private String orgAddress2;    // 联系地址2
-    private String orgTel1;        // 联系电话1
-    private String orgTel2;        // 联系电话2
-    private Date orgBeginDate;        // 成立日期
-    private String orgType;        // 机构类型
-    private String orgFax;            // 传真
-    private String orgPostal;        // 机构邮编
-    private String orgLegal;        // 法人代表
-    private String orgTaxNo;        // 税务号
-    private String orgRegNo;        // 注册登记号
-    private Long orgBelongDist;    // 所属地区
+    private String code;        // 机构代码
+    private String simpleName;    // 机构简称
+    private String fullName;    // 机构全称
+    private String address1;    // 联系地址1
+    private String address2;    // 联系地址2
+    private String tel1;        // 联系电话1
+    private String tel2;        // 联系电话2
+    private Date beginDate;        // 成立日期
+    private String type;        // 机构类型
+    private String fax;            // 传真
+    private String postal;        // 机构邮编
+    private String legal;        // 法人代表
+    private String taxNo;        // 税务号
+    private String regNo;        // 注册登记号
+    private Long belongDist;    // 所属地区
     private String status;            // 机构状态
     private String memo;            // 备注
+    private String updater;        // 更新人
+    private Date updateDate;        // 更新时间
     private String creator;        // 创建人
     private Date createDate;        // 创建时间
 
@@ -46,7 +48,7 @@ public class Organ implements java.io.Serializable {
 //	private boolean isLeaf;
 //	private String dataIconCls;
 //	
-//	private String orgBelongDistName;	// 所属地区
+//	private String belongDistName;	// 所属地区
 
     /**
      * default constructor
@@ -65,32 +67,34 @@ public class Organ implements java.io.Serializable {
     /**
      * full constructor
      */
-    public Organ(Long orgId, Long parentId, String orgSimpleName,
-                 String orgFullName, String orgCode, String orgAddress1,
-                 String orgAddress2, String orgTel1, String orgTel2,
-                 Date orgBeginDate, String orgType, String orgFax, String orgPostal,
-                 String orgLegal, String orgTaxNo, String orgRegNo,
-                 Long orgBelongDist, String status, String memo, String creator,
-                 Date createDate) {
+    public Organ(Long orgId, Long parentId, String code,
+                 String simpleName, String fullName, String address1,
+                 String address2, String tel1, String tel2,
+                 Date beginDate, String type, String fax, String postal,
+                 String legal, String taxNo, String regNo,
+                 Long belongDist, String status, String memo,
+                 String updater, Date updateDate, String creator, Date createDate) {
         this.orgId = orgId;
         this.parentId = parentId;
-        this.orgSimpleName = orgSimpleName;
-        this.orgFullName = orgFullName;
-        this.orgCode = orgCode;
-        this.orgAddress1 = orgAddress1;
-        this.orgAddress2 = orgAddress2;
-        this.orgTel1 = orgTel1;
-        this.orgTel2 = orgTel2;
-        this.orgBeginDate = orgBeginDate;
-        this.orgType = orgType;
-        this.orgFax = orgFax;
-        this.orgPostal = orgPostal;
-        this.orgLegal = orgLegal;
-        this.orgTaxNo = orgTaxNo;
-        this.orgRegNo = orgRegNo;
-        this.orgBelongDist = orgBelongDist;
+        this.code = code;
+        this.simpleName = simpleName;
+        this.fullName = fullName;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.tel1 = tel1;
+        this.tel2 = tel2;
+        this.beginDate = beginDate;
+        this.type = type;
+        this.fax = fax;
+        this.postal = postal;
+        this.legal = legal;
+        this.taxNo = taxNo;
+        this.regNo = regNo;
+        this.belongDist = belongDist;
         this.status = status;
         this.memo = memo;
+        this.updater = updater;
+        this.updateDate = updateDate;
         this.creator = creator;
         this.createDate = createDate;
     }
@@ -111,124 +115,124 @@ public class Organ implements java.io.Serializable {
         this.parentId = parentId;
     }
 
-    public String getOrgSimpleName() {
-        return this.orgSimpleName;
+    public String getCode() {
+        return code;
     }
 
-    public void setOrgSimpleName(String orgSimpleName) {
-        this.orgSimpleName = orgSimpleName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getOrgFullName() {
-        return this.orgFullName;
+    public String getSimpleName() {
+        return simpleName;
     }
 
-    public void setOrgFullName(String orgFullName) {
-        this.orgFullName = orgFullName;
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
     }
 
-    public String getOrgCode() {
-        return this.orgCode;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getOrgAddress1() {
-        return this.orgAddress1;
+    public String getAddress1() {
+        return address1;
     }
 
-    public void setOrgAddress1(String orgAddress1) {
-        this.orgAddress1 = orgAddress1;
+    public void setAddress1(String address1) {
+        this.address1 = address1;
     }
 
-    public String getOrgAddress2() {
-        return this.orgAddress2;
+    public String getAddress2() {
+        return address2;
     }
 
-    public void setOrgAddress2(String orgAddress2) {
-        this.orgAddress2 = orgAddress2;
+    public void setAddress2(String address2) {
+        this.address2 = address2;
     }
 
-    public String getOrgTel1() {
-        return this.orgTel1;
+    public String getTel1() {
+        return tel1;
     }
 
-    public void setOrgTel1(String orgTel1) {
-        this.orgTel1 = orgTel1;
+    public void setTel1(String tel1) {
+        this.tel1 = tel1;
     }
 
-    public String getOrgTel2() {
-        return this.orgTel2;
+    public String getTel2() {
+        return tel2;
     }
 
-    public void setOrgTel2(String orgTel2) {
-        this.orgTel2 = orgTel2;
+    public void setTel2(String tel2) {
+        this.tel2 = tel2;
     }
 
-    public Date getOrgBeginDate() {
-        return this.orgBeginDate;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setOrgBeginDate(Date orgBeginDate) {
-        this.orgBeginDate = orgBeginDate;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
-    public String getOrgType() {
-        return this.orgType;
+    public String getType() {
+        return type;
     }
 
-    public void setOrgType(String orgType) {
-        this.orgType = orgType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getOrgFax() {
-        return this.orgFax;
+    public String getFax() {
+        return fax;
     }
 
-    public void setOrgFax(String orgFax) {
-        this.orgFax = orgFax;
+    public void setFax(String fax) {
+        this.fax = fax;
     }
 
-    public String getOrgPostal() {
-        return this.orgPostal;
+    public String getPostal() {
+        return postal;
     }
 
-    public void setOrgPostal(String orgPostal) {
-        this.orgPostal = orgPostal;
+    public void setPostal(String postal) {
+        this.postal = postal;
     }
 
-    public String getOrgLegal() {
-        return this.orgLegal;
+    public String getLegal() {
+        return legal;
     }
 
-    public void setOrgLegal(String orgLegal) {
-        this.orgLegal = orgLegal;
+    public void setLegal(String legal) {
+        this.legal = legal;
     }
 
-    public String getOrgTaxNo() {
-        return this.orgTaxNo;
+    public String getTaxNo() {
+        return taxNo;
     }
 
-    public void setOrgTaxNo(String orgTaxNo) {
-        this.orgTaxNo = orgTaxNo;
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
     }
 
-    public String getOrgRegNo() {
-        return this.orgRegNo;
+    public String getRegNo() {
+        return regNo;
     }
 
-    public void setOrgRegNo(String orgRegNo) {
-        this.orgRegNo = orgRegNo;
+    public void setRegNo(String regNo) {
+        this.regNo = regNo;
     }
 
-    public Long getOrgBelongDist() {
-        return this.orgBelongDist;
+    public Long getBelongDist() {
+        return belongDist;
     }
 
-    public void setOrgBelongDist(Long orgBelongDist) {
-        this.orgBelongDist = orgBelongDist;
+    public void setBelongDist(Long belongDist) {
+        this.belongDist = belongDist;
     }
 
     public String getStatus() {
@@ -245,6 +249,22 @@ public class Organ implements java.io.Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getCreator() {

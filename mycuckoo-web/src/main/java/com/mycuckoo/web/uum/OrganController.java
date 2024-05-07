@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 import static com.mycuckoo.web.constant.ActionConst.LIMIT;
@@ -45,8 +46,8 @@ public class OrganController {
     /**
      * 功能说明 : 列表展示页面
      *
-     * @param orgCode  机构代码
-     * @param orgName  机构名称
+     * @param code  机构代码
+     * @param name  机构名称
      * @param pageNo   第几页
      * @param pageSize 每页显示数量, 暂时没有使用
      * @return
@@ -55,15 +56,15 @@ public class OrganController {
      */
     @GetMapping
     public AjaxResponse<Page<OrganVo>> list(
-            @RequestParam(value = "orgCode", defaultValue = "") String orgCode,
-            @RequestParam(value = "orgName", defaultValue = "") String orgName,
+            @RequestParam(value = "code", defaultValue = "") String code,
+            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
 
-        orgCode = StringUtils.isNotBlank(orgCode) ? "%" + orgCode + "%" : null;
-        orgName = StringUtils.isNotBlank(orgName) ? "%" + orgName + "%" : null;
+        code = StringUtils.isNotBlank(code) ? "%" + code + "%" : null;
+        name = StringUtils.isNotBlank(name) ? "%" + name + "%" : null;
 
-        Page<OrganVo> page = organService.findByPage(orgCode, orgName, new PageRequest(pageNo - 1, pageSize));
+        Page<OrganVo> page = organService.findByPage(code, name, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -78,10 +79,10 @@ public class OrganController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Organ organ) {
-
-        logger.debug(JsonUtils.toJson(organ));
-
+        organ.setUpdater(SessionUtil.getUserCode());
+        organ.setUpdateDate(new Date());
         organ.setCreator(SessionUtil.getUserCode());
+        organ.setCreateDate(new Date());
         organService.save(organ);
 
         return AjaxResponse.create("保存机构成功");
@@ -97,7 +98,8 @@ public class OrganController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Organ organ) {
-
+        organ.setUpdater(SessionUtil.getUserCode());
+        organ.setUpdateDate(new Date());
         organService.update(organ);
 
         return AjaxResponse.create("修改机构成功");

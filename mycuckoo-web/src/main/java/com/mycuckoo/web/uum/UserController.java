@@ -73,15 +73,15 @@ public class UserController {
     @GetMapping
     public AjaxResponse<Page<UserVo>> list(
             @RequestParam(defaultValue = "-1") String treeId,
-            @RequestParam(defaultValue = "") String userCode,
-            @RequestParam(defaultValue = "") String userName,
+            @RequestParam(defaultValue = "") String code,
+            @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
-        userCode = StringUtils.isBlank(userCode) ? null : "%" + userCode + "%";
-        userName = StringUtils.isBlank(userName) ? null : "%" + userName + "%";
-        Page<UserVo> page = userService.findByPage(treeId, userName,
-                userCode, new PageRequest(pageNo - 1, pageSize));
+        code = StringUtils.isBlank(code) ? null : "%" + code + "%";
+        name = StringUtils.isBlank(name) ? null : "%" + name + "%";
+        Page<UserVo> page = userService.findByPage(treeId, code,
+                name, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -145,21 +145,22 @@ public class UserController {
     public AjaxResponse<String> create(@RequestBody UserVo user) {
         logger.debug(JsonUtils.toJson(user));
 
-        Assert.hasText(user.getUserCode(), "用户编码必填");
-        Assert.isTrue(user.getUserCode().length() <= 10
-                        || StringUtils.isAlphanumeric(user.getUserCode()),
+        Assert.hasText(user.getCode(), "用户编码必填");
+        Assert.isTrue(user.getCode().length() <= 10
+                        || StringUtils.isAlphanumeric(user.getCode()),
                 "用户编码长度最大10的字符或数字");
-        Assert.isTrue(StringUtils.isNumeric(user.getUserMobile()), "必须有效电话号");
-        Assert.isTrue(StringUtils.isNumeric(user.getUserFamilyTel()), "必须有效电话号");
-        Assert.isTrue(StringUtils.isNumeric(user.getUserOfficeTel()), "必须有效电话号");
-        Assert.notNull(user.getUserAvidate(), "用户有效期不能为空");
+        Assert.isTrue(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
+        Assert.isTrue(StringUtils.isNumeric(user.getFamilyTel()), "必须有效电话号");
+        Assert.isTrue(StringUtils.isNumeric(user.getOfficeTel()), "必须有效电话号");
+        Assert.notNull(user.getAvidate(), "用户有效期不能为空");
         Assert.notNull(user.getOrgRoleId(), "角色不能为空");
         Assert.hasText(user.getRoleName(), "角色不能为空");
 
-
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
         user.setCreator(SessionUtil.getUserCode());
         user.setCreateDate(new Date());
-        user.setUserNamePy(CommonUtils.getFirstLetters(user.getUserName()));
+        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
 
         userService.save(user);
 
@@ -168,7 +169,10 @@ public class UserController {
 
     @PutMapping
     public AjaxResponse<String> update(@RequestBody UserVo user) {
-        user.setUserNamePy(FirstLetter.getFirstLetters(user.getUserName()));
+
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
+        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
         userService.update(user);
 
         return AjaxResponse.create("修改用户成功");
@@ -329,9 +333,9 @@ public class UserController {
 
         String password = vo.getPassword();
         User user = userService.getUserByUserId(SessionUtil.getUserId());
-        Assert.state(password.equals(user.getUserPassword()), "密码错误");
+        Assert.state(password.equals(user.getPassword()), "密码错误");
 
-        user.setUserPassword(vo.getNewPassword());
+        user.setPassword(vo.getNewPassword());
         userService.updateUserInfo(user);
 
         return AjaxResponse.create("修改成功");
