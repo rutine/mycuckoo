@@ -9,7 +9,8 @@ package com.mycuckoo.constant.enums;
  */
 public enum  PrivilegeType {
     ROW("row", "行权限"),
-    OPT("opt", "操作权限");
+    OPT("opt", "操作权限"),
+    RES("res", "资源权限");
 
     private String type;
     private String desc;

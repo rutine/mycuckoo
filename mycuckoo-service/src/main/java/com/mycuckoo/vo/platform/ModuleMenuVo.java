@@ -10,6 +10,7 @@ import com.mycuckoo.domain.platform.ModuleMenu;
  * @time Jul 9, 2017 5:49:19 PM
  */
 public class ModuleMenuVo extends ModuleMenu {
+    private String id; //字符串类型, 方便操作
     private String parentName; //上级模块名称
     private boolean isLeaf;
 
@@ -24,6 +25,15 @@ public class ModuleMenuVo extends ModuleMenu {
      */
     public ModuleMenuVo(Long moduleId) {
         super(moduleId);
+        this.id = String.valueOf(moduleId);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getParentName() {

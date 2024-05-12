@@ -140,7 +140,7 @@ public class OperateService {
      */
     private void writeLog(Operate entity, LogLevel logLevel, OptName opt) {
         LogOperator.begin()
-                .module(ModuleName.SYS_MODOPT_MGR)
+                .module(ModuleName.SYS_OPT_MGR)
                 .operate(opt)
                 .id(entity.getOperateId())
                 .title(null)

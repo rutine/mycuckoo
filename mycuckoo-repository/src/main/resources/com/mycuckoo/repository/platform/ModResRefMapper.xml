@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: ModResRefMapper映射文件
+    
+    @author rutine
+    @time May 12, 2024 11:09:21 AM
+    @version 4.1.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.ModResRefMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.ModResRef">
+        <id property="modResId" column="mod_res_id" />
+        <result property="group" column="group" />
+        <result property="order" column="order" />
+        <association property="moduleMemu"
+            javaType="com.mycuckoo.domain.platform.ModuleMenu"
+            resultMap="com.mycuckoo.repository.platform.ModuleMenuMapper.baseMap"
+            columnPrefix="modu_"/>
+        <association property="resource"
+                     javaType="com.mycuckoo.domain.platform.Resource"
+                     resultMap="com.mycuckoo.repository.platform.ResourceMapper.baseMap"
+                     columnPrefix="res_"/>
+    </resultMap>
+    
+    <sql id="colums">
+        mod_res_id, module_id, resource_id, `group`, `order`
+    </sql>
+    
+    <sql id="table">
+        cuckoo.sys_mod_res_ref
+    </sql>
+
+    <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModResRef对象 2.嵌套属性输入#{operate.operateId}-->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.ModResRef"
+            useGeneratedKeys="true" keyProperty="modResId" keyColumn="mod_res_id">
+        insert into <include refid="table" /> (
+            mod_res_id,
+            module_id,
+            resource_id,
+            `group`,
+            `order`
+        )
+        values (
+            #{modResId},
+            #{moduleMemu.moduleId},
+            #{resource.resourceId},
+            #{group},
+            #{order}
+        )
+    </insert>
+    
+    <!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.ModResRef">
+        update <include refid="table" />
+        set
+            resource_id     = #{resource.resourceId},
+            module_id       = #{moduleMemu.moduleId},
+            `group`         = #{group},
+            `order`         = #{order}
+        where mod_res_id = #{modResId}
+    </update>
+    
+    <!-- 删除模块操作关系 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where mod_res_id = #{id}
+    </delete>
+    
+    <!--
+        获取模块操作关系: 输出直接映射到 baseMap
+        module_id, operate_id, name, `method`, path
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select 
+            t1.mod_res_id         as mod_res_id,
+            t1.`group`            as `group`,
+            t1.`order`            as `order`,
+            t1.module_id          as modu_module_id,
+            t1.resource_id        as res_resource_id,
+            t2.module_id          as res_module_id,
+            t2.operate_id         as res_operate_id,
+            t2.name               as res_name,
+            t2.`method`           as res_method,
+            t2.path               as res_path,
+            t2.status             as res_status,
+            t3.parent_id          as modu_parent_id,
+            t3.name               as modu_name,
+            t3.code               as modu_code,
+            t3.icon_cls           as modu_icon_cls,
+            t3.level              as modu_level,
+            t3.`order`            as modu_order,
+            t3.belong_sys         as modu_belong_sys,
+            t3.page_type          as modu_page_type,
+            t3.status             as modu_status
+        from <include refid="table" /> t1
+        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
+        where mod_res_id = #{id}
+    </select>
+    
+    <!-- 判断模块操作关系是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select
+            count(1) > 0 
+        from <include refid="table" />
+        where mod_res_id = #{id}
+    </select>
+
+    <!-- 返回所有模块操作关系, 映射到 baseMap-->
+    <select id="findByPage" resultMap="baseMap">
+        select
+            t1.mod_res_id         as mod_res_id,
+            t1.`group`            as `group`,
+            t1.`order`            as `order`,
+            t1.module_id          as modu_module_id,
+            t1.resource_id        as res_resource_id,
+            t2.module_id          as res_module_id,
+            t2.operate_id         as res_operate_id,
+            t2.name               as res_name,
+            t2.`method`           as res_method,
+            t2.path               as res_path,
+            t2.status             as res_status,
+            t3.parent_id          as modu_parent_id,
+            t3.name               as modu_name,
+            t3.code               as modu_code,
+            t3.icon_cls           as modu_icon_cls,
+            t3.level              as modu_level,
+            t3.`order`            as modu_order,
+            t3.belong_sys         as modu_belong_sys,
+            t3.page_type          as modu_page_type,
+            t3.status             as modu_status
+        from <include refid="table" /> t1
+        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
+    </select>
+    
+        <!-- 统计记录总数 -->
+    <select id="count" resultType="long">
+        select count(1)
+        from <include refid="table" />
+    </select>
+    
+    <!-- 根据模块ID删除,级联删除权限 1 -->
+    <delete id="deleteByModuleId" parameterType="long">
+        delete from <include refid="table" />
+        where module_id = #{id}
+    </delete>
+    
+    <!-- 根据资源ID删除,级联删除权限 2 -->
+    <delete id="deleteByResourceId" parameterType="long">
+        delete from <include refid="table" />
+        where resource_id = #{id}
+    </delete>
+    
+    <!-- 根据资源ID查询, 映射到 baseMap-->
+    <select id="findByResourceId" parameterType="long" resultMap="baseMap">
+        select
+            mod_res_id    as mod_res_id,
+            module_id     as modu_module_id,
+            resource_id    as res_resource_id,
+            `group`,
+            `order`
+        from <include refid="table" />
+        where resource_id = #{id}
+    </select>
+    
+    <!-- 根据模块ID查询, 映射到 baseMap-->
+    <select id="findByModuleId" parameterType="long" resultMap="baseMap">
+        select
+            mod_res_id    as mod_res_id,
+            module_id     as modu_module_id,
+            resource_id   as res_resource_id,
+            `group`,
+            `order`
+        from <include refid="table" />
+        where module_id = #{id}
+    </select>
+    
+    <!-- 根据ID查询, 映射到 baseMap-->
+    <select id="findByIds" parameterType="map" resultMap="baseMap">
+        select
+            t1.mod_res_id         as mod_res_id,
+            t1.`group`            as `group`,
+            t1.`order`            as `order`,
+            t1.module_id          as modu_module_id,
+            t1.resource_id        as res_resource_id,
+            t2.module_id          as res_module_id,
+            t2.operate_id         as res_operate_id,
+            t2.name               as res_name,
+            t2.`method`           as res_method,
+            t2.path               as res_path,
+            t2.status             as res_status,
+            t3.parent_id          as modu_parent_id,
+            t3.name               as modu_name,
+            t3.code               as modu_code,
+            t3.icon_cls           as modu_icon_cls,
+            t3.level              as modu_level,
+            t3.`order`            as modu_order,
+            t3.belong_sys         as modu_belong_sys,
+            t3.page_type          as modu_page_type,
+            t3.status             as modu_status
+        from <include refid="table" /> t1
+        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
+        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
+        where t1.mod_res_id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+</mapper> 

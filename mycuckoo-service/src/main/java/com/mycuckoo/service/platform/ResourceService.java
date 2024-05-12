@@ -13,8 +13,6 @@ import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.ResourceMapper;
 import com.mycuckoo.utils.CommonUtils;
-import com.mycuckoo.utils.TreeHelper;
-import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.platform.ResourceTreeVo;
 import org.assertj.core.util.Lists;
@@ -69,7 +67,7 @@ public class ResourceService {
         return true;
     }
 
-    public List<? extends SimpleTree> findAll() {
+    public List<ResourceTreeVo> findAll() {
         List<ModuleMenuVo> menuVos = moduleService.findAll();
 
         List<ResourceTreeVo> all = Lists.newArrayList();
@@ -104,7 +102,7 @@ public class ResourceService {
             all.add(tree);
         });
 
-        return TreeHelper.buildTree(all, "0");
+        return all;
     }
 
     public Page<Resource> findByPage(String name, Pageable page) {

@@ -2,10 +2,9 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mycuckoo.constant.ServiceConst;
 import com.mycuckoo.constant.enums.*;
-import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.domain.uum.Privilege;
@@ -17,11 +16,11 @@ import com.mycuckoo.utils.CommonUtils;
 import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.vo.*;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
+import com.mycuckoo.vo.platform.ResourceVo;
 import com.mycuckoo.vo.uum.RowPrivilegeVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +43,6 @@ import static com.mycuckoo.operator.LogOperator.DUNHAO;
 public class PrivilegeService {
     static Logger logger = LoggerFactory.getLogger(PrivilegeService.class);
 
-    private long optIdMode = 1000L;
-
     @Autowired
     private PrivilegeMapper privilegeMapper;
     @Autowired
@@ -66,6 +63,12 @@ public class PrivilegeService {
         if (modOptRefIds == null || modOptRefIds.length == 0) return;
 
         privilegeMapper.deleteByModOptId(modOptRefIds, PrivilegeType.OPT.value());
+    }
+
+    public void deletePrivilegeByModResId(String[] modResRefIds) {
+        if (modResRefIds == null || modResRefIds.length == 0) return;
+
+        privilegeMapper.deleteByModOptId(modResRefIds, PrivilegeType.RES.value());
     }
 
     public void deleteByOwnerIdAndOwnerType(long ownerId, String ownerType) {
@@ -113,13 +116,13 @@ public class PrivilegeService {
         }
 
         // 查找所有模块操作关系
-        List<ModOptRef> allModOptList = platformServiceFacade.findAllModOptRefs();
-        List<ModOptRef> assignedModOptList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIdList);
-        List<Long> checkedOperations = assignedModOptList.parallelStream()
-                .map(mapper -> {return mapper.getModOptId() + optIdMode; }).collect(Collectors.toList());
+        List<ResourceVo> resources = platformServiceFacade.findAllModOptRefsNew();
+        List<String> checkedOperations = resourceIdList.parallelStream()
+                .map(id -> {return ServiceConst.LEAF_ID + id; })
+                .collect(Collectors.toList());
 
         //将操作转化成列表数据
-        List<ModuleMenuVo> allModMenuList = this.filterModOpt(allModOptList, true).getModuleMenu();
+        List<ModuleMenuVo> allModMenuList = this.filterModOpt(resources, true).getMenu();
 
         List<? extends SimpleTree> trees = platformServiceFacade.buildTree(allModMenuList, checkedOperations, true);
 
@@ -186,35 +189,29 @@ public class PrivilegeService {
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {
-        List<ModOptRef> modOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
-        List<ModuleMenuVo> modOptVoList = Lists.newArrayList(); // 四级模块操作
-        for (ModOptRef modOptRef : modOptRefList) {
-            ModuleMenu moduleMenu = modOptRef.getModuleMemu(); // 所属模块
-            Operate operate = modOptRef.getOperate(); // 具体操作
-            ModuleMenuVo vo = new ModuleMenuVo();
-            BeanUtils.copyProperties(moduleMenu, vo);
-
-            // 操作按钮
-            ModuleMenuVo modOptVo = new ModuleMenuVo();
-            modOptVo.setParentId(vo.getModuleId()); // 将第三级菜单设置为操作
-            modOptVo.setModuleId(modOptRef.getModOptId() + optIdMode); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setName(operate.getName());
-            modOptVo.setIconCls(operate.getIconCls());
-            modOptVo.setCode(operate.getCode()); // 为操作准备功能链接
-            modOptVo.setOrder(operate.getOrder()); // 操作按钮的顺序
-            modOptVo.setLevel(ModuleLevel.FOUR.value());
-            modOptVo.setIsLeaf(true);
-            modOptVoList.add(modOptVo);
-        }
-
+        List<ResourceVo> resourceVos = platformServiceFacade.findAllModOptRefsNew(); // 四级模块操作
         // 四级模块操作
-        Map<Long, List<ModuleMenuVo>> modOptMap = modOptVoList.stream()
-                .collect(Collectors.groupingBy(ModuleMenu::getParentId,
+        Map<Long, List<ResourceVo>> resMap = resourceVos.stream()
+                .collect(Collectors.groupingBy(ResourceVo::getParentId,
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(ResourceVo::getOrder)).collect(Collectors.toList()))));
         List<ModuleMenuVo> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
         HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
-        hierarchyModuleVo.setFourth(modOptMap);
+        hierarchyModuleVo.setFourth(resMap);
+
+        return hierarchyModuleVo;
+    }
+
+    public HierarchyModuleVo findPrivilegesForAdminLoginNew() {
+        List<ResourceVo> resourceVos = platformServiceFacade.findAllModResRefs(); // 所有资源
+        // 四级模块操作
+        Map<Long, List<ResourceVo>> resMap = resourceVos.stream()
+                .collect(Collectors.groupingBy(ResourceVo::getParentId,
+                        Collectors.collectingAndThen(Collectors.toList(),
+                                sub -> sub.stream().sorted(Comparator.comparing(ResourceVo::getOrder)).collect(Collectors.toList()))));
+        List<ModuleMenuVo> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
+        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
+        hierarchyModuleVo.setFourth(resMap);
 
         return hierarchyModuleVo;
     }
@@ -268,20 +265,21 @@ public class PrivilegeService {
                 privilegeScope = PrivilegeScope.of(privilege.getPrivilegeScope());
             }
         }
-        List<ModOptRef> modOptRefList = platformServiceFacade.findModOptRefByModOptRefIds(resourceIds);
+
+        List<ResourceVo> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-            List<ModOptRef> allModOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
-            allModOptRefList.removeAll(modOptRefList);
-            modOptRefList = allModOptRefList;
+            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefsNew(); // 所有操作按钮
+            resources = allResources.stream()
+                    .filter(r -> !resourceIds.contains(r.getId()))
+                    .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
-            List<ModOptRef> allModOptRefList = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
-            modOptRefList = allModOptRefList;
+            resources = platformServiceFacade.findAllModOptRefsNew(); // 所有操作按钮
         }
 
         // 过滤所有的模块操作
-        ModuleOperationVo moduleOperationVo = this.filterModOpt(modOptRefList, false);
-        List<ModuleMenuVo> moduleMenuList = moduleOperationVo.getModuleMenu();
-        Map<Long, List<ModuleMenuVo>> modOptMap = moduleOperationVo.getModuleOperate();
+        ModuleResourceVo moduleResourceVo = this.filterModOpt(resources, false);
+        List<ModuleMenuVo> moduleMenuList = moduleResourceVo.getMenu();
+        Map<Long, List<ResourceVo>> modOptMap = moduleResourceVo.getResource();
 
         // 1,2,3 级菜单分类
         HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(moduleMenuList);
@@ -356,12 +354,8 @@ public class PrivilegeService {
 
         modOptIds = modOptIds.parallelStream()
                 .map(mapper -> {
-                    try {
-                        long id = Long.valueOf(mapper) - optIdMode;
-                        return id > 0 ? id : Long.valueOf(mapper);
-                    } catch (Exception e) {
-                        return mapper;
-                    }
+                    int index = mapper.indexOf(ServiceConst.LEAF_ID);
+                    return index >= 0 ? mapper.substring(ServiceConst.LEAF_ID.length()) : mapper;
                 })
                 .map(String::valueOf)
                 .collect(Collectors.toList());
@@ -391,7 +385,7 @@ public class PrivilegeService {
                 }
 
                 LogOperator.begin()
-                        .module(ModuleName.SYS_MOD_ASSIGN_OPT)
+                        .module(ModuleName.SYS_PRIVILEGE)
                         .operate(OptName.SAVE)
                         .id(ownerId + ":" + privilegeType.value())
                         .title(null)
@@ -425,26 +419,27 @@ public class PrivilegeService {
 
 
 
-    private ModuleOperationVo filterModOpt(List<ModOptRef> modOptRefList, boolean isTreeFlag) {
+    private ModuleResourceVo filterModOpt(List<ResourceVo> resources, boolean isTreeFlag) {
         List<ModuleMenuVo> modOptVoList = Lists.newArrayList(); // 四级模块操作
         List<ModuleMenuVo> moduleMenuVoList = Lists.newArrayList(); // 模块菜单list
-        for (ModOptRef modOptRef : modOptRefList) {
-            ModuleMenu moduleMenu3 = modOptRef.getModuleMemu(); // 第三级菜单
-            ModuleMenuVo vo3 = new ModuleMenuVo();
-            BeanUtils.copyProperties(moduleMenu3, vo3);
-
-            // 操作按钮
-            Operate operate = modOptRef.getOperate();
-            ModuleMenuVo modOptVo = new ModuleMenuVo();
-            modOptVo.setParentId(vo3.getModuleId()); // 将第三级菜单设置为操作
-            modOptVo.setModuleId(modOptRef.getModOptId() + optIdMode); // 将模块操作关系的id加上1000,防id重复
-            modOptVo.setName(operate.getName());
-            modOptVo.setIconCls(operate.getIconCls());
-            modOptVo.setCode(operate.getCode()); // 为操作准备功能链接
-            modOptVo.setOrder(operate.getOrder()); // 操作按钮的顺序
-            modOptVo.setLevel(ModuleLevel.FOUR.value());
-            modOptVo.setIsLeaf(true);
-            modOptVoList.add(modOptVo);
+        for (ResourceVo resource : resources) {
+            // 第三级菜单
+            ModuleMenuVo vo3 = platformServiceFacade.getModule(resource.getParentId());;
+            if (isTreeFlag) {
+                // 操作按钮
+                ModuleMenuVo modOptVo = new ModuleMenuVo();
+                // 将id加上前缀,防id重复
+                modOptVo.setId(ServiceConst.LEAF_ID + resource.getId());
+                modOptVo.setModuleId(resource.getId());
+                modOptVo.setParentId(resource.getParentId()); // 将第三级菜单设置为操作
+                modOptVo.setCode(resource.getCode()); // 为操作准备功能链接
+                modOptVo.setName(resource.getName());
+                modOptVo.setIconCls(resource.getIconCls());
+                modOptVo.setOrder(resource.getOrder()); // 操作按钮的顺序
+                modOptVo.setLevel(ModuleLevel.FOUR.value());
+                modOptVo.setIsLeaf(true);
+                modOptVoList.add(modOptVo);
+            }
 
             // 如果包含相应菜单项则加入相应模块菜单
             if (!moduleMenuVoList.contains(vo3)) {
@@ -462,23 +457,23 @@ public class PrivilegeService {
         }
 
         // 四级模块操作
-        Map<Long, List<ModuleMenuVo>> modOptMap = Maps.newHashMap();
+        Map<Long, List<ResourceVo>> modResMap = Maps.newHashMap();
         if (isTreeFlag) {
             // 如果为树则加入模块list
             moduleMenuVoList.addAll(modOptVoList);
         }
         else {
             // 不为树则维护操作按钮map
-            modOptMap = modOptVoList.stream()
-                    .collect(Collectors.groupingBy(ModuleMenu::getParentId,
+            modResMap = resources.stream()
+                    .collect(Collectors.groupingBy(ResourceVo::getParentId,
                             Collectors.collectingAndThen(Collectors.toList(),
-                                    sub -> sub.stream().sorted(Comparator.comparing(ModuleMenu::getOrder)).collect(Collectors.toList()))));
+                                    sub -> sub.stream().sorted(Comparator.comparing(ResourceVo::getOrder)).collect(Collectors.toList()))));
         }
         Collections.sort(moduleMenuVoList, new ModuleMenu());
 
 
 
-        return new ModuleOperationVo(moduleMenuVoList, modOptMap);
+        return new ModuleResourceVo(moduleMenuVoList, modResMap);
     }
 
     /**

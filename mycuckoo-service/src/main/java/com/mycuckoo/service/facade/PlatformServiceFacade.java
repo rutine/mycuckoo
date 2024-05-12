@@ -2,6 +2,7 @@ package com.mycuckoo.service.facade;
 
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.platform.ModOptRef;
+import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.service.platform.DistrictService;
 import com.mycuckoo.service.platform.ModuleService;
@@ -9,6 +10,7 @@ import com.mycuckoo.service.platform.SystemParameterService;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
+import com.mycuckoo.vo.platform.ResourceVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class PlatformServiceFacade {
     private DistrictService districtService;
 
 
-    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations, boolean isCheckbox) {
+    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<String> checkedOperations, boolean isCheckbox) {
         return moduleService.buildTree(menus, checkedOperations, isCheckbox);
     }
 
@@ -42,8 +44,12 @@ public class PlatformServiceFacade {
         return moduleService.filterModule(list);
     }
 
-    public List<ModOptRef> findAllModOptRefs() {
-        return moduleService.findAllModOptRefs();
+    public List<ResourceVo> findAllModOptRefsNew() {
+        return moduleService.findAllModOptRefsNew();
+    }
+
+    public List<ResourceVo> findAllModResRefs() {
+        return moduleService.findAllModResRefs();
     }
 
     public List<ModuleMenuVo> findAllModule() {
@@ -56,10 +62,6 @@ public class PlatformServiceFacade {
 
     public District getDistrict(Long districtId) {
         return districtService.get(districtId);
-    }
-
-    public List<ModOptRef> findModOptRefByModOptRefIds(List<Long> modOptRefIdList) {
-        return moduleService.findModOptRefsByModOptRefIds(modOptRefIdList.toArray(new Long[modOptRefIdList.size()]));
     }
 
     public String findSystemParaByKey(String key) {

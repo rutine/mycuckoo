@@ -13,6 +13,7 @@ public enum OptName {
     DELETE("删除"),
     ENABLE("启用"),
     DISABLE("停用"),
+    ASSIGN("分配"),
     START_SCHEDULER("启动调度器"),
     STOP_SCHEDULER("停止调度器"),
     START_JOB("启动job"),

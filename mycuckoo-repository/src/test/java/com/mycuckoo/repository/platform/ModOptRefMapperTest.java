@@ -58,15 +58,6 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testFindByIds() {
-        List<ModOptRef> list = mapper.findByIds(new Long[]{0l, 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l});
-
-        for (ModOptRef entity : list) {
-            logger.info("------> findByOperateId: {}", entity);
-        }
-    }
-
-    @Test
     public void testSave() {
         ModOptRef modOptRef = new ModOptRef();
         modOptRef.setModuleMemu(new ModuleMenu(8L));

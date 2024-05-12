@@ -9,8 +9,7 @@ package com.mycuckoo.constant.enums;
  */
 public enum ModuleName {
     SYS_MOD_MGR("系统模块管理"),
-    SYS_MODOPT_MGR("系统模块操作管理"),
-    SYS_MODOPT_ASSIGN("系统模块分配操作"),
+    SYS_OPT_MGR("系统模块操作管理"),
     SYS_RESOURCE_MRG("系统资源管理"),
     SYS_CONFIG_MGR("系统配置管理"),
     SYS_AFFICHE("系统公告管理"),
@@ -18,7 +17,7 @@ public enum ModuleName {
     SYS_PARAMETER("系统参数管理"),
     SYS_CODE("系统编码管理"),
     SYS_SCHEDULER("系统调度管理"),
-    SYS_MOD_ASSIGN_OPT("模块分配操作"),
+    SYS_PRIVILEGE("系统权限管理"),
     SYS_DISTRICT("省市地区管理"),
     SYS_TYPEDIC("类别字典管理"),
 

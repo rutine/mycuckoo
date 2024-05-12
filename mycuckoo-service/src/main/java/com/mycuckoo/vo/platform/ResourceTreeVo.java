@@ -8,7 +8,7 @@ public class ResourceTreeVo extends OrderTree {
     private Integer level;
     private String method; //请求方法
     private String path; //请求路径
-    private Integer order; //顺序
+    private Integer group;
     private String memo; //备注
     private String status; //状态
     private String creator; //创建人
@@ -36,6 +36,14 @@ public class ResourceTreeVo extends OrderTree {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Integer getGroup() {
+        return group;
+    }
+
+    public void setGroup(Integer group) {
+        this.group = group;
     }
 
     public String getMemo() {

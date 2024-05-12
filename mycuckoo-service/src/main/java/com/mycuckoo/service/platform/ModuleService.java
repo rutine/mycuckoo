@@ -2,13 +2,12 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mycuckoo.constant.ServiceConst;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.ModOptRef;
-import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.platform.Operate;
+import com.mycuckoo.domain.platform.*;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.exception.SystemException;
 import com.mycuckoo.operator.LogOperator;
@@ -17,14 +16,19 @@ import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
+import com.mycuckoo.repository.platform.ModResRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
+import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.utils.XmlOptUtils;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
+import com.mycuckoo.vo.platform.ResourceTreeVo;
+import com.mycuckoo.vo.platform.ResourceVo;
+import com.sun.org.apache.regexp.internal.RE;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -35,14 +39,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.ServiceConst.LEAF_ID;
 import static com.mycuckoo.operator.LogOperator.DUNHAO;
 import static com.mycuckoo.utils.CommonUtils.getResourcePath;
 import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
@@ -64,14 +68,18 @@ public class ModuleService {
     private ModuleMenuMapper moduleMenuMapper;
     @Autowired
     private ModOptRefMapper modOptRefMapper;
+    @Autowired
+    private ModResRefMapper modResRefMapper;
 
     @Autowired
     private OperateService operateService;
     @Autowired
+    private ResourceService resourceService;
+    @Autowired
     private UumServiceFacade uumServiceFacade;
 
 
-    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<Long> checkedOperations, boolean isCheckbox) {
+    public List<? extends SimpleTree> buildTree(List<ModuleMenuVo> menus, List<String> checkedOperations, boolean isCheckbox) {
         List<ModuleMenuVo> firsts = Lists.newArrayList();
         List<ModuleMenuVo> others = Lists.newArrayList();
 
@@ -113,7 +121,7 @@ public class ModuleService {
         modOptRefMapper.deleteByOperateId(operateId);
 
         LogOperator.begin()
-                .module(ModuleName.SYS_MODOPT_MGR)
+                .module(ModuleName.SYS_OPT_MGR)
                 .operate(OptName.DELETE)
                 .id(operateId)
                 .title(null)
@@ -234,8 +242,7 @@ public class ModuleService {
         List<ModuleMenu> list = moduleMenuMapper.findByPage(null, pageRequest).getContent();
         List<ModuleMenuVo> vos = Lists.newArrayList();
         list.forEach(item -> {
-            ModuleMenuVo vo = new ModuleMenuVo();
-            vo.setModuleId(item.getModuleId());
+            ModuleMenuVo vo = new ModuleMenuVo(item.getModuleId());
             vo.setParentId(item.getParentId());
             vo.setCode(item.getCode());
             vo.setName(item.getName());
@@ -253,9 +260,34 @@ public class ModuleService {
         return vos;
     }
 
-    public List<ModOptRef> findAllModOptRefs() {
+//    public List<ModOptRef> findAllModOptRefs() {
+//        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
+//        return modOptRefMapper.findByPage(null, pageRequest).getContent();
+//    }
+
+    public List<ResourceVo> findAllModOptRefsNew() {
         Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-        return modOptRefMapper.findByPage(null, pageRequest).getContent();
+        List<ModOptRef> refs = modOptRefMapper.findByPage(null, pageRequest).getContent();
+        Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
+                .collect(Collectors.toMap(ModuleMenuVo::getModuleId, Function.identity()));
+
+        List<ResourceVo> result = refs.stream().map(ref -> {
+            Operate operate = ref.getOperate();
+            ResourceVo vo = new ResourceVo();
+            vo.setId(ref.getModOptId());
+            vo.setParentId(ref.getModuleMemu().getModuleId()); // 将第三级菜单设置为父
+            vo.setCode(operate.getCode());
+            vo.setName(operate.getName());
+            vo.setIconCls(operate.getIconCls());
+            vo.setOrder(operate.getOrder()); //顺序
+            vo.setLevel(ModuleLevel.FOUR.value());
+            vo.setIsLeaf(true);
+
+            return vo;
+        }).collect(Collectors.toList());
+
+
+        return result;
     }
 
     public AssignVo<CheckBoxTree, Long> findOperationTreeByModId(long moduleId) {
@@ -285,12 +317,88 @@ public class ModuleService {
         return new AssignVo<>(trees, optIds);
     }
 
-    public List<ModOptRef> findModOptRefsByModOptRefIds(Long[] modOptRefIds) {
-        if (modOptRefIds == null || modOptRefIds.length == 0) {
-            return new ArrayList<>(0);
+//    public List<ModResRef> findAllModResRefs() {
+//        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
+//        return modResRefMapper.findByPage(null, pageRequest).getContent();
+//    }
+
+    public List<ResourceVo> findAllModResRefs() {
+        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
+        List<ModResRef> refs = modResRefMapper.findByPage(null, pageRequest).getContent();
+        Map<Long, Operate> operateMap = operateService.findAll().stream()
+                .collect(Collectors.toMap(Operate::getOperateId, Function.identity()));
+        Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
+                .collect(Collectors.toMap(ModuleMenuVo::getModuleId, Function.identity()));
+
+        List<ResourceVo> result = refs.stream().map(ref -> {
+            Operate operate = operateMap.get(ref.getResource().getOperateId());
+            ModuleMenuVo menu = menuMap.get(ref.getResource().getModuleId());
+
+            ResourceVo vo = new ResourceVo();
+            vo.setId(ref.getModResId());
+            vo.setParentId(ref.getModuleMemu().getModuleId()); // 将第三级菜单设置为父
+            vo.setCode(String.format("%s.%s", menu.getCode(), operate.getCode()));
+            vo.setName(ref.getResource().getName());
+            vo.setIconCls(operate.getIconCls());
+            vo.setOrder(ref.getOrder()); //顺序
+            vo.setLevel(ModuleLevel.FOUR.value());
+            vo.setIsLeaf(true);
+
+            return vo;
+        }).collect(Collectors.toList());
+
+
+        return result;
+    }
+
+    public AssignVo<SimpleTree, String> findResourceTreeByModId(long moduleId) {
+        List<ResourceTreeVo> all = resourceService.findAll();
+        List<ModResRef> modResRefs = modResRefMapper.findByModuleId(moduleId); //已经分配的操作
+        Map<String, ModResRef> modResMap = modResRefs.stream()
+                .collect(Collectors.toMap(o -> LEAF_ID + o.getResource().getResourceId(), Function.identity()));
+        List<String> resIds = modResRefs.parallelStream()
+                .map(ModResRef::getResource)
+                .map(o -> LEAF_ID + o.getResourceId())
+                .collect(Collectors.toList());
+        all.forEach(tree -> {
+            ModResRef ref = modResMap.get(tree.getId());
+            if (ref != null) {
+                tree.setGroup(ref.getGroup());
+                tree.setOrder(ref.getOrder());
+            }
+        });
+
+        List<? extends SimpleTree> trees = TreeHelper.buildTree(all, "0");
+        this.removeIfAbsenceLeaf(trees);
+        Iterator<? extends SimpleTree> it = trees.iterator();
+        while(it.hasNext()) {
+            SimpleTree one = it.next();
+            if (one.getChildren() == null || one.getChildren().isEmpty()) {
+                it.remove();
+            }
         }
 
-        return modOptRefMapper.findByIds(modOptRefIds);
+        return new AssignVo(trees, resIds);
+    }
+    //如果没有资源子节点, 递归移除上级
+    private boolean removeIfAbsenceLeaf(List<? extends SimpleTree> trees) {
+        if (trees == null || trees.isEmpty()) {
+            return false;
+        }
+
+        for (SimpleTree tree : trees) {
+            boolean result =  this.removeIfAbsenceLeaf(tree.getChildren());
+            if (result) {
+                return true;
+            }
+            tree.setChildren(null);
+
+            if (tree.getId().startsWith(LEAF_ID)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Page<ModuleMenuVo> findByPage(long treeId, String code, String name, Pageable page) {
@@ -317,6 +425,7 @@ public class ModuleService {
 
         ModuleMenuVo vo = new ModuleMenuVo();
         BeanUtils.copyProperties(entity, vo);
+        vo.setId(entity.getModuleId() + "");
 
         return vo;
     }
@@ -384,33 +493,70 @@ public class ModuleService {
 
     @Transactional
     public void saveModuleOptRefs(long modId, List<Long> optIds) {
+        Assert.state(moduleMenuMapper.exists(modId), "模块不存在!");
+
         // 查询当前模块的所有操作
         List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(modId);
         if (modOptRefs.isEmpty()) {
-            saveModuleOptRefSingle(modId, optIds);
+            doSaveModuleOptRefs(modId, optIds);
         }
         else {
-            /*
-             * 模块操作关系：首先过滤出已被删除的数据,
-             * 原模块操作列表删除重复的之后删除(并级联删除权限操作)
-             * 新分配的操作列表删除重复的之后增加
-             */
+            //模块操作关系：首先过滤出已被删除的数据,
             List<ModOptRef> deleteModOptRefs = modOptRefs.stream()
                     .filter(modOptRef -> !optIds.contains(modOptRef.getOperate().getOperateId()))
                     .collect(Collectors.toList());
-
             deleteModOptRefs.forEach(modOptRef -> {
                 modOptRefMapper.delete(modOptRef.getModOptId()); //进行模块操作关系删除
             });
 
+            //级联删除权限操作
             List<String> deleteModOptRefIds = deleteModOptRefs.stream()
                     .map(ModOptRef::getModOptId)
                     .map(String::valueOf)
                     .collect(Collectors.toList());
             uumServiceFacade.deletePrivilegeByModOptId(deleteModOptRefIds.toArray(new String[deleteModOptRefIds.size()]));
 
-            // 删除权限操作 modOptRefList 模块操作关系
-            this.saveModuleOptRefSingle(modId, optIds); // 保存新分配的模块操作关系
+            //去掉已存在的操作id
+            optIds.removeAll(modOptRefs.stream().map(o -> o.getOperate().getOperateId()).collect(Collectors.toList()));
+            // 保存新分配的模块操作关系
+            this.doSaveModuleOptRefs(modId, optIds);
+        }
+    }
+
+    @Transactional
+    public void saveModuleResRefs(long modId, List<ModResRef> modResRefs) {
+        Assert.state(moduleMenuMapper.exists(modId), "模块不存在!");
+
+        // 查询当前模块的所有资源
+        List<ModResRef> oldModResRefs = modResRefMapper.findByModuleId(modId);
+        if (oldModResRefs.isEmpty()) {
+            doSaveModuleResRefs(modId, modResRefs);
+        }
+        else {
+            //模块资源关系：首先过滤出已被删除的数据
+            List<Long> resources = modResRefs.stream().map(o -> o.getResourceId()).collect(Collectors.toList());
+            List<ModResRef> deleteModResRefs = oldModResRefs.stream()
+                    .filter(modOptRef -> !resources.contains(modOptRef.getResource().getResourceId()))
+                    .collect(Collectors.toList());
+            deleteModResRefs.forEach(modOptRef -> {
+                modOptRefMapper.delete(modOptRef.getModResId());
+            });
+
+            //级联删除权限操作
+            List<String> deleteModResRefIds = deleteModResRefs.stream()
+                    .map(ModResRef::getModResId)
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+            uumServiceFacade.deletePrivilegeByModResId(deleteModResRefIds.toArray(new String[deleteModResRefIds.size()]));
+
+            //去掉已存在的操作id
+            List<Long> oldRes = oldModResRefs.stream()
+                    .map(o -> o.getResource().getResourceId())
+                    .collect(Collectors.toList());
+            modResRefs = modResRefs.stream()
+                    .filter(o -> !oldRes.contains(o.getResourceId())).collect(Collectors.toList());
+            // 保存新分配的资源
+            this.doSaveModuleResRefs(modId, modResRefs);
         }
     }
 
@@ -418,17 +564,17 @@ public class ModuleService {
     // --------------------------- 私有方法 -------------------------------
 
 
-    private SimpleTree buildTree(ModuleMenuVo parentMenu, Map<Long, List<ModuleMenuVo>> groupMap,
-                                 List<Long> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
-        Long parentId = parentMenu.getModuleId();
+    private SimpleTree buildTree(ModuleMenuVo menu, Map<Long, List<ModuleMenuVo>> groupMap,
+                                 List<String> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
+        String id = menu.getId();
         List<? super SimpleTree> subMenuVos = Lists.newArrayList();
-        if (groupMap.containsKey(parentId)) {
-            subMenuVos = groupMap.get(parentId).stream()
+        if (!id.startsWith(LEAF_ID) && groupMap.containsKey(menu.getModuleId())) {
+            subMenuVos = groupMap.get(menu.getModuleId()).stream()
                     .map(tree -> buildTree(tree, groupMap, checkedOperations, checked, isCheckbox))
                     .collect(Collectors.toList());
         }
 
-        checked.checked = checked.checked || checkedOperations.contains(parentId);
+        checked.checked = checked.checked || checkedOperations.contains(id);
         if (checked.parent != null && !checked.parent.checked) {
             checked.parent.checked = checked.checked;
         }
@@ -443,11 +589,11 @@ public class ModuleService {
         } else {
             tree = new SimpleTree();
         }
-        tree.setId(parentId.toString());
-        tree.setParentId(parentMenu.getParentId().toString());
-        tree.setText(parentMenu.getName());
-        tree.setIconSkin(parentMenu.getIconCls());
-        tree.setIsLeaf(parentMenu.getIsLeaf());
+        tree.setId(id);
+        tree.setParentId(menu.getParentId().toString());
+        tree.setText(menu.getName());
+        tree.setIconSkin(menu.getIconCls());
+        tree.setIsLeaf(menu.getIsLeaf());
         tree.setChildren(subMenuVos);
 
         return tree;
@@ -483,7 +629,7 @@ public class ModuleService {
      * @author rutine
      * @time Oct 14, 2012 9:14:00 AM
      */
-    private void saveModuleOptRefSingle(long moduleId, List<Long> operateIdList) {
+    private void doSaveModuleOptRefs(long moduleId, List<Long> operateIdList) {
         if (operateIdList == null || operateIdList.isEmpty()) {
             return;
         }
@@ -496,12 +642,42 @@ public class ModuleService {
         }
 
         LogOperator.begin()
-                .module(ModuleName.SYS_MODOPT_ASSIGN)
-                .operate(OptName.SAVE)
+                .module(ModuleName.SYS_MOD_MGR)
+                .operate(OptName.ASSIGN)
                 .id(moduleId)
                 .title(null)
                 .content("模块分配操作: %s",
                         operateIdList.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                .level(LogLevel.FIRST)
+                .emit();
+    }
+    /**
+     * 只单独保存模块资源关系
+     *
+     * @param moduleId
+     * @param modResRefs
+     * @author rutine
+     * @time May 12, 2024 11:58:13 AM
+     */
+    private void doSaveModuleResRefs(long moduleId, List<ModResRef> modResRefs) {
+        if (modResRefs == null || modResRefs.isEmpty()) {
+            return;
+        }
+
+        for (ModResRef modResRef : modResRefs) {
+            Resource resource = new Resource(modResRef.getResourceId(), null);
+            ModuleMenu moduleMemu = new ModuleMenu(moduleId);
+            ModResRef newModResRef = new ModResRef(null, resource, moduleMemu, modResRef.getGroup(), modResRef.getOrder());
+            modResRefMapper.save(newModResRef);
+        }
+
+        LogOperator.begin()
+                .module(ModuleName.SYS_MOD_MGR)
+                .operate(OptName.ASSIGN)
+                .id(moduleId)
+                .title(null)
+                .content("模块分配资源: %s",
+                        modResRefs.stream().map(o -> String.valueOf(o.getResourceId())).collect(Collectors.joining(DUNHAO)))
                 .level(LogLevel.FIRST)
                 .emit();
     }

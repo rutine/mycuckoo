@@ -1,6 +1,8 @@
 package com.mycuckoo.web.platform;
 
 
+import com.mycuckoo.constant.ServiceConst;
+import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
@@ -15,6 +17,7 @@ import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -80,6 +83,22 @@ public class ModuleController {
     }
 
     /**
+     * 功能说明 : 获得模块已经分配和未分配的资源
+     *
+     * @param id
+     * @return
+     * @author rutine
+     * @time May 12, 2024 7:35:46 PM
+     */
+    @GetMapping(value = "/{id}/resource")
+    public AjaxResponse<AssignVo<SimpleTree, String>> listResource(@PathVariable long id) {
+
+        AssignVo<SimpleTree, String> vo = moduleService.findResourceTreeByModId(id);
+
+        return AjaxResponse.create(vo);
+    }
+
+    /**
      * 功能说明 : 创建模块
      *
      * @return
@@ -136,6 +155,40 @@ public class ModuleController {
             @RequestBody List<Long> optIds) {
 
         moduleService.saveModuleOptRefs(id, optIds);
+
+        return AjaxResponse.create("分配模块权限成功");
+    }
+
+    /**
+     * 功能说明 : 保存模块资源关系
+     *
+     * @param id            模块ID
+     * @param modResRefs    模块资源列表
+     * @return
+     * @author rutine
+     * @time May 12, 2024 12:04:13 AM
+     */
+    @PostMapping(value = "/{id}/module-res-ref")
+    public AjaxResponse<String> createModuleResRefs(
+            @PathVariable long id,
+            @RequestBody List<ModResRef> modResRefs) {
+        int order = 1;
+        int mask = (1 << 10) - 1;
+        boolean fund = false;
+        for (ModResRef ref : modResRefs) {
+            Assert.state((mask & ref.getGroup())  == ref.getGroup(), "应用配置有误!");
+            if ((1 & ref.getGroup()) == 1) {
+                Assert.state(!fund, "一个模块仅允许一个列表应用配置");
+                fund = true;
+            }
+            ref.setOrder(order++);
+        }
+
+        String mapper = (ServiceConst.LEAF_ID + 33);
+        int index = mapper.indexOf(ServiceConst.LEAF_ID);
+        System.out.println("=========>" + (index >= 0 ? mapper.substring(ServiceConst.LEAF_ID.length()) : mapper));
+
+        moduleService.saveModuleResRefs(id, modResRefs);
 
         return AjaxResponse.create("分配模块权限成功");
     }

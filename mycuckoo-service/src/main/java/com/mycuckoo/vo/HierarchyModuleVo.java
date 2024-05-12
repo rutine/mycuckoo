@@ -1,6 +1,7 @@
 package com.mycuckoo.vo;
 
 import com.mycuckoo.vo.platform.ModuleMenuVo;
+import com.mycuckoo.vo.platform.ResourceVo;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class HierarchyModuleVo {
     private List<ModuleMenuVo> first;
     private Map<String, List<ModuleMenuVo>> second;
     private Map<String, List<ModuleMenuVo>> third;
-    private Map<Long, List<ModuleMenuVo>> fourth;
+    private Map<Long, List<ResourceVo>> fourth;
     private String row;
 
     public HierarchyModuleVo(
@@ -52,11 +53,11 @@ public class HierarchyModuleVo {
         this.third = third;
     }
 
-    public Map<Long, List<ModuleMenuVo>> getFourth() {
+    public Map<Long, List<ResourceVo>> getFourth() {
         return fourth;
     }
 
-    public void setFourth(Map<Long, List<ModuleMenuVo>> fourth) {
+    public void setFourth(Map<Long, List<ResourceVo>> fourth) {
         this.fourth = fourth;
     }
 

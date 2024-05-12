@@ -37,6 +37,10 @@ public class UumServiceFacade {
         this.privilegeService.deletePrivilegeByModOptId(modOptRefIds);
     }
 
+    public void deletePrivilegeByModResId(String[] modOptRefIds) {
+        this.privilegeService.deletePrivilegeByModResId(modOptRefIds);
+    }
+
     public List<UserRoleVo> findRoleUsersByUserId(long userId) {
         return userOrgRoleService.findByUserId(userId);
     }

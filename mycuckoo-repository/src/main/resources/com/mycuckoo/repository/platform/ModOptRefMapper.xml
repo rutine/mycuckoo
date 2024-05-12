@@ -160,34 +160,4 @@
         where module_id = #{id}
     </select>
     
-    <!-- 根据模块关系表ID查询模块操作关系, 映射到 baseMap-->
-    <select id="findByIds" parameterType="map" resultMap="baseMap">
-        select 
-            t1.mod_opt_id               as mod_opt_id,
-            t1.operate_id               as opt_operate_id,
-            t1.module_id                as modu_module_id,
-            t2.name                     as opt_name,
-            t2.icon_cls                 as opt_icon_cls,
-            t2.order                    as opt_order,
-            t2.group                    as opt_group,
-            t2.status                   as opt_status,
-            t2.code                     as opt_code,
-            t3.parent_id                as modu_parent_id,
-            t3.name                     as modu_name,
-            t3.code                     as modu_code,
-            t3.icon_cls                 as modu_icon_cls,
-            t3.level                    as modu_level,
-            t3.`order`                  as modu_order,
-            t3.belong_sys               as modu_belong_sys,
-            t3.page_type                as modu_page_type,
-            t3.status                   as modu_status
-        from <include refid="table" /> t1
-        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
-        where t1.mod_opt_id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </select>
-    
 </mapper> 

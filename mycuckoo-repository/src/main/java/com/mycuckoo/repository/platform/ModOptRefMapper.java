@@ -43,12 +43,4 @@ public interface ModOptRefMapper extends Repository<ModOptRef, Long> {
      * @return 所有关联的模块操作关系
      */
     List<ModOptRef> findByOperateId(Long operateId);
-
-    /**
-     * 根据模块操作关系IDs查询模块操作关系
-     *
-     * @param modOptRefIds
-     * @return 列表
-     */
-    List<ModOptRef> findByIds(Long[] modOptRefIds);
 }

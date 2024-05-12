@@ -4,7 +4,9 @@ package com.mycuckoo.web.platform;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.service.platform.ResourceService;
 import com.mycuckoo.utils.SessionUtil;
+import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.platform.ResourceTreeVo;
 import com.mycuckoo.web.vo.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +41,10 @@ public class ResourceController {
      */
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list() {
-        List<? extends SimpleTree> page = resourceService.findAll();
+        List<ResourceTreeVo> all = resourceService.findAll();
+        List<? extends SimpleTree> list = TreeHelper.buildTree(all, "0");
 
-        return AjaxResponse.create(page);
+        return AjaxResponse.create(list);
     }
 
     /**
