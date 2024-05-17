@@ -21,6 +21,7 @@ import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
+import com.mycuckoo.vo.uum.UserVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,14 +97,16 @@ public class UserService {
         return true;
     }
 
-    public List<UserVo> findByUserName(String userName) {
+    public List<UserVos.UProfile> findByName(String userName) {
         userName = "%" + userName + "%";
         List<User> list = userMapper.findByCodeAndName(null, userName);
 
-        List<UserVo> vos = Lists.newArrayList();
+        List<UserVos.UProfile> vos = Lists.newArrayList();
         list.forEach(entity -> {
-            UserVo vo = new UserVo();
-            BeanUtils.copyProperties(entity, vo);
+            UserVos.UProfile vo = new UserVos.UProfile();
+            vo.setUserId(entity.getUserId());
+            vo.setCode(entity.getCode());
+            vo.setName(entity.getName());
             vos.add(vo);
         });
 

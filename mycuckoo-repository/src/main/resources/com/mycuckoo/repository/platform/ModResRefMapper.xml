@@ -177,36 +177,4 @@
         where module_id = #{id}
     </select>
     
-    <!-- 根据ID查询, 映射到 baseMap-->
-    <select id="findByIds" parameterType="map" resultMap="baseMap">
-        select
-            t1.mod_res_id         as mod_res_id,
-            t1.`group`            as `group`,
-            t1.`order`            as `order`,
-            t1.module_id          as modu_module_id,
-            t1.resource_id        as res_resource_id,
-            t2.module_id          as res_module_id,
-            t2.operate_id         as res_operate_id,
-            t2.name               as res_name,
-            t2.`method`           as res_method,
-            t2.path               as res_path,
-            t2.status             as res_status,
-            t3.parent_id          as modu_parent_id,
-            t3.name               as modu_name,
-            t3.code               as modu_code,
-            t3.icon_cls           as modu_icon_cls,
-            t3.level              as modu_level,
-            t3.`order`            as modu_order,
-            t3.belong_sys         as modu_belong_sys,
-            t3.page_type          as modu_page_type,
-            t3.status             as modu_status
-        from <include refid="table" /> t1
-        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
-        where t1.mod_res_id in
-        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </select>
-    
 </mapper> 

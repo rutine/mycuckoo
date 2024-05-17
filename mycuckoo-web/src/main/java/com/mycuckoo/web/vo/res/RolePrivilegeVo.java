@@ -15,10 +15,10 @@ public class RolePrivilegeVo {
     private String privilegeScope;
     private String rowPrivilege;
     private List<CheckBoxTree> privileges;
-    private List<Long> assign;
+    private List<String> assign;
 
     public RolePrivilegeVo(String privilegeScope, String rowPrivilege,
-                           List<CheckBoxTree> privileges, List<Long> assign) {
+                           List<CheckBoxTree> privileges, List<String> assign) {
         this.privilegeScope = privilegeScope;
         this.rowPrivilege = rowPrivilege;
         this.privileges = privileges;
@@ -49,11 +49,11 @@ public class RolePrivilegeVo {
         this.privileges = privileges;
     }
 
-    public List<Long> getAssign() {
+    public List<String> getAssign() {
         return assign;
     }
 
-    public void setAssign(List<Long> assign) {
+    public void setAssign(List<String> assign) {
         this.assign = assign;
     }
 }

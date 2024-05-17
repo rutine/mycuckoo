@@ -43,12 +43,4 @@ public interface ModResRefMapper extends Repository<ModResRef, Long> {
      * @return
      */
     List<ModResRef> findByResourceId(Long resourceId);
-
-    /**
-     * 根据IDs查询
-     *
-     * @param modOptRefIds
-     * @return 列表
-     */
-    List<ModResRef> findByIds(Long[] modOptRefIds);
 }

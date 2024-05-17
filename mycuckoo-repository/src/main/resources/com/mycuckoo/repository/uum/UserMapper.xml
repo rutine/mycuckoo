@@ -173,15 +173,10 @@
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
     <select id="findByCodeAndName" resultMap="baseMap">
         select
-            t1.*,
-            t2.simple_name org_name,
-            t4.org_role_id,
-            t5.name role_name
+            t1.user_id,
+            t1.code,
+            t1.name
         from <include refid="table" /> t1
-        left join cuckoo.uum_organ t2 on t1.belong_org = t2.org_id
-        left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-        left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
-        left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
         <where>
             <if test="code != null and code != ''">and t1.code like #{code}</if>
             <if test="name != null and name != ''">and t1.name like #{name}</if>

@@ -44,8 +44,8 @@ public class PlatformServiceFacade {
         return moduleService.filterModule(list);
     }
 
-    public List<ResourceVo> findAllModOptRefsNew() {
-        return moduleService.findAllModOptRefsNew();
+    public List<ResourceVo> findAllModOptRefs() {
+        return moduleService.findAllModOptRefs();
     }
 
     public List<ResourceVo> findAllModResRefs() {

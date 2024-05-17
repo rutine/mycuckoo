@@ -79,7 +79,7 @@ public class PrivilegeService {
         privilegeMapper.deleteRowPrivilegeByOrgId(orgId, PrivilegeType.ROW.value(), PrivilegeScope.ORGAN.value());
     }
 
-    public String findRowPrivilegeByRoleIdAPriType(long roleId) {
+    public String findRowPrivilegeByRoleId(long roleId) {
         // 查找已经分配的权限
         Long[] roleIds = { roleId };
         String[] ownerTypes = { OwnerType.ROLE.value() };
@@ -93,7 +93,7 @@ public class PrivilegeService {
         return resourceId;
     }
 
-    public AssignVo<CheckBoxTree, Long> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
+    public AssignVo<CheckBoxTree, String> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
         String[] ownerTypes = { ownerType.value() };
@@ -116,7 +116,44 @@ public class PrivilegeService {
         }
 
         // 查找所有模块操作关系
-        List<ResourceVo> resources = platformServiceFacade.findAllModOptRefsNew();
+        List<ResourceVo> resources = platformServiceFacade.findAllModOptRefs();
+        List<String> checkedOperations = resourceIdList.parallelStream()
+                .map(id -> {return ServiceConst.LEAF_ID + id; })
+                .collect(Collectors.toList());
+
+        //将操作转化成列表数据
+        List<ModuleMenuVo> allModMenuList = this.filterModOpt(resources, true).getMenu();
+
+        List<? extends SimpleTree> trees = platformServiceFacade.buildTree(allModMenuList, checkedOperations, true);
+
+        //将已分配和未分配的模块操作放入
+        return new AssignVo(trees, checkedOperations, privilegeScope);
+    }
+
+    public AssignVo<CheckBoxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
+        // 查找已经分配的权限
+        Long[] roleIds = { ownerId };
+        String[] ownerTypes = { ownerType.value() };
+        String[] privilegeTypes = { PrivilegeType.RES.value() };
+        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
+
+        // 操作id集
+        List<Long> resourceIdList = new ArrayList<>();
+        String privilegeScope = "";
+        for (Privilege privilege : privilegeList) {
+            String resourceId = privilege.getResourceId();
+            try {
+                resourceIdList.add(Long.parseLong(resourceId));
+            } catch (NumberFormatException e) {
+                logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
+            }
+            if (StringUtils.isBlank(privilegeScope)) {
+                privilegeScope = privilege.getPrivilegeScope();
+            }
+        }
+
+        // 查找所有模块资源关系
+        List<ResourceVo> resources = platformServiceFacade.findAllModResRefs();
         List<String> checkedOperations = resourceIdList.parallelStream()
                 .map(id -> {return ServiceConst.LEAF_ID + id; })
                 .collect(Collectors.toList());
@@ -189,7 +226,7 @@ public class PrivilegeService {
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {
-        List<ResourceVo> resourceVos = platformServiceFacade.findAllModOptRefsNew(); // 四级模块操作
+        List<ResourceVo> resourceVos = platformServiceFacade.findAllModOptRefs(); // 四级模块操作
         // 四级模块操作
         Map<Long, List<ResourceVo>> resMap = resourceVos.stream()
                 .collect(Collectors.groupingBy(ResourceVo::getParentId,
@@ -268,12 +305,12 @@ public class PrivilegeService {
 
         List<ResourceVo> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefsNew(); // 所有操作按钮
+            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
             resources = allResources.stream()
                     .filter(r -> !resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
-            resources = platformServiceFacade.findAllModOptRefsNew(); // 所有操作按钮
+            resources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
         }
 
         // 过滤所有的模块操作

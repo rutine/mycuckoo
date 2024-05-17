@@ -2,7 +2,6 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.constant.ServiceConst;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
@@ -28,7 +27,6 @@ import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.vo.platform.ResourceTreeVo;
 import com.mycuckoo.vo.platform.ResourceVo;
-import com.sun.org.apache.regexp.internal.RE;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -39,14 +37,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
-import static com.mycuckoo.constant.ServiceConst.LEAF_ID;
+import static com.mycuckoo.constant.ServiceConst.*;
 import static com.mycuckoo.operator.LogOperator.DUNHAO;
 import static com.mycuckoo.utils.CommonUtils.getResourcePath;
 import static com.mycuckoo.utils.CommonUtils.isNullOrEmpty;
@@ -265,7 +263,7 @@ public class ModuleService {
 //        return modOptRefMapper.findByPage(null, pageRequest).getContent();
 //    }
 
-    public List<ResourceVo> findAllModOptRefsNew() {
+    public List<ResourceVo> findAllModOptRefs() {
         Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
         List<ModOptRef> refs = modOptRefMapper.findByPage(null, pageRequest).getContent();
         Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
@@ -570,7 +568,7 @@ public class ModuleService {
         List<? super SimpleTree> subMenuVos = Lists.newArrayList();
         if (!id.startsWith(LEAF_ID) && groupMap.containsKey(menu.getModuleId())) {
             subMenuVos = groupMap.get(menu.getModuleId()).stream()
-                    .map(tree -> buildTree(tree, groupMap, checkedOperations, checked, isCheckbox))
+                    .map(tree -> buildTree(tree, groupMap, checkedOperations, new CheckedHolder(checked), isCheckbox))
                     .collect(Collectors.toList());
         }
 

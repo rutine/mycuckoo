@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeType;
 import com.mycuckoo.utils.CommonUtils;
-import com.mycuckoo.utils.FirstLetter;
 import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.Page;
@@ -20,6 +19,7 @@ import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.RowPrivilegeVo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
+import com.mycuckoo.vo.uum.UserVos;
 import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.req.UserPasswordUvo;
@@ -94,8 +94,10 @@ public class UserController {
      * @time Oct 13, 2013 1:05:30 PM
      */
     @GetMapping("/{id}/user-privilege")
-    public AjaxResponse<AssignVo<CheckBoxTree, Long>> listUserPrivilege(@PathVariable long id) {
-        AssignVo<CheckBoxTree, Long> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+    public AjaxResponse<AssignVo<CheckBoxTree, String>> listUserPrivilege(@PathVariable long id) {
+        //todo
+        AssignVo<CheckBoxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+//        AssignVo<CheckBoxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
     }
@@ -210,9 +212,9 @@ public class UserController {
      * @author rutine
      * @time Oct 20, 2013 3:07:34 PM
      */
-    @GetMapping("/query/users")
-    public AjaxResponse<List<UserVo>> queryUsersByUserName(@RequestParam(defaultValue = "") String userName) {
-        List<UserVo> vos = userService.findByUserName(userName);
+    @GetMapping("/selector")
+    public AjaxResponse<List<UserVos.UProfile>> listByName(@RequestParam(defaultValue = "") String userName) {
+        List<UserVos.UProfile> vos = userService.findByName(userName);
 
         return AjaxResponse.create(vos);
     }
@@ -247,15 +249,36 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 2:13:42 PM
      */
-    @PostMapping("/{id}/operation-privilege/{privilegeScope}")
-    public AjaxResponse<String> saveOperationPrivilege(@PathVariable long id,
-                                                       @PathVariable String privilegeScope,
-                                                       @RequestBody Set<String> operationIds) {
+    @PostMapping("/{id}/opt-privilege/{privilegeScope}")
+    public AjaxResponse<String> saveOptPrivilege(@PathVariable long id,
+                                                 @PathVariable String privilegeScope,
+                                                 @RequestBody Set<String> operationIds) {
 
         List<String> list = Lists.newArrayList(operationIds);
         privilegeService.save(list, id, PrivilegeType.OPT, OwnerType.USR, privilegeScope);
 
         return AjaxResponse.create("为用户分配操作权限成功");
+    }
+
+    /**
+     * 功能说明 : 保存为用户分配资源权限
+     *
+     * @param id             用户id
+     * @param privilegeScope 权限范围
+     * @param resIds         资源id集合
+     * @return json消息
+     * @author rutine
+     * @time May 17 2024 18:24:15 PM
+     */
+    @PostMapping("/{id}/res-privilege/{privilegeScope}")
+    public AjaxResponse<String> saveResPrivilege(@PathVariable long id,
+                                                 @PathVariable String privilegeScope,
+                                                 @RequestBody Set<String> resIds) {
+
+        List<String> list = Lists.newArrayList(resIds);
+        privilegeService.save(list, id, PrivilegeType.RES, OwnerType.USR, privilegeScope);
+
+        return AjaxResponse.create("为用户分配资源权限成功");
     }
 
     /**

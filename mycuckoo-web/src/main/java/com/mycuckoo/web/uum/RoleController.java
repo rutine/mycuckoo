@@ -11,7 +11,6 @@ import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.vo.AssignVo;
 import com.mycuckoo.vo.CheckBoxTree;
-import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.res.RolePrivilegeVo;
 import org.assertj.core.util.Lists;
@@ -74,11 +73,13 @@ public class RoleController {
      */
     @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
-        AssignVo<CheckBoxTree, Long> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+        //todo
+        AssignVo<CheckBoxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+//        AssignVo<CheckBoxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getPrivilegeScope(),
-                privilegeService.findRowPrivilegeByRoleIdAPriType(id),
+                privilegeService.findRowPrivilegeByRoleId(id),
                 baseVo.getSource(),
                 baseVo.getAssign());
 
@@ -153,12 +154,12 @@ public class RoleController {
      *
      * @param id             角色id
      * @param privilegeScope 权限范围
-     * @param operationIds   模块id集合
+     * @param operationIds   操作id集合
      * @return json 数据
      * @author rutine
      * @time Sep 15, 2013 9:47:05 AM
      */
-    @PostMapping("/{id}/operation-privilege/{privilegeScope}")
+    @PostMapping("/{id}/opt-privilege/{privilegeScope}")
     public AjaxResponse<String> saveOptPrivilege(
             @PathVariable long id,
             @PathVariable String privilegeScope,
@@ -167,6 +168,27 @@ public class RoleController {
         privilegeService.save(Lists.newArrayList(operationIds), id, PrivilegeType.OPT, OwnerType.ROLE, privilegeScope);
 
         return AjaxResponse.create("分配角色操作权限成功");
+    }
+
+    /**
+     * 功能说明 : 为角色分配资源权限
+     *
+     * @param id             角色id
+     * @param privilegeScope 权限范围
+     * @param resIds         资源id集合
+     * @return json 数据
+     * @author rutine
+     * @time May 17 2024 18:24:15 PM
+     */
+    @PostMapping("/{id}/res-privilege/{privilegeScope}")
+    public AjaxResponse<String> saveResPrivilege(
+            @PathVariable long id,
+            @PathVariable String privilegeScope,
+            @RequestBody Set<String> resIds) {
+
+        privilegeService.save(Lists.newArrayList(resIds), id, PrivilegeType.RES, OwnerType.ROLE, privilegeScope);
+
+        return AjaxResponse.create("分配角色资源权限成功");
     }
 
     /**
