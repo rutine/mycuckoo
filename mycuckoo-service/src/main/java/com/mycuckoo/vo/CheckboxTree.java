@@ -7,10 +7,10 @@ package com.mycuckoo.vo;
  * @version 2.0.0
  * @time Sep 23, 2014 10:59:31 AM
  */
-public class CheckBoxTree extends SimpleTree<CheckBoxTree> {
-    private Boolean checked;
+public class CheckboxTree extends SimpleTree<CheckboxTree> {
+    private Boolean checked; //ztree
     private Boolean nocheck;
-    private CheckBox checkBox;
+    private Checkbox checkbox;
 
     public Boolean isChecked() {
         return checked;
@@ -36,21 +36,21 @@ public class CheckBoxTree extends SimpleTree<CheckBoxTree> {
         return nocheck;
     }
 
-    public CheckBox getCheckBox() {
-        return checkBox;
+    public Checkbox getCheckbox() {
+        return checkbox;
     }
 
-    public void setCheckBox(CheckBox checkBox) {
-        this.checkBox = checkBox;
+    public void setCheckbox(Checkbox checkbox) {
+        this.checkbox = checkbox;
     }
 
-    public static class CheckBox {
+    public static class Checkbox {
         private int type = 0;
         private Integer isChecked;
 
-        public CheckBox() {}
+        public Checkbox() {}
 
-        public CheckBox(Integer isChecked) {
+        public Checkbox(Integer isChecked) {
             this.isChecked = isChecked;
         }
 

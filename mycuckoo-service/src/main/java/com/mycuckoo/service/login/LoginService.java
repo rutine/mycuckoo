@@ -1,11 +1,15 @@
 package com.mycuckoo.service.login;
 
 import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.utils.PwdCrypt;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.utils.SystemConfigXmlParse;
 import com.mycuckoo.vo.HierarchyModuleVo;
+import com.mycuckoo.vo.UserInfo;
 import com.mycuckoo.vo.uum.UserRoleVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,17 +41,35 @@ public class LoginService {
         return false;
     }
 
+    public Long getAccountByPhoneAndPwd(String phone, String password) {
+        password = PwdCrypt.getInstance().encrypt(password);//明文加密成密文
+
+        return uumServiceFacade.getAccountByPhoneAndPwd(phone, password, SessionUtil.getIP());
+    }
+
     public User getUserByUserCodePwd(String userCode, String password) {
         password = PwdCrypt.getInstance().encrypt(password);//明文加密成密文
 
         return uumServiceFacade.getUserByUserCodeAndPwd(userCode, password);
     }
 
-    public List<UserRoleVo> preLogin(User user) {
-        long userId = user.getUserId();
-        List<UserRoleVo> vos = uumServiceFacade.findRoleUsersByUserId(userId);
+    public UserInfo getUserByAccountIdAndUserId(Long accountId, Long userId) {
+        UserExtend user = uumServiceFacade.getUserByAccountIdAndUserId(accountId, userId);
+        if (user == null) {
+            return null;
+        }
 
-        return vos;
+        UserInfo info = new UserInfo();
+        BeanUtils.copyProperties(user, info);
+        info.setId(user.getUserId());
+        info.setUserName(user.getName());
+        info.setUserCode(user.getCode());
+
+        return info;
+    }
+
+    public List<UserExtend> preLogin(Long accountId) {
+        return uumServiceFacade.findByAccountId(accountId);
     }
 
     public HierarchyModuleVo filterPrivilege(Long userId, Long roleId, Long organId, Long organRoleId, String userCode) {

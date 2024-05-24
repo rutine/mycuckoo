@@ -12,6 +12,7 @@ import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.RoleMapper;
 import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Date;
 import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
@@ -39,8 +41,6 @@ public class RoleService {
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
-    private OrganRoleService organRoleService;
-    @Autowired
     private PrivilegeService privilegeService;
 
 
@@ -48,7 +48,6 @@ public class RoleService {
     public void disEnable(long roleId, String disEnableFlag) {
         boolean enable = ENABLE.equals(disEnableFlag);
         if (!enable) {
-            organRoleService.deleteByRoleId(roleId); //根据角色ID删除机构角色关系记录，为停用角色所用
             privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.value());  //删除用户所拥有操作、行权限
 
             roleMapper.update(new Role(roleId, DISABLE));
@@ -86,6 +85,8 @@ public class RoleService {
         Assert.state(old.getName().equals(role.getName())
                 || !existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
+        role.setUpdateDate(new Date());
+        role.setUpdater(SessionUtil.getUserCode());
         roleMapper.update(role);
 
         writeLog(role, LogLevel.SECOND, OptName.MODIFY);
@@ -95,6 +96,11 @@ public class RoleService {
     public void save(Role role) {
         Assert.state(!existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
+        role.setOrgId(SessionUtil.getOrganId());
+        role.setUpdateDate(new Date());
+        role.setUpdater(SessionUtil.getUserCode());
+        role.setCreateDate(new Date());
+        role.setCreator(SessionUtil.getUserCode());
         role.setStatus(ENABLE);
         roleMapper.save(role);
 

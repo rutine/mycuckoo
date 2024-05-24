@@ -1,48 +1,36 @@
 package com.mycuckoo.web.uum;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeType;
-import com.mycuckoo.utils.CommonUtils;
-import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.uum.PrivilegeService;
-import com.mycuckoo.service.uum.UserOrgRoleService;
 import com.mycuckoo.service.uum.UserService;
+import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.CheckBoxTree;
-import com.mycuckoo.vo.SimpleTree;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.vo.uum.RowPrivilegeVo;
-import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.vo.uum.UserVos;
-import com.mycuckoo.web.util.JsonUtils;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.req.UserPasswordUvo;
 import com.mycuckoo.web.vo.req.UserPhotoUvo;
+import com.mycuckoo.web.vo.req.UserReqVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static com.mycuckoo.constant.BaseConst.USER_DEFAULT_PWD;
@@ -63,8 +51,6 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserOrgRoleService userOrgRoleService;
-    @Autowired
     private PrivilegeService privilegeService;
     @Autowired
     private PlatformServiceFacade platformServiceFacade;
@@ -72,16 +58,14 @@ public class UserController {
 
     @GetMapping
     public AjaxResponse<Page<UserVo>> list(
-            @RequestParam(defaultValue = "-1") String treeId,
-            @RequestParam(defaultValue = "") String code,
+           @RequestParam(defaultValue = "") String code,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = LIMIT + "") int pageSize) {
 
         code = StringUtils.isBlank(code) ? null : "%" + code + "%";
         name = StringUtils.isBlank(name) ? null : "%" + name + "%";
-        Page<UserVo> page = userService.findByPage(treeId, code,
-                name, new PageRequest(pageNo - 1, pageSize));
+        Page<UserVo> page = userService.findByPage(code, name, new PageRequest(pageNo - 1, pageSize));
 
         return AjaxResponse.create(page);
     }
@@ -94,31 +78,12 @@ public class UserController {
      * @time Oct 13, 2013 1:05:30 PM
      */
     @GetMapping("/{id}/user-privilege")
-    public AjaxResponse<AssignVo<CheckBoxTree, String>> listUserPrivilege(@PathVariable long id) {
+    public AjaxResponse<AssignVo<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
         //todo
-        AssignVo<CheckBoxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
-//        AssignVo<CheckBoxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+        AssignVo<CheckboxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+//        AssignVo<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
-    }
-
-    /**
-     * 功能说明 : 查询用户的所有角色
-     *
-     * @param id 用户id
-     * @author rutine
-     * @time Oct 13, 2013 4:53:00 PM
-     */
-    @GetMapping("/{id}/role-privilege")
-    public AjaxResponse<Map<String, Object>> listRolePrivilege(@PathVariable long id) {
-        List<UserRoleVo> userRoles = userOrgRoleService.findByUserId(id);
-        List<? extends SimpleTree> orgRoles = this.getChildNodes(0L, "Y").getData();
-
-        Map<String, Object> map = Maps.newHashMap();
-        map.put("userRoles", userRoles);
-        map.put("orgRoles", orgRoles);
-
-        return AjaxResponse.create(map);
     }
 
     /**
@@ -145,24 +110,14 @@ public class UserController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody UserVo user) {
-        logger.debug(JsonUtils.toJson(user));
-
         Assert.hasText(user.getCode(), "用户编码必填");
-        Assert.isTrue(user.getCode().length() <= 10
+        Assert.state(user.getCode().length() <= 10
                         || StringUtils.isAlphanumeric(user.getCode()),
                 "用户编码长度最大10的字符或数字");
-        Assert.isTrue(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
-        Assert.isTrue(StringUtils.isNumeric(user.getFamilyTel()), "必须有效电话号");
-        Assert.isTrue(StringUtils.isNumeric(user.getOfficeTel()), "必须有效电话号");
+        Assert.state(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
+        Assert.state(StringUtils.isNumeric(user.getFamilyTel()), "必须有效电话号");
+        Assert.state(StringUtils.isNumeric(user.getOfficeTel()), "必须有效电话号");
         Assert.notNull(user.getAvidate(), "用户有效期不能为空");
-        Assert.notNull(user.getOrgRoleId(), "角色不能为空");
-        Assert.hasText(user.getRoleName(), "角色不能为空");
-
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
-        user.setCreator(SessionUtil.getUserCode());
-        user.setCreateDate(new Date());
-        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
 
         userService.save(user);
 
@@ -171,10 +126,6 @@ public class UserController {
 
     @PutMapping
     public AjaxResponse<String> update(@RequestBody UserVo user) {
-
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
-        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
         userService.update(user);
 
         return AjaxResponse.create("修改用户成功");
@@ -182,7 +133,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public AjaxResponse<User> get(@PathVariable long id) {
-        User user = userService.getUserByUserId(id);
+        User user = userService.getByUserId(id);
 
         return AjaxResponse.create(user);
     }
@@ -217,26 +168,6 @@ public class UserController {
         List<UserVos.UProfile> vos = userService.findByName(userName);
 
         return AjaxResponse.create(vos);
-    }
-
-    /**
-     * 功能说明 : 查找指定节点的下一级子节点
-     *
-     * @param orgId         机构id
-     * @param isCheckbox
-     * @author rutine
-     * @time Dec 1, 2012 1:45:37 PM
-     */
-    @GetMapping("/{orgId}/child/nodes")
-    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(
-            @PathVariable Long orgId,
-            @RequestParam(value = "isCheckbox", defaultValue = "N") String isCheckbox) {
-
-        List<? extends SimpleTree> asyncTreeList = userService.findChildNodes(orgId, isCheckbox);
-
-        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
-
-        return AjaxResponse.create(asyncTreeList);
     }
 
     /**
@@ -279,27 +210,6 @@ public class UserController {
         privilegeService.save(list, id, PrivilegeType.RES, OwnerType.USR, privilegeScope);
 
         return AjaxResponse.create("为用户分配资源权限成功");
-    }
-
-    /**
-     * 功能说明 : 保存为用户分配的角色
-     *
-     * @param id            用户id
-     * @param defaultRoleId 默认角色id
-     * @param roleIds       角色id集合
-     * @author rutine
-     * @time Oct 13, 2013 9:17:05 PM
-     */
-    @PostMapping("/{id}/role-privilege/{defaultRoleId}")
-    public AjaxResponse<String> saveRolePrivilege(
-            @PathVariable long id,
-            @PathVariable long defaultRoleId,
-            @RequestBody Set<Long> roleIds) {
-
-        List<Long> list = new ArrayList<>(roleIds);
-        userOrgRoleService.save(id, list, defaultRoleId);
-
-        return AjaxResponse.create("为用户分配角色成功");
     }
 
     /**
@@ -355,11 +265,7 @@ public class UserController {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
         String password = vo.getPassword();
-        User user = userService.getUserByUserId(SessionUtil.getUserId());
-        Assert.state(password.equals(user.getPassword()), "密码错误");
-
-        user.setPassword(vo.getNewPassword());
-        userService.updateUserInfo(user);
+        userService.updateUserInfo(password, vo.getNewPassword());
 
         return AjaxResponse.create("修改成功");
     }
@@ -376,8 +282,21 @@ public class UserController {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
         userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
-        SessionUtil.getUserInfo().setUserPhotoUrl(vo.getPhoto());
+        SessionUtil.getUserInfo().setPhotoUrl(vo.getPhoto());
 
         return AjaxResponse.create("上传头像成功");
+    }
+
+    /**
+     * 功能说明 : 更新用户角色
+     */
+    @PutMapping("/update/role")
+    public AjaxResponse<String> updateRole(@RequestBody UserReqVos.URole vo) {
+        Assert.notNull(vo.getUserId(), "用户id不能为空");
+        Assert.notNull(vo.getRoleId(), "角色id不能为空");
+
+        userService.updateRole(vo.getUserId(), vo.getRoleId());
+
+        return AjaxResponse.create("设置角色成功");
     }
 }

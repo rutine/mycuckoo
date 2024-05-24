@@ -2,7 +2,7 @@ package com.mycuckoo.utils;
 
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.uum.UserRoleVo;
+import com.mycuckoo.vo.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
@@ -12,7 +12,9 @@ import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static com.mycuckoo.constant.BaseConst.*;
+import static com.mycuckoo.constant.BaseConst.ACCOUNT_ID;
+import static com.mycuckoo.constant.BaseConst.MODULE_MENU;
+import static com.mycuckoo.constant.BaseConst.USER_INFO;
 
 /**
  * 功能说明: 取会话信息工具类，主要是统一获取会话中的信息
@@ -85,8 +87,8 @@ public final class SessionUtil {
      * @author rutine
      * @time Jan 27, 2019 3:16:53 PM
      */
-    public static UserRoleVo getUserInfo() {
-        return (UserRoleVo) getSession().getAttribute(USER_INFO);
+    public static UserInfo getUserInfo() {
+        return (UserInfo) getSession().getAttribute(USER_INFO);
     }
 
     /**
@@ -109,17 +111,6 @@ public final class SessionUtil {
      */
     public static String getOrganName() {
         return getUserInfo() != null ? getUserInfo().getOrgName() : null;
-    }
-
-    /**
-     * 功能说明 : 获取用户所属的机构角色id, 此值登录后存入会话
-     *
-     * @return 机构角色id
-     * @author rutine
-     * @time Nov 1, 2014 1:30:06 PM
-     */
-    public static Long getOrganRoleId() {
-        return getUserInfo() != null ? getUserInfo().getOrgRoleId() : null;
     }
 
     /**
@@ -152,7 +143,14 @@ public final class SessionUtil {
      * @time Nov 1, 2014 1:35:39 PM
      */
     public static Long getUserId() {
-        return getUserInfo() != null ? getUserInfo().getUserId() : null;
+        return getUserInfo() != null ? getUserInfo().getId() : null;
+    }
+
+    /**
+     * 功能说明 : 获取账号id, 此值登录后存入会话
+     */
+    public static Long getAccountId() {
+        return getSession() != null ? (Long) getSession().getAttribute(ACCOUNT_ID) : null;
     }
 
     /**
@@ -163,7 +161,7 @@ public final class SessionUtil {
      * @time Nov 1, 2014 1:36:38 PM
      */
     public static String getUserCode() {
-        return (String) getSession().getAttribute(USER_CODE);
+        return (String) getUserInfo().getUserCode();
     }
 
     /**
@@ -185,7 +183,7 @@ public final class SessionUtil {
      * @time Nov 1, 2014 1:38:39 PM
      */
     public static String getUserPhotoUrl() {
-        return getUserInfo() != null ? getUserInfo().getUserPhotoUrl() : null;
+        return getUserInfo() != null ? getUserInfo().getPhotoUrl() : null;
     }
 
     /**

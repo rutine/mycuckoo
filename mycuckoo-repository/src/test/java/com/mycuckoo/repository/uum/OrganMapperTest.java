@@ -24,12 +24,6 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Autowired
     private OrganMapper organMapper;
 
-    @Test
-    public void testFindByParentId() {
-        List<Organ> list = organMapper.findByParentId(0L);
-
-        logger.info("------> findByParentId: {}", list);
-    }
 
     @Test
     public void testCountByParentId() {

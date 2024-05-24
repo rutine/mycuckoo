@@ -21,7 +21,7 @@ import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.utils.TreeHelper;
 import com.mycuckoo.utils.XmlOptUtils;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
@@ -288,7 +288,7 @@ public class ModuleService {
         return result;
     }
 
-    public AssignVo<CheckBoxTree, Long> findOperationTreeByModId(long moduleId) {
+    public AssignVo<CheckboxTree, Long> findOperationTreeByModId(long moduleId) {
         List<Operate> allOperates = operateService.findAll(); //所有操作
         List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId); //已经分配的操作
         List<Long> optIds = modOptRefs.parallelStream()
@@ -296,11 +296,11 @@ public class ModuleService {
                 .map(Operate::getOperateId)
                 .collect(Collectors.toList());
 
-        List<CheckBoxTree> trees = Lists.newArrayList();
+        List<CheckboxTree> trees = Lists.newArrayList();
         allOperates.forEach(consumer -> {
             boolean checked = optIds.contains(consumer.getOperateId());
 
-            CheckBoxTree tree = new CheckBoxTree();
+            CheckboxTree tree = new CheckboxTree();
             tree.setId(consumer.getOperateId().toString());
             tree.setParentId("0");
             tree.setText(consumer.getName());
@@ -308,7 +308,7 @@ public class ModuleService {
             tree.setIsLeaf(true);
             tree.setChildren(null);
             tree.setChecked(checked);
-            tree.setCheckBox(new CheckBoxTree.CheckBox(checked ? 1 : 0));
+            tree.setCheckbox(new CheckboxTree.Checkbox(checked ? 1 : 0));
             trees.add(tree);
         });
 
@@ -579,11 +579,11 @@ public class ModuleService {
 
         SimpleTree tree = null;
         if (isCheckbox) {
-            tree = new CheckBoxTree();
-            CheckBoxTree boxTree = (CheckBoxTree) tree;
+            tree = new CheckboxTree();
+            CheckboxTree boxTree = (CheckboxTree) tree;
             boxTree.setNocheck(false);
             boxTree.setChecked(checked.checked);
-            boxTree.setCheckBox(new CheckBoxTree.CheckBox(checked.checked ? 1 : 0));
+            boxTree.setCheckbox(new CheckboxTree.Checkbox(checked.checked ? 1 : 0));
         } else {
             tree = new SimpleTree();
         }

@@ -1,6 +1,6 @@
 package com.mycuckoo.web.vo.res;
 
-import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.CheckboxTree;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ import java.util.List;
 public class RolePrivilegeVo {
     private String privilegeScope;
     private String rowPrivilege;
-    private List<CheckBoxTree> privileges;
+    private List<CheckboxTree> privileges;
     private List<String> assign;
 
     public RolePrivilegeVo(String privilegeScope, String rowPrivilege,
-                           List<CheckBoxTree> privileges, List<String> assign) {
+                           List<CheckboxTree> privileges, List<String> assign) {
         this.privilegeScope = privilegeScope;
         this.rowPrivilege = rowPrivilege;
         this.privileges = privileges;
@@ -41,11 +41,11 @@ public class RolePrivilegeVo {
         this.rowPrivilege = rowPrivilege;
     }
 
-    public List<CheckBoxTree> getPrivileges() {
+    public List<CheckboxTree> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges(List<CheckBoxTree> privileges) {
+    public void setPrivileges(List<CheckboxTree> privileges) {
         this.privileges = privileges;
     }
 

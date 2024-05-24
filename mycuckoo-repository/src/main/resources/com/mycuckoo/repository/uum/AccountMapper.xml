@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.repository.uum.AccountMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.uum.Account">
+        <id property="accountId" column="account_id" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="errorCount" column="error_count" />
+        <result property="ip" column="ip" />
+        <result property="loginDate" column="login_date" />
+        <result property="updateDate" column="update_date" />
+        <result property="createDate" column="create_date" />
+    </resultMap>
+
+    <sql id="columns">
+        account_id, phone, email,
+        password, error_count, ip,
+        login_date, update_date, create_date
+    </sql>
+
+    <sql id="table">
+        cuckoo.uum_account
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.uum.Account"
+            useGeneratedKeys="true" keyProperty="accountId" keyColumn="account_id">
+        insert into <include refid="table" />
+        (
+            account_id,
+            phone,
+            email,
+            password,
+            error_count,
+            ip,
+            login_date,
+            update_date,
+            create_date
+        )
+        values (
+            #{accountId},
+            #{phone},
+            #{email},
+            #{password},
+            #{errorCount},
+            #{ip},
+            #{loginDate},
+            #{updateDate},
+            #{createDate}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.uum.Account">
+        update <include refid="table" />
+        <set>
+            <if test="phone != null">phone = #{phone}, </if>
+            <if test="email != null">email = #{email}, </if>
+            <if test="password != null">password = #{password}, </if>
+            <if test="errorCount != null">error_count = #{errorCount}, </if>
+            <if test="ip != null">ip = #{ip}, </if>
+            <if test="loginDate != null">login_date = #{loginDate}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
+        </set>
+        where account_id = #{accountId}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where account_id = #{accountId}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where account_id = #{accountId}
+    </select>
+
+    <select id="exists" parameterType="long" resultType="boolean">
+        select count(account_id) > 0
+        from <include refid="table" />
+        where account_id = #{accountId}
+    </select>
+
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+    </select>
+
+    <select id="count" resultType="long">
+        select count(1)
+        from <include refid="table" />
+    </select>
+
+    <select id="getByPhoneOrEmail" resultMap="baseMap">
+        select
+            t1.account_id,
+            t1.phone,
+            t1.email,
+            t1.password,
+            t1.error_count
+        from <include refid="table" /> t1
+        <where>
+            <if test="phone != null and phone != ''">and t1.phone like #{phone}</if>
+            <if test="email != null and email != ''">and t1.email like #{email}</if>
+        </where>
+    </select>
+
+</mapper> 

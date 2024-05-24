@@ -9,7 +9,7 @@ import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
 import com.mycuckoo.web.util.JsonUtils;
@@ -75,9 +75,9 @@ public class ModuleController {
      * @time May 9, 2013 8:52:56 PM
      */
     @GetMapping(value = "/{id}/operation")
-    public AjaxResponse<AssignVo<CheckBoxTree, Long>> listOperation(@PathVariable long id) {
+    public AjaxResponse<AssignVo<CheckboxTree, Long>> listOperation(@PathVariable long id) {
 
-        AssignVo<CheckBoxTree, Long> vo = moduleService.findOperationTreeByModId(id);
+        AssignVo<CheckboxTree, Long> vo = moduleService.findOperationTreeByModId(id);
 
         return AjaxResponse.create(vo);
     }

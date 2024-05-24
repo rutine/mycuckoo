@@ -27,13 +27,13 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String uri = request.getRequestURI();
         logger.info("request uri:{}", uri);
-        if (matcher.match("/login/step/first", uri)
+        if (matcher.match("/login", uri)
                 || matcher.match("/file", uri)) {
             return true;
         }
 
         HttpSession session = request.getSession(false);
-        if (session == null || SessionUtil.getUserCode() == null) {
+        if (session == null || SessionUtil.getAccountId() == null) {
             logger.info("未登录被拦截");
 
             response.setCharacterEncoding("UTF-8");

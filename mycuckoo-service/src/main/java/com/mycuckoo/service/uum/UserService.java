@@ -5,10 +5,9 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.domain.uum.OrgRoleRef;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.domain.uum.UserOrgRoleRef;
+import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.repository.Page;
@@ -16,13 +15,10 @@ import com.mycuckoo.repository.PageImpl;
 import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.UserMapper;
 import com.mycuckoo.utils.CommonUtils;
+import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.utils.SystemConfigXmlParse;
-import com.mycuckoo.vo.CheckBoxTree;
-import com.mycuckoo.vo.SimpleTree;
-import com.mycuckoo.vo.uum.UserRoleVo;
 import com.mycuckoo.vo.uum.UserVo;
 import com.mycuckoo.vo.uum.UserVos;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -31,10 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明: 用户业务类
@@ -52,11 +48,9 @@ public class UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserOrgRoleService userOrgRoleService;
-    @Autowired
     private OrganService organService;
     @Autowired
-    private OrganRoleService organRoleService;
+    private RoleService roleService;
     @Autowired
     private PrivilegeService privilegeService;
 
@@ -79,15 +73,8 @@ public class UserService {
         boolean enable = ENABLE.equals(disEnableFlag);
         if (!enable) {
             User user = new User(userId, DISABLE);
-            user.setBelongOrg(0L);
-            userMapper.update(user); // 更改用户所属机构为0
-            userOrgRoleService.deleteByUserId(userId); // 1 移除用户角色
-            privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.value()); // 2 移除用户所拥有操作、行权限
-
-            OrgRoleRef orgRoleRef = new OrgRoleRef(0L);
-            UserOrgRoleRef userOrgRoleRef = new UserOrgRoleRef(null, orgRoleRef, user);
-            userOrgRoleRef.setIsDefault(Y);
-            userOrgRoleService.save(userOrgRoleRef); // 设置无角色用户
+            // 移除用户所拥有操作、行权限
+            privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.value());
         } else {
             userMapper.update(new User(userId, ENABLE));
         }
@@ -117,74 +104,11 @@ public class UserService {
         return userMapper.findByPinyin(userNamePy, userId);
     }
 
-    public List<? extends SimpleTree> findChildNodes(Long organId, String isCheckbox) {
-        List<? extends SimpleTree> simpleTrees = organService.findChildNodes(organId, isCheckbox);
-
-        return this.buildTree(simpleTrees, isCheckbox);
-    }
-    private List<? extends CheckBoxTree> buildTree(List<? extends SimpleTree> simpleTrees, String isCheckbox) {
-        if (simpleTrees == null) {
-            return null;
-        }
-
-        List<CheckBoxTree> boxTrees = Lists.newArrayList();
-        for (SimpleTree tree : simpleTrees) {
-            String parentId = "orgId_" + tree.getParentId();
-            CheckBoxTree boxTree = new CheckBoxTree();
-            boxTree.setId("orgId_" + tree.getId());
-            boxTree.setParentId(parentId);
-            boxTree.setText(tree.getText());
-            boxTree.setIcon(tree.getIcon());
-            boxTree.setIconSkin(tree.getIconSkin());
-            boxTree.setIsLeaf(false);
-            boxTree.setCheckBox(null); // 机构无checkbox
-            boxTree.setNocheck(true); // 机构无checkbox
-            boxTree.setChildren(this.buildTree(tree.getChildren(), isCheckbox));
-            boxTrees.add(boxTree);
-
-            List<OrgRoleRef> orgRoleList = organRoleService.findRolesByOrgId(Long.valueOf(tree.getId()));
-            for (OrgRoleRef orgRoleRef : orgRoleList) {
-                Role role = orgRoleRef.getRole();
-                CheckBoxTree roleBoxTree = new CheckBoxTree();
-                roleBoxTree.setId("orgRoleId_" + orgRoleRef.getOrgRoleId());
-                roleBoxTree.setParentId(parentId);
-                roleBoxTree.setText(role.getName());
-                roleBoxTree.setIsLeaf(true);
-                if (!Y.equals(isCheckbox)) {// 角色无checkbox
-                    roleBoxTree.setCheckBox(null);
-                    roleBoxTree.setNocheck(true);
-                    roleBoxTree.setIconSkin(ROLE_CSS);
-                } else {
-                    roleBoxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
-                }
-                boxTrees.add(roleBoxTree);
-            }
-        }
-
-        return boxTrees;
-    }
-
-    public Page<UserVo> findByPage(String treeId, String code, String name, Pageable page) {
-        Long orgRoleId = null;
-        String flag = null;
-        if (!CommonUtils.isNullOrEmpty(treeId) && treeId.indexOf("_") != -1) {
-            int index = treeId.indexOf("_");
-            orgRoleId = Long.parseLong(treeId.substring(index + 1));
-            flag = treeId.substring(0, index);
-        }
-
-        Page<User> page2 = null;
-        if (flag == null) { // 根据用户代码和用户名称模糊、分页查询用户记录
-            page2 = userMapper.findByPage2(null, null, code, name, page);
-        } else if (StringUtils.equals(flag, "orgId")) { // 分页查询属于机构ids的用户记录
-            List<Long> orgIds = organService.findChildIds(orgRoleId, 0);
-            Long[] arr = orgIds.isEmpty() ? null : orgIds.toArray(new Long[]{});
-            page2 = userMapper.findByPage2(null, arr, code, name, page);
-        } else { // 分页查询属于某个角色id的用户记录
-            page2 = userMapper.findByPage2(orgRoleId, null, code, name, page);
-        }
-
-
+    public Page<UserVo> findByPage(String code, String name, Pageable page) {
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("code", code);
+        params.put("name", name);
+        Page<User> page2 = userMapper.findByPage(params, page);;
         List<UserVo> vos = Lists.newArrayList();
         page2.forEach(entity -> {
             UserVo vo = new UserVo();
@@ -193,6 +117,10 @@ public class UserService {
         });
 
         return new PageImpl<>(vos, page, page2.getTotalElements());
+    }
+
+    public List<UserExtend> findByAccountId(Long accountId) {
+        return userMapper.findByAccountId(accountId);
     }
 
     public UserVo getUserByUserCodeAndPwd(String userCode, String password) {
@@ -212,20 +140,21 @@ public class UserService {
         return vo;
     }
 
-    public UserVo getUserByUserId(long userId) {
+    public UserExtend getByAccountIdAndUserId(Long accountId, Long userId) {
+        if (accountId == null || userId == null) return null;
+
+        return userMapper.getByAccountIdAndUserId(accountId, userId);
+    }
+
+    public UserVo getByUserId(long userId) {
         User user = userMapper.get(userId);
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user, vo);
-        vo.setPassword(CommonUtils.decrypt(user.getPassword()));
+        vo.setPassword(null);
 
-        List<UserRoleVo> roleUserVos = userOrgRoleService.findByUserId(user.getUserId());
-        for (UserRoleVo refVo : roleUserVos) {
-            if (Y.equals(refVo.getIsDefault())) {
-                vo.setOrgRoleId(refVo.getOrgRoleId());
-                vo.setOrgName(refVo.getOrgName());
-                vo.setRoleName(refVo.getRoleName());
-                break;
-            }
+        if (user.getRoleId() != null) {
+            Role role = roleService.get(user.getRoleId());
+            vo.setRoleName(role == null ? null : role.getName());
         }
 
         return vo;
@@ -238,7 +167,10 @@ public class UserService {
     }
 
     public Page<UserVo> findUsersForSetAdmin(String userName, String userCode, Pageable page) {
-        Page<User> page2 = userMapper.findByPage2(null, null, userCode, userName, page);
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("code", userCode);
+        params.put("name", userName);
+        Page<User> page2 = userMapper.findByPage(params, page);
         List<UserVo> vos = Lists.newArrayList();
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         int count = 0;
@@ -277,13 +209,16 @@ public class UserService {
 
     @Transactional
     public void update(UserVo user) {
-        user.setCode(null); //用户号不更改
+        user.setOrgId(null);
+        user.setAccountId(null);
+        user.setDeptId(null);
+        user.setCode(null);
+        user.setPassword(null);
+        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
+        user.setStatus(null);
 
-        // 设置用户所属机构
-        OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId() == null ? 0 : user.getOrgRoleId());
-        user.setBelongOrg(orgRoleRef.getOrgan().getOrgId());
-
-        user.setPassword(CommonUtils.encrypt(user.getPassword())); // 加密
         userMapper.update(user); // 保存用户
 
         writeLog(user, LogLevel.SECOND, OptName.MODIFY);
@@ -292,18 +227,21 @@ public class UserService {
     public void updateBelongOrgIdForAssignRole(long organId, long userId) {
         User user = new User();
         user.setUserId(userId);
-        user.setBelongOrg(organId);
+        user.setOrgId(organId);
         userMapper.update(user);
     }
 
     @Transactional
-    public void updateUserInfo(User user) {
-        User user2 = new User();
-        user2.setUserId(user.getUserId());
-        user2.setCode(user.getCode());
-        user2.setName(user.getName());
-        user2.setPassword(CommonUtils.encrypt(user.getPassword()));
-        userMapper.update(user2); // 保存用户
+    public void updateUserInfo(String password, String newPassword) {
+        User old = userMapper.get(SessionUtil.getUserId());
+        Assert.state(password.equals(old.getPassword()), "密码错误");
+
+        User update = new User();
+        update.setUserId(SessionUtil.getUserId());
+        update.setPassword(CommonUtils.encrypt(newPassword));
+        update.setUpdater(SessionUtil.getUserCode());
+        update.setUpdateDate(new Date());
+        userMapper.update(update); // 保存用户
     }
 
     @Transactional
@@ -311,6 +249,18 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setPhotoUrl(photoUrl);
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
+        userMapper.update(user);
+    }
+
+    @Transactional
+    public void updateRole(long userId, long roleId) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setRoleId(roleId);
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
         userMapper.update(user);
     }
 
@@ -319,6 +269,8 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setPassword(CommonUtils.encrypt(userDefaultPwd));
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
         userMapper.update(user);
 
         LogOperator.begin()
@@ -335,16 +287,15 @@ public class UserService {
     public void save(UserVo user) {
         Assert.state(!existsByUserCode(user.getCode()), "用户编码[" + user.getCode() + "]已存在!");
 
-        // 设置用户所属机构
-        OrgRoleRef orgRoleRef = organRoleService.get(user.getOrgRoleId());
-        user.setBelongOrg(orgRoleRef.getOrgan().getOrgId());
-        user.setPassword(CommonUtils.encrypt(user.getPassword())); // 加密
+        user.setOrgId(SessionUtil.getOrganId());
+        user.setPassword(null);
+        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);
+        user.setUpdater(SessionUtil.getUserCode());
+        user.setUpdateDate(new Date());
+        user.setCreator(SessionUtil.getUserCode());
+        user.setCreateDate(new Date());
         userMapper.save(user);
-
-        UserOrgRoleRef roleUserRef = new UserOrgRoleRef(null, orgRoleRef, user); // 默认角色
-        roleUserRef.setIsDefault(Y);
-        userOrgRoleService.save(roleUserRef); // 保存用户的默认角色
 
         writeLog(user, LogLevel.FIRST, OptName.SAVE);
     }
@@ -369,7 +320,7 @@ public class UserService {
                 .id(entity.getUserId())
                 .title(null)
                 .content("用户编码：%s, 用户名称: %s, 所属机构: %s",
-                        entity.getCode(), entity.getName(), entity.getBelongOrg())
+                        entity.getCode(), entity.getName(), entity.getOrgId())
                 .level(logLevel)
                 .emit();
     }

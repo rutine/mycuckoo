@@ -15,6 +15,10 @@ import java.util.Date;
 public class User implements Serializable {
 
     private Long userId; //用户ID
+    private Long orgId;
+    private Long accountId;
+    private Long roleId;
+    private Long deptId;
     private String code; //用户号
     private String name; //用户名
     private String pinyin;
@@ -30,7 +34,6 @@ public class User implements Serializable {
     private String familyTel; //家庭电话
     private Date avidate; //用户有效期
     private String address; //家庭住址
-    private Long belongOrg;
     private String memo; //备注
     private String status; //用户状态
     private String updater; //更新人
@@ -55,8 +58,11 @@ public class User implements Serializable {
     /**
      * full constructor
      */
-    public User(Long userId, String code,
-                String name, String phone, String email,
+    public User(Long userId,
+                Long orgId, Long accountId,
+                Long roleId, Long deptId,
+                String code, String name,
+                String phone, String email,
                 String password, String gender,
                 String position, String photoUrl,
                 String qq, String wechat,
@@ -65,6 +71,10 @@ public class User implements Serializable {
                 String memo, String status,
                 String updater, Date updateDate, String creator, Date createDate) {
         this.userId = userId;
+        this.orgId = orgId;
+        this.accountId = accountId;
+        this.roleId = roleId;
+        this.deptId = deptId;
         this.code = code;
         this.name = name;
         this.phone = phone;
@@ -79,7 +89,6 @@ public class User implements Serializable {
         this.familyTel = familyTel;
         this.avidate = avidate;
         this.address = address;
-        this.belongOrg = belongOrg;
         this.memo = memo;
         this.status = status;
         this.updater = updater;
@@ -90,6 +99,38 @@ public class User implements Serializable {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     public void setUserId(Long userId) {
@@ -214,14 +255,6 @@ public class User implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public Long getBelongOrg() {
-        return belongOrg;
-    }
-
-    public void setBelongOrg(Long belongOrg) {
-        this.belongOrg = belongOrg;
     }
 
     public String getMemo() {

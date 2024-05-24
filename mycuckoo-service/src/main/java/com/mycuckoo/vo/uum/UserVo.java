@@ -10,17 +10,8 @@ import com.mycuckoo.domain.uum.User;
  * @time Jul 9, 2017 6:16:58 PM
  */
 public class UserVo extends User {
-    private Long orgRoleId;
     private String roleName;
     private String orgName;
-
-    public Long getOrgRoleId() {
-        return orgRoleId;
-    }
-
-    public void setOrgRoleId(Long orgRoleId) {
-        this.orgRoleId = orgRoleId;
-    }
 
     public String getRoleName() {
         return roleName;

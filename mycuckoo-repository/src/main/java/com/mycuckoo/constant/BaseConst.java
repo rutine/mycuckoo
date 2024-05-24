@@ -18,6 +18,11 @@ public class BaseConst {
     public final static String ORGAN_ROLE_ID = "organRoleId";
     public final static String ROLE_ID = "roleId";
     public final static String ROLE_NAME = "roleName";
+
+    //账号ID
+    public final static String ACCOUNT_ID = "accountId";
+    public final static String ACCOUNT_ORG = "accountOrg";
+
     //用户名称 ID
     public final static String USER_ID = "userId";
     public final static String USER_CODE = "userCode";

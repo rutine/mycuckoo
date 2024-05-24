@@ -13,6 +13,9 @@
     <resultMap id="baseMap" type="com.mycuckoo.domain.uum.Organ">
         <id property="orgId" column="org_id" />
         <result property="parentId" column="parent_id" />
+        <result property="treeId" column="tree_id" />
+        <result property="roleId" column="role_id" />
+        <result property="level" column="level" />
         <result property="code" column="code" />
         <result property="simpleName" column="simple_name" />
         <result property="fullName" column="full_name" />
@@ -37,7 +40,7 @@
     </resultMap>
     
     <sql id="columns">
-        org_id, parent_id, code, simple_name, full_name,
+        org_id, parent_id, tree_id, role_id, level, code, simple_name, full_name,
         address1, address2, tel1, tel2, begin_date, 
         type, fax, postal, legal, tax_no, 
         reg_no, belong_dist, status, memo,
@@ -57,7 +60,10 @@
         insert into <include refid="table" />
         (
             org_id,
-            parent,
+            parent_id,
+            tree_id,
+            role_id,
+            level,
             code,
             simple_name,
             full_name,
@@ -83,6 +89,8 @@
         values (
             #{orgId},
             #{parentId},
+            #{treeId},
+            #{level},
             #{code},
             #{simpleName},
             #{fullName},
@@ -99,9 +107,9 @@
             #{regNo},
             #{belongDist},
             #{status},
+            #{memo},
             #{updater},
             #{updateDate},
-            #{memo},
             #{creator},
             #{createDate}
         )
@@ -112,6 +120,9 @@
         update <include refid="table" />
         <set>
             <if test="parentId != null">parent_id = #{parentId}, </if>
+            <if test="treeId != null">tree_id = #{treeId}, </if>
+            <if test="roleId != null">role_id = #{roleId}, </if>
+            <if test="level != null">level = #{level}, </if>
             <if test="code != null">code = #{code}, </if>
             <if test="simpleName != null">simple_name = #{simpleName}, </if>
             <if test="fullName != null">full_name = #{fullName}, </if>
@@ -168,13 +179,6 @@
         from <include refid="table" />
         <include refid="whereStatement"/>
         order by parent_id, org_id
-    </select>
-    
-    <!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
-    <select id="findByParentId" parameterType="long" resultMap="baseMap">
-        select <include refid="columns" />
-        from <include refid="table" />
-        where parent_id = #{id}
     </select>
     
     <!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->

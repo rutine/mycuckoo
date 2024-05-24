@@ -1,13 +1,13 @@
 package com.mycuckoo.service.facade;
 
 import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserExtend;
+import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
-import com.mycuckoo.service.uum.UserOrgRoleService;
 import com.mycuckoo.service.uum.UserService;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.CheckBoxTree;
 import com.mycuckoo.vo.platform.ModuleMenuVo;
-import com.mycuckoo.vo.uum.UserRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +26,9 @@ import java.util.List;
 public class UumServiceFacade {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
     @Autowired
-    private UserOrgRoleService userOrgRoleService;
+    private UserService userService;
     @Autowired
     private PrivilegeService privilegeService;
 
@@ -41,12 +41,20 @@ public class UumServiceFacade {
         this.privilegeService.deletePrivilegeByModResId(modOptRefIds);
     }
 
-    public List<UserRoleVo> findRoleUsersByUserId(long userId) {
-        return userOrgRoleService.findByUserId(userId);
+    public Long getAccountByPhoneAndPwd(String phone, String password, String ip) {
+        return accountService.getAccountIdByPhoneOrEmail(phone, null, password, ip);
     }
 
     public User getUserByUserCodeAndPwd(String userCode, String password) {
         return userService.getUserByUserCodeAndPwd(userCode, password);
+    }
+
+    public UserExtend getUserByAccountIdAndUserId(Long accountId, Long userId) {
+        return userService.getByAccountIdAndUserId(accountId, userId);
+    }
+
+    public List<UserExtend> findByAccountId(Long accountId) {
+        return userService.findByAccountId(accountId);
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {
@@ -61,7 +69,7 @@ public class UumServiceFacade {
         return privilegeService.existsSpecialPrivilegeByUserId(userId);
     }
 
-    public List<CheckBoxTree> convertToTree(List<ModuleMenuVo> vos) {
+    public List<CheckboxTree> convertToTree(List<ModuleMenuVo> vos) {
         return privilegeService.convertToTree(vos);
     }
 }

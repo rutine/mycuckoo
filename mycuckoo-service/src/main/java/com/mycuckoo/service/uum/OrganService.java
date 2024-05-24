@@ -17,7 +17,7 @@ import com.mycuckoo.repository.Pageable;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.utils.TreeHelper;
-import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.vo.SimpleTree;
 import com.mycuckoo.vo.uum.OrganVo;
 import org.slf4j.Logger;
@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.ServiceConst.DISABLE;
+import static com.mycuckoo.constant.ServiceConst.ENABLE;
 
 /**
  * 功能说明: 机构业务类
@@ -50,8 +51,6 @@ public class OrganService {
 
     @Autowired
     private OrganMapper organMapper;
-    @Autowired
-    private OrganRoleService organRoleService;
     @Autowired
     private PrivilegeService privilegeService;
     @Autowired
@@ -72,9 +71,6 @@ public class OrganService {
             int childCount = organMapper.countByParentId(organId);
             if (childCount > 0) throw new ApplicationException("机构有下级");
 
-            int roleCount = organRoleService.countByOrgId(organId);
-            if (roleCount > 0) throw new ApplicationException("机构下有角色");
-
             organMapper.update(new Organ(organId, DISABLE));
             privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
         } else {
@@ -94,7 +90,7 @@ public class OrganService {
     public List<Long> findChildIds(long organId, int flag) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
-        List<? extends SimpleTree> vos = toTree(all, N);
+        List<? extends SimpleTree> vos = toTree(all, false);
         List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
 
         List<String> nodeIds = Lists.newArrayList();
@@ -102,13 +98,13 @@ public class OrganService {
 
         //过滤出所有下级节点ID
         List<Long> orgIds = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
-        if (organId != 0) {
+        if (organId != 1) {
             orgIds.add(organId);
         }
 
         if (flag == 1) {
             List<Long> allIds = all.stream().map(Organ::getOrgId).collect(Collectors.toList());
-            allIds.remove(0L);  //删除根元素
+            allIds.remove(1L);  //删除根元素
             allIds.removeAll(orgIds);
 
             orgIds = allIds;
@@ -117,7 +113,7 @@ public class OrganService {
         return orgIds;
     }
 
-    public List<? extends SimpleTree> findChildNodes(long organId, String isCheckbox) {
+    public List<? extends SimpleTree> findChildNodes(long organId, boolean isCheckbox) {
         List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, isCheckbox);
@@ -126,11 +122,11 @@ public class OrganService {
     }
 
     @Deprecated
-    public List<CheckBoxTree> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
+    public List<CheckboxTree> findNextLevelChildNodesWithCheckbox(long organId, long filterOutOrgId) {
         List<Organ> list = organMapper.findByParentIdAndFilterOutOrgId(organId, filterOutOrgId);
-        List<CheckBoxTree> treeVoList = new ArrayList<>();
+        List<CheckboxTree> treeVoList = new ArrayList<>();
         for (Organ organ : list) {
-            CheckBoxTree treeVo = new CheckBoxTree();
+            CheckboxTree treeVo = new CheckboxTree();
             treeVo.setId(organ.getOrgId().toString());
             treeVo.setText(organ.getSimpleName());
             if (ModuleLevel.TWO.value().toString().equals(organ.getType())) {
@@ -143,7 +139,7 @@ public class OrganService {
     }
 
     public Page<OrganVo> findByPage(String code, String name, Pageable page) {
-        Integer organId = 0; //最顶级机构
+        Integer organId = 1; //最顶级机构
         List<Long> idList = this.findChildIds(organId, 0);
         if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
 
@@ -172,7 +168,7 @@ public class OrganService {
         Organ parentOrgan = organMapper.get(organ.getParentId());
         OrganVo vo = new OrganVo();
         BeanUtils.copyProperties(organ, vo);
-        vo.setParentName(parentOrgan.getSimpleName());
+        vo.setParentName(parentOrgan == null ? null: parentOrgan.getSimpleName());
 
         District district = platformServiceFacade.getDistrict(organ.getBelongDist());
         if (district != null) {
@@ -190,11 +186,21 @@ public class OrganService {
 
     @Transactional
     public void update(Organ organ) {
+        Organ parent = get(organ.getParentId());
+        Assert.notNull(parent, "上级组织不存在!");
         Organ old = get(organ.getOrgId());
         Assert.notNull(old, "机构不存在!");
         Assert.state(old.getSimpleName().equals(organ.getSimpleName())
                 || !existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
+        //不允许更新字段置空
+        organ.setParentId(null);
+        organ.setTreeId(null);
+        organ.setRoleId(null);
+        organ.setLevel(null);
+        organ.setStatus(null);
+        organ.setCreateDate(null);
+        organ.setCreator(null);
         organMapper.update(organ);
 
         writeLog(organ, LogLevel.SECOND, OptName.MODIFY);
@@ -202,10 +208,17 @@ public class OrganService {
 
     @Transactional
     public void save(Organ organ) {
+        Organ parent = get(organ.getParentId());
+        Assert.notNull(parent, "上级组织不存在!");
         Assert.state(!existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
+        organ.setLevel(parent.getLevel() + 1);
         organ.setStatus(ENABLE);
         organMapper.save(organ);
+
+        Organ updateEntity = new Organ();
+        updateEntity.setTreeId(String.format("%s.%s", parent.getTreeId(), organ.getOrgId()));
+        organMapper.update(updateEntity);
 
         writeLog(organ, LogLevel.FIRST, OptName.SAVE);
     }
@@ -239,20 +252,20 @@ public class OrganService {
      * 转换树vo
      *
      * @param list 机构
-     * @param isCheckbox  Y:带复选框 N:无复选框
+     * @param isCheckbox  true:带复选框 false:无复选框
      * @return
      * @author rutine
      * @time Oct 29, 2020 17:39:35 PM
      */
-    private List<? extends SimpleTree> toTree(List<Organ> list, String isCheckbox) {
+    private List<? extends SimpleTree> toTree(List<Organ> list, boolean isCheckbox) {
         return list.stream().map(mapper -> {
             SimpleTree tree = null;
-            if (Y.equals(isCheckbox)) {
-                tree = new CheckBoxTree();
-                CheckBoxTree boxTree = (CheckBoxTree) tree;
+            if (isCheckbox) {
+                tree = new CheckboxTree();
+                CheckboxTree boxTree = (CheckboxTree) tree;
                 boxTree.setNocheck(false);
                 boxTree.setChecked(false);
-                boxTree.setCheckBox(new CheckBoxTree.CheckBox(0));
+                boxTree.setCheckbox(new CheckboxTree.Checkbox(0));
             } else {
                 tree = new SimpleTree();
             }

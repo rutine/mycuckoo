@@ -10,7 +10,7 @@ import com.mycuckoo.repository.PageRequest;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.vo.AssignVo;
-import com.mycuckoo.vo.CheckBoxTree;
+import com.mycuckoo.vo.CheckboxTree;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.res.RolePrivilegeVo;
 import org.assertj.core.util.Lists;
@@ -74,8 +74,8 @@ public class RoleController {
     @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
         //todo
-        AssignVo<CheckBoxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
-//        AssignVo<CheckBoxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+//        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getPrivilegeScope(),
@@ -96,10 +96,6 @@ public class RoleController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Role role) {
-        role.setUpdateDate(new Date());
-        role.setUpdater(SessionUtil.getUserCode());
-        role.setCreateDate(new Date());
-        role.setCreator(SessionUtil.getUserCode());
         roleService.save(role);
 
         return AjaxResponse.create("保存角色成功");
@@ -116,8 +112,6 @@ public class RoleController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Role role) {
-        role.setUpdateDate(new Date());
-        role.setUpdater(SessionUtil.getUserCode());
         roleService.update(role);
 
         return AjaxResponse.create("修改角色成功");

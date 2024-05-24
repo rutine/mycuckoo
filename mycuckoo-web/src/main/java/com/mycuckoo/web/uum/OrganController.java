@@ -142,7 +142,7 @@ public class OrganController {
     @GetMapping("/{id}/child/nodes")
     public AjaxResponse<List<? extends SimpleTree>> getChildNodes(
             @PathVariable long id,
-            @RequestParam(value = "isCheckbox", defaultValue = "N") String isCheckbox) {
+            @RequestParam(value = "isCheckbox", defaultValue = "false") boolean isCheckbox) {
         List<? extends SimpleTree> asyncTreeList = organService.findChildNodes(id, isCheckbox);
 
         logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));

@@ -4,29 +4,28 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.exception.ApplicationException;
 import com.mycuckoo.operator.LogOperator;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.utils.SessionUtil;
 import com.mycuckoo.vo.HierarchyModuleVo;
-import com.mycuckoo.vo.uum.UserRoleVo;
-import com.mycuckoo.web.util.JsonUtils;
+import com.mycuckoo.vo.UserInfo;
 import com.mycuckoo.web.vo.AjaxResponse;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import static com.mycuckoo.constant.BaseConst.*;
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
 
 /**
  * 功能说明: 登陆系统Controller
@@ -50,21 +49,18 @@ public class LoginController {
     /**
      * 功能说明 : 登录系统第一阶段 代理 多角色
      *
-     * @param userCode
+     * @param account
      * @param password
      * @param session
      * @return
      * @author rutine
      * @time Nov 21, 2012 8:00:26 PM
      */
-    @PostMapping("/login/step/first")
-    public AjaxResponse<List<UserRoleVo>> stepFirst(
-            @RequestParam String userCode,
+    @PostMapping("/login")
+    public AjaxResponse<List<UserExtend>> login(
+            @RequestParam String account,
             @RequestParam String password,
             HttpSession session) {
-
-        logger.debug("userCode --> {}", userCode);
-        logger.debug("password --> {}", password);
         
         /*
          * 1. 验证用户是否存在 并得到用户对象
@@ -74,24 +70,24 @@ public class LoginController {
          * 5. 存在并已经登录则踢出
          * 6. 获得系统定义的角色切换方式，如果用户拥有多个角色则提示用户选择角色
          */
-        User user = null;
-        boolean isAdmin = loginService.isAdmin(userCode);
-        user = loginService.getUserByUserCodePwd(userCode, password);
-        if (user == null) {
-            throw new ApplicationException(1, "用户不存在");
-        } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
-            throw new ApplicationException(3, "用户用户已被停用");
-        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
-            throw new ApplicationException(4, "用户过期");
-        }
+        boolean isAdmin = loginService.isAdmin(account);
+//        User user = loginService.getUserByUserCodePwd(userCode, password);
+//        if (user == null) {
+//            throw new ApplicationException(1, "用户不存在");
+//        } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
+//            throw new ApplicationException(3, "用户已被停用");
+//        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
+//            throw new ApplicationException(4, "用户过期");
+//        }
+        Long accountId = loginService.getAccountByPhoneAndPwd(account, password);
 
-        List<UserRoleVo> vos = loginService.preLogin(user);
+        List<UserExtend> vos = loginService.preLogin(accountId);
         if (!isAdmin) {
             int len = vos.size();
-            Iterator<UserRoleVo> it = vos.iterator();
+            Iterator<UserExtend> it = vos.iterator();
             while (it.hasNext()) {
-                UserRoleVo vo = it.next();
-                if (vo.getOrgRoleId() == 0) {
+                User vo = it.next();
+                if (vo.getRoleId() == null || vo.getRoleId() == 0) {
                     if (len == 1) {
                         throw new ApplicationException(4, "用户为无角色用户没有使用权限");
                     }
@@ -104,9 +100,8 @@ public class LoginController {
             }
         }
 
-        logger.debug("json --> {}", JsonUtils.toJson(vos));
-        session.setAttribute(USER_CODE, userCode);
-        session.setAttribute(USER_ROLES, vos);
+        session.setAttribute(ACCOUNT_ID, accountId);
+        session.setAttribute(ACCOUNT_ORG, vos);
 
         return AjaxResponse.create(vos);
     }
@@ -114,54 +109,38 @@ public class LoginController {
     /**
      * 功能说明 : 登录系统第二阶段, 设置用户会话信息
      *
-     * @param role
+     * @param userId
      * @param session
      * @return
      * @author rutine
      * @time Nov 21, 2012 8:00:41 PM
      */
-    @PostMapping("/login/step/second")
-    public AjaxResponse<?> stepSecond(
-            @RequestBody UserRoleVo role,
+    @PostMapping("/login/select-org")
+    public AjaxResponse<?> selectOrg(
+            @RequestBody Long userId,
             HttpSession session) {
-
-        logger.debug("role --> {}", JsonUtils.toJson(role));
-        
         /*
          * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
          */
-        Long userId = null;
-        String userCode = null;
-        String userName = null;
-        String userPhotoUrl = null;
-        if (role != null) {
-            userId = role.getUserId();
-            userCode = role.getUserCode();
-            userName = role.getUserName();
-            userPhotoUrl = role.getUserPhotoUrl();
-        }
+        Long accountId = (Long) session.getAttribute(ACCOUNT_ID);
+        UserInfo user = loginService.getUserByAccountIdAndUserId(accountId, userId);
+        Assert.notNull(user, "所选组织不存在, 请选择正确组织登录!");
+        String userName = user.getUserName();
         
         /*
          * 用户ID及名称、用户机构ID及名称、用户角色ID及名称角色级别、放入session
          * ID 均为Long
          */
-        Long organId = role.getOrgId() == null ? -1L : role.getOrgId();
-        String organName = role.getOrgName() == null ? ADMIN_ORGNAME : role.getOrgName();
-        Long organRoleId = role.getOrgRoleId() == null ? -1L : role.getOrgRoleId();
-        Long roleId = role.getRoleId() == null ? -1L : role.getRoleId();
-        String roleName = role.getRoleName() == null ? ADMIN_ROLENAME : role.getRoleName();
+        Long organId = user.getOrgId() == null ? -1L : user.getOrgId();
+        String organName = user.getOrgName() == null ? ADMIN_ORGNAME : user.getOrgName();
+        Long roleId = user.getRoleId() == null ? -1L : user.getRoleId();
+        String roleName = user.getRoleName() == null ? ADMIN_ROLENAME : user.getRoleName();
 
-        role.setOrgId(organId);
-        role.setOrgName(organName);
-        role.setOrgRoleId(organRoleId);
-        role.setRoleId(roleId);
-        role.setRoleName(roleName);
+        session.setAttribute(USER_INFO, user);
 
-        session.setAttribute(USER_INFO, role);
-
-        logger.info("organId :      {}  -  organName : {}", organId, organName);
-        logger.info("organRoleId :  {}  -  roleId :    {}  -  roleName : {}", organRoleId, roleId, roleName);
-        logger.info("userId :       {}  -  userCode :  {}  -  userName : {}", userId, userCode, userName);
+        logger.info("organId:   {}  -  organName:  {}", organId, organName);
+        logger.info("roleId:    {}  -  roleName:   {}", roleId, roleName);
+        logger.info("userId:    {}  -  userName:  {}", userId, userName);
 
         return AjaxResponse.create("登录成功");
     }
@@ -173,24 +152,23 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:01:00 PM
      */
-    @PostMapping("/login/step/third")
-    public AjaxResponse<LoginUserInfo> stepThird(HttpServletRequest request, HttpSession session) {
+    @PostMapping("/login/my-menu")
+    public AjaxResponse<LoginUserInfo> getMyMenu(HttpServletRequest request, HttpSession session) {
         /*
          *  8  通过配置XML获得管理员用户，管理员则不需要权限过滤
          *  9 模块权限过滤，用户是否有特殊权限，并过滤特殊权限
          * 10 portal?
          */
-        UserRoleVo userRole = (UserRoleVo) session.getAttribute(USER_INFO);
-        Long organId = userRole.getOrgId();
-        Long organRoleId = userRole.getOrgRoleId();
-        Long roleId = userRole.getRoleId();
-        Long userId = userRole.getUserId();
-        String userCode = userRole.getUserCode();
+        UserInfo user = SessionUtil.getUserInfo();
+        Long organId = user.getOrgId();
+        Long roleId = user.getRoleId();
+        Long userId = user.getId();
+        String userCode = user.getUserCode();
 
         HierarchyModuleVo moduleVo = (HierarchyModuleVo) session.getAttribute(MODULE_MENU);
         if (moduleVo == null) {
             // 加载用户菜单
-            moduleVo = loginService.filterPrivilege(userId, roleId, organId, organRoleId, userCode);
+            moduleVo = loginService.filterPrivilege(userId, roleId, organId, -1L, userCode);
             logger.info("user row privilege : 【{}】", moduleVo.getRow());
 
             session.setAttribute(MODULE_MENU, moduleVo);
@@ -209,7 +187,7 @@ public class LoginController {
 
         LoginUserInfo userInfo = new LoginUserInfo();
         userInfo.setMenu(moduleVo);
-        userInfo.setUser(userRole);
+        userInfo.setUser(user);
 
         return AjaxResponse.create(userInfo);
     }

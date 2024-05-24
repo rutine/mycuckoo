@@ -16,14 +16,6 @@ import java.util.List;
 public interface OrganMapper extends Repository<Organ, Long> {
 
     /**
-     * 查询所有直接下级机构记录
-     *
-     * @param parentId 父级机构ID
-     * @return 所有关联的子机构
-     */
-    List<Organ> findByParentId(Long parentId);
-
-    /**
      * 统计所有下级机构数量
      *
      * @param parentId 父级机构ID

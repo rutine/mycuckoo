@@ -1,6 +1,8 @@
 package com.mycuckoo.web.vo.res;
 
+import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.vo.HierarchyModuleVo;
+import com.mycuckoo.vo.UserInfo;
 import com.mycuckoo.vo.uum.UserRoleVo;
 
 /**
@@ -12,7 +14,7 @@ import com.mycuckoo.vo.uum.UserRoleVo;
  */
 public class LoginUserInfo {
     private HierarchyModuleVo menu;
-    private UserRoleVo user;
+    private UserInfo user;
 
     public HierarchyModuleVo getMenu() {
         return menu;
@@ -22,11 +24,11 @@ public class LoginUserInfo {
         this.menu = menu;
     }
 
-    public UserRoleVo getUser() {
+    public UserInfo getUser() {
         return user;
     }
 
-    public void setUser(UserRoleVo user) {
+    public void setUser(UserInfo user) {
         this.user = user;
     }
 }

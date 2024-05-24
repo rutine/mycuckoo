@@ -14,7 +14,8 @@ import java.util.Date;
  */
 public class Role implements java.io.Serializable {
 
-    private Long roleId;        //角色ID
+    private Long roleId;    //角色ID
+    private Long orgId;     //组织id
     private String name;    //角色名称
     private Short level;    //角色级别
     private String status;        //角色状态
@@ -44,6 +45,14 @@ public class Role implements java.io.Serializable {
 
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
     public String getName() {

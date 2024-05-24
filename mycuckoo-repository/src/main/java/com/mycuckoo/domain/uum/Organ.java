@@ -14,11 +14,14 @@ import java.util.Date;
  */
 public class Organ implements java.io.Serializable {
 
-    private Long orgId;            // 主键
-    private Long parentId;            // 上一级
-    private String code;        // 机构代码
-    private String simpleName;    // 机构简称
-    private String fullName;    // 机构全称
+    private Long orgId;             // 主键
+    private Long parentId;          // 上一级
+    private String treeId;
+    private Long roleId;
+    private Integer level;
+    private String code;            // 机构代码
+    private String simpleName;      // 机构简称
+    private String fullName;        // 机构全称
     private String address1;    // 联系地址1
     private String address2;    // 联系地址2
     private String tel1;        // 联系电话1
@@ -38,18 +41,6 @@ public class Organ implements java.io.Serializable {
     private String creator;        // 创建人
     private Date createDate;        // 创建时间
 
-//	private List<OrgRoleRef> orgRoleRefs = Lists.newArrayList(); // 
-//	private List<User> users =  Lists.newArrayList(); // 
-//	private List<Organ> organs = Lists.newArrayList(); // 
-//	
-//	
-//	private Long upOrgId;				//上级机构ID
-//	private String upOrgName; 			//上级机构
-//	private boolean isLeaf;
-//	private String dataIconCls;
-//	
-//	private String belongDistName;	// 所属地区
-
     /**
      * default constructor
      */
@@ -67,7 +58,7 @@ public class Organ implements java.io.Serializable {
     /**
      * full constructor
      */
-    public Organ(Long orgId, Long parentId, String code,
+    public Organ(Long orgId, Long parentId, String treeId, Long roleId, Integer level, String code,
                  String simpleName, String fullName, String address1,
                  String address2, String tel1, String tel2,
                  Date beginDate, String type, String fax, String postal,
@@ -76,6 +67,9 @@ public class Organ implements java.io.Serializable {
                  String updater, Date updateDate, String creator, Date createDate) {
         this.orgId = orgId;
         this.parentId = parentId;
+        this.treeId = treeId;
+        this.roleId = roleId;
+        this.level = level;
         this.code = code;
         this.simpleName = simpleName;
         this.fullName = fullName;
@@ -113,6 +107,30 @@ public class Organ implements java.io.Serializable {
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public String getTreeId() {
+        return treeId;
+    }
+
+    public void setTreeId(String treeId) {
+        this.treeId = treeId;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public String getCode() {

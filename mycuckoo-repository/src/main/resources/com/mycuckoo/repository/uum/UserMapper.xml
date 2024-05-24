@@ -12,7 +12,10 @@
 <mapper namespace="com.mycuckoo.repository.uum.UserMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.uum.UserExtend">
         <id property="userId" column="user_id" />
-
+        <result property="orgId" column="org_id" />
+        <result property="accountId" column="account_id" />
+        <result property="roleId" column="role_id" />
+        <result property="deptId" column="dept_id" />
         <result property="code" column="code" />
         <result property="name" column="name" />
         <result property="pinyin" column="pinyin" />
@@ -28,7 +31,6 @@
         <result property="familyTel" column="family_tel" />
         <result property="address" column="address" />
         <result property="avidate" column="avidate" />
-        <result property="belongOrg" column="belong_org" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
         <result property="updater" column="updater" />
@@ -42,10 +44,11 @@
     </resultMap>
 
     <sql id="columns">
-        user_id, code, name, pinyin, phone, email,
+        user_id, org_id, account_id, role_id, dept_id,
+        code, name, pinyin, phone, email,
         password, gender, position, photo_url,
         qq, wechat, office_tel, family_tel,
-        address, avidate, belong_org, memo, status,
+        address, avidate, memo, status,
         updater, update_date, creator, create_date
     </sql>
 
@@ -59,6 +62,10 @@
         insert into <include refid="table" />
         (
             user_id,
+            org_id,
+            account_id,
+            role_id,
+            dept_id,
             code,
             name,
             pinyin,
@@ -74,7 +81,6 @@
             family_tel,
             address,
             avidate,
-            belong_org,
             memo,
             status,
             updater,
@@ -84,6 +90,10 @@
         )
         values (
             #{userId},
+            #{orgId},
+            #{accountId},
+            #{roleId},
+            #{deptId},
             #{code},
             #{name},
             #{pinyin},
@@ -99,7 +109,6 @@
             #{familyTel},
             #{address},
             #{avidate},
-            #{belongOrg},
             #{memo},
             #{status},
             #{updater},
@@ -113,6 +122,10 @@
     <update id="update" parameterType="com.mycuckoo.domain.uum.User">
         update <include refid="table" />
         <set>
+            <if test="orgId != null">org_id = #{orgId}, </if>
+            <if test="accountId != null">account_id = #{accountId}, </if>
+            <if test="roleId != null">role_id = #{roleId}, </if>
+            <if test="deptId != null">dept_id = #{deptId}, </if>
             <if test="code != null">code = #{code}, </if>
             <if test="name != null">name = #{name}, </if>
             <if test="pinyin != null">pinyin = #{pinyin}, </if>
@@ -128,7 +141,6 @@
             <if test="familyTel != null">family_tel = #{familyTel}, </if>
             <if test="address != null">address = #{address}, </if>
             <if test="avidate != null">avidate = #{avidate}, </if>
-            <if test="belongOrg != null">belong_org = #{belongOrg}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
             <if test="updater != null">updater = #{updater}, </if>
@@ -148,7 +160,7 @@
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where user_id=#{id}
+        where user_id = #{id}
     </select>
 
     <!-- 判断用户是否存在 -->
@@ -160,8 +172,18 @@
 
     <!-- 返回所有用户,映射到'uumUser'-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="columns" />
-        from <include refid="table" />
+        select
+            t1.*,
+            t2.simple_name org_name,
+            t5.name role_name
+        from <include refid="table" /> t1
+        left join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
+        left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
+        <where>
+            <if test="code != null and code != ''">and t1.code like #{code}</if>
+            <if test="name != null and name != ''">and t1.name like #{name}</if>
+        </where>
+        order by t1.user_id desc
     </select>
 
     <!-- 统计用户记录总数 -->
@@ -182,32 +204,6 @@
             <if test="name != null and name != ''">and t1.name like #{name}</if>
         </where>
         order by user_id desc
-    </select>
-
-    <!-- 根据用户代码、用户名称、机构ids或角色ids查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
-    <select id="findByPage2" resultMap="baseMap">
-        select
-            t1.*,
-            t2.simple_name org_name,
-            t4.org_role_id,
-            t5.name role_name
-        from <include refid="table" /> t1
-        left join cuckoo.uum_organ t2 on t1.belong_org = t2.org_id
-        left join cuckoo.uum_user_org_role_ref t3 on t1.user_id = t3.user_id and t3.is_default = 'Y' <!-- 默认角色 -->
-        left join cuckoo.uum_org_role_ref t4 on t3.org_role_id = t4.org_role_id
-        left join cuckoo.uum_role t5 on t4.role_id = t5.role_id
-        <where>
-            <if test="orgIds != null">
-                and t1.belong_org in
-                <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">#{orgId}</foreach>
-            </if>
-            <if test="orgRoleId != null">
-                and t1.user_id in (select st1.user_id from cuckoo.uum_user_org_role_ref st1 where st1.org_role_id = #{orgRoleId})
-            </if>
-            <if test="code != null and code != ''">and t1.code like #{code}</if>
-            <if test="name != null and name != ''">and t1.name like #{name}</if>
-        </where>
-        order by t1.user_id desc
     </select>
 
     <!-- 判断用户号是否存在 -->
@@ -245,6 +241,51 @@
             #{userId}
         </foreach>
         </where>
+    </select>
+
+    <select id="findByAccountId" resultMap="baseMap">
+        select
+            t1.user_id,
+            t1.org_id,
+            t1.account_id,
+            t1.role_id,
+            t1.dept_id,
+            t1.code,
+            t1.name,
+            t1.avidate,
+            t1.status,
+            t2.simple_name org_name
+        from <include refid="table" /> t1
+        inner join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
+        where t1.account_id = #{accountId}
+        order by t1.user_id desc
+    </select>
+
+    <select id="getByAccountIdAndUserId" resultMap="baseMap">
+        select
+            t1.user_id,
+            t1.org_id,
+            t1.account_id,
+            t1.role_id,
+            t1.dept_id,
+            t1.code,
+            t1.name,
+            t1.pinyin,
+            t1.gender,
+            t1.position,
+            t1.photo_url,
+            t1.avidate,
+            t1.status,
+            t2.simple_name org_name,
+            t3.phone,
+            t3.email,
+            t5.name role_name
+        from <include refid="table" /> t1
+        inner join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
+        inner join cuckoo.uum_account t3 on t3.account_id = t1.account_id
+        left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
+        where t1.account_id = #{accountId}
+        and t1.user_id = #{userId}
     </select>
 
 </mapper> 

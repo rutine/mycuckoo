@@ -21,7 +21,8 @@ public enum ModuleName {
     SYS_DISTRICT("省市地区管理"),
     SYS_TYPEDIC("类别字典管理"),
 
-    ORGAN_MGR("机构管理"),
+    ORGAN_MGR("组织管理"),
+    DEPT_MGR("部门管理"),
     ROLE_MGR("角色管理"),
     ROLE_ASSIGN("角色分配"),
     USER_MGR("用户管理"),

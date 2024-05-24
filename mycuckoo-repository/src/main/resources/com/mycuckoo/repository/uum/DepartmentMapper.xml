@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.repository.uum.DepartmentMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.uum.DepartmentExtend">
+        <id property="deptId" column="dept_id" />
+        <result property="orgId" column="org_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="treeId" column="tree_id" />
+        <result property="roleId" column="role_id" />
+        <result property="level" column="level" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="status" column="status" />
+        <result property="memo" column="memo" />
+        <result property="updater" column="updater" />
+        <result property="updateDate" column="update_date" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+
+        <result property="parentName" column="parent_name" />
+        <result property="roleName" column="role_name" />
+    </resultMap>
+    
+    <sql id="columns">
+        dept_id, org_id, parent_id, tree_id, role_id, level,
+        code, name, status, memo,
+        updater, update_date, creator, create_date
+    </sql>
+    
+    <sql id="table">
+        cuckoo.uum_department
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.uum.Department"
+            useGeneratedKeys="true" keyProperty="deptId" keyColumn="dept_id">
+        insert into <include refid="table" />
+        (
+            dept_id,
+            org_id,
+            parent_id,
+            tree_id,
+            role_id,
+            level,
+            code,
+            name,
+            status,
+            memo,
+            updater,
+            update_date,
+            creator,
+            create_date
+        )
+        values (
+            #{deptId},
+            #{orgId},
+            #{parentId},
+            #{treeId},
+            #{level},
+            #{code},
+            #{name},
+            #{status},
+            #{memo},
+            #{updater},
+            #{updateDate},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.uum.Department">
+        update <include refid="table" />
+        <set>
+            <if test="parentId != null">parent_id = #{parentId}, </if>
+            <if test="treeId != null">tree_id = #{treeId}, </if>
+            <if test="roleId != null">role_id = #{roleId}, </if>
+            <if test="level != null">level = #{level}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
+        </set>
+        where dept_id = #{deptId}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where dept_id = #{deptId}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where dept_id = #{deptId}
+    </select>
+
+    <select id="exists" parameterType="long" resultType="boolean">
+        select count(1) > 0
+        from <include refid="table" />
+        where dept_id = #{deptId}
+    </select>
+
+    <select id="count" resultType="long">
+        select count(1)
+        from <include refid="table" />
+    </select>
+
+    <select id="findByPage" resultMap="baseMap">
+        select
+            t1.dept_id,
+            t1.parent_id,
+            t1.role_id,
+            t1.code,
+            t1.name,
+            t1.status,
+            t1.creator,
+            t1.create_date,
+            t2.name role_name
+        from <include refid="table" /> t1
+        left join cuckoo.uum_role t2 on t2.role_id = t1.role_id
+        <include refid="whereStatement"/>
+        order by t1.dept_id
+    </select>
+
+    <update id="updateTreeId">
+        update <include refid="table" />
+        set tree_id = replace(tree_id, concat(#{oldParentTreeId}, '.'), concat(#{newParentTreeId}, '.')),
+          level = level + #{level}
+        where tree_id like concat(#{oldParentTreeId}, '.%')
+    </update>
+
+    <select id="countByParentId" parameterType="long" resultType="int">
+        select count(1)
+        from <include refid="table" />
+        where parent_id = #{id}
+    </select>
+
+    <select id="findByDeptIds" resultMap="baseMap">
+        select
+            t1.dept_id,
+            t1.name,
+            t1.role_id,
+            t2.name role_name
+        from <include refid="table" /> t1
+        left join cuckoo.uum_role t2 on t2.role_id = t1.role_id
+        where t1.dept_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="name != null and name != ''">
+                and name like #{name}
+            </if>
+            <if test="treeId != null">
+                and tree_id like concat(#{treeId}, '.%')
+            </if>
+        </where>
+    </sql>
+    
+</mapper> 

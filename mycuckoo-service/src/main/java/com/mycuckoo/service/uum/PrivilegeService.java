@@ -5,8 +5,7 @@ import com.google.common.collect.Maps;
 import com.mycuckoo.constant.ServiceConst;
 import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.uum.OrgRoleRef;
-import com.mycuckoo.domain.uum.Organ;
+import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.operator.LogOperator;
@@ -48,9 +47,7 @@ public class PrivilegeService {
     @Autowired
     private UserService userService;
     @Autowired
-    private OrganService organService;
-    @Autowired
-    private OrganRoleService organRoleService;
+    private DepartmentService deptService;
     @Autowired
     private PlatformServiceFacade platformServiceFacade;
 
@@ -93,7 +90,7 @@ public class PrivilegeService {
         return resourceId;
     }
 
-    public AssignVo<CheckBoxTree, String> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
+    public AssignVo<CheckboxTree, String> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
         String[] ownerTypes = { ownerType.value() };
@@ -130,7 +127,7 @@ public class PrivilegeService {
         return new AssignVo(trees, checkedOperations, privilegeScope);
     }
 
-    public AssignVo<CheckBoxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
+    public AssignVo<CheckboxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
         String[] ownerTypes = { ownerType.value() };
@@ -196,22 +193,22 @@ public class PrivilegeService {
             });
         }
         else if (PrivilegeScope.ROLE == privilegeScope) {
-            List<OrgRoleRef> orgRoleRefList = organRoleService.findByOrgRoleIds(resourceIdArray);
-            orgRoleRefList.forEach(item -> {
-                String orgName = item.getOrgan().getSimpleName();
-                String roleName = item.getRole().getName();
+            List<DepartmentExtend> deptList = deptService.findByDeptIds(resourceIdArray);
+            deptList.forEach(item -> {
+                String deptName = item.getName();
+                String roleName = item.getRoleName();
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
-                vo.setId(item.getOrgRoleId());
-                vo.setName(orgName + "-" + roleName);
+                vo.setId(item.getRoleId());
+                vo.setName(deptName + "-" + roleName);
                 rowVos.add(vo);
             });
         }
         else {
-            List<Organ> organList = organService.findByOrgIds(resourceIdArray);
-            organList.forEach(item -> {
+            List<DepartmentExtend> deptList = deptService.findByDeptIds(resourceIdArray);
+            deptList.forEach(item -> {
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
-                vo.setId(item.getOrgId());
-                vo.setName(item.getSimpleName());
+                vo.setId(item.getDeptId());
+                vo.setName(item.getName());
                 rowVos.add(vo);
             });
         }
@@ -354,7 +351,7 @@ public class PrivilegeService {
             } else if (PrivilegeScope.USER == privilegeScopeFlag) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {
-                String organChildren = getPrivilegeOrganChildren(organId);
+                String organChildren = getPrivilegeDeptChildren(organId);
                 sql.append(ORGAN_ID + " in ( " + organChildren + ") ");
             }
         }
@@ -375,7 +372,7 @@ public class PrivilegeService {
             } else if (PrivilegeScope.USER.value().equals(rowPrivilegeLevel)) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {
-                String organChildren = getPrivilegeOrganChildren(organId);
+                String organChildren = getPrivilegeDeptChildren(organId);
                 sql.append(ORGAN_ID + " in ( " + organChildren + ") ");
             }
         }
@@ -434,10 +431,10 @@ public class PrivilegeService {
         }
     }
 
-    public List<CheckBoxTree> convertToTree(List<ModuleMenuVo> vos) {
-        List<CheckBoxTree> treeList = new ArrayList<>();
+    public List<CheckboxTree> convertToTree(List<ModuleMenuVo> vos) {
+        List<CheckboxTree> treeList = new ArrayList<>();
         for (ModuleMenuVo vo : vos) {
-            CheckBoxTree tree = new CheckBoxTree();
+            CheckboxTree tree = new CheckboxTree();
             tree.setId(vo.getModuleId().toString());
             tree.setParentId(vo.getParentId().toString());
             tree.setText(vo.getName());
@@ -514,18 +511,16 @@ public class PrivilegeService {
     }
 
     /**
-     * 查询用户的机构上级
+     * 查询用户的部门上级
      *
-     * @param organId
+     * @param deptId
      * @return
      * @author rutine
      * @time Oct 21, 2012 4:37:53 PM
      */
-    private String getPrivilegeOrganChildren(long organId) {
-        List<Long> orgIds = organService.findChildIds(organId, 0);
-        String orgIdStr = orgIds.stream()
+    private String getPrivilegeDeptChildren(long deptId) {
+        List<Long> deptIds = deptService.findChildIds(deptId, 0);
+        return deptIds.stream()
                 .map(String::valueOf).collect(Collectors.joining("," ));
-
-        return orgIdStr;
     }
 }

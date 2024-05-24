@@ -3,7 +3,6 @@ package com.mycuckoo.repository.uum;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.Page;
 import com.mycuckoo.repository.PageRequest;
-import org.assertj.core.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -37,18 +38,6 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 
         for (User entity : list) {
             logger.info("------> findByCodeAndName: {}", entity);
-        }
-    }
-
-    @Test
-    public void testFindByPage2() {
-        Page<User> page = mapper.findByPage2(
-                null,
-                Arrays.array(0l, 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l),
-                "ad%", "管理%", new PageRequest(0, 10));
-
-        for (User entity : page.getContent()) {
-            logger.info("------> findByPage2: {}", entity);
         }
     }
 
@@ -149,7 +138,14 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 
     @Test
     public void testFindByPage() {
-        fail("Not yet implemented");
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("code", "ad%");
+        params.put("name", "管理%");
+        Page<User> page = mapper.findByPage(params, new PageRequest(0, 10));
+
+        for (User entity : page.getContent()) {
+            logger.info("------> findByPage: {}", entity);
+        }
     }
 
     @Test
