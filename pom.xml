@@ -19,9 +19,8 @@
   <url>http://maven.apache.org</url>
 
   <modules>
-    <module>mycuckoo-repository</module>
-    <module>mycuckoo-service</module>
-    <module>mycuckoo-web</module>
+    <module>mycuckoo-core</module>
+    <module>mycuckoo-admin</module>
   </modules>
 
   <properties>

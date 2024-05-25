@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: SysParameterMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:58:08 AM
+    @version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.SysParameterMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysParameter">
+        <id property="paraId" column="para_id" />
+        <result property="name" column="name" />
+        <result property="key" column="key" />
+        <result property="value" column="value" />
+        <result property="type" column="type" />
+        <result property="memo" column="memo" />
+        <result property="status" column="status" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+    </resultMap>
+    
+    <sql id="columns">
+        para_id, name, `key`, `value`, type, memo, status,
+        updater, update_date, creator, create_date
+    </sql>
+    
+    <sql id="table">
+        cuckoo.sys_parameter
+    </sql>
+
+    <!-- 插入系统参数： 1.由数据库生成id并赋值到SysParameter对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.SysParameter"
+            useGeneratedKeys="true" keyProperty="paraId" keyColumn="para_id">
+        insert into <include refid="table" />
+        (
+            para_id,
+            name,
+            `key`,
+            `value`,
+            type,
+            memo,
+            status,
+            updater,
+            update_date,
+            creator,
+            create_date
+        )
+        values (
+            #{paraId},
+            #{name},
+            #{key},
+            #{value},
+            #{type},
+            #{memo},
+            #{status},
+            #{updater},
+            #{updateDate},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+    
+    <!-- 更新系统参数： 1.输入对象参数 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.SysParameter">
+        update <include refid="table" />
+        <set>
+            <if test="name != null">name = #{name}, </if>
+            <if test="key != null">`key` = #{key}, </if>
+            <if test="value != null">`value` = #{value}, </if>
+            <if test="type != null">type = #{type}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
+        </set>
+        where para_id = #{paraId}
+    </update>
+    
+    <!-- 删除系统参数 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where para_id = #{id}
+    </delete>
+    
+    <!--
+        获取系统参数: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where para_id = #{id}
+    </select>
+    
+    <!-- 系统参数是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select count(1) > 0
+        from <include refid="table" />
+        where para_id = #{id}
+    </select>
+
+    <!-- 根据系统参数名称及键值查询系统参数, 映射到 baseMap -->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        <where>
+            <if test="name != null">
+                name like #{name}
+            </if>
+            <if test="key != null">
+                and `key` like #{key}
+            </if>
+        </where>
+        order by para_id desc
+    </select>
+    
+    <!-- 统计系统参数记录总数 -->
+    <select id="count" resultType="long">
+        select count(1)
+        from <include refid="table" />
+    </select>
+
+    <!-- 判断参数键是否存在 -->
+    <select id="countByKey" parameterType="string" resultType="int">
+        select count(1)
+        from <include refid="table" />
+        where `key` = #{key}
+    </select>
+    
+    <!-- 根据参数键查找系统参数 -->
+    <select id="getByKey" parameterType="string" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where `key` = #{key}
+    </select>
+    
+</mapper> 

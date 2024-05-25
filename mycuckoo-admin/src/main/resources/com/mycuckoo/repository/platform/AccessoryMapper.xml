@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: AccessoryMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:20:23 AM
+    @version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.AccessoryMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Accessory">
+        <id property="accessoryId" column="accessory_id" />
+        <result  property="infoId" column="info_id"  />
+        <result property="accessoryName" column="accessory_name" />
+    </resultMap>
+    
+    <sql id="colums">
+        accessory_id, info_id, accessory_name
+    </sql>
+    
+    <sql id="table">
+        cuckoo.sys_accessory
+    </sql>
+
+    <!-- 插入附件： 1.由数据库生成id并赋值到Accessory对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.Accessory"
+            useGeneratedKeys="true" keyProperty="accessoryId" keyColumn="accessory_id">
+        insert into <include refid="table" />
+        (
+            accessory_id,
+            info_id,
+            accessory_name
+        )
+        values (
+            #{accessoryId},
+            #{infoId},
+            #{accessoryName}
+        )
+    </insert>
+    
+    <!-- 更新附件： 1.输入用对象  -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.Accessory">
+        update <include refid="table" />
+        <set>
+            <if test="infoId != null">info_id = #{infoId}, </if>
+            <if test="accessoryName != null">accessory_name = #{accessoryName}, </if>
+        </set>
+        where accessory_id = #{accessoryId}
+    </update>
+    
+    <!-- 删除附件 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where accessory_id = #{id}
+    </delete>
+    
+    <!--
+        获取附件: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="colums" />
+        from <include refid="table" />
+        where accessory_id = #{id}
+    </select>
+    
+    <!-- 判断附件是否存在 -->
+    <select id="exists" parameterType="long" resultType="boolean">
+        select count(1) > 0
+        from <include refid="table" />
+        where accessory_id = #{id}
+    </select>
+
+    <!-- 返回所有附件, 映射到 baseMap-->
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="colums" />
+        from <include refid="table" />
+    </select>
+    
+    <!-- 统计附件记录总数 -->
+    <select id="count" resultType="long">
+        select count(1) from <include refid="table" />
+    </select>
+    
+    <!-- 根据公告afficheId查询附件, 映射到 baseMap-->
+    <select id="findByAfficheId" parameterType="long" resultMap="baseMap">
+        select <include refid="colums" />
+        from <include refid="table" />
+        where info_id = #{id}
+    </select>
+</mapper> 
