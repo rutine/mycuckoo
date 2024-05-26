@@ -126,11 +126,4 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
         logger.info("------> findByPage: {}", page);
     }
 
-    @Test
-    public void testCount() {
-        long count = organMapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

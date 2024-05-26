@@ -114,19 +114,13 @@
         select <include refid="columns" />
         from <include refid="table" />
         where module_id != 0
-        <if test="name != null">
-            and name like #{name}
+        <if test="q.name != null">
+            and name like concat('%', #{q.name}, '%')
         </if>
-        <if test="code != null">
-            and code like #{code}
+        <if test="q.code != null">
+            and code like concat('%', #{q.code}, '%')
         </if>
         order by module_id desc
-    </select>
-    
-    <!-- 统计模块菜单记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
     
     <!-- 根据父级模块ID统计下级模块数 -->

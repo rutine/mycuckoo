@@ -88,12 +88,4 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
             logger.info("------> count: {}", entity);
         }
     }
-
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

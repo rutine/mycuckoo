@@ -1,17 +1,15 @@
 package com.mycuckoo.service.uum;
 
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.domain.uum.Role;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.repository.uum.RoleMapper;
-import com.mycuckoo.util.CommonUtils;
 import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Date;
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -67,11 +64,8 @@ public class RoleService {
         return count > 0;
     }
 
-    public Page<Role> findByPage(String name, Pageable page) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("name", CommonUtils.isNullOrEmpty(name) ? null : "%" + name + "%");
-
-        return roleMapper.findByPage(params, page);
+    public Page<Role> findByPage(Querier querier) {
+        return roleMapper.findByPage(querier.getQ(), querier);
     }
 
     public Role get(long roleId) {

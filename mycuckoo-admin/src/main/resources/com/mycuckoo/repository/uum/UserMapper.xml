@@ -180,16 +180,14 @@
         left join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
         left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
         <where>
-            <if test="code != null and code != ''">and t1.code like #{code}</if>
-            <if test="name != null and name != ''">and t1.name like #{name}</if>
+            <if test="q.code != null and q.code != ''">
+                and t1.code like concat('%', #{q.code}, '%')
+            </if>
+            <if test="q.name != null and q.name != ''">
+                and t1.name like concat('%', #{q.name}, '%')
+            </if>
         </where>
         order by t1.user_id desc
-    </select>
-
-    <!-- 统计用户记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
 
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
@@ -223,7 +221,7 @@
     <!-- 根据拼音代码查询用户信息 -->
     <select id="findByPinyin" parameterType="com.mycuckoo.domain.uum.User" resultType="map">
         select
-            user_id   as "userId",
+            user_id userId
             name as "name"
         from <include refid="table" />
         where pinyin like #{pinyin}

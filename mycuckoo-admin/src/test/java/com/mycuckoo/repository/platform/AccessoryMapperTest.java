@@ -81,11 +81,4 @@ public class AccessoryMapperTest extends AbstractTransactionalJUnit4SpringContex
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

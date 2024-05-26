@@ -132,11 +132,4 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

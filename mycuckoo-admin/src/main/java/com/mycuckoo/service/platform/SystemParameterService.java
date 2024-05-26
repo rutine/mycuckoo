@@ -3,18 +3,16 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.SysParameter;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.repository.platform.SysParameterMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -58,8 +56,8 @@ public class SystemParameterService {
         return false;
     }
 
-    public Page<SysParameter> findByPage(Map<String, Object> params, Pageable page) {
-        return sysParameterMapper.findByPage(params, page);
+    public Page<SysParameter> findByPage(Querier querier) {
+        return sysParameterMapper.findByPage(querier.getQ(), querier);
     }
 
     public SysParameter get(long paraId) {

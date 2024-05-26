@@ -14,6 +14,7 @@ public interface Pageable {
      *
      * @return the page to be returned.
      */
+    @Deprecated
     int getPageNumber();
 
     /**

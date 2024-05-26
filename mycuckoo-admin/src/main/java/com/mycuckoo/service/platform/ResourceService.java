@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.platform.Resource;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.ModuleMenu;
+import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
 import com.mycuckoo.util.CommonUtils;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
@@ -83,7 +83,7 @@ public class ResourceService {
             all.add(tree);
         }
 
-        List<Resource> resources = resourceMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<Resource> resources = resourceMapper.findByPage(null, Querier.EMPTY).getContent();
         resources.forEach(o -> {
             ResourceTreeVo tree = new ResourceTreeVo();
             tree.setId(LEAF_ID + o.getResourceId());

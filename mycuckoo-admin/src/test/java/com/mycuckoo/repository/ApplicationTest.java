@@ -1,6 +1,6 @@
 package com.mycuckoo.repository;
 
-import com.mycuckoo.core.repository.PageInterceptor;
+import com.mycuckoo.core.repository.plugin.PageInterceptorOld;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class ApplicationTest {
 
     @Bean
     public Interceptor interceptors() {
-        return new PageInterceptor();
+        return new PageInterceptorOld();
     }
 
     /**

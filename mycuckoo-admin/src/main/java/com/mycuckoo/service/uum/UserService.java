@@ -5,18 +5,18 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
-import com.mycuckoo.domain.uum.Role;
-import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.domain.uum.UserExtend;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.uum.Role;
+import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.repository.uum.UserMapper;
 import com.mycuckoo.util.CommonUtils;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.util.SystemConfigXmlParse;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.uum.UserVo;
 import com.mycuckoo.web.vo.res.uum.UserVos;
 import org.slf4j.Logger;
@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -104,11 +106,8 @@ public class UserService {
         return userMapper.findByPinyin(userNamePy, userId);
     }
 
-    public Page<UserVo> findByPage(String code, String name, Pageable page) {
-        Map<String, Object> params = new HashMap<>(2);
-        params.put("code", code);
-        params.put("name", name);
-        Page<User> page2 = userMapper.findByPage(params, page);;
+    public Page<UserVo> findByPage(Querier querier) {
+        Page<User> page2 = userMapper.findByPage(querier.getQ(), querier);;
         List<UserVo> vos = Lists.newArrayList();
         page2.forEach(entity -> {
             UserVo vo = new UserVo();
@@ -116,7 +115,7 @@ public class UserService {
             vos.add(vo);
         });
 
-        return new PageImpl<>(vos, page, page2.getTotalElements());
+        return new PageImpl<>(vos, querier, page2.getTotalElements());
     }
 
     public List<UserExtend> findByAccountId(Long accountId) {
@@ -166,11 +165,8 @@ public class UserService {
         return userMapper.findByUserIds(userIds);
     }
 
-    public Page<UserVo> findUsersForSetAdmin(String userName, String userCode, Pageable page) {
-        Map<String, Object> params = new HashMap<>(2);
-        params.put("code", userCode);
-        params.put("name", userName);
-        Page<User> page2 = userMapper.findByPage(params, page);
+    public Page<UserVo> findUsersForSetAdmin(Querier querier) {
+        Page<User> page2 = userMapper.findByPage(querier.getQ(), querier);
         List<UserVo> vos = Lists.newArrayList();
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         int count = 0;
@@ -183,7 +179,7 @@ public class UserService {
             }
         }
 
-        return new PageImpl<>(vos, page, page2.getTotalElements() - count);
+        return new PageImpl<>(vos, querier, page2.getTotalElements() - count);
     }
 
     public Page<UserVo> findAdminUsers() {

@@ -1,31 +1,20 @@
 package com.mycuckoo.web.uum;
 
-import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.domain.uum.Organ;
-import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.service.uum.OrganService;
-import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.web.vo.res.uum.OrganVo;
-import com.mycuckoo.util.JsonUtils;
 import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.domain.uum.Organ;
+import com.mycuckoo.service.uum.OrganService;
+import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.web.vo.res.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 机构管理Controller
@@ -46,25 +35,14 @@ public class OrganController {
     /**
      * 功能说明 : 列表展示页面
      *
-     * @param code  机构代码
-     * @param name  机构名称
-     * @param pageNo   第几页
-     * @param pageSize 每页显示数量, 暂时没有使用
+     * @param querier
      * @return
      * @author rutine
      * @time Jul 2, 2013 3:31:22 PM
      */
     @GetMapping
-    public AjaxResponse<Page<OrganVo>> list(
-            @RequestParam(value = "code", defaultValue = "") String code,
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-
-        code = StringUtils.isNotBlank(code) ? "%" + code + "%" : null;
-        name = StringUtils.isNotBlank(name) ? "%" + name + "%" : null;
-
-        Page<OrganVo> page = organService.findByPage(code, name, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<OrganVo>> list(Querier querier) {
+        Page<OrganVo> page = organService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -85,7 +63,7 @@ public class OrganController {
         organ.setCreateDate(new Date());
         organService.save(organ);
 
-        return AjaxResponse.create("保存机构成功");
+        return AjaxResponse.success("保存机构成功");
     }
 
     /**
@@ -102,7 +80,7 @@ public class OrganController {
         organ.setUpdateDate(new Date());
         organService.update(organ);
 
-        return AjaxResponse.create("修改机构成功");
+        return AjaxResponse.success("修改机构成功");
     }
 
     @GetMapping("/{id}")
@@ -128,7 +106,7 @@ public class OrganController {
 
         organService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("停用启用成功");
+        return AjaxResponse.success("停用启用成功");
     }
 
     /**
@@ -144,8 +122,6 @@ public class OrganController {
             @PathVariable long id,
             @RequestParam(value = "isCheckbox", defaultValue = "false") boolean isCheckbox) {
         List<? extends SimpleTree> asyncTreeList = organService.findChildNodes(id, isCheckbox);
-
-        logger.debug("json --> {}", JsonUtils.toJson(asyncTreeList));
 
         return AjaxResponse.create(asyncTreeList);
     }

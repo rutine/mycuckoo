@@ -1,21 +1,20 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.uum.Department;
-import com.mycuckoo.domain.uum.DepartmentExtend;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Department;
+import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.repository.uum.DepartmentMapper;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.core.CheckboxTree;
-import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.DeptTreeVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,6 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.ServiceConst.*;
@@ -72,7 +70,7 @@ public class DepartmentService {
     }
 
     public List<Long> findChildIds(long deptId, int flag) {
-        List<Department> all = departmentMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<Department> all = departmentMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, false, false);
         List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(deptId));
@@ -98,20 +96,19 @@ public class DepartmentService {
     }
 
     public List<? extends SimpleTree> findChildNodes(long deptId, boolean isCheckbox, boolean withRole) {
-        List<Department> all = departmentMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<Department> all = departmentMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, isCheckbox, withRole);
 
         return TreeHelper.buildTree(vos, String.valueOf(deptId));
     }
 
-    public List<? extends SimpleTree> findAll(String name) {
+    public List<? extends SimpleTree> findAll(Querier querier) {
         String treeId = "1"; //最顶级部门
+        querier.putQ("treeId", treeId);
 
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("treeId", treeId);
-        params.put("name", name);
-        Page<Department> page = departmentMapper.findByPage(params, new PageRequest(0, Integer.MAX_VALUE));
+        querier.setPageSize(0);
+        Page<Department> page = departmentMapper.findByPage(querier.getQ(), querier);
 
         List<DeptTreeVo> all = org.assertj.core.util.Lists.newArrayList();
         for (Department entity : page) {

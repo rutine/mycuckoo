@@ -1,6 +1,9 @@
-package com.mycuckoo.core.repository;
+package com.mycuckoo.core.repository.plugin;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.repository.PageImpl;
+import com.mycuckoo.core.repository.Pageable;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
@@ -46,8 +49,8 @@ import java.util.Properties;
         @Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class}),
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
 })
-public class PageInterceptor implements Interceptor {
-    private static Logger logger = LoggerFactory.getLogger(PageInterceptor.class);
+public class PageInterceptorOld implements Interceptor {
+    private static Logger logger = LoggerFactory.getLogger(PageInterceptorOld.class);
 
     protected ThreadLocal<ThreadLocalPage> pageThreadLocal = new ThreadLocal<>();
     protected CountSqlParser parser = new CountSqlParser();

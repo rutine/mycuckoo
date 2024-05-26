@@ -1,34 +1,21 @@
 package com.mycuckoo.web.platform.system;
 
 
-import com.google.common.collect.Maps;
-import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.domain.platform.SchedulerJob;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.service.platform.SchedulerHandle;
 import com.mycuckoo.service.platform.SchedulerService;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统调度Controller
@@ -47,16 +34,8 @@ public class SchedulerController {
 
 
     @GetMapping
-    public AjaxResponse<Page<SchedulerJob>> list(
-            @RequestParam(value = "jobName", defaultValue = "") String jobName,
-            @RequestParam(value = "triggerType", defaultValue = "") String triggerType,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("jobName", StringUtils.isBlank(jobName) ? null : "%" + jobName + "%");
-        params.put("triggerType", StringUtils.isBlank(triggerType) ? null : "%" + triggerType + "%");
-        Page<SchedulerJob> page = schedulerService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<SchedulerJob>> list(Querier querier) {
+        Page<SchedulerJob> page = schedulerService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -80,7 +59,7 @@ public class SchedulerController {
         schedulerJob.setCreator(SessionUtil.getUserCode());
         schedulerService.save(schedulerJob);
 
-        return AjaxResponse.create("任务保存成功");
+        return AjaxResponse.success("任务保存成功");
     }
 
     /**
@@ -95,7 +74,7 @@ public class SchedulerController {
     public AjaxResponse<String> delete(@PathVariable Long id) throws SystemException {
         schedulerService.delete(id);
 
-        return AjaxResponse.create("成功删除任务");
+        return AjaxResponse.success("成功删除任务");
     }
 
     /**
@@ -112,7 +91,7 @@ public class SchedulerController {
         scheduler.setUpdater(SessionUtil.getUserCode());
         schedulerService.update(scheduler);
 
-        return AjaxResponse.create("修改任务成功");
+        return AjaxResponse.success("修改任务成功");
     }
 
     @GetMapping("/{id}")
@@ -136,7 +115,7 @@ public class SchedulerController {
     public AjaxResponse<String> startJob(@PathVariable Long id) throws SystemException {
         schedulerService.startJob(id);
 
-        return AjaxResponse.create("任务调度启动成功");
+        return AjaxResponse.success("任务调度启动成功");
     }
 
     /**
@@ -152,7 +131,7 @@ public class SchedulerController {
 
         schedulerService.stopJob(id);
 
-        return AjaxResponse.create("任务调度停止成功");
+        return AjaxResponse.success("任务调度停止成功");
     }
 
     /**
@@ -166,7 +145,7 @@ public class SchedulerController {
     public AjaxResponse<String> startScheduler() throws SystemException {
         schedulerService.startScheduler();
 
-        return AjaxResponse.create("启动调度器成功");
+        return AjaxResponse.success("启动调度器成功");
     }
 
     /**
@@ -180,7 +159,7 @@ public class SchedulerController {
     public AjaxResponse<String> stopScheduler() throws SystemException {
         schedulerService.stopScheduler();
 
-        return AjaxResponse.create("停止调度器成功");
+        return AjaxResponse.success("停止调度器成功");
     }
 
     /**

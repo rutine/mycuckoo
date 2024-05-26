@@ -102,17 +102,11 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="name != null">
-                name like #{name}
+            <if test="keyword != null">
+                name like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by operate_id desc
-    </select>
-    
-        <!-- 统计操作记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
     
     <!-- 根据操作名统计操作数量-->

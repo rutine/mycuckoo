@@ -1,31 +1,19 @@
 package com.mycuckoo.web.platform.system;
 
 
-import com.google.common.collect.Maps;
-import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.domain.platform.SysParameter;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.service.platform.SystemParameterService;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统参数Controller
@@ -44,16 +32,8 @@ public class SystemParameterController {
 
 
     @GetMapping
-    public AjaxResponse<Page<SysParameter>> list(
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String key,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
-        params.put("key", StringUtils.isBlank(key) ? null : "%" + key + "%");
-        Page<SysParameter> page = systemParameterService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<SysParameter>> list(Querier querier) {
+        Page<SysParameter> page = systemParameterService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -77,7 +57,7 @@ public class SystemParameterController {
         sysParameter.setCreator(SessionUtil.getUserCode());
         systemParameterService.save(sysParameter);
 
-        return AjaxResponse.create("保存系统参数成功");
+        return AjaxResponse.success("保存系统参数成功");
     }
 
     /**
@@ -94,7 +74,7 @@ public class SystemParameterController {
         sysParameter.setUpdater(SessionUtil.getUserCode());
         systemParameterService.update(sysParameter);
 
-        return AjaxResponse.create("修改系统参数成功");
+        return AjaxResponse.success("修改系统参数成功");
     }
 
     @GetMapping("/{id}")
@@ -120,6 +100,6 @@ public class SystemParameterController {
 
         systemParameterService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 }

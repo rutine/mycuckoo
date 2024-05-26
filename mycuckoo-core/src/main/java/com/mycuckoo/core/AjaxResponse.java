@@ -25,6 +25,12 @@ public class AjaxResponse<R> {
         return response;
     }
 
+    public static <R> AjaxResponse<R> success(String message) {
+        AjaxResponse<R> response = new AjaxResponse<>();
+        response.setMessage(message);
+        return response;
+    }
+
     public int getCode() {
         return code;
     }

@@ -1,17 +1,14 @@
 package com.mycuckoo.service.platform;
 
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.Operate;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.platform.OperateMapper;
-import com.mycuckoo.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -62,16 +58,11 @@ public class OperateService {
     }
 
     public List<Operate> findAll() {
-        return operateMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        return operateMapper.findByPage(null, Querier.EMPTY).getContent();
     }
 
-    public Page<Operate> findByPage(String name, Pageable page) {
-        Map<String, Object> params = Maps.newHashMap();
-        if (!CommonUtils.isNullOrEmpty(name)) {
-            params.put("name", "%" + name + "%");
-        }
-
-        return operateMapper.findByPage(params, page);
+    public Page<Operate> findByPage(Querier querier) {
+        return operateMapper.findByPage(querier.getQ(), querier);
     }
 
     public boolean existsByCode(String code) {

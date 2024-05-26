@@ -135,12 +135,4 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
             logger.info("------> findByPage: {}", entity);
         }
     }
-
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

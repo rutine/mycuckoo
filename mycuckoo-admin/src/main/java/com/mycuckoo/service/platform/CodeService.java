@@ -3,11 +3,11 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.Code;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.repository.platform.CodeMapper;
 import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -70,8 +69,8 @@ public class CodeService {
         return true;
     }
 
-    public Page<Code> findByPage(Map<String, Object> params, Pageable page) {
-        return codeMapper.findByPage(params, page);
+    public Page<Code> findByPage(Querier querier) {
+        return codeMapper.findByPage(querier.getQ(), querier);
     }
 
     public boolean existByCode(String code) {

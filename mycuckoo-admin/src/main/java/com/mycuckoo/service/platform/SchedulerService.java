@@ -3,12 +3,11 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.SchedulerJob;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.repository.platform.SchedulerJobMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -57,8 +55,8 @@ public class SchedulerService {
                 .emit();
     }
 
-    public Page<SchedulerJob> findByPage(Map<String, Object> params, Pageable page) {
-        return schedulerJobMapper.findByPage(params, page);
+    public Page<SchedulerJob> findByPage(Querier querier) {
+        return schedulerJobMapper.findByPage(querier.getQ(), querier);
     }
 
     public SchedulerJob get(Long jobId) {
@@ -204,7 +202,7 @@ public class SchedulerService {
      * @time Oct 30, 2012 8:10:54 PM
      */
     private List<SchedulerJob> findAll() {
-        Page<SchedulerJob> page = schedulerJobMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
+        Page<SchedulerJob> page = schedulerJobMapper.findByPage(null, Querier.EMPTY);
 
         return page.getContent();
     }

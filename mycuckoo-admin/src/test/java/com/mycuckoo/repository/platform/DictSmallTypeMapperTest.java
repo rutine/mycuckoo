@@ -102,11 +102,4 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

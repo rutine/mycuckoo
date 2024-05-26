@@ -3,33 +3,24 @@ package com.mycuckoo.web.uum;
 
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeType;
-import com.mycuckoo.domain.uum.Role;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.RoleService;
-import com.mycuckoo.web.vo.res.uum.AssignVo;
-import com.mycuckoo.core.CheckboxTree;
-import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.web.vo.res.RolePrivilegeVo;
+import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 角色管理Controller
@@ -50,13 +41,8 @@ public class RoleController {
 
 
     @GetMapping
-    public AjaxResponse<Page<Role>> list(
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize,
-            Model model) {
-
-        Page<Role> page = roleService.findByPage(name, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<Role>> list(Querier querier, Model model) {
+        Page<Role> page = roleService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -96,7 +82,7 @@ public class RoleController {
     public AjaxResponse<String> create(@RequestBody Role role) {
         roleService.save(role);
 
-        return AjaxResponse.create("保存角色成功");
+        return AjaxResponse.success("保存角色成功");
     }
 
 
@@ -112,7 +98,7 @@ public class RoleController {
     public AjaxResponse<String> update(@RequestBody Role role) {
         roleService.update(role);
 
-        return AjaxResponse.create("修改角色成功");
+        return AjaxResponse.success("修改角色成功");
     }
 
     @GetMapping("/{id}")
@@ -138,7 +124,7 @@ public class RoleController {
 
         roleService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("停用启用成功");
+        return AjaxResponse.success("停用启用成功");
     }
 
     /**
@@ -159,7 +145,7 @@ public class RoleController {
 
         privilegeService.save(Lists.newArrayList(operationIds), id, PrivilegeType.OPT, OwnerType.ROLE, privilegeScope);
 
-        return AjaxResponse.create("分配角色操作权限成功");
+        return AjaxResponse.success("分配角色操作权限成功");
     }
 
     /**
@@ -180,7 +166,7 @@ public class RoleController {
 
         privilegeService.save(Lists.newArrayList(resIds), id, PrivilegeType.RES, OwnerType.ROLE, privilegeScope);
 
-        return AjaxResponse.create("分配角色资源权限成功");
+        return AjaxResponse.success("分配角色资源权限成功");
     }
 
     /**
@@ -200,7 +186,7 @@ public class RoleController {
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
         privilegeService.save(optIdList, id, PrivilegeType.ROW, OwnerType.ROLE, rowPrivilege);
 
-        return AjaxResponse.create("设置角色行权限成功");
+        return AjaxResponse.success("设置角色行权限成功");
     }
 
 }

@@ -3,14 +3,14 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.SysOptLog;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.repository.platform.SysOptLogMapper;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.util.SystemConfigXmlParse;
-import com.mycuckoo.core.SystemConfigBean;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
 
@@ -47,8 +46,8 @@ public class SystemOptLogService {
         sysOptLogMapper.deleteLogger(calendar.getTime());
     }
 
-    public Page<SysOptLog> findByPage(Map<String, Object> params, Pageable page) {
-        return sysOptLogMapper.findByPage(params, page);
+    public Page<SysOptLog> findByPage(Querier querier) {
+        return sysOptLogMapper.findByPage(querier.getQ(), querier);
     }
 
     public String getOptContentById(long optId) {

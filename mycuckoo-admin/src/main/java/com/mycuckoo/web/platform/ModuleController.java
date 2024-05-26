@@ -2,18 +2,18 @@ package com.mycuckoo.web.platform;
 
 
 import com.mycuckoo.constant.ServiceConst;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.service.platform.ModuleService;
-import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.uum.AssignVo;
-import com.mycuckoo.core.CheckboxTree;
-import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
+import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 模块菜单Controller
@@ -44,24 +42,14 @@ public class ModuleController {
     /**
      * 功能说明 : 列表展示页面
      *
-     * @param treeId     查找指定节点下的模块`
-     * @param code       模块编码
-     * @param name       模块名称
-     * @param pageNo     第几页
-     * @param pageSize   页面大小, 暂时没有使用
+     * @param querier  查询参数
      * @return
      * @author rutine
      * @time Dec 2, 2012 8:22:41 PM
      */
     @GetMapping
-    public AjaxResponse<Page<ModuleMenuVo>> list(@RequestParam(defaultValue = "-1") long treeId,
-                                                 @RequestParam(defaultValue = "") String code,
-                                                 @RequestParam(defaultValue = "") String name,
-                                                 @RequestParam(defaultValue = "1") int pageNo,
-                                                 @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
-        Page<ModuleMenuVo> page = moduleService.findByPage(treeId, code, name,
-                new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<ModuleMenuVo>> list(Querier querier) {
+        Page<ModuleMenuVo> page = moduleService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -114,7 +102,7 @@ public class ModuleController {
         modMenu.setCreator(SessionUtil.getUserCode());
         moduleService.save(modMenu);
 
-        return AjaxResponse.create("保存模块成功");
+        return AjaxResponse.success("保存模块成功");
     }
 
     /**
@@ -128,7 +116,7 @@ public class ModuleController {
     public AjaxResponse<String> update(@RequestBody ModuleMenu modMenu) {
         moduleService.update(modMenu);
 
-        return AjaxResponse.create("修改模块成功");
+        return AjaxResponse.success("修改模块成功");
     }
 
     @GetMapping("/{id}")
@@ -156,7 +144,7 @@ public class ModuleController {
 
         moduleService.saveModuleOptRefs(id, optIds);
 
-        return AjaxResponse.create("分配模块权限成功");
+        return AjaxResponse.success("分配模块权限成功");
     }
 
     /**
@@ -190,7 +178,7 @@ public class ModuleController {
 
         moduleService.saveModuleResRefs(id, modResRefs);
 
-        return AjaxResponse.create("分配模块权限成功");
+        return AjaxResponse.success("分配模块权限成功");
     }
 
     /**
@@ -206,7 +194,7 @@ public class ModuleController {
 
         moduleService.delete(id);
 
-        return AjaxResponse.create("模块菜单删除成功");
+        return AjaxResponse.success("模块菜单删除成功");
     }
 
     /**
@@ -225,7 +213,7 @@ public class ModuleController {
 
         boolean disEnableBol = moduleService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 
     /**

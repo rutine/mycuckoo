@@ -123,11 +123,4 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

@@ -105,20 +105,14 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="name != null">
-                name like #{name}
+            <if test="q.name != null">
+                name like concat('%', #{q.name}, '%')
             </if>
-            <if test="key != null">
-                and `key` like #{key}
+            <if test="q.key != null">
+                and `key` like concat('%', #{q.key}, '%')
             </if>
         </where>
         order by para_id desc
-    </select>
-    
-    <!-- 统计系统参数记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
 
     <!-- 判断参数键是否存在 -->

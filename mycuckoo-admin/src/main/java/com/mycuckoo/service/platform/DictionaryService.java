@@ -3,11 +3,11 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.DictBigType;
-import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.DictBigType;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
 import com.mycuckoo.repository.platform.DictSmallTypeMapper;
 import com.mycuckoo.util.web.SessionUtil;
@@ -18,7 +18,6 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
 import static com.mycuckoo.constant.ServiceConst.ENABLE;
@@ -70,8 +69,8 @@ public class DictionaryService {
         return dictBigTypeMapper.get(bigTypeId);
     }
 
-    public Page<DictBigType> findBigTypesByPage(Map<String, Object> params, Pageable page) {
-        return dictBigTypeMapper.findByPage(params, page);
+    public Page<DictBigType> findBigTypesByPage(Querier querier) {
+        return dictBigTypeMapper.findByPage(querier.getQ(), querier);
     }
 
     @Transactional

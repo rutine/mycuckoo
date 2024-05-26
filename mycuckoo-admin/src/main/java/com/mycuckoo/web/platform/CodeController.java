@@ -1,32 +1,19 @@
 package com.mycuckoo.web.platform;
 
-import com.google.common.collect.Maps;
-import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.domain.platform.Code;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.service.platform.CodeService;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统编码Controller
@@ -45,19 +32,8 @@ public class CodeController {
 
 
     @GetMapping
-    public AjaxResponse<Page<Code>> list(
-            @RequestParam(value = "code", defaultValue = "") String code,
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "moduleName", defaultValue = "") String moduleName,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("code", StringUtils.isBlank(code) ? null : "%" + code + "%");
-        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
-        params.put("moduleName", StringUtils.isBlank(moduleName) ? null : "%" + moduleName + "%");
-        Page<Code> page = codeService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<Code>> list(Querier querier) {
+        Page<Code> page = codeService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -81,7 +57,7 @@ public class CodeController {
         code.setCreateDate(new Date());
         codeService.saveCode(code);
 
-        return AjaxResponse.create("保存系统编码成功");
+        return AjaxResponse.success("保存系统编码成功");
     }
 
     /**
@@ -98,7 +74,7 @@ public class CodeController {
         code.setUpdateDate(new Date());
         codeService.update(code);
 
-        return AjaxResponse.create("修改系统编码成功");
+        return AjaxResponse.success("修改系统编码成功");
     }
 
     @GetMapping("/{id}")
@@ -142,7 +118,7 @@ public class CodeController {
 
         boolean disEnableBol = codeService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 
 }

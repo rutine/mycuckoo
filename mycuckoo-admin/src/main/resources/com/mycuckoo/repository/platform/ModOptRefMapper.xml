@@ -22,7 +22,7 @@
             columnPrefix="modu_"/>
     </resultMap>
     
-    <sql id="colums">
+    <sql id="columns">
         mod_opt_id, operate_id, module_id
     </sql>
     
@@ -120,12 +120,6 @@
         from <include refid="table" /> t1
         left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
         left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
-    </select>
-    
-        <!-- 统计模块操作关系记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
     
     <!-- 根据模块ID删除模块操作关系,级联删除权限 1 -->

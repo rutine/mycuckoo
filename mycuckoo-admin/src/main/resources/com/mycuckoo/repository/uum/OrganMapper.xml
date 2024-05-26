@@ -166,12 +166,6 @@
         from <include refid="table" />
         where org_id = #{id}
     </select>
-    
-    <!-- 统计所有数据记录 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
-    </select>
 
     <!-- 查询数据, 映射到resultMap-->
     <select id="findByPage" resultMap="baseMap">
@@ -220,16 +214,14 @@
     <!-- 分页查询和数量统计条件声明 -->
     <sql id="whereStatement">
         <where>
-            <if test="code != null and code != ''">
-                code like #{code}
+            <if test="q.treeId != null">
+                and tree_id like concat(#{q.treeId}, '.%')
             </if>
-            <if test="simpleName != null and simpleName != ''">
-                and simple_name like #{simpleName}
+            <if test="q.code != null and q.code != ''">
+                code like concat('%', #{q.code}, '%')
             </if>
-            <if test="filterOrgIds != null"> and org_id in
-                <foreach collection="filterOrgIds" item="orgId" open="(" separator="," close=")">
-                    #{orgId}
-                </foreach>
+            <if test="q.name != null and q.name != ''">
+                and simple_name like concat('%', #{q.name}, '%')
             </if>
         </where>
     </sql>

@@ -96,11 +96,4 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

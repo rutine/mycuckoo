@@ -1,25 +1,18 @@
 package com.mycuckoo.web.platform.system;
 
 
-import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.SysOptLog;
-import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.service.platform.SystemOptLogService;
 import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.domain.platform.SysOptLog;
+import com.mycuckoo.service.platform.SystemOptLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统操作日志Controller
@@ -38,19 +31,8 @@ public class SystemOptLogController {
 
 
     @GetMapping
-    public AjaxResponse<Page<SysOptLog>> list(
-            @RequestParam(required = false) String modName,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String userName,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("modName", StringUtils.isBlank(modName) ? null : "%" + modName + "%");
-        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
-        params.put("userName", StringUtils.isBlank(userName) ? null : "%" + userName + "%");
-
-        Page<SysOptLog> page = systemOptLogService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<SysOptLog>> list(Querier querier) {
+        Page<SysOptLog> page = systemOptLogService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }

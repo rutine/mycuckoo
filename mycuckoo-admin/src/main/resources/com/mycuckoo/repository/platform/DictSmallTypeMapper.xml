@@ -19,7 +19,7 @@
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
+    <sql id="columns">
         small_type_id, big_type_id, code, name, creator, create_date
     </sql>
     
@@ -68,7 +68,7 @@
         获取字典小类: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where small_type_id = #{id}
     </select>
@@ -82,13 +82,7 @@
 
     <!-- 返回所有字典小类, 映射到 baseMap-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="colums" />
-        from <include refid="table" />
-    </select>
-    
-    <!-- 统计字典小类记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
+        select <include refid="columns" />
         from <include refid="table" />
     </select>
     
@@ -101,14 +95,14 @@
     
     <!-- 根据大类ID查询小类, 映射到 baseMap-->
     <select id="findByBigTypeId" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where big_type_id = #{id}
     </select>
     
     <!-- 根据大类代码查询小类, 映射到 baseMap-->
     <select id="findByBigTypeCode" parameterType="string" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where big_type_id in
         (

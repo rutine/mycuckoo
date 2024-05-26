@@ -117,23 +117,17 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="modName != null">
-                mod_name like #{modName}
+            <if test="q.modName != null">
+                mod_name like concat('%', #{q.modName}, '%')
             </if>
-            <if test="optName != null">
-                and name like #{name}
+            <if test="q.name != null">
+                and name like concat('%', #{q.name}, '%')
             </if>
-            <if test="userName != null">
-                and user_name like #{userName}
+            <if test="q.userName != null">
+                and user_name concat('%', #{q.userName}, '%')
             </if>
         </where>
         order by opt_id desc
-    </select>
-    
-    <!-- 统计系统操作日志记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
     
     <!-- 删除日志 -->

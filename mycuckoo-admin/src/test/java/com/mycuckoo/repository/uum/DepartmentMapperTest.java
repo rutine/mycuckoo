@@ -112,11 +112,4 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
         logger.info("------> findByPage: {}", page);
     }
 
-    @Test
-    public void testCount() {
-        long count = departmentMapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

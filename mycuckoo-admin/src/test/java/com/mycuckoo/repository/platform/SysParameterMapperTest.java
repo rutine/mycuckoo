@@ -101,11 +101,4 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
         }
     }
 
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

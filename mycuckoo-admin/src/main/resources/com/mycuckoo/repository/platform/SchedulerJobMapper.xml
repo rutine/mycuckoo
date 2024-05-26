@@ -126,22 +126,16 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="jobName != null">
-                and job_name like #{jobName}
+            <if test="q.jobName != null">
+                and job_name like concat('%', #{q.jobName}, '%')
             </if>
-            <if test="triggerType != null">
-                and trigger_type like #{triggerType}
+            <if test="q.triggerType != null">
+                and trigger_type like concat('%', #{q.triggerType}, '%')
             </if>
         </where>
         order by job_id desc
     </select>
-    
-    <!-- 统计计划任务记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
-    </select>
-    
+
     <!-- 根据任务名称统计任务数量 -->
     <select id="countByJobName" parameterType="string" resultType="int">
         select count(1)

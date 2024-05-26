@@ -1,31 +1,19 @@
 package com.mycuckoo.web.platform.system;
 
 
-import com.google.common.collect.Maps;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.domain.platform.DictSmallType;
-import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.service.platform.DictionaryService;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 字典Controller
@@ -44,17 +32,8 @@ public class DictionaryController {
 
 
     @GetMapping
-    public AjaxResponse<Page<DictBigType>> list(
-            @RequestParam(value = "code", defaultValue = "") String code,
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("code", StringUtils.isBlank(code) ? null : "%" + code + "%");
-        params.put("name", StringUtils.isBlank(name) ? null : "%" + name + "%");
-
-        Page<DictBigType> page = dictionaryService.findBigTypesByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<DictBigType>> list(Querier querier) {
+        Page<DictBigType> page = dictionaryService.findBigTypesByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -73,7 +52,7 @@ public class DictionaryController {
 
         dictionaryService.saveBigType(dictBigType);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     /**
@@ -90,7 +69,7 @@ public class DictionaryController {
 
         dictionaryService.updateBigType(dictBigType);
 
-        return AjaxResponse.create("修改字典成功");
+        return AjaxResponse.success("修改字典成功");
     }
 
     @GetMapping("/{id}")
@@ -119,7 +98,7 @@ public class DictionaryController {
 
         dictionaryService.disEnableBigType(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 
     /**

@@ -1,27 +1,19 @@
 package com.mycuckoo.web.platform.system;
 
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.service.platform.SystemConfigService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.web.vo.res.uum.UserVo;
-import com.mycuckoo.core.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统配置Controller
@@ -44,25 +36,17 @@ public class SystemConfigController {
     /**
      * 功能说明 : 查询用户信息为管理员分配
      *
-     * @param userCode
-     * @param userName
-     * @param pageNo
-     * @param pageSize
+     * @param querier
      * @return
      * @author rutine
      * @time Nov 23, 2013 11:03:33 PM
      */
     @GetMapping("/users")
-    public AjaxResponse<Page<UserVo>> list(
-            @RequestParam(defaultValue = "") String userCode,
-            @RequestParam(defaultValue = "") String userName,
-            @RequestParam String userAddDelFlag,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
+    public AjaxResponse<Page<UserVo>> list(Querier querier) {
+        String userAddDelFlag = (String) querier.getRequired("userAddDelFlag");
         Page<UserVo> page = null;
         if ("add".equalsIgnoreCase(userAddDelFlag)) {
-            page = userService.findUsersForSetAdmin(userName, userCode, new PageRequest(pageNo - 1, pageSize));
+            page = userService.findUsersForSetAdmin(querier);
         } else {
             page = userService.findAdminUsers();
         }
@@ -87,7 +71,7 @@ public class SystemConfigController {
             AjaxResponse.create(500, "设置失败");
         }
 
-        return AjaxResponse.create("设置成功");
+        return AjaxResponse.success("设置成功");
     }
 
     @GetMapping
@@ -114,6 +98,6 @@ public class SystemConfigController {
         }
 
 
-        return AjaxResponse.create("启动成功");
+        return AjaxResponse.success("启动成功");
     }
 }

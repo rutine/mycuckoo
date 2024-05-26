@@ -4,17 +4,16 @@ import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.DictSmallType;
-import com.mycuckoo.domain.platform.District;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.platform.DistrictMapper;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.web.vo.res.platform.DistrictVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,11 +76,7 @@ public class DistrictService {
         return false;
     }
 
-    public Page<DistrictVo> findByPage(Map<String, Object> params, Pageable page) {
-        long treeId = (Long) params.get("treeId");
-        String name = (String) params.get("name");
-        String level = (String) params.get("level");
-
+    public Page<DistrictVo> findByPage(long treeId, Querier querier) {
         List<Long> idList = new ArrayList<Long>();
         if (treeId >= 0) {
             idList = findChildIds(treeId, 0); // 过滤出所有下级
@@ -90,8 +85,8 @@ public class DistrictService {
             }
         }
 
-        params.put("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
-        Page<District> pageResult = districtMapper.findByPage(params, page);
+        querier.putQ("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
+        Page<District> pageResult = districtMapper.findByPage(querier.getQ(), querier);
         List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
         Map<String, String> dicSmallTypeMap = dictSmallTypeList.stream()
                 .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictSmallType::getName));
@@ -109,7 +104,7 @@ public class DistrictService {
             vos.add(vo);
         }
 
-        return new PageImpl<>(vos, page, pageResult.getTotalElements());
+        return new PageImpl<>(vos, querier, pageResult.getTotalElements());
     }
 
     public DistrictVo get(Long districtId) {
@@ -125,7 +120,7 @@ public class DistrictService {
     }
 
     public List<? extends SimpleTree> findChildNodes(long districtId) {
-        List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<District> all = districtMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
 
@@ -187,7 +182,7 @@ public class DistrictService {
      * @time Oct 16, 2012 8:31:35 PM
      */
     private List<Long> findChildIds(long districtId, int flag) {
-        List<District> all = districtMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<District> all = districtMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
         List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(districtId));

@@ -1,20 +1,18 @@
 package com.mycuckoo.web.platform;
 
 
-import com.mycuckoo.domain.platform.Operate;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.service.platform.OperateService;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.core.AjaxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 操作按钮Controller
@@ -35,20 +33,14 @@ public class OperateController {
     /**
      * 功能说明 : 操作按钮管理界面入口
      *
-     * @param name        操作名称
-     * @param pageNo      页码
-     * @param pageSize    每页大小
+     * @param querier   查询参数
      * @return
      * @author rutine
      * @time Jun 2, 2013 5:52:09 PM
      */
     @GetMapping
-    public AjaxResponse<Page<Operate>> list(
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
-        Page<Operate> page = optService.findByPage(name, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<Operate>> list(Querier querier) {
+        Page<Operate> page = optService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -67,7 +59,7 @@ public class OperateController {
         operate.setCreator(SessionUtil.getUserCode());
         optService.save(operate);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     /**
@@ -82,7 +74,7 @@ public class OperateController {
     public AjaxResponse<String> update(@RequestBody Operate operate) {
         optService.update(operate);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     @GetMapping("/{id}")
@@ -108,6 +100,6 @@ public class OperateController {
 
         optService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 }

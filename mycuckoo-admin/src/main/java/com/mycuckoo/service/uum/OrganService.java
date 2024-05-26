@@ -1,24 +1,22 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.District;
-import com.mycuckoo.domain.uum.Organ;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.District;
+import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.core.CheckboxTree;
-import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.web.vo.res.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,6 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.ServiceConst.DISABLE;
@@ -88,7 +85,7 @@ public class OrganService {
     }
 
     public List<Long> findChildIds(long organId, int flag) {
-        List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<Organ> all = organMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, false);
         List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
@@ -114,7 +111,7 @@ public class OrganService {
     }
 
     public List<? extends SimpleTree> findChildNodes(long organId, boolean isCheckbox) {
-        List<Organ> all = organMapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE)).getContent();
+        List<Organ> all = organMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all, isCheckbox);
 
@@ -138,16 +135,10 @@ public class OrganService {
         return treeVoList;
     }
 
-    public Page<OrganVo> findByPage(String code, String name, Pageable page) {
-        Integer organId = 1; //最顶级机构
-        List<Long> idList = this.findChildIds(organId, 0);
-        if (idList.isEmpty()) return new PageImpl<>(new ArrayList<>(), page, 0);
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("filterOrgIds", idList);
-        params.put("code", code);
-        params.put("simpleName", name);
-        Page<Organ> entityPage = organMapper.findByPage(params, page);
+    public Page<OrganVo> findByPage(Querier querier) {
+        String treeId = "1"; //最顶级机构
+        querier.putQ("treeId", treeId);
+        Page<Organ> entityPage = organMapper.findByPage(querier.getQ(), querier);
 
         List<OrganVo> vos = Lists.newArrayList();
         for (Organ entity : entityPage.getContent()) {
@@ -156,7 +147,7 @@ public class OrganService {
             vos.add(vo);
         }
 
-        return new PageImpl<>(vos, page, entityPage.getTotalElements());
+        return new PageImpl<>(vos, querier, entityPage.getTotalElements());
     }
 
     public OrganVo get(Long organId) {

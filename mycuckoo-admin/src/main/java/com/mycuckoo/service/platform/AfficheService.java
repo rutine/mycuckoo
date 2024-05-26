@@ -3,6 +3,7 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.core.operator.LogOperator;
@@ -76,8 +77,8 @@ public class AfficheService {
         return entity;
     }
 
-    public Page<Affiche> findByPage(Map<String, Object> params, Pageable page) {
-        return afficheMapper.findByPage(params, page);
+    public Page<Affiche> findByPage(Querier querier) {
+        return afficheMapper.findByPage(querier.getQ(), querier);
     }
 
     public List<Affiche> findBeforeValidate() {

@@ -1,30 +1,17 @@
 package com.mycuckoo.web.platform;
 
-import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.Affiche;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.service.platform.AfficheService;
 import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 系统公告Controller
@@ -42,16 +29,8 @@ public class AfficheController {
     private AfficheService afficheService;
 
     @RequestMapping
-    public AjaxResponse<Page<Affiche>> list(
-            @RequestParam(value = "title", defaultValue = "") String title,
-            @RequestParam(value = "publish", defaultValue = "0") Short publish,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = LIMIT + "") int pageSize) {
-
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("title", StringUtils.isBlank(title) ? null : "%" + title + "%");
-        params.put("publish", publish);
-        Page<Affiche> page = afficheService.findByPage(params, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<Affiche>> list(Querier querier) {
+        Page<Affiche> page = afficheService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -66,12 +45,11 @@ public class AfficheController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Affiche affiche) {
-
         logger.debug(JsonUtils.toJson(affiche));
 
         afficheService.save(affiche);
 
-        return AjaxResponse.create("保存公告成功");
+        return AjaxResponse.success("保存公告成功");
     }
 
     /**
@@ -87,14 +65,12 @@ public class AfficheController {
 
         afficheService.update(affiche);
 
-        return AjaxResponse.create("修改公告成功");
+        return AjaxResponse.success("修改公告成功");
     }
 
     @GetMapping("/{id}")
     public AjaxResponse<Affiche> get(@PathVariable long id) {
         Affiche affiche = afficheService.get(id);
-
-        logger.debug(JsonUtils.toJson(affiche));
 
         return AjaxResponse.create(affiche);
     }
@@ -113,6 +89,6 @@ public class AfficheController {
 
         afficheService.deleteByIds(afficheIdList);
 
-        return AjaxResponse.create("删除公告成功");
+        return AjaxResponse.success("删除公告成功");
     }
 }

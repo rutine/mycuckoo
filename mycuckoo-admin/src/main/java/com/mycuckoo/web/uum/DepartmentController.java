@@ -1,5 +1,6 @@
 package com.mycuckoo.web.uum;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.service.uum.DepartmentService;
 import com.mycuckoo.core.SimpleTree;
@@ -33,12 +34,8 @@ public class DepartmentController {
      * 功能说明 : 列表展示页面
      */
     @GetMapping
-    public AjaxResponse<List<? extends SimpleTree>> list(
-            @RequestParam(value = "name", defaultValue = "") String name) {
-
-        name = StringUtils.isNotBlank(name) ? "%" + name + "%" : null;
-
-        List<? extends SimpleTree> all = deptService.findAll(name);
+    public AjaxResponse<List<? extends SimpleTree>> list(Querier querier) {
+        List<? extends SimpleTree> all = deptService.findAll(querier);
 
         return AjaxResponse.create(all);
     }
@@ -47,14 +44,14 @@ public class DepartmentController {
     public AjaxResponse<String> create(@RequestBody Department entity) {
         deptService.save(entity);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Department entity) {
         deptService.update(entity);
 
-        return AjaxResponse.create("修改成功");
+        return AjaxResponse.success("修改成功");
     }
 
     @GetMapping("/{id}")
@@ -71,7 +68,7 @@ public class DepartmentController {
 
         deptService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("停用启用成功");
+        return AjaxResponse.success("停用启用成功");
     }
 
     @GetMapping("/{id}/child/nodes")
@@ -93,7 +90,7 @@ public class DepartmentController {
 
         deptService.assignRole(id, dept.getRoleId());
 
-        return AjaxResponse.create("分配角色成功");
+        return AjaxResponse.success("分配角色成功");
     }
 
 }

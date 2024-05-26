@@ -118,28 +118,19 @@
     <select id="findByPage" parameterType="map" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where district_id != 0
-        <if test="array != null">
+        where district_id > 0
+        <if test="q.array != null">
             and district_id in
-            <foreach item="id" collection="array" open="(" separator="," close=")">
+            <foreach item="id" collection="q.array" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </if>
-        <if test="name != null">
-            and name like #{name}
-        </if>
-        <if test="districtLevel != null">
-            and level = #{level}
+        <if test="keyword != null">
+            and name like concat('%', #{keyword}, '%')
         </if>
         order by district_id
     </select>
-    
-        <!-- 统计地区记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
-    </select>
-    
+
     <!-- 根据父地区ID统计下级地区数 -->
     <select id="countByParentId" parameterType="long" resultType="int">
         select count(1)

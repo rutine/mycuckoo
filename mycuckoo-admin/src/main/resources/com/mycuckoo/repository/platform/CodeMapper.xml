@@ -149,23 +149,17 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="code != null">
-                and code like #{code}
+            <if test="q.code != null">
+                and code like concat('%', #{q.code}, '%')
             </if>
-            <if test="name != null">
-                and name like #{name}
+            <if test="q.name != null">
+                and name like concat('%', #{q.name}, '%')
             </if>
-            <if test="moduleName != null">
-                and module_name like #{moduleName}
+            <if test="q.moduleName != null">
+                and module_name like concat('%', #{q.moduleName}, '%')
             </if>
         </where>
         order by code_id desc
-    </select>
-    
-        <!-- 统计编码记录总数 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
     </select>
     
         <!-- 判断编码是否存在 -->

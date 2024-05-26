@@ -16,7 +16,7 @@
         <result property="accessoryName" column="accessory_name" />
     </resultMap>
     
-    <sql id="colums">
+    <sql id="columns">
         accessory_id, info_id, accessory_name
     </sql>
     
@@ -59,7 +59,7 @@
         获取附件: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where accessory_id = #{id}
     </select>
@@ -73,18 +73,13 @@
 
     <!-- 返回所有附件, 映射到 baseMap-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
-    </select>
-    
-    <!-- 统计附件记录总数 -->
-    <select id="count" resultType="long">
-        select count(1) from <include refid="table" />
     </select>
     
     <!-- 根据公告afficheId查询附件, 映射到 baseMap-->
     <select id="findByAfficheId" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where info_id = #{id}
     </select>

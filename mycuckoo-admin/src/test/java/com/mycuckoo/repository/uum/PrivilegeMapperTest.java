@@ -112,11 +112,4 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
         logger.info("------> findByPage: {}", page);
     }
 
-    @Test
-    public void testCount() {
-        long count = privilegeMapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

@@ -21,7 +21,7 @@
         <result property="createDate" column="create_date" />
     </resultMap>
     
-    <sql id="colums">
+    <sql id="columns">
         affiche_id, title, content, invalidate, publish, creator, create_date
     </sql>
     
@@ -74,7 +74,7 @@
         获取公告: 输出直接映射到对象
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where affiche_id = #{id}
     </select>
@@ -88,27 +88,22 @@
 
     <!-- 根据条件分页查询公告 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="title != null">
-                and title like #{title}
+            <if test="keyword != null">
+                and title like concat('%' #{keyword}, '%')
             </if>
-            <if test="publish != null">
-                and publish = #{publish}
+            <if test="q.publish != null">
+                and publish = #{q.publish}
             </if>
         </where>
         order by affiche_id desc
     </select>
     
-    <!-- 统计公告记录总数 -->
-    <select id="count" resultType="long">
-        select count(1) from <include refid="table" />
-    </select>
-    
     <!-- 查询有效期内的公告记录 -->
     <select id="findBeforeValidate" parameterType="date" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         where publish = 0
         and invalidate >= #{invalidate}

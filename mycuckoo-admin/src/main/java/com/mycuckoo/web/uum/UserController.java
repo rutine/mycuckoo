@@ -3,22 +3,22 @@ package com.mycuckoo.web.uum;
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeType;
-import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.uum.AssignVo;
-import com.mycuckoo.core.CheckboxTree;
-import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
-import com.mycuckoo.web.vo.res.uum.UserVo;
-import com.mycuckoo.web.vo.res.uum.UserVos;
-import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.web.vo.req.UserPasswordUvo;
 import com.mycuckoo.web.vo.req.UserPhotoUvo;
 import com.mycuckoo.web.vo.req.UserReqVos;
+import com.mycuckoo.web.vo.res.uum.AssignVo;
+import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
+import com.mycuckoo.web.vo.res.uum.UserVo;
+import com.mycuckoo.web.vo.res.uum.UserVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.mycuckoo.constant.BaseConst.USER_DEFAULT_PWD;
-import static com.mycuckoo.constant.ActionConst.LIMIT;
 
 /**
  * 功能说明: 用户管理Controller
@@ -55,15 +54,8 @@ public class UserController {
 
 
     @GetMapping
-    public AjaxResponse<Page<UserVo>> list(
-           @RequestParam(defaultValue = "") String code,
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = LIMIT + "") int pageSize) {
-
-        code = StringUtils.isBlank(code) ? null : "%" + code + "%";
-        name = StringUtils.isBlank(name) ? null : "%" + name + "%";
-        Page<UserVo> page = userService.findByPage(code, name, new PageRequest(pageNo - 1, pageSize));
+    public AjaxResponse<Page<UserVo>> list(Querier querier) {
+        Page<UserVo> page = userService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -119,14 +111,14 @@ public class UserController {
 
         userService.save(user);
 
-        return AjaxResponse.create("保存用户成功");
+        return AjaxResponse.success("保存用户成功");
     }
 
     @PutMapping
     public AjaxResponse<String> update(@RequestBody UserVo user) {
         userService.update(user);
 
-        return AjaxResponse.create("修改用户成功");
+        return AjaxResponse.success("修改用户成功");
     }
 
     @GetMapping("/{id}")
@@ -151,7 +143,7 @@ public class UserController {
 
         userService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("停用启用成功");
+        return AjaxResponse.success("停用启用成功");
     }
 
     /**
@@ -186,7 +178,7 @@ public class UserController {
         List<String> list = Lists.newArrayList(operationIds);
         privilegeService.save(list, id, PrivilegeType.OPT, OwnerType.USR, privilegeScope);
 
-        return AjaxResponse.create("为用户分配操作权限成功");
+        return AjaxResponse.success("为用户分配操作权限成功");
     }
 
     /**
@@ -207,7 +199,7 @@ public class UserController {
         List<String> list = Lists.newArrayList(resIds);
         privilegeService.save(list, id, PrivilegeType.RES, OwnerType.USR, privilegeScope);
 
-        return AjaxResponse.create("为用户分配资源权限成功");
+        return AjaxResponse.success("为用户分配资源权限成功");
     }
 
     /**
@@ -228,7 +220,7 @@ public class UserController {
         List<String> list = new ArrayList<>(rowIds);
         privilegeService.save(list, id, PrivilegeType.ROW, OwnerType.USR, privilegeScope);
 
-        return AjaxResponse.create("为用户分配行权限成功");
+        return AjaxResponse.success("为用户分配行权限成功");
     }
 
     /**
@@ -247,7 +239,7 @@ public class UserController {
         String userDefaultPwd = platformServiceFacade.findSystemParaByKey(USER_DEFAULT_PWD);
         userService.resetPwdByUserId(userDefaultPwd, userName, id);
 
-        return AjaxResponse.create("重置密码成功");
+        return AjaxResponse.success("重置密码成功");
     }
 
 
@@ -265,7 +257,7 @@ public class UserController {
         String password = vo.getPassword();
         userService.updateUserInfo(password, vo.getNewPassword());
 
-        return AjaxResponse.create("修改成功");
+        return AjaxResponse.success("修改成功");
     }
 
     /**
@@ -282,7 +274,7 @@ public class UserController {
         userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
         SessionUtil.getUserInfo().setPhotoUrl(vo.getPhoto());
 
-        return AjaxResponse.create("上传头像成功");
+        return AjaxResponse.success("上传头像成功");
     }
 
     /**
@@ -295,6 +287,6 @@ public class UserController {
 
         userService.updateRole(vo.getUserId(), vo.getRoleId());
 
-        return AjaxResponse.create("设置角色成功");
+        return AjaxResponse.success("设置角色成功");
     }
 }

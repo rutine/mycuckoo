@@ -102,11 +102,6 @@
         where dept_id = #{deptId}
     </select>
 
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
-    </select>
-
     <select id="findByPage" resultMap="baseMap">
         select
             t1.dept_id,
@@ -153,11 +148,11 @@
 
     <sql id="whereStatement">
         <where>
-            <if test="name != null and name != ''">
-                and name like #{name}
+            <if test="q.name != null and q.name != ''">
+                and name like concat('%', #{q.name}, '%')
             </if>
-            <if test="treeId != null">
-                and tree_id like concat(#{treeId}, '.%')
+            <if test="q.treeId != null">
+                and tree_id like concat(#{q.treeId}, '.%')
             </if>
         </where>
     </sql>

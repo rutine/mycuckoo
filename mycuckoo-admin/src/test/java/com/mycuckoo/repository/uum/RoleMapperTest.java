@@ -90,13 +90,6 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testCount() {
-        long count = roleMapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
-    @Test
     public void testDelete() {
         roleMapper.delete(3L);
     }

@@ -1,32 +1,30 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.*;
+import com.mycuckoo.core.CheckboxTree;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.core.repository.PageRequest;
-import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.domain.platform.*;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModResRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.util.TreeHelper;
 import com.mycuckoo.util.XmlOptUtils;
-import com.mycuckoo.web.vo.res.uum.AssignVo;
-import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
-import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.web.vo.res.platform.ResourceTreeVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
+import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -47,7 +45,6 @@ import java.util.stream.Collectors;
 import static com.mycuckoo.constant.ServiceConst.*;
 import static com.mycuckoo.core.operator.LogOperator.DUNHAO;
 import static com.mycuckoo.util.CommonUtils.getResourcePath;
-import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 系统模块业务类
@@ -236,8 +233,7 @@ public class ModuleService {
     }
 
     public List<ModuleMenuVo> findAll() {
-        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-        List<ModuleMenu> list = moduleMenuMapper.findByPage(null, pageRequest).getContent();
+        List<ModuleMenu> list = moduleMenuMapper.findByPage(null, Querier.EMPTY).getContent();
         List<ModuleMenuVo> vos = Lists.newArrayList();
         list.forEach(item -> {
             ModuleMenuVo vo = new ModuleMenuVo(item.getModuleId());
@@ -264,8 +260,7 @@ public class ModuleService {
 //    }
 
     public List<ResourceVo> findAllModOptRefs() {
-        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-        List<ModOptRef> refs = modOptRefMapper.findByPage(null, pageRequest).getContent();
+        List<ModOptRef> refs = modOptRefMapper.findByPage(null, Querier.EMPTY).getContent();
         Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
                 .collect(Collectors.toMap(ModuleMenuVo::getModuleId, Function.identity()));
 
@@ -321,8 +316,7 @@ public class ModuleService {
 //    }
 
     public List<ResourceVo> findAllModResRefs() {
-        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-        List<ModResRef> refs = modResRefMapper.findByPage(null, pageRequest).getContent();
+        List<ModResRef> refs = modResRefMapper.findByPage(null, Querier.EMPTY).getContent();
         Map<Long, Operate> operateMap = operateService.findAll().stream()
                 .collect(Collectors.toMap(Operate::getOperateId, Function.identity()));
         Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
@@ -399,11 +393,8 @@ public class ModuleService {
         return false;
     }
 
-    public Page<ModuleMenuVo> findByPage(long treeId, String code, String name, Pageable page) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("code", isNullOrEmpty(code) ? null : "%" + code + "%");
-        params.put("name", isNullOrEmpty(name) ? null : "%" + name + "%");
-        Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(params, page);
+    public Page<ModuleMenuVo> findByPage(Querier querier) {
+        Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(querier.getQ(), querier);
 
         List<ModuleMenuVo> vos = Lists.newArrayList();
         for (ModuleMenu entity : entityPage.getContent()) {
@@ -412,7 +403,7 @@ public class ModuleService {
             vos.add(vo);
         }
 
-        return new PageImpl<>(vos, page, entityPage.getTotalElements());
+        return new PageImpl<>(vos, querier, entityPage.getTotalElements());
     }
 
     public ModuleMenuVo get(Long moduleId) {

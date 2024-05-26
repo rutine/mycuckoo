@@ -61,7 +61,7 @@ public class ResourceController {
         resource.setCreator(SessionUtil.getUserCode());
         resourceService.save(resource);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     /**
@@ -76,7 +76,7 @@ public class ResourceController {
     public AjaxResponse<String> update(@RequestBody Resource resource) {
         resourceService.update(resource);
 
-        return AjaxResponse.create("保存成功");
+        return AjaxResponse.success("保存成功");
     }
 
     @GetMapping("/{id}")
@@ -102,6 +102,6 @@ public class ResourceController {
 
         resourceService.disEnable(id, disEnableFlag);
 
-        return AjaxResponse.create("操作成功");
+        return AjaxResponse.success("操作成功");
     }
 }

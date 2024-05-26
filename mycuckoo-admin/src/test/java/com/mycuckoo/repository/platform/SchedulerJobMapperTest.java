@@ -116,12 +116,4 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
             logger.info("------> findByPage: {}", entity);
         }
     }
-
-    @Test
-    public void testCount() {
-        long count = mapper.count();
-
-        logger.info("------> count: {}", count);
-    }
-
 }

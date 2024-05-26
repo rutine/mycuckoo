@@ -100,18 +100,12 @@
         select <include refid="columns" />
         from <include refid="table" />
         where role_id != 0
-        <if test="name !=null">
-            and name like #{name}
+        <if test="q.name !=null">
+            and name like concat('%', #{q.name}, '%')
         </if>
         order by role_id desc
     </select>
-    
-    <!-- 统计数据记录 -->
-    <select id="count" resultType="long">
-        select count(1)
-        from <include refid="table" />
-    </select>
-    
+
     <!-- 根据角色名称统计角色记录 -->
     <select id="countByRoleName" parameterType="string" resultType="int">
         select count(1)

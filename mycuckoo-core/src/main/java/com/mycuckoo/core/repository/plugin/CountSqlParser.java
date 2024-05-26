@@ -1,4 +1,4 @@
-package com.mycuckoo.core.repository;
+package com.mycuckoo.core.repository.plugin;
 
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Function;

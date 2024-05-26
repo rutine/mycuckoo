@@ -65,11 +65,4 @@ public interface Repository<T, ID extends Serializable> {
      * @return a page of entities
      */
     Page<T> findByPage(Map<String, Object> params, Pageable pageable);
-
-    /**
-     * 返回所有实体对象数量
-     *
-     * @return the number of entities
-     */
-    long count();
 }
