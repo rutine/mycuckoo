@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.AdminConst.*;
 
 /**
  * 功能说明: 地区业务类

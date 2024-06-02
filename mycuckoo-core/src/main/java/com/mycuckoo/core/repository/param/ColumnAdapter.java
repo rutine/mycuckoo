@@ -26,8 +26,8 @@ public abstract class ColumnAdapter implements Column {
     }
 
     @Override
-    public String getName() {
-        return column.getName();
+    public String getTitle() {
+        return column.getTitle();
     }
 
     @Override

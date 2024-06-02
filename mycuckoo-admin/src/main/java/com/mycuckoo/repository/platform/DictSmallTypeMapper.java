@@ -1,7 +1,9 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.core.repository.Repository;
+import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.DictSmallTypeExtend;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -36,5 +38,13 @@ public interface DictSmallTypeMapper extends Repository<DictSmallType, Long> {
      * @return 列表
      */
     List<DictSmallType> findByBigTypeCode(String bigTypeCode);
+
+    /**
+     * 根据大类代码查询小类
+     *
+     * @param bigTypeCodes 大类代码
+     * @return 列表
+     */
+    List<DictSmallTypeExtend> findByBigTypeCodes(@Param("list") List<String> bigTypeCodes);
 
 }

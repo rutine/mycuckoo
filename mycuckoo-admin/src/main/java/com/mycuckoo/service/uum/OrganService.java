@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.AdminConst.DISABLE;
+import static com.mycuckoo.constant.AdminConst.ENABLE;
 
 /**
  * 功能说明: 机构业务类
@@ -82,32 +82,6 @@ public class OrganService {
         int count = organMapper.countByOrgSimpleName(organName);
 
         return count > 0;
-    }
-
-    public List<Long> findChildIds(long organId, int flag) {
-        List<Organ> all = organMapper.findByPage(null, Querier.EMPTY).getContent();
-
-        List<? extends SimpleTree> vos = toTree(all, false);
-        List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(organId));
-
-        List<String> nodeIds = Lists.newArrayList();
-        TreeHelper.collectNodeIds(nodeIds, trees);
-
-        //过滤出所有下级节点ID
-        List<Long> orgIds = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
-        if (organId != 1) {
-            orgIds.add(organId);
-        }
-
-        if (flag == 1) {
-            List<Long> allIds = all.stream().map(Organ::getOrgId).collect(Collectors.toList());
-            allIds.remove(1L);  //删除根元素
-            allIds.removeAll(orgIds);
-
-            orgIds = allIds;
-        }
-
-        return orgIds;
     }
 
     public List<? extends SimpleTree> findChildNodes(long organId, boolean isCheckbox) {

@@ -1,5 +1,6 @@
 package com.mycuckoo.service.platform;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
@@ -10,12 +11,12 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.Pageable;
 import com.mycuckoo.domain.platform.ModuleMenu;
+import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
 import com.mycuckoo.util.CommonUtils;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
-import com.mycuckoo.web.vo.res.platform.ResourceTreeVo;
-import org.assertj.core.util.Lists;
+import com.mycuckoo.web.vo.res.platform.ResourceVos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,9 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.AdminConst.*;
 import static com.mycuckoo.constant.enums.ModuleLevel.FOUR;
 import static com.mycuckoo.constant.enums.ModuleLevel.THREE;
 
@@ -67,28 +69,32 @@ public class ResourceService {
         return true;
     }
 
-    public List<ResourceTreeVo> findAll() {
+    public List<ResourceVos.Tree> findAll() {
         List<ModuleMenuVo> menuVos = moduleService.findAll();
+        List<Operate> operates = operateService.findAll();
+        Map<Long, String> operateMap = operates.stream().collect(Collectors.toMap(Operate::getOperateId, Operate::getCode));
 
-        List<ResourceTreeVo> all = Lists.newArrayList();
+        List<ResourceVos.Tree> all = Lists.newArrayList();
         for (ModuleMenuVo menu : menuVos) {
-            ResourceTreeVo tree = new ResourceTreeVo();
-            tree.setId(menu.getModuleId() + "");
+            ResourceVos.Tree tree = new ResourceVos.Tree();
+            tree.setId(menu.getId());
             tree.setParentId(menu.getParentId() + "");
+            tree.setIsParent(true);
             tree.setText(menu.getName());
             tree.setLevel(menu.getLevel());
             tree.setOrder(menu.getOrder());
-            //取反
-            tree.setIsLeaf(true);
+            tree.setIsLeaf(false);
             all.add(tree);
         }
 
         List<Resource> resources = resourceMapper.findByPage(null, Querier.EMPTY).getContent();
         resources.forEach(o -> {
-            ResourceTreeVo tree = new ResourceTreeVo();
+            ResourceVos.Tree tree = new ResourceVos.Tree();
             tree.setId(LEAF_ID + o.getResourceId());
             tree.setParentId(o.getModuleId() + "");
+            tree.setIsParent(false);
             tree.setText(o.getName());
+            tree.setCode(operateMap.get(o.getOperateId()));
             tree.setMethod(o.getMethod());
             tree.setPath(o.getPath());
             tree.setOrder(o.getOrder());
@@ -97,8 +103,7 @@ public class ResourceService {
             tree.setCreator(o.getCreator());
             tree.setCreateDate(o.getCreateDate());
             tree.setLevel(FOUR.value());
-            //取反
-            tree.setIsLeaf(false);
+            tree.setIsLeaf(true);
             all.add(tree);
         });
 

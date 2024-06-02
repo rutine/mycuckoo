@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.AdminConst.DISABLE;
+import static com.mycuckoo.constant.AdminConst.ENABLE;
 
 /**
  * 功能说明: 系统参数业务类

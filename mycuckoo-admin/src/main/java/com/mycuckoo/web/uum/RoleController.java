@@ -1,6 +1,7 @@
 package com.mycuckoo.web.uum;
 
 
+import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeType;
 import com.mycuckoo.core.AjaxResponse;
@@ -12,7 +13,6 @@ import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.web.vo.res.RolePrivilegeVo;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
-import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

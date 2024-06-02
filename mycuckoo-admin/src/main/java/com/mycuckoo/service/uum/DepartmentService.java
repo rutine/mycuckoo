@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.AdminConst.*;
 
 /**
  * 功能说明: 部门业务类
@@ -79,20 +79,20 @@ public class DepartmentService {
         TreeHelper.collectNodeIds(nodeIds, trees);
 
         //过滤出所有下级节点ID
-        List<Long> orgIds = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Long> deptIds = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
         if (deptId != 1) {
-            orgIds.add(deptId);
+            deptIds.add(deptId);
         }
 
         if (flag == 1) {
             List<Long> allIds = all.stream().map(Department::getDeptId).collect(Collectors.toList());
             allIds.remove(1L);  //删除根元素
-            allIds.removeAll(orgIds);
+            allIds.removeAll(deptIds);
 
-            orgIds = allIds;
+            deptIds = allIds;
         }
 
-        return orgIds;
+        return deptIds;
     }
 
     public List<? extends SimpleTree> findChildNodes(long deptId, boolean isCheckbox, boolean withRole) {
@@ -110,7 +110,7 @@ public class DepartmentService {
         querier.setPageSize(0);
         Page<Department> page = departmentMapper.findByPage(querier.getQ(), querier);
 
-        List<DeptTreeVo> all = org.assertj.core.util.Lists.newArrayList();
+        List<DeptTreeVo> all = Lists.newArrayList();
         for (Department entity : page) {
             DeptTreeVo tree = new DeptTreeVo();
             tree.setId(entity.getDeptId() + "");

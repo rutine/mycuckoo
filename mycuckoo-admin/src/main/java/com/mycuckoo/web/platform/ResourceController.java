@@ -1,13 +1,12 @@
 package com.mycuckoo.web.platform;
 
 
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.service.platform.ResourceService;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.web.vo.res.platform.ResourceTreeVo;
-import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
 
 /**
  * 功能说明: 资源Controller
@@ -41,8 +42,8 @@ public class ResourceController {
      */
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list() {
-        List<ResourceTreeVo> all = resourceService.findAll();
-        List<? extends SimpleTree> list = TreeHelper.buildTree(all, "0");
+        List<? extends SimpleTree> all = resourceService.findAll();
+        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ROOT_ID_VALUE);
 
         return AjaxResponse.create(list);
     }

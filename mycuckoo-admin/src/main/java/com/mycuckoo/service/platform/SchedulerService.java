@@ -19,8 +19,8 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.AdminConst.DISABLE;
+import static com.mycuckoo.constant.AdminConst.ENABLE;
 
 /**
  * 功能说明: 任务业务类

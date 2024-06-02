@@ -10,13 +10,15 @@
     @version 3.0.0
  -->
 <mapper namespace="com.mycuckoo.repository.platform.DictSmallTypeMapper">
-    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictSmallType">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictSmallTypeExtend">
         <id property="smallTypeId" column="small_type_id" />
         <result property="bigTypeId" column="big_type_id" />
         <result property="code" column="code" />
         <result property="name" column="name" />
         <result property="creator" column="creator" />
         <result property="createDate" column="create_date" />
+
+        <result property="bigTypeCode" column="big_type_code" />
     </resultMap>
     
     <sql id="columns">
@@ -110,6 +112,20 @@
             from cuckoo.sys_dict_big_type
             where code = #{bigTypeCode}
         )
+    </select>
+
+    <select id="findByBigTypeCodes" parameterType="string" resultMap="baseMap">
+        select
+            t1.small_type_id,
+            t1.code,
+            t1.name,
+            t2.code big_type_code
+        from <include refid="table" /> t1
+        inner join cuckoo.sys_dict_big_type t2 on t2.big_type_id = t1.big_type_id
+          and t2.code in
+          <foreach collection="list" item="code" open="(" close=")" separator=",">
+            #{code}
+          </foreach>
     </select>
     
 </mapper> 

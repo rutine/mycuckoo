@@ -7,7 +7,7 @@ package com.mycuckoo.constant;
  * @version 2.0.0
  * @time Sep 22, 2014 9:10:02 PM
  */
-public class ServiceConst extends BaseConst {
+public abstract class AdminConst extends BaseConst {
 
     //类别字典系统类别
     public final static String DICT_SYSTEM_TYPE = "systemType";
@@ -20,11 +20,12 @@ public class ServiceConst extends BaseConst {
 
     public final static String ENABLE = "enable";
     public final static String DISABLE = "disable";
-    public final static String Y = "Y";//默认角色
-    public final static String N = "N";//否
 
     //模块名称
     public final static String ROLE_CSS = "rolemgr";
+
+    //根节点
+    public final static String ROOT_ID_VALUE = "0";
 
     //叶子节点前缀
     public final static String LEAF_ID = "leaf-id-";

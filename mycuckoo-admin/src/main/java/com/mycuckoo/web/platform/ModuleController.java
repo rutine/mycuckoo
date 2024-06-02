@@ -1,16 +1,16 @@
 package com.mycuckoo.web.platform;
 
 
-import com.mycuckoo.constant.ServiceConst;
+import com.mycuckoo.constant.AdminConst;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.util.JsonUtils;
+import com.mycuckoo.util.TreeHelper;
 import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
 
 /**
  * 功能说明: 模块菜单Controller
@@ -48,10 +50,13 @@ public class ModuleController {
      * @time Dec 2, 2012 8:22:41 PM
      */
     @GetMapping
-    public AjaxResponse<Page<ModuleMenuVo>> list(Querier querier) {
-        Page<ModuleMenuVo> page = moduleService.findByPage(querier);
+    public AjaxResponse<List<? extends SimpleTree>> list(Querier querier) {
+        querier.setPageSize(0);
+        List<? extends SimpleTree> all = moduleService.findByPage(querier);
 
-        return AjaxResponse.create(page);
+        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ROOT_ID_VALUE);
+
+        return AjaxResponse.create(list);
     }
 
     /**
@@ -172,9 +177,9 @@ public class ModuleController {
             ref.setOrder(order++);
         }
 
-        String mapper = (ServiceConst.LEAF_ID + 33);
-        int index = mapper.indexOf(ServiceConst.LEAF_ID);
-        System.out.println("=========>" + (index >= 0 ? mapper.substring(ServiceConst.LEAF_ID.length()) : mapper));
+        String mapper = (AdminConst.LEAF_ID + 33);
+        int index = mapper.indexOf(AdminConst.LEAF_ID);
+        System.out.println("=========>" + (index >= 0 ? mapper.substring(AdminConst.LEAF_ID.length()) : mapper));
 
         moduleService.saveModuleResRefs(id, modResRefs);
 
@@ -226,7 +231,7 @@ public class ModuleController {
     @GetMapping("/{id}/child/nodes")
     public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable long id) {
 
-        List<? extends SimpleTree> asyncTreeList = moduleService.findChildNodes(id, false);
+        List<? extends SimpleTree> asyncTreeList = moduleService.findChildNodes(id);
 
         return AjaxResponse.create(asyncTreeList);
     }

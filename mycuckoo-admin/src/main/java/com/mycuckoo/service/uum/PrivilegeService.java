@@ -2,7 +2,7 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.constant.ServiceConst;
+import com.mycuckoo.constant.AdminConst;
 import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.SimpleTree;
@@ -120,7 +120,7 @@ public class PrivilegeService {
         // 查找所有模块操作关系
         List<ResourceVo> resources = platformServiceFacade.findAllModOptRefs();
         List<String> checkedOperations = resourceIdList.parallelStream()
-                .map(id -> {return ServiceConst.LEAF_ID + id; })
+                .map(id -> {return AdminConst.LEAF_ID + id; })
                 .collect(Collectors.toList());
 
         //将操作转化成列表数据
@@ -157,7 +157,7 @@ public class PrivilegeService {
         // 查找所有模块资源关系
         List<ResourceVo> resources = platformServiceFacade.findAllModResRefs();
         List<String> checkedOperations = resourceIdList.parallelStream()
-                .map(id -> {return ServiceConst.LEAF_ID + id; })
+                .map(id -> {return AdminConst.LEAF_ID + id; })
                 .collect(Collectors.toList());
 
         //将操作转化成列表数据
@@ -393,8 +393,8 @@ public class PrivilegeService {
 
         modOptIds = modOptIds.parallelStream()
                 .map(mapper -> {
-                    int index = mapper.indexOf(ServiceConst.LEAF_ID);
-                    return index >= 0 ? mapper.substring(ServiceConst.LEAF_ID.length()) : mapper;
+                    int index = mapper.indexOf(AdminConst.LEAF_ID);
+                    return index >= 0 ? mapper.substring(AdminConst.LEAF_ID.length()) : mapper;
                 })
                 .map(String::valueOf)
                 .collect(Collectors.toList());
@@ -468,7 +468,7 @@ public class PrivilegeService {
                 // 操作按钮
                 ModuleMenuVo modOptVo = new ModuleMenuVo();
                 // 将id加上前缀,防id重复
-                modOptVo.setId(ServiceConst.LEAF_ID + resource.getId());
+                modOptVo.setId(AdminConst.LEAF_ID + resource.getId());
                 modOptVo.setModuleId(resource.getId());
                 modOptVo.setParentId(resource.getParentId()); // 将第三级菜单设置为操作
                 modOptVo.setCode(resource.getCode()); // 为操作准备功能链接

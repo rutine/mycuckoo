@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.AdminConst.DISABLE;
+import static com.mycuckoo.constant.AdminConst.ENABLE;
 import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
 
 /**

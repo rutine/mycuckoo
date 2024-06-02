@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.repository.platform.TableConfigMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.TableConfig">
+        <id property="tableId" column="table_id" />
+        <result property="tableCode" column="table_code" />
+        <result property="moduleId" column="module_id" />
+        <result property="type" column="type" />
+        <result property="field" column="field" />
+        <result property="title" column="title" />
+        <result property="filterType" column="filter_type" />
+        <result property="filter" column="filter" />
+        <result property="sort" column="sort" />
+        <result property="blank" column="blank" />
+        <result property="width" column="width" />
+        <result property="extra" column="extra" />
+        <result property="order" column="order" />
+        <result property="updater" column="updater" />
+        <result property="updateDate" column="update_date" />
+        <result property="creator" column="creator" />
+        <result property="createDate" column="create_date" />
+    </resultMap>
+    
+    <sql id="columns">
+        table_id, table_code, module_id,
+        type, field, `title`, filter_type, `filter`, sort, blank, width, extra,
+        `order`, updater, update_date, creator, create_date
+    </sql>
+    
+    <sql id="table">
+        cuckoo.sys_table_config
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.TableConfig"
+            useGeneratedKeys="true" keyProperty="tableId" keyColumn="table_id">
+        insert into <include refid="table" />
+        (
+            table_id,
+            table_code,
+            module_id,
+            type,
+            field,
+            `title`,
+            `filter_type`,
+            filter,
+            sort,
+            blank,
+            width,
+            extra,
+            `order`,
+            updater,
+            update_date,
+            creator,
+            create_date
+        )
+        values (
+            #{tableId},
+            #{tableCode},
+            #{moduleId},
+            #{type},
+            #{field},
+            #{title},
+            #{filterType},
+            #{filter},
+            #{sort},
+            #{blank},
+            #{width},
+            #{extra},
+            #{order},
+            #{updater},
+            #{updateDate},
+            #{creator},
+            #{createDate}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.mycuckoo.domain.platform.TableConfig"
+            useGeneratedKeys="true" keyProperty="tableId" keyColumn="table_id">
+        insert into <include refid="table" />
+        (
+            table_id,
+            table_code,
+            module_id,
+            type,
+            field,
+            `title`,
+            `filter_type`,
+            filter,
+            sort,
+            blank,
+            width,
+            extra,
+            `order`,
+            updater,
+            update_date,
+            creator,
+            create_date
+        ) values
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.tableId},
+            #{item.tableCode},
+            #{item.moduleId},
+            #{item.type},
+            #{item.field},
+            #{item.title},
+            #{item.filterType},
+            #{item.filter},
+            #{item.sort},
+            #{item.blank},
+            #{item.width},
+            #{item.extra},
+            #{item.order},
+            #{item.updater},
+            #{item.updateDate},
+            #{item.creator},
+            #{item.createDate}
+        )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.platform.TableConfig">
+        update <include refid="table" />
+        <set>
+            <if test="tableCode != null">table_code = #{tableCode}, </if>
+            <if test="moduleId != null">module_id = #{moduleId}, </if>
+            <if test="type != null">type = #{type}, </if>
+            <if test="field != null">field = #{field}, </if>
+            <if test="title != null">`title` = #{title}, </if>
+            <if test="filterType != null">`filter_type` = #{filterType}, </if>
+            <if test="filter != null">`filter` = #{filter}, </if>
+            <if test="sort != null">`sort` = #{sort}, </if>
+            <if test="blank != null">`blank` = #{blank}, </if>
+            <if test="width != null">`width` = #{width}, </if>
+            <if test="extra != null">extra = #{extra}, </if>
+            <if test="order != null">`order` = #{order}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateDate != null">update_date = #{updateDate}, </if>
+        </set>
+        where table_id = #{tableId}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where table_id = #{tableId}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where table_id = #{tableId}
+    </select>
+
+    <select id="exists" parameterType="long" resultType="boolean">
+        select count(1) > 0
+        from <include refid="table" />
+        where table_id = #{tableId}
+    </select>
+
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        order by table_id desc
+    </select>
+    
+    <select id="findByModuleId" resultMap="baseMap">
+        select
+            table_id,
+            table_code,
+            module_id,
+            type,
+            field,
+            `title`,
+            filter_type,
+            `filter`,
+            sort,
+            blank,
+            width,
+            extra,
+            `order`
+        from <include refid="table" />
+        where module_id = #{moduleId}
+    </select>
+
+    <select id="findByTableCode" resultMap="baseMap">
+        select
+            table_id,
+            table_code,
+            module_id,
+            type,
+            field,
+            `title`,
+            filter_type,
+            `filter`,
+            sort,
+            blank,
+            width,
+            extra,
+            `order`
+        from <include refid="table" />
+        where table_code = #{tableCode}
+    </select>
+
+    <delete id="deleteByIds" parameterType="long">
+        delete from <include refid="table" />
+        where table_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper> 

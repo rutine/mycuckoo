@@ -12,7 +12,6 @@ import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.domain.platform.*;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModResRefMapper;
@@ -20,10 +19,7 @@ import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.util.TreeHelper;
 import com.mycuckoo.util.XmlOptUtils;
-import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
-import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
-import com.mycuckoo.web.vo.res.platform.ResourceTreeVo;
-import com.mycuckoo.web.vo.res.platform.ResourceVo;
+import com.mycuckoo.web.vo.res.platform.*;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -42,7 +38,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.*;
+import static com.mycuckoo.constant.AdminConst.*;
 import static com.mycuckoo.core.operator.LogOperator.DUNHAO;
 import static com.mycuckoo.util.CommonUtils.getResourcePath;
 
@@ -217,19 +213,10 @@ public class ModuleService {
         return new HierarchyModuleVo(firstList, secondMap, thirdMap);
     }
 
-    //TODO 方法名不能代表其含义了
-    public List<? extends SimpleTree> findChildNodes(long modId, boolean isCheckbox) {
-        List<ModuleMenuVo> all = this.findAll();
-        ModuleMenuVo parent = new ModuleMenuVo(modId);
-        parent.setParentId(modId);
+    public List<? extends SimpleTree> findChildNodes(long modId) {
+        List<? extends SimpleTree> all = this.findByPage(Querier.EMPTY);
 
-        List<ModuleMenuVo> tempList = Lists.newArrayList();
-        tempList.addAll(all);
-        tempList.remove(parent); //删除根元素
-
-        List<? extends SimpleTree> trees = this.buildTree(tempList, Lists.newArrayList(), isCheckbox);
-
-        return trees;
+        return TreeHelper.buildTree(all, modId + "");
     }
 
     public List<ModuleMenuVo> findAll() {
@@ -254,16 +241,8 @@ public class ModuleService {
         return vos;
     }
 
-//    public List<ModOptRef> findAllModOptRefs() {
-//        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-//        return modOptRefMapper.findByPage(null, pageRequest).getContent();
-//    }
-
     public List<ResourceVo> findAllModOptRefs() {
         List<ModOptRef> refs = modOptRefMapper.findByPage(null, Querier.EMPTY).getContent();
-        Map<Long, ModuleMenuVo> menuMap = this.findAll().stream()
-                .collect(Collectors.toMap(ModuleMenuVo::getModuleId, Function.identity()));
-
         List<ResourceVo> result = refs.stream().map(ref -> {
             Operate operate = ref.getOperate();
             ResourceVo vo = new ResourceVo();
@@ -278,7 +257,6 @@ public class ModuleService {
 
             return vo;
         }).collect(Collectors.toList());
-
 
         return result;
     }
@@ -297,7 +275,7 @@ public class ModuleService {
 
             CheckboxTree tree = new CheckboxTree();
             tree.setId(consumer.getOperateId().toString());
-            tree.setParentId("0");
+            tree.setParentId(ROOT_ID_VALUE);
             tree.setText(consumer.getName());
             tree.setIconSkin(consumer.getIconCls());
             tree.setIsLeaf(true);
@@ -309,11 +287,6 @@ public class ModuleService {
 
         return new AssignVo<>(trees, optIds);
     }
-
-//    public List<ModResRef> findAllModResRefs() {
-//        Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
-//        return modResRefMapper.findByPage(null, pageRequest).getContent();
-//    }
 
     public List<ResourceVo> findAllModResRefs() {
         List<ModResRef> refs = modResRefMapper.findByPage(null, Querier.EMPTY).getContent();
@@ -344,7 +317,7 @@ public class ModuleService {
     }
 
     public AssignVo<SimpleTree, String> findResourceTreeByModId(long moduleId) {
-        List<ResourceTreeVo> all = resourceService.findAll();
+        List<ResourceVos.Tree> all = resourceService.findAll();
         List<ModResRef> modResRefs = modResRefMapper.findByModuleId(moduleId); //已经分配的操作
         Map<String, ModResRef> modResMap = modResRefs.stream()
                 .collect(Collectors.toMap(o -> LEAF_ID + o.getResource().getResourceId(), Function.identity()));
@@ -393,17 +366,20 @@ public class ModuleService {
         return false;
     }
 
-    public Page<ModuleMenuVo> findByPage(Querier querier) {
-        Page<ModuleMenu> entityPage = moduleMenuMapper.findByPage(querier.getQ(), querier);
-
-        List<ModuleMenuVo> vos = Lists.newArrayList();
-        for (ModuleMenu entity : entityPage.getContent()) {
-            ModuleMenuVo vo = new ModuleMenuVo();
+    public List<ModuleMenuVos.Tree> findByPage(Querier querier) {
+        Page<ModuleMenu> page = moduleMenuMapper.findByPage(querier.getQ(), querier);
+        List<ModuleMenuVos.Tree> vos = Lists.newArrayList();
+        for (ModuleMenu entity : page.getContent()) {
+            ModuleMenuVos.Tree vo = new ModuleMenuVos.Tree();
             BeanUtils.copyProperties(entity, vo);
+            vo.setId(entity.getModuleId() + "");
+            vo.setParentId(entity.getParentId() + "");
+            vo.setIsParent(!vo.getLevel().equals(ModuleLevel.THREE.value()));
+            vo.setIsLeaf(vo.getLevel().equals(ModuleLevel.THREE.value()));
             vos.add(vo);
         }
 
-        return new PageImpl<>(vos, querier, entityPage.getTotalElements());
+        return vos;
     }
 
     public ModuleMenuVo get(Long moduleId) {
@@ -557,7 +533,7 @@ public class ModuleService {
                                  List<String> checkedOperations, CheckedHolder checked, boolean isCheckbox) {
         String id = menu.getId();
         List<? super SimpleTree> subMenuVos = Lists.newArrayList();
-        if (!id.startsWith(LEAF_ID) && groupMap.containsKey(menu.getModuleId())) {
+        if (id != null && !id.startsWith(LEAF_ID) && groupMap.containsKey(menu.getModuleId())) {
             subMenuVos = groupMap.get(menu.getModuleId()).stream()
                     .map(tree -> buildTree(tree, groupMap, checkedOperations, new CheckedHolder(checked), isCheckbox))
                     .collect(Collectors.toList());

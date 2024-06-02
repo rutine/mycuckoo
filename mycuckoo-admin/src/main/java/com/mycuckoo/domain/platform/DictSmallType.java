@@ -1,5 +1,6 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.core.Dictionary;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -14,7 +15,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:03:38 PM
  */
-public class DictSmallType implements Serializable {
+public class DictSmallType implements Dictionary, Serializable {
 
     private Long smallTypeId;
     private Long bigTypeId;

@@ -17,9 +17,21 @@ public enum FilterType {
     PROVINCE_CITY_AREA("province_city_area", "地区"),
     BOOL("bool", "是否");
 
+    public static FilterType of(String code) {
+        if (code == null || "".equals(code.trim())) {
+            return null;
+        }
+        for (FilterType type : FilterType.values()) {
+            if (type.getCode().equalsIgnoreCase(code.trim())) {
+                return type;
+            }
+        }
+
+        return null;
+    }
+
     private String code;
     private String desc;
-
     FilterType(String code, String desc) {
         this.code = code;
         this.desc = desc;

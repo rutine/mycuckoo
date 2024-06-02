@@ -1,5 +1,6 @@
 package com.mycuckoo.service.platform;
 
+import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
@@ -8,6 +9,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.DictSmallTypeExtend;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
 import com.mycuckoo.repository.platform.DictSmallTypeMapper;
 import com.mycuckoo.util.web.SessionUtil;
@@ -18,9 +20,11 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.ServiceConst.DISABLE;
-import static com.mycuckoo.constant.ServiceConst.ENABLE;
+import static com.mycuckoo.constant.AdminConst.DISABLE;
+import static com.mycuckoo.constant.AdminConst.ENABLE;
 
 /**
  * 功能说明: 字典大小类业务类
@@ -63,6 +67,16 @@ public class DictionaryService {
 
     public List<DictSmallType> findSmallTypesByBigTypeCode(String bigTypeCode) {
         return dictSmallTypeMapper.findByBigTypeCode(bigTypeCode);
+    }
+
+    public Map<String, List<DictSmallTypeExtend>> findSmallTypeMapByBigTypeCodes(List<String> bigTypeCodes) {
+        if (bigTypeCodes == null || bigTypeCodes.isEmpty()) {
+            return Maps.newHashMap();
+        }
+
+        List<DictSmallTypeExtend> list = dictSmallTypeMapper.findByBigTypeCodes(bigTypeCodes);
+
+        return list.stream().collect(Collectors.groupingBy(DictSmallTypeExtend::getBigTypeCode));
     }
 
     public DictBigType getBigTypeByBigTypeId(long bigTypeId) {

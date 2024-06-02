@@ -19,9 +19,9 @@ public interface Column {
     String getField();
 
     /**
-     * 字段名称
+     * 标题
      */
-    String getName();
+    String getTitle();
 
     /**
      * 查询类型
