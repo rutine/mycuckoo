@@ -1,7 +1,6 @@
 package com.mycuckoo.web.platform;
 
 
-import com.mycuckoo.constant.AdminConst;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
@@ -9,9 +8,7 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.service.platform.ModuleService;
-import com.mycuckoo.util.JsonUtils;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.slf4j.Logger;
@@ -20,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
@@ -100,11 +96,6 @@ public class ModuleController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody ModuleMenu modMenu) {
-
-        logger.debug(JsonUtils.toJson(modMenu));
-
-        modMenu.setCreateDate(new Date());
-        modMenu.setCreator(SessionUtil.getUserCode());
         moduleService.save(modMenu);
 
         return AjaxResponse.success("保存模块成功");
@@ -176,10 +167,6 @@ public class ModuleController {
             }
             ref.setOrder(order++);
         }
-
-        String mapper = (AdminConst.LEAF_ID + 33);
-        int index = mapper.indexOf(AdminConst.LEAF_ID);
-        System.out.println("=========>" + (index >= 0 ? mapper.substring(AdminConst.LEAF_ID.length()) : mapper));
 
         moduleService.saveModuleResRefs(id, modResRefs);
 

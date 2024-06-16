@@ -7,7 +7,6 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.service.platform.DictionaryService;
-import com.mycuckoo.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,6 @@ public class DictionaryController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody DictBigType dictBigType) {
-        logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
         dictionaryService.saveBigType(dictBigType);
 
@@ -65,7 +63,6 @@ public class DictionaryController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody DictBigType dictBigType) {
-        logger.debug(JsonUtils.toJson(dictBigType.getSmallTypes(), DictSmallType.class));
 
         dictionaryService.updateBigType(dictBigType);
 

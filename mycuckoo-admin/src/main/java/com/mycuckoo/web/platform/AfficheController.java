@@ -5,7 +5,6 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.service.platform.AfficheService;
-import com.mycuckoo.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +44,6 @@ public class AfficheController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Affiche affiche) {
-        logger.debug(JsonUtils.toJson(affiche));
-
         afficheService.save(affiche);
 
         return AjaxResponse.success("保存公告成功");

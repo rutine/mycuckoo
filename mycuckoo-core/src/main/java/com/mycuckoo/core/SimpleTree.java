@@ -60,14 +60,6 @@ public class SimpleTree<T extends SimpleTree<T>> implements Tree {
         this.iconSkin = iconSkin;
     }
 
-    public Boolean getLeaf() {
-        return isLeaf;
-    }
-
-    public void setLeaf(Boolean leaf) {
-        isLeaf = leaf;
-    }
-
     public Boolean getSpread() {
         return spread;
     }

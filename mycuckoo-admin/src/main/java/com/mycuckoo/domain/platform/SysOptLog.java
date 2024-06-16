@@ -1,9 +1,9 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:06:08 PM
  */
-public class SysOptLog implements Serializable {
+public class SysOptLog extends BasicDomain<Long> {
 
     private Long optId;
     private String modName;
@@ -26,8 +26,6 @@ public class SysOptLog implements Serializable {
     private String userName;
     private String userRole;
     private String userOrgan;
-    private String creator;
-    private Date createDate;
 
     private Date startTime;
     private Date endTime;
@@ -45,28 +43,6 @@ public class SysOptLog implements Serializable {
         this.optId = optId;
     }
 
-    /**
-     * full constructor
-     */
-    public SysOptLog(Long optId, String modName, String name,
-                     String content, Integer busiType, String busiId,
-                     String host, String ip, String userName,
-                     String userRole, String userOrgan,
-                     String creator, Date createDate) {
-        this.optId = optId;
-        this.modName = modName;
-        this.name = name;
-        this.content = content;
-        this.busiType = busiType;
-        this.busiId = busiId;
-        this.host = host;
-        this.ip = ip;
-        this.userName = userName;
-        this.userRole = userRole;
-        this.userOrgan = userOrgan;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getOptId() {
         return this.optId;
@@ -154,22 +130,6 @@ public class SysOptLog implements Serializable {
 
     public void setUserOrgan(String userOrgan) {
         this.userOrgan = userOrgan;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     public Date getStartTime() {

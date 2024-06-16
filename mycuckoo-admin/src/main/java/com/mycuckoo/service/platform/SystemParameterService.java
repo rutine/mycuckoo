@@ -9,10 +9,13 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.repository.platform.SysParameterMapper;
+import com.mycuckoo.util.web.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
 import static com.mycuckoo.constant.AdminConst.ENABLE;
@@ -71,6 +74,8 @@ public class SystemParameterService {
     @Transactional
     public void update(SysParameter entity) {
         entity.setKey(null); //参数键不可修改
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setUpdator(SessionUtil.getUserCode());
         sysParameterMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -79,6 +84,11 @@ public class SystemParameterService {
     @Transactional
     public void save(SysParameter entity) {
         Assert.state(!countByKey(entity.getKey()), "键值[" + entity.getKey() + "]已存在!");
+
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setCreateTime(LocalDateTime.now());
+        entity.setCreator(SessionUtil.getUserCode());
         sysParameterMapper.save(entity);
 
         writeLog(entity, LogLevel.FIRST, OptName.SAVE);

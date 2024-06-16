@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.DictSmallType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
@@ -52,7 +52,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         dictSmallType.setCode("小类型code");
         dictSmallType.setName("字典小类型");
         dictSmallType.setCreator("rutine");
-        dictSmallType.setCreateDate(new Date());
+        dictSmallType.setCreateTime(LocalDateTime.now());
 
         mapper.save(dictSmallType);
 
@@ -65,7 +65,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         dictSmallType.setCode("小类型code");
         dictSmallType.setName("字典小类型");
         dictSmallType.setCreator("rutine");
-        dictSmallType.setCreateDate(new Date());
+        dictSmallType.setCreateTime(LocalDateTime.now());
         dictSmallType.setSmallTypeId(8L);
 
         int row = mapper.update(dictSmallType);

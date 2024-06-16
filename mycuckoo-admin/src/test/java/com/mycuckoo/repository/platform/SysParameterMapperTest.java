@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.SysParameter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,10 +35,10 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testSave() {
         SysParameter sysParameter = new SysParameter();
-        sysParameter.setCreateDate(new Date());
+        sysParameter.setCreateTime(LocalDateTime.now());
         sysParameter.setCreator("rutine");
-        sysParameter.setUpdateDate(new Date());
-        sysParameter.setUpdater("rutine");
+        sysParameter.setUpdateTime(LocalDateTime.now());
+        sysParameter.setUpdator("rutine");
         sysParameter.setMemo("测试");
         sysParameter.setName("编号");
         sysParameter.setKey("no-key-name");
@@ -54,8 +54,8 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testUpdate() {
         SysParameter sysParameter = new SysParameter();
-        sysParameter.setUpdateDate(new Date());
-        sysParameter.setUpdater("rutine");
+        sysParameter.setUpdateTime(LocalDateTime.now());
+        sysParameter.setUpdator("rutine");
         sysParameter.setMemo("测试");
         sysParameter.setName("编号");
         sysParameter.setKey("no-key-name");

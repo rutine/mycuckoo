@@ -7,14 +7,12 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.service.platform.DistrictService;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.DistrictVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
@@ -61,11 +59,6 @@ public class DistrictController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody District district) {
-        district.setUpdateDate(new Date());
-        district.setUpdater(SessionUtil.getUserCode());
-        district.setCreateDate(new Date());
-        district.setCreator(SessionUtil.getUserCode());
-        district.setParentId(district.getParentId());
         districtService.save(district);
 
         return AjaxResponse.success("保存地区成功");
@@ -81,8 +74,6 @@ public class DistrictController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody District district) {
-        district.setUpdateDate(new Date());
-        district.setUpdater(SessionUtil.getUserCode());
         districtService.update(district);
 
         return AjaxResponse.success("修改地区成功");

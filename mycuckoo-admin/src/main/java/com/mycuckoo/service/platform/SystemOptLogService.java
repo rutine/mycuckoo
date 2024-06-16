@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 
 import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
 
@@ -83,7 +83,7 @@ public class SystemOptLogService {
         sysOptLog.setUserRole(SessionUtil.getRoleName());
         sysOptLog.setUserOrgan(SessionUtil.getOrganName());
         sysOptLog.setCreator(SessionUtil.getUserCode());
-        sysOptLog.setCreateDate(new Date());
+        sysOptLog.setCreateTime(LocalDateTime.now());
 
         sysOptLogMapper.save(sysOptLog);
     }

@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.SysOptLog;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
         sysOptLog.setCreator("rutine");
-        sysOptLog.setCreateDate(new Date());
+        sysOptLog.setCreateTime(LocalDateTime.now());
 
         mapper.save(sysOptLog);
 
@@ -76,7 +77,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
         sysOptLog.setCreator("rutine");
-        sysOptLog.setCreateDate(new Date());
+        sysOptLog.setCreateTime(LocalDateTime.now());
         sysOptLog.setOptId(4L);
 
         int row = mapper.update(sysOptLog);

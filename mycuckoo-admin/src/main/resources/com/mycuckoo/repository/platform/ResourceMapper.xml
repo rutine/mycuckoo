@@ -14,18 +14,22 @@
         <id property="resourceId" column="resource_id" />
         <result property="moduleId" column="module_id" />
         <result property="operateId" column="operate_id" />
+        <result property="identifier" column="identifier" />
         <result property="name" column="name" />
         <result property="method" column="method" />
         <result property="path" column="path" />
         <result property="order" column="order" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updator" column="updator" />
+        <result property="updateTime" column="update_time" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
-        resource_id, module_id, operate_id, name, `method`, path, `order`, memo, status, creator, create_date
+        resource_id, module_id, operate_id, identifier, name, `method`, path, `order`, memo, status,
+        updator, update_time, creator, create_time
     </sql>
     
     <sql id="table">
@@ -40,27 +44,33 @@
             resource_id,
             module_id,
             operate_id,
+            identifier,
             name,
             `method`,
             `order`,
             path,
             memo,
             status,
+            updator,
+            update_time,
             creator,
-            create_date
+            create_time
         )
         values (
             #{resourceId},
             #{moduleId},
             #{operateId},
+            #{identifier},
             #{name},
             #{method},
             #{order},
             #{path},
             #{memo},
             #{status},
+            #{updator},
+            #{updateTime},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
     
@@ -70,12 +80,15 @@
         <set>
             <if test="moduleId != null">module_id = #{moduleId}, </if>
             <if test="operateId != null">operate_id = #{operateId}, </if>
+            <if test="identifier != null">identifier = #{identifier}, </if>
             <if test="name != null">name = #{name}, </if>
             <if test="method != null">`method` = #{method}, </if>
             <if test="path != null">`path` = #{path}, </if>
             <if test="order != null">`order` = #{order}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updator != null">updator = #{updator}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
         where resource_id = #{resourceId}
     </update>

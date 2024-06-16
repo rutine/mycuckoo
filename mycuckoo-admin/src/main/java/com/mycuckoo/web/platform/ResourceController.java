@@ -6,13 +6,11 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.service.platform.ResourceService;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
@@ -58,8 +56,6 @@ public class ResourceController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Resource resource) {
-        resource.setCreateDate(new Date());
-        resource.setCreator(SessionUtil.getUserCode());
         resourceService.save(resource);
 
         return AjaxResponse.success("保存成功");

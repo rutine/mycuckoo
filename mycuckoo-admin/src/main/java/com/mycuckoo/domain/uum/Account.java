@@ -3,7 +3,7 @@ package com.mycuckoo.domain.uum;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 功能说明: 域对象
@@ -20,9 +20,9 @@ public class Account implements Serializable {
     private String password; //密码
     private Integer errorCount; //密码错误次数
     private String ip; //
-    private Date loginDate; //最近登录时间
-    private Date updateDate; //更新时间
-    private Date createDate; //创建时间
+    private LocalDateTime loginTime; //最近登录时间
+    private LocalDateTime updateTime; //更新时间
+    private LocalDateTime createTime; //创建时间
 
     /**
      * default constructor
@@ -44,16 +44,16 @@ public class Account implements Serializable {
                    String phone, String email,
                    String password,
                    Integer errorCount, String ip,
-                   Date loginDate, Date updateDate, Date createDate) {
+                   LocalDateTime loginTime, LocalDateTime updateTime, LocalDateTime createTime) {
         this.accountId = accountId;
         this.phone = phone;
         this.email = email;
         this.password = password;
         this.errorCount = errorCount;
         this.ip = ip;
-        this.loginDate = loginDate;
-        this.updateDate = updateDate;
-        this.createDate = createDate;
+        this.loginTime = loginTime;
+        this.updateTime = updateTime;
+        this.createTime = createTime;
     }
 
     public Long getAccountId() {
@@ -104,29 +104,30 @@ public class Account implements Serializable {
         this.ip = ip;
     }
 
-    public Date getLoginDate() {
-        return loginDate;
+    public LocalDateTime getLoginTime() {
+        return loginTime;
     }
 
-    public void setLoginDate(Date loginDate) {
-        this.loginDate = loginDate;
+    public void setLoginTime(LocalDateTime loginTime) {
+        this.loginTime = loginTime;
     }
 
-    public Date getUpdateDate() {
-        return updateDate;
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
     }
 
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
+
 
     @Override
     public boolean equals(Object obj) {

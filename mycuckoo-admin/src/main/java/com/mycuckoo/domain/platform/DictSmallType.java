@@ -1,12 +1,11 @@
 package com.mycuckoo.domain.platform;
 
 import com.mycuckoo.core.Dictionary;
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -15,14 +14,12 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:03:38 PM
  */
-public class DictSmallType implements Dictionary, Serializable {
+public class DictSmallType extends BasicDomain<Long> implements Dictionary {
 
     private Long smallTypeId;
     private Long bigTypeId;
     private String code;
     private String name;
-    private String creator;
-    private Date createDate;
 
     /**
      * default constructor
@@ -35,19 +32,6 @@ public class DictSmallType implements Dictionary, Serializable {
      */
     public DictSmallType(Long smallTypeId) {
         this.smallTypeId = smallTypeId;
-    }
-
-    /**
-     * full constructor
-     */
-    public DictSmallType(Long smallTypeId, Long bigTypeId,
-                         String code, String name, String creator, Date createDate) {
-        this.smallTypeId = smallTypeId;
-        this.bigTypeId = bigTypeId;
-        this.code = code;
-        this.name = name;
-        this.creator = creator;
-        this.createDate = createDate;
     }
 
     public Long getSmallTypeId() {
@@ -82,21 +66,6 @@ public class DictSmallType implements Dictionary, Serializable {
         this.name = name;
     }
 
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     public boolean equals(Object obj) {
         if (this == obj) return true;

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -107,6 +108,8 @@ public class CodeService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
         codeMapper.update(entity);
 
         LogOperator.begin()
@@ -177,10 +180,14 @@ public class CodeService {
     }
 
     @Transactional
-    public void saveCode(Code entity) throws ApplicationException {
+    public void save(Code entity) throws ApplicationException {
         Assert.state(!existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreateTime(LocalDateTime.now());
         codeMapper.save(entity);
 
         LogOperator.begin()

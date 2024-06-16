@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.SchedulerJob;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,10 +45,10 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testSave() {
         SchedulerJob schedulerJob = new SchedulerJob();
-        schedulerJob.setCreateDate(new Date());
+        schedulerJob.setCreateTime(LocalDateTime.now());
         schedulerJob.setCreator("rutine");
-        schedulerJob.setUpdateDate(new Date());
-        schedulerJob.setUpdater("rutine");
+        schedulerJob.setUpdateTime(LocalDateTime.now());
+        schedulerJob.setUpdator("rutine");
         schedulerJob.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 24 * 60 * 60 * 1000L));
         schedulerJob.setJobClass("打酱油");
         schedulerJob.setJobName("闲职");
@@ -66,10 +67,10 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
     @Test
     public void testUpdate() {
         SchedulerJob schedulerJob = new SchedulerJob();
-        schedulerJob.setCreateDate(new Date());
+        schedulerJob.setCreateTime(LocalDateTime.now());
         schedulerJob.setCreator("rutine");
-        schedulerJob.setUpdateDate(new Date());
-        schedulerJob.setUpdater("rutine");
+        schedulerJob.setUpdateTime(LocalDateTime.now());
+        schedulerJob.setUpdator("rutine");
         schedulerJob.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 24 * 60 * 60 * 1000L));
         schedulerJob.setJobClass("打酱油");
         schedulerJob.setJobName("闲职");

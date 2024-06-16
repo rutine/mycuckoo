@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Operate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @SpringBootTest
@@ -33,7 +33,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testSave() {
         Operate operate = new Operate();
-        operate.setCreateDate(Calendar.getInstance().getTime());
+        operate.setCreateTime(LocalDateTime.now());
         operate.setCreator("rutine");
         operate.setMemo("测试");
         operate.setName("增加");
@@ -50,7 +50,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     @Test
     public void testUpdate() {
         Operate operate = new Operate();
-        operate.setCreateDate(Calendar.getInstance().getTime());
+        operate.setCreateTime(LocalDateTime.now());
         operate.setCreator("rutine");
         operate.setMemo("测试");
         operate.setName("增加");

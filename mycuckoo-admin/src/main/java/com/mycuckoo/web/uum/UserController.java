@@ -67,7 +67,7 @@ public class UserController {
      * @author rutine
      * @time Oct 13, 2013 1:05:30 PM
      */
-    @GetMapping("/{id}/user-privilege")
+    @GetMapping("/{id}/res-privilege")
     public AjaxResponse<AssignVo<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
         //todo
         AssignVo<CheckboxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);

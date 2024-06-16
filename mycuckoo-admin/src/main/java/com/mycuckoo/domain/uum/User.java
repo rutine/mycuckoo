@@ -1,8 +1,9 @@
 package com.mycuckoo.domain.uum;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -12,10 +13,9 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 25, 2014 8:38:53 PM
  */
-public class User implements Serializable {
+public class User extends BasicDomain<Long> {
 
     private Long userId; //用户ID
-    private Long orgId;
     private Long accountId;
     private Long roleId;
     private Long deptId;
@@ -36,10 +36,6 @@ public class User implements Serializable {
     private String address; //家庭住址
     private String memo; //备注
     private String status; //用户状态
-    private String updater; //更新人
-    private Date updateDate; //更新时间
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     /**
      * default constructor
@@ -69,7 +65,8 @@ public class User implements Serializable {
                 String officeTel, String familyTel,
                 Date avidate, String address, Long belongOrg,
                 String memo, String status,
-                String updater, Date updateDate, String creator, Date createDate) {
+                String updator, LocalDateTime updateTime,
+                String creator, LocalDateTime createTime) {
         this.userId = userId;
         this.orgId = orgId;
         this.accountId = accountId;
@@ -91,22 +88,14 @@ public class User implements Serializable {
         this.address = address;
         this.memo = memo;
         this.status = status;
-        this.updater = updater;
-        this.updateDate = updateDate;
+        this.updator = updator;
+        this.updateTime = updateTime;
         this.creator = creator;
-        this.createDate = createDate;
+        this.createTime = createTime;
     }
 
     public Long getUserId() {
         return userId;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
     }
 
     public Long getAccountId() {
@@ -273,37 +262,6 @@ public class User implements Serializable {
         this.status = status;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     @Override
     public boolean equals(Object obj) {

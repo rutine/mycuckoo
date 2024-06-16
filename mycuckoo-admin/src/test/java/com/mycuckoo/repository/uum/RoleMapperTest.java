@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Role;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
@@ -35,10 +35,10 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         role.setStatus("enable");
         role.setMemo("测试");
         role.setLevel((short) 3);
-        role.setUpdater("rutine");
-        role.setUpdateDate(new Date());
+        role.setUpdator("rutine");
+        role.setUpdateTime(LocalDateTime.now());
         role.setCreator("rutine");
-        role.setCreateDate(new Date());
+        role.setCreateTime(LocalDateTime.now());
 
         roleMapper.save(role);
 
@@ -54,8 +54,8 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         role.setMemo("测试");
         role.setLevel((short) 3);
         role.setRoleId(3L);
-        role.setUpdater("rutine");
-        role.setUpdateDate(new Date());
+        role.setUpdator("rutine");
+        role.setUpdateTime(LocalDateTime.now());
 
         int row = roleMapper.update(role);
 

@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.DictBigType;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.DictBigType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @SpringBootTest
@@ -40,9 +40,9 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         DictBigType dictBigType = new DictBigType();
         dictBigType.setCode("bigTypeCode");
         dictBigType.setName("大字典类型");
-        dictBigType.setUpdateDate(new Date());
-        dictBigType.setUpdater("rutine");
-        dictBigType.setCreateDate(new Date());
+        dictBigType.setUpdateTime(LocalDateTime.now());
+        dictBigType.setUpdator("rutine");
+        dictBigType.setCreateTime(LocalDateTime.now());
         dictBigType.setCreator("rutine");
         dictBigType.setStatus("enable");
 
@@ -56,9 +56,9 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         DictBigType dictBigType = new DictBigType();
         dictBigType.setCode("bigTypeCode");
         dictBigType.setName("大字典类型");
-        dictBigType.setUpdateDate(new Date());
-        dictBigType.setUpdater("rutine");
-        dictBigType.setCreateDate(new Date());
+        dictBigType.setUpdateTime(LocalDateTime.now());
+        dictBigType.setUpdator("rutine");
+        dictBigType.setCreateTime(LocalDateTime.now());
         dictBigType.setCreator("rutine");
         dictBigType.setStatus("enable");
         dictBigType.setBigTypeId(5L);

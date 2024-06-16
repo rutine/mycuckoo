@@ -1,7 +1,7 @@
 package com.mycuckoo.service.uum;
 
-import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.repository.uum.AccountMapper;
 import com.mycuckoo.util.CommonUtils;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 功能说明: 账号业务类
@@ -51,7 +51,7 @@ public class AccountService {
         Account updateEntity = new Account(account.getAccountId());
         updateEntity.setErrorCount(0);
         updateEntity.setIp(ip);
-        updateEntity.setLoginDate(new Date());
+        updateEntity.setLoginTime(LocalDateTime.now());
         accountMapper.update(updateEntity);
 
         return account.getAccountId();
@@ -69,7 +69,7 @@ public class AccountService {
             Account updateEntity = new Account(account.getAccountId());
             updateEntity.setErrorCount(account.getErrorCount() + 1);
             updateEntity.setIp(ip);
-            updateEntity.setLoginDate(new Date());
+            updateEntity.setLoginTime(LocalDateTime.now());
             accountMapper.update(updateEntity);
         }
     }

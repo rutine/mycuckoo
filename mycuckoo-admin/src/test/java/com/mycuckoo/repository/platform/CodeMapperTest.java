@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Code;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @SpringBootTest
@@ -54,9 +54,9 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setPart3Con("->");
         code.setPartNum(3);
         code.setStatus("enable");
-        code.setUpdateDate(new Date());
-        code.setUpdater("rutine");
-        code.setCreateDate(new Date());
+        code.setUpdateTime(LocalDateTime.now());
+        code.setUpdator("rutine");
+        code.setCreateTime(LocalDateTime.now());
         code.setCreator("rutine");
 
         mapper.save(code);
@@ -82,8 +82,8 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setPartNum(3);
         code.setStatus("enable");
         code.setCodeId(25L);
-        code.setUpdateDate(new Date());
-        code.setUpdater("rutine");
+        code.setUpdateTime(LocalDateTime.now());
+        code.setUpdator("rutine");
 
         int row = mapper.update(code);
 

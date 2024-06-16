@@ -18,13 +18,15 @@
         <result property="type" column="type" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updator" column="updator" />
+        <result property="updateTime" column="update_time" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
         para_id, name, `key`, `value`, type, memo, status,
-        updater, update_date, creator, create_date
+        updator, update_time, creator, create_time
     </sql>
     
     <sql id="table">
@@ -43,10 +45,10 @@
             type,
             memo,
             status,
-            updater,
-            update_date,
+            updator,
+            update_time,
             creator,
-            create_date
+            create_time
         )
         values (
             #{paraId},
@@ -56,10 +58,10 @@
             #{type},
             #{memo},
             #{status},
-            #{updater},
-            #{updateDate},
+            #{updator},
+            #{updateTime},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
     
@@ -73,8 +75,8 @@
             <if test="type != null">type = #{type}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
-            <if test="updater != null">updater = #{updater}, </if>
-            <if test="updateDate != null">update_date = #{updateDate}, </if>
+            <if test="updator != null">updator = #{updator}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
         where para_id = #{paraId}
     </update>

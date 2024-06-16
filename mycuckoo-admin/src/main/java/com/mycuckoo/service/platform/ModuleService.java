@@ -19,6 +19,7 @@ import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.util.TreeHelper;
 import com.mycuckoo.util.XmlOptUtils;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.*;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.dom4j.Document;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -234,7 +236,7 @@ public class ModuleService {
             vo.setBelongSys(item.getBelongSys());
             vo.setStatus(item.getStatus());
             vo.setCreator(item.getCreator());
-            vo.setCreateDate(item.getCreateDate());
+            vo.setCreateTime(item.getCreateTime());
             vos.add(vo);
         });
 
@@ -423,6 +425,8 @@ public class ModuleService {
                 entity.setLevel(parent.getLevel() + 1);
             }
         }
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
         moduleMenuMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -450,6 +454,10 @@ public class ModuleService {
         Assert.state(!existsByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
         entity.setStatus(ENABLE);
         entity.setLevel(parent.getLevel() + 1);
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreateTime(LocalDateTime.now());
         moduleMenuMapper.save(entity);
 
         writeLog(entity, LogLevel.FIRST, OptName.SAVE);

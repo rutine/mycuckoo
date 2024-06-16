@@ -6,14 +6,12 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.service.uum.OrganService;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,10 +55,6 @@ public class OrganController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Organ organ) {
-        organ.setUpdater(SessionUtil.getUserCode());
-        organ.setUpdateDate(new Date());
-        organ.setCreator(SessionUtil.getUserCode());
-        organ.setCreateDate(new Date());
         organService.save(organ);
 
         return AjaxResponse.success("保存机构成功");
@@ -76,8 +70,6 @@ public class OrganController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Organ organ) {
-        organ.setUpdater(SessionUtil.getUserCode());
-        organ.setUpdateDate(new Date());
         organService.update(organ);
 
         return AjaxResponse.success("修改机构成功");

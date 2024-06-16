@@ -1,11 +1,10 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -14,7 +13,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:04:59 PM
  */
-public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
+public class ModuleMenu extends BasicDomain<String> implements Comparator<ModuleMenu> {
 
     private Long moduleId; //模块ID
     private Long parentId; //上级模块
@@ -27,8 +26,6 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
     private String pageType;//页面类型
     private String status;
     private String memo; //备注
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     /**
      * default constructor
@@ -43,25 +40,6 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
         this.moduleId = moduleId;
     }
 
-    /**
-     * full constructor
-     */
-    public ModuleMenu(Long moduleId, Long parentId,
-                      String code, String name, String iconCls,
-                      Integer level, Integer order, String status,
-                      String memo, String creator, Date createDate) {
-        this.moduleId = moduleId;
-        this.parentId = parentId;
-        this.code = code;
-        this.name = name;
-        this.iconCls = iconCls;
-        this.level = level;
-        this.order = order;
-        this.status = status;
-        this.memo = memo;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getModuleId() {
         return moduleId;
@@ -149,22 +127,6 @@ public class ModuleMenu implements Serializable, Comparator<ModuleMenu> {
 
     public void setMemo(String memo) {
         this.memo = memo;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     @Override

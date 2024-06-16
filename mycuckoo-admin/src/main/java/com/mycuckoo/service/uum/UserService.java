@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
@@ -211,8 +211,8 @@ public class UserService {
         user.setCode(null);
         user.setPassword(null);
         user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
+        user.setUpdator(SessionUtil.getUserCode());
+        user.setUpdateTime(LocalDateTime.now());
         user.setStatus(null);
 
         userMapper.update(user); // 保存用户
@@ -235,8 +235,8 @@ public class UserService {
         User update = new User();
         update.setUserId(SessionUtil.getUserId());
         update.setPassword(CommonUtils.encrypt(newPassword));
-        update.setUpdater(SessionUtil.getUserCode());
-        update.setUpdateDate(new Date());
+        update.setUpdator(SessionUtil.getUserCode());
+        update.setUpdateTime(LocalDateTime.now());
         userMapper.update(update); // 保存用户
     }
 
@@ -245,8 +245,8 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setPhotoUrl(photoUrl);
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
+        user.setUpdator(SessionUtil.getUserCode());
+        user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
     }
 
@@ -255,8 +255,8 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setRoleId(roleId);
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
+        user.setUpdator(SessionUtil.getUserCode());
+        user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
     }
 
@@ -265,8 +265,8 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setPassword(CommonUtils.encrypt(userDefaultPwd));
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
+        user.setUpdator(SessionUtil.getUserCode());
+        user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
 
         LogOperator.begin()
@@ -287,10 +287,10 @@ public class UserService {
         user.setPassword(null);
         user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);
-        user.setUpdater(SessionUtil.getUserCode());
-        user.setUpdateDate(new Date());
+        user.setUpdator(SessionUtil.getUserCode());
+        user.setUpdateTime(LocalDateTime.now());
         user.setCreator(SessionUtil.getUserCode());
-        user.setCreateDate(new Date());
+        user.setCreateTime(LocalDateTime.now());
         userMapper.save(user);
 
         writeLog(user, LogLevel.FIRST, OptName.SAVE);

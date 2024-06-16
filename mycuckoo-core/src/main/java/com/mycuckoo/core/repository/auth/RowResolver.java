@@ -119,7 +119,7 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
     private static String newSql() {
         PrivilegeInfo authInfo = PrivilegeContextHolder.get();
 
-        Map<Integer, Integer> params = new HashMap(2);
+        Map<Integer, Long> params = new HashMap(2);
         params.put(0, authInfo.getOrgId());
         params.put(1, authInfo.getUserId());
 

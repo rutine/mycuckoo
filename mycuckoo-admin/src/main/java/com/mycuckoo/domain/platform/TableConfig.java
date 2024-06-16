@@ -1,10 +1,8 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 功能说明:
@@ -13,7 +11,7 @@ import java.util.Date;
  * @version 4.1.0
  * @time 2024/6/1 10:12
  */
-public class TableConfig implements Serializable {
+public class TableConfig extends BasicDomain<Long> {
     private Long tableId; //ID
     private String tableCode; //表头编码
     private Long moduleId; //模块ID
@@ -27,10 +25,6 @@ public class TableConfig implements Serializable {
     private Integer width;
     private String extra;
     private Integer order; //顺序
-    private String updater; //创建人
-    private Date updateDate; //创建时间
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     /**
      * default constructor
@@ -149,37 +143,6 @@ public class TableConfig implements Serializable {
         this.order = order;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     public boolean equals(Object obj) {
         if (this == obj) return true;

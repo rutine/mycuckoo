@@ -1,9 +1,8 @@
 package com.mycuckoo.domain.uum;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -12,18 +11,13 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 23, 2014 10:48:50 AM
  */
-public class Role implements java.io.Serializable {
+public class Role extends BasicDomain<Long> {
 
     private Long roleId;    //角色ID
-    private Long orgId;     //组织id
     private String name;    //角色名称
     private Short level;    //角色级别
     private String status;        //角色状态
     private String memo;        //备注
-    private String updater;    //更新人
-    private Date updateDate;    //更新时间
-    private String creator;    //创建人
-    private Date createDate;    //创建时间
 
     /**
      * default constructor
@@ -45,14 +39,6 @@ public class Role implements java.io.Serializable {
 
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
     }
 
     public String getName() {
@@ -87,37 +73,6 @@ public class Role implements java.io.Serializable {
         this.memo = memo;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     @Override
     public boolean equals(Object obj) {

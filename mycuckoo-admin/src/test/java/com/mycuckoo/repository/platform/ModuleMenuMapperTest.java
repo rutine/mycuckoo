@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.ModuleMenu;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +67,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     public void testSave() {
         ModuleMenu moduleMenu = new ModuleMenu();
         moduleMenu.setBelongSys("用户");
-        moduleMenu.setCreateDate(Calendar.getInstance().getTime());
+        moduleMenu.setCreateTime(LocalDateTime.now());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
         moduleMenu.setCode("en10001");
@@ -87,7 +87,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
     public void testUpdate() {
         ModuleMenu moduleMenu = new ModuleMenu();
         moduleMenu.setBelongSys("用户");
-        moduleMenu.setCreateDate(Calendar.getInstance().getTime());
+        moduleMenu.setCreateTime(LocalDateTime.now());
         moduleMenu.setCreator("rutine");
         moduleMenu.setMemo("测试");
         moduleMenu.setCode("en10001");

@@ -6,14 +6,10 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.SysParameter;
 import com.mycuckoo.service.platform.SystemParameterService;
-import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 /**
  * 功能说明: 系统参数Controller
@@ -49,12 +45,6 @@ public class SystemParameterController {
     @PostMapping
     public AjaxResponse<String> create(@RequestBody SysParameter sysParameter) {
 
-        logger.debug(JsonUtils.toJson(sysParameter));
-
-        sysParameter.setUpdateDate(new Date());
-        sysParameter.setUpdater(SessionUtil.getUserCode());
-        sysParameter.setCreateDate(new Date());
-        sysParameter.setCreator(SessionUtil.getUserCode());
         systemParameterService.save(sysParameter);
 
         return AjaxResponse.success("保存系统参数成功");
@@ -70,8 +60,6 @@ public class SystemParameterController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody SysParameter sysParameter) {
-        sysParameter.setUpdateDate(new Date());
-        sysParameter.setUpdater(SessionUtil.getUserCode());
         systemParameterService.update(sysParameter);
 
         return AjaxResponse.success("修改系统参数成功");

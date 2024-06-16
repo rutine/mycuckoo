@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
-import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,10 +80,10 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testSave() {
         User user = new User();
-        user.setUpdater("rutine");
-        user.setUpdateDate(new Date());
+        user.setUpdator("rutine");
+        user.setUpdateTime(LocalDateTime.now());
         user.setCreator("rutine");
-        user.setCreateDate(new Date());
+        user.setCreateTime(LocalDateTime.now());
         user.setMemo("测试");
         user.setCode("10110");
         user.setName("rutine");
@@ -98,10 +98,10 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setUpdater("rutine");
-        user.setUpdateDate(new Date());
+        user.setUpdator("rutine");
+        user.setUpdateTime(LocalDateTime.now());
         user.setCreator("rutine");
-        user.setCreateDate(new Date());
+        user.setCreateTime(LocalDateTime.now());
         user.setMemo("测试");
         user.setCode("10110");
         user.setName("rutine");

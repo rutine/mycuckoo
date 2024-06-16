@@ -6,14 +6,10 @@ import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.service.platform.CodeService;
-import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 /**
  * 功能说明: 系统编码Controller
@@ -48,14 +44,7 @@ public class CodeController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Code code) {
-
-        logger.debug(JsonUtils.toJson(code));
-
-        code.setUpdater(SessionUtil.getUserCode());
-        code.setUpdateDate(new Date());
-        code.setCreator(SessionUtil.getUserCode());
-        code.setCreateDate(new Date());
-        codeService.saveCode(code);
+        codeService.save(code);
 
         return AjaxResponse.success("保存系统编码成功");
     }
@@ -70,8 +59,6 @@ public class CodeController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody Code code) {
-        code.setUpdater(SessionUtil.getUserCode());
-        code.setUpdateDate(new Date());
         codeService.update(code);
 
         return AjaxResponse.success("修改系统编码成功");
@@ -80,8 +67,6 @@ public class CodeController {
     @GetMapping("/{id}")
     public AjaxResponse<Code> get(@PathVariable long id) {
         Code code = codeService.get(id);
-
-        logger.debug(JsonUtils.toJson(code));
 
         return AjaxResponse.create(code);
     }

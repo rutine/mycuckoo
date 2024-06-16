@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
 import static com.mycuckoo.constant.AdminConst.ENABLE;
@@ -79,8 +79,8 @@ public class RoleService {
         Assert.state(old.getName().equals(role.getName())
                 || !existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
-        role.setUpdateDate(new Date());
-        role.setUpdater(SessionUtil.getUserCode());
+        role.setUpdateTime(LocalDateTime.now());
+        role.setUpdator(SessionUtil.getUserCode());
         roleMapper.update(role);
 
         writeLog(role, LogLevel.SECOND, OptName.MODIFY);
@@ -91,9 +91,9 @@ public class RoleService {
         Assert.state(!existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
         role.setOrgId(SessionUtil.getOrganId());
-        role.setUpdateDate(new Date());
-        role.setUpdater(SessionUtil.getUserCode());
-        role.setCreateDate(new Date());
+        role.setUpdateTime(LocalDateTime.now());
+        role.setUpdator(SessionUtil.getUserCode());
+        role.setCreateTime(LocalDateTime.now());
         role.setCreator(SessionUtil.getUserCode());
         role.setStatus(ENABLE);
         roleMapper.save(role);

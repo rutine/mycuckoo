@@ -1,10 +1,8 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -13,7 +11,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:05:15 PM
  */
-public class Operate implements Serializable {
+public class Operate extends BasicDomain<Long> {
 
     private Long operateId; //操作ID
     private String code; //操作编码
@@ -23,8 +21,6 @@ public class Operate implements Serializable {
     private Integer group; //模块操作组
     private String memo; //备注
     private String status; //模块操作状态
-    private String creator; //创建人
-    private Date createDate; //创建时间
 //	private List<ModOptRef> modOptRefs = Lists.newArrayList();
 
     /**
@@ -39,24 +35,6 @@ public class Operate implements Serializable {
     public Operate(Long operateId, String status) {
         this.operateId = operateId;
         this.status = status;
-    }
-
-    /**
-     * full constructor
-     */
-    public Operate(Long operateId, String code, String name, String iconCls,
-                   Integer order, Integer group, String memo, String status,
-                   String creator, Date createDate) {
-        this.operateId = operateId;
-        this.code = code;
-        this.name = name;
-        this.iconCls = iconCls;
-        this.order = order;
-        this.group = group;
-        this.memo = memo;
-        this.status = status;
-        this.creator = creator;
-        this.createDate = createDate;
     }
 
     public Long getOperateId() {
@@ -121,22 +99,6 @@ public class Operate implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     public boolean equals(Object obj) {

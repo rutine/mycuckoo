@@ -1,10 +1,8 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -13,18 +11,17 @@ import java.util.Date;
  * @version 4.1.0
  * @time May 5, 2024 10:12:15 AM
  */
-public class Resource implements Serializable {
+public class Resource extends BasicDomain<Long> {
     private Long resourceId; //操作ID
     private Long moduleId; //上级模块ID
     private Long operateId; //操作ID
+    private String identifier;
     private String name; //名称
     private String method; //请求方法
     private String path; //请求路径
     private Integer order; //顺序
     private String memo; //备注
     private String status; //状态
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     /**
      * default constructor
@@ -38,25 +35,6 @@ public class Resource implements Serializable {
     public Resource(Long resourceId, String status) {
         this.resourceId = resourceId;
         this.status = status;
-    }
-
-    /**
-     * full constructor
-     */
-    public Resource(Long resourceId, Long moduleId, Long operateId, String name,
-                    String method, String path, Integer order, String memo, String status,
-                    String creator, Date createDate) {
-        this.resourceId = resourceId;
-        this.moduleId = moduleId;
-        this.operateId = operateId;
-        this.name = name;
-        this.path = path;
-        this.method = method;
-        this.order = order;
-        this.memo = memo;
-        this.status = status;
-        this.creator = creator;
-        this.createDate = createDate;
     }
 
     public Long getResourceId() {
@@ -81,6 +59,14 @@ public class Resource implements Serializable {
 
     public void setOperateId(Long operateId) {
         this.operateId = operateId;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getName() {
@@ -131,21 +117,6 @@ public class Resource implements Serializable {
         this.status = status;
     }
 
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     public boolean equals(Object obj) {
         if (this == obj) return true;

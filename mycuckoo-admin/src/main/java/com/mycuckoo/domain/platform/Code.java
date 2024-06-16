@@ -1,10 +1,9 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ import java.util.List;
  * @version 2.0.0
  * @time Sep 22, 2014 9:00:36 PM
  */
-public class Code implements Serializable {
+public class Code extends BasicDomain<Long> {
 
     private Long codeId; //编码ID
     private String code; //英文编码名称
@@ -33,10 +32,6 @@ public class Code implements Serializable {
     private String effect; //编码效果
     private String memo; //备注
     private String status; //状态
-    private String updater; //更新人
-    private Date updateDate; //更新时间
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     private List<String> partList;
     private List<String> partConList;
@@ -55,37 +50,6 @@ public class Code implements Serializable {
         this.status = status;
     }
 
-    /**
-     * full constructor
-     */
-    public Code(Long codeId, String code, String name,
-                String moduleName, String delimiter, Integer partNum, String part1,
-                String part1Con, String part2, String part2Con, String part3,
-                String part3Con, String part4, String part4Con, String effect,
-                String memo, String status, String updater, Date updateDate,
-                String creator, Date createDate) {
-        this.codeId = codeId;
-        this.code = code;
-        this.name = name;
-        this.moduleName = moduleName;
-        this.delimiter = delimiter;
-        this.partNum = partNum;
-        this.part1 = part1;
-        this.part1Con = part1Con;
-        this.part2 = part2;
-        this.part2Con = part2Con;
-        this.part3 = part3;
-        this.part3Con = part3Con;
-        this.part4 = part4;
-        this.part4Con = part4Con;
-        this.effect = effect;
-        this.memo = memo;
-        this.status = status;
-        this.updater = updater;
-        this.updateDate = updateDate;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getCodeId() {
         return this.codeId;
@@ -221,38 +185,6 @@ public class Code implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     public List<String> getPartList() {

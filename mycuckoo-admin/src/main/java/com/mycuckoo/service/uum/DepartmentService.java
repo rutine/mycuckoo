@@ -15,7 +15,7 @@ import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.repository.uum.DepartmentMapper;
 import com.mycuckoo.util.TreeHelper;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.platform.DeptTreeVo;
+import com.mycuckoo.web.vo.res.platform.DeptVos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,9 +110,9 @@ public class DepartmentService {
         querier.setPageSize(0);
         Page<Department> page = departmentMapper.findByPage(querier.getQ(), querier);
 
-        List<DeptTreeVo> all = Lists.newArrayList();
+        List<DeptVos.Tree> all = Lists.newArrayList();
         for (Department entity : page) {
-            DeptTreeVo tree = new DeptTreeVo();
+            DeptVos.Tree tree = new DeptVos.Tree();
             tree.setId(entity.getDeptId() + "");
             tree.setParentId(entity.getParentId() + "");
             tree.setText(entity.getName());
@@ -120,7 +120,7 @@ public class DepartmentService {
             tree.setOrder(0);
             tree.setStatus(entity.getStatus());
             tree.setCreator(entity.getCreator());
-            tree.setCreateDate(entity.getCreateDate());
+            tree.setCreateTime(entity.getCreateTime());
             all.add(tree);
         }
 
@@ -162,7 +162,7 @@ public class DepartmentService {
         entity.setRoleId(null);
         entity.setLevel(null);
         entity.setStatus(null);
-        entity.setCreateDate(null);
+        entity.setCreateTime(null);
         entity.setCreator(null);
 
         if (parentId != null && !parentId.equals(old.getParentId())) {
@@ -175,8 +175,8 @@ public class DepartmentService {
             entity.setLevel(parent.getLevel() + 1);
         }
 
-        entity.setUpdater(SessionUtil.getUserCode());
-        entity.setUpdateDate(new Date());
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
         departmentMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -188,10 +188,10 @@ public class DepartmentService {
         Assert.notNull(parent, "上级不存在!");
 
         entity.setOrgId(SessionUtil.getOrganId());
-        entity.setUpdater(SessionUtil.getUserCode());
-        entity.setUpdateDate(new Date());
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdateTime(LocalDateTime.now());
         entity.setCreator(SessionUtil.getUserCode());
-        entity.setCreateDate(new Date());
+        entity.setCreateTime(LocalDateTime.now());
         entity.setLevel(parent.getLevel() + 1);
         entity.setStatus(ENABLE);
         departmentMapper.save(entity);
@@ -211,8 +211,8 @@ public class DepartmentService {
         Department updateEntity = new Department();
         updateEntity.setDeptId(deptId);
         updateEntity.setRoleId(roleId);
-        updateEntity.setUpdater(SessionUtil.getUserCode());
-        updateEntity.setUpdateDate(new Date());
+        updateEntity.setUpdator(SessionUtil.getUserCode());
+        updateEntity.setUpdateTime(LocalDateTime.now());
         departmentMapper.update(updateEntity);
 
         LogOperator.begin()
@@ -257,7 +257,8 @@ public class DepartmentService {
                 tree = new CheckboxTree();
                 CheckboxTree boxTree = (CheckboxTree) tree;
                 boxTree.setNocheck(false);
-                boxTree.setCheckbox(withRole ? null : new CheckboxTree.Checkbox(0));
+//                boxTree.setCheckbox(withRole ? null : new CheckboxTree.Checkbox(0));
+                boxTree.setCheckbox(new CheckboxTree.Checkbox(0));
             } else {
                 tree = new SimpleTree();
             }

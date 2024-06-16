@@ -9,6 +9,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.platform.OperateMapper;
+import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
@@ -100,6 +102,8 @@ public class OperateService {
         Assert.state(old.getName().equals(operate.getName())
                 || !existsByName(operate.getName()), "操作名[" + operate.getName() + "]已存在!");
 
+        operate.setUpdator(SessionUtil.getUserCode());
+        operate.setUpdateTime(LocalDateTime.now());
         operateMapper.update(operate);
 
         writeLog(operate, LogLevel.SECOND, OptName.MODIFY);
@@ -111,6 +115,10 @@ public class OperateService {
         Assert.state(!existsByName(operate.getName()), "操作名[" + operate.getName() + "]已存在!");
 
         operate.setStatus(ENABLE);
+        operate.setUpdator(SessionUtil.getUserCode());
+        operate.setUpdateTime(LocalDateTime.now());
+        operate.setCreator(SessionUtil.getUserCode());
+        operate.setCreateTime(LocalDateTime.now());
         operateMapper.save(operate);
 
         writeLog(operate, LogLevel.FIRST, OptName.SAVE);

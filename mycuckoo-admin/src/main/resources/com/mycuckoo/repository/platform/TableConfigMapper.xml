@@ -17,16 +17,16 @@
         <result property="width" column="width" />
         <result property="extra" column="extra" />
         <result property="order" column="order" />
-        <result property="updater" column="updater" />
-        <result property="updateDate" column="update_date" />
+        <result property="updator" column="updator" />
+        <result property="updateTime" column="update_time" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
         table_id, table_code, module_id,
-        type, field, `title`, filter_type, `filter`, sort, blank, width, extra,
-        `order`, updater, update_date, creator, create_date
+        type, field, `title`, filter_type, `filter`, sort, blank, width, extra, `order`,
+        updator, update_time, creator, create_time
     </sql>
     
     <sql id="table">
@@ -50,10 +50,10 @@
             width,
             extra,
             `order`,
-            updater,
-            update_date,
+            updator,
+            update_time,
             creator,
-            create_date
+            create_time
         )
         values (
             #{tableId},
@@ -69,10 +69,10 @@
             #{width},
             #{extra},
             #{order},
-            #{updater},
-            #{updateDate},
+            #{updator},
+            #{updateTime},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
 
@@ -93,10 +93,10 @@
             width,
             extra,
             `order`,
-            updater,
-            update_date,
+            updator,
+            update_time,
             creator,
-            create_date
+            create_time
         ) values
         <foreach collection="list" item="item" separator=",">
         (
@@ -113,10 +113,10 @@
             #{item.width},
             #{item.extra},
             #{item.order},
-            #{item.updater},
-            #{item.updateDate},
-            #{item.creator},
-            #{item.createDate}
+            #{updator},
+            #{updateTime},
+            #{creator},
+            #{createTime}
         )
         </foreach>
     </insert>
@@ -136,8 +136,8 @@
             <if test="width != null">`width` = #{width}, </if>
             <if test="extra != null">extra = #{extra}, </if>
             <if test="order != null">`order` = #{order}, </if>
-            <if test="updater != null">updater = #{updater}, </if>
-            <if test="updateDate != null">update_date = #{updateDate}, </if>
+            <if test="updator != null">updator = #{updator}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
         where table_id = #{tableId}
     </update>

@@ -19,12 +19,15 @@
         <result property="group" column="group" />
         <result property="memo" column="memo" />
         <result property="status" column="status" />
+        <result property="updator" column="updator" />
+        <result property="updateTime" column="update_time" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
-        operate_id, code, name, icon_cls, `order`, `group`, memo, status, creator, create_date
+        operate_id, code, name, icon_cls, `order`, `group`, memo, status,
+        updator, update_time, creator, create_time
     </sql>
     
     <sql id="table">
@@ -44,8 +47,10 @@
             `group`,
             memo,
             status,
+            updator,
+            update_time,
             creator,
-            create_date
+            create_time
         )
         values (
             #{operateId},
@@ -56,8 +61,10 @@
             #{group},
             #{memo},
             #{status},
+            #{updator},
+            #{updateTime},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
     
@@ -72,6 +79,8 @@
             <if test="group != null">`group` = #{group}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="updator != null">updator = #{updator}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
         where operate_id = #{operateId}
     </update>

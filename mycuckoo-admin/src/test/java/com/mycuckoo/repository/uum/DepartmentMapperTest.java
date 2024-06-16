@@ -1,10 +1,10 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.uum.Department;
-import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Department;
+import com.mycuckoo.domain.uum.DepartmentExtend;
 import org.assertj.core.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -53,10 +53,10 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testSave() {
         Department entity = new Department();
-        entity.setUpdater("rutine");
-        entity.setUpdateDate(new Date());
+        entity.setUpdator("rutine");
+        entity.setUpdateTime(LocalDateTime.now());
         entity.setCreator("rutine");
-        entity.setCreateDate(new Date());
+        entity.setCreateTime(LocalDateTime.now());
         entity.setMemo("测试");
         entity.setCode("10010");
         entity.setName("技术部");
@@ -70,10 +70,10 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testUpdate() {
         Department entity = new Department();
-        entity.setUpdater("rutine");
-        entity.setUpdateDate(new Date());
+        entity.setUpdator("rutine");
+        entity.setUpdateTime(LocalDateTime.now());
         entity.setCreator("rutine");
-        entity.setCreateDate(new Date());
+        entity.setCreateTime(LocalDateTime.now());
         entity.setMemo("测试");
         entity.setCode("10010");
         entity.setName("技术部");

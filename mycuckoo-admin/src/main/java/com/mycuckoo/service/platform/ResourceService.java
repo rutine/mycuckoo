@@ -15,8 +15,10 @@ import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
 import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVos;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -101,7 +104,7 @@ public class ResourceService {
             tree.setMemo(o.getMemo());
             tree.setStatus(o.getStatus());
             tree.setCreator(o.getCreator());
-            tree.setCreateDate(o.getCreateDate());
+            tree.setCreateTime(o.getCreateTime());
             tree.setLevel(FOUR.value());
             tree.setIsLeaf(true);
             all.add(tree);
@@ -128,9 +131,12 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.notNull(operateService.get(entity.getOperateId()), "操作不存在!");
+        Assert.state(StringUtils.isNotBlank(entity.getIdentifier())
+                || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
         Assert.state(resourceMapper.exists(entity.getResourceId()), "资源不存在!");
 
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setUpdator(SessionUtil.getUserCode());
         resourceMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -141,8 +147,14 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.notNull(operateService.get(entity.getOperateId()), "操作不存在!");
+        Assert.state(StringUtils.isNotBlank(entity.getIdentifier())
+                || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
+
         entity.setStatus(ENABLE);
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setCreateTime(LocalDateTime.now());
+        entity.setCreator(SessionUtil.getUserCode());
         resourceMapper.save(entity);
 
         writeLog(entity, LogLevel.FIRST, OptName.SAVE);

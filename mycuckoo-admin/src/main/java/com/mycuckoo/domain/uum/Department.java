@@ -1,9 +1,10 @@
 package com.mycuckoo.domain.uum;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 功能说明: 域对象
@@ -12,10 +13,9 @@ import java.util.Date;
  * @version 4.1.0
  * @time May 19, 2024 11:29:53 AM
  */
-public class Department implements java.io.Serializable {
+public class Department extends BasicDomain<Long> {
 
     private Long deptId;            // 主键
-    private Long orgId;             //
     private Long parentId;          // 上一级
     private String treeId;
     private Long roleId;
@@ -24,10 +24,6 @@ public class Department implements java.io.Serializable {
     private String name;            // 名称
     private String status;            // 状态
     private String memo;            // 备注
-    private String updater;        // 更新人
-    private Date updateDate;        // 更新时间
-    private String creator;        // 创建人
-    private Date createDate;        // 创建时间
 
     /**
      * default constructor
@@ -49,7 +45,8 @@ public class Department implements java.io.Serializable {
     public Department(Long deptId, Long orgId,
                       Long parentId, String treeId, Long roleId, Integer level,
                       String code, String name, String status, String memo,
-                      String updater, Date updateDate, String creator, Date createDate) {
+                      String updator, LocalDateTime updateTime,
+                      String creator, LocalDateTime createTime) {
         this.deptId = deptId;
         this.orgId = orgId;
         this.parentId = parentId;
@@ -60,10 +57,10 @@ public class Department implements java.io.Serializable {
         this.name = name;
         this.status = status;
         this.memo = memo;
-        this.updater = updater;
-        this.updateDate = updateDate;
+        this.updator = updator;
+        this.updateTime = updateTime;
         this.creator = creator;
-        this.createDate = createDate;
+        this.createTime = createTime;
     }
 
     public Long getDeptId() {
@@ -72,14 +69,6 @@ public class Department implements java.io.Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
-    }
-
-    public Long getOrgId() {
-        return this.orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
     }
 
     public Long getParentId() {
@@ -146,37 +135,6 @@ public class Department implements java.io.Serializable {
         this.memo = memo;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     @Override
     public boolean equals(Object obj) {

@@ -1,10 +1,8 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -13,7 +11,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:06:28 PM
  */
-public class SysParameter implements Serializable {
+public class SysParameter extends BasicDomain<Long> {
 
     private Long paraId;
     private String name;
@@ -22,10 +20,6 @@ public class SysParameter implements Serializable {
     private String type;
     private String memo;
     private String status;
-    private String updater; //更新人
-    private Date updateDate; //更新时间
-    private String creator;
-    private Date createDate;
 
     /**
      * default constructor
@@ -41,24 +35,6 @@ public class SysParameter implements Serializable {
         this.status = status;
     }
 
-    /**
-     * full constructor
-     */
-    public SysParameter(Long paraId, String name, String key,
-                        String value, String type, String memo, String status,
-                        String updater, Date updateDate, String creator, Date createDate) {
-        this.paraId = paraId;
-        this.name = name;
-        this.key = key;
-        this.value = value;
-        this.type = type;
-        this.memo = memo;
-        this.status = status;
-        this.updater = updater;
-        this.updateDate = updateDate;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getParaId() {
         return this.paraId;
@@ -116,37 +92,6 @@ public class SysParameter implements Serializable {
         this.status = status;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     @Override
     public String toString() {

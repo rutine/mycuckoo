@@ -8,14 +8,10 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.service.platform.SchedulerHandle;
 import com.mycuckoo.service.platform.SchedulerService;
-import com.mycuckoo.util.JsonUtils;
-import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 /**
  * 功能说明: 系统调度Controller
@@ -50,13 +46,6 @@ public class SchedulerController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody SchedulerJob schedulerJob) throws SystemException {
-
-        logger.debug(JsonUtils.toJson(schedulerJob));
-
-        schedulerJob.setUpdateDate(new Date());
-        schedulerJob.setUpdater(SessionUtil.getUserCode());
-        schedulerJob.setCreateDate(new Date());
-        schedulerJob.setCreator(SessionUtil.getUserCode());
         schedulerService.save(schedulerJob);
 
         return AjaxResponse.success("任务保存成功");
@@ -87,8 +76,6 @@ public class SchedulerController {
      */
     @PutMapping
     public AjaxResponse<String> update(@RequestBody SchedulerJob scheduler) {
-        scheduler.setUpdateDate(new Date());
-        scheduler.setUpdater(SessionUtil.getUserCode());
         schedulerService.update(scheduler);
 
         return AjaxResponse.success("修改任务成功");
@@ -97,8 +84,6 @@ public class SchedulerController {
     @GetMapping("/{id}")
     public AjaxResponse<SchedulerJob> get(@PathVariable long id) {
         SchedulerJob scheduler = schedulerService.get(id);
-
-        logger.debug(JsonUtils.toJson(scheduler));
 
         return AjaxResponse.create(scheduler);
     }

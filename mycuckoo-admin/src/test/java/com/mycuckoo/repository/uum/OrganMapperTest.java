@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Organ;
 import org.assertj.core.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -67,10 +67,10 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testSave() {
         Organ organ = new Organ();
-        organ.setUpdater("rutine");
-        organ.setUpdateDate(new Date());
+        organ.setUpdator("rutine");
+        organ.setUpdateTime(LocalDateTime.now());
         organ.setCreator("rutine");
-        organ.setCreateDate(new Date());
+        organ.setCreateTime(LocalDateTime.now());
         organ.setMemo("测试");
         organ.setCode("10010");
         organ.setSimpleName("技术部");
@@ -84,10 +84,10 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testUpdate() {
         Organ organ = new Organ();
-        organ.setUpdater("rutine");
-        organ.setUpdateDate(new Date());
+        organ.setUpdator("rutine");
+        organ.setUpdateTime(LocalDateTime.now());
         organ.setCreator("rutine");
-        organ.setCreateDate(new Date());
+        organ.setCreateTime(LocalDateTime.now());
         organ.setMemo("测试");
         organ.setCode("10010");
         organ.setSimpleName("技术部");

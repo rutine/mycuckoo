@@ -16,13 +16,13 @@
         <result property="code" column="code" />
         <result property="name" column="name" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
 
         <result property="bigTypeCode" column="big_type_code" />
     </resultMap>
     
     <sql id="columns">
-        small_type_id, big_type_id, code, name, creator, create_date
+        small_type_id, big_type_id, code, name, creator, create_time
     </sql>
     
     <sql id="table">
@@ -38,7 +38,7 @@
             code,
             name,
             creator,
-            create_date
+            create_time
         )
         values (
             #{smallTypeId},
@@ -46,7 +46,7 @@
             #{code},
             #{name},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
     

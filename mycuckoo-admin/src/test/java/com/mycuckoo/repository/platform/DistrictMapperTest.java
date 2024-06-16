@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.District;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -61,10 +61,10 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testSave() {
         District district = new District();
-        district.setCreateDate(new Date());
+        district.setCreateTime(LocalDateTime.now());
         district.setCreator("rutine");
-        district.setUpdateDate(new Date());
-        district.setUpdater("rutine");
+        district.setUpdateTime(LocalDateTime.now());
+        district.setUpdator("rutine");
         district.setCode("020");
         district.setLevel("1");
         district.setName("广州");
@@ -81,10 +81,10 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testUpdate() {
         District district = new District();
-        district.setCreateDate(new Date());
+        district.setCreateTime(LocalDateTime.now());
         district.setCreator("rutine");
-        district.setUpdateDate(new Date());
-        district.setUpdater("rutine");
+        district.setUpdateTime(LocalDateTime.now());
+        district.setUpdator("rutine");
         district.setCode("020");
         district.setLevel("1");
         district.setName("广州");

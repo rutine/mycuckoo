@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,7 +51,6 @@ public class TableConfigService {
         List<Long> oldIds = old.stream().map(TableConfig::getTableId).collect(Collectors.toList());
 
         String user = SessionUtil.getUserCode();
-        Date now = new Date();
         int i = 0;
         List<TableConfig> configs = Lists.newArrayList();
         for (TableConfigReqVos.CreateConfig config : vo.getConfigs()) {
@@ -63,8 +62,8 @@ public class TableConfigService {
             newConfig.setModuleId(vo.getModuleId());
             newConfig.setTableCode(vo.getTableCode());
             newConfig.setOrder(++i);
-            newConfig.setUpdater(user);
-            newConfig.setUpdateDate(now);
+            newConfig.setUpdator(user);
+            newConfig.setUpdateTime(LocalDateTime.now());
             if (config.getTableId() != null) {
                 int row = tableConfigMapper.update(newConfig);
                 if (row > 0) {
@@ -72,7 +71,7 @@ public class TableConfigService {
                 }
             }
             newConfig.setCreator(user);
-            newConfig.setCreateDate(now);
+            newConfig.setCreateTime(LocalDateTime.now());
             configs.add(newConfig);
         }
 

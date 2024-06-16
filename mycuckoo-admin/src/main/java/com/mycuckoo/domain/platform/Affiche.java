@@ -1,9 +1,9 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,15 +14,13 @@ import java.util.List;
  * @version 3.0.0
  * @time Sep 22, 2014 8:59:44 PM
  */
-public class Affiche implements Serializable {
+public class Affiche extends BasicDomain<Long> {
 
     private Long afficheId; //公告ID
     private String title; //公告标题
     private String content; //公告内容
     private Date invalidate; //公告有效期
     private Boolean publish; //是否发布
-    private String creator; //创建人
-    private Date createDate; //创建时间
     private List<Accessory> accessories; //公告附件添加
 
     /**
@@ -38,19 +36,6 @@ public class Affiche implements Serializable {
         this.afficheId = afficheId;
     }
 
-    /**
-     * full constructor
-     */
-    public Affiche(Long afficheId, String title, String content,
-                   Date invalidate, Boolean publish, String creator, Date createDate) {
-        this.afficheId = afficheId;
-        this.title = title;
-        this.content = content;
-        this.invalidate = invalidate;
-        this.publish = publish;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getAfficheId() {
         return this.afficheId;
@@ -90,22 +75,6 @@ public class Affiche implements Serializable {
 
     public void setPublish(Boolean publish) {
         this.publish = publish;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
     public List<Accessory> getAccessories() {

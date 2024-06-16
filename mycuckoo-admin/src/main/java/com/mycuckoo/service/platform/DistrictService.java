@@ -14,6 +14,7 @@ import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.platform.DistrictMapper;
 import com.mycuckoo.util.TreeHelper;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.DistrictVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +136,8 @@ public class DistrictService {
         Assert.state(old.getName().equals(district.getName())
                 || !existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
 
+        district.setUpdateTime(LocalDateTime.now());
+        district.setUpdator(SessionUtil.getUserCode());
         districtMapper.update(district);
 
         writeLog(district, LogLevel.SECOND, OptName.MODIFY);
@@ -142,7 +146,12 @@ public class DistrictService {
     @Transactional
     public void save(District district) {
         Assert.state(!existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
+        district.setParentId(district.getParentId());
         district.setStatus(ENABLE);
+        district.setUpdateTime(LocalDateTime.now());
+        district.setUpdator(SessionUtil.getUserCode());
+        district.setCreateTime(LocalDateTime.now());
+        district.setCreator(SessionUtil.getUserCode());
         districtMapper.save(district);
 
         writeLog(district, LogLevel.FIRST, OptName.SAVE);

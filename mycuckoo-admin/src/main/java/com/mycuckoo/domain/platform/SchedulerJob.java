@@ -1,9 +1,9 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:05:57 PM
  */
-public class SchedulerJob implements Serializable {
+public class SchedulerJob extends BasicDomain<Long> {
 
     private Long jobId; //调度ID
     private String jobName; //英文调度名称
@@ -26,10 +26,6 @@ public class SchedulerJob implements Serializable {
     private Long intervalTime; //时间间隔
     private String status; //状态
     private String memo; //备注
-    private String updater; //更新人
-    private Date updateDate; //更新时间
-    private String creator; //创建人
-    private Date createDate; //创建时间
 
     /**
      * default constructor
@@ -45,29 +41,6 @@ public class SchedulerJob implements Serializable {
         this.status = status;
     }
 
-    /**
-     * full constructor
-     */
-    public SchedulerJob(Long jobId, String jobName,
-                        String jobClass, String triggerType, String cron,
-                        Date startTime, Date endTime, Integer repeatCount, Long intervalTime,
-                        String status, String memo, String updater, Date updateDate, String creator, Date createDate) {
-        this.jobId = jobId;
-        this.jobName = jobName;
-        this.jobClass = jobClass;
-        this.triggerType = triggerType;
-        this.cron = cron;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.repeatCount = repeatCount;
-        this.intervalTime = intervalTime;
-        this.status = status;
-        this.memo = memo;
-        this.updater = updater;
-        this.updateDate = updateDate;
-        this.creator = creator;
-        this.createDate = createDate;
-    }
 
     public Long getJobId() {
         return this.jobId;
@@ -157,37 +130,6 @@ public class SchedulerJob implements Serializable {
         this.memo = memo;
     }
 
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 
     @Override
     public String toString() {

@@ -1,10 +1,8 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 功能说明: 域对象
@@ -13,7 +11,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 22, 2014 9:04:00 PM
  */
-public class District implements Serializable {
+public class District extends BasicDomain<Long> {
     private static final long serialVersionUID = 1000000L;
 
     private Long districtId;
@@ -25,10 +23,6 @@ public class District implements Serializable {
     private String level;
     private String memo;
     private String status;
-    private String updater; //更新人
-    private Date updateDate; //更新时间
-    private String creator;
-    private Date createDate;
 
     /**
      * default constructor
@@ -42,29 +36,6 @@ public class District implements Serializable {
     public District(Long districtId, String status) {
         this.districtId = districtId;
         this.status = status;
-    }
-
-    /**
-     * full constructor
-     */
-    public District(Long districtId, Long parentId,
-                    String code, String name, String postal,
-                    String telcode, String level, String memo,
-                    String status, String updater, Date updateDate,
-                    String creator, Date createDate) {
-        this.districtId = districtId;
-        this.parentId = parentId;
-        this.code = code;
-        this.name = name;
-        this.postal = postal;
-        this.telcode = telcode;
-        this.level = level;
-        this.memo = memo;
-        this.status = status;
-        this.updater = updater;
-        this.updateDate = updateDate;
-        this.creator = creator;
-        this.createDate = createDate;
     }
 
     public Long getDistrictId() {
@@ -137,38 +108,6 @@ public class District implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 
 

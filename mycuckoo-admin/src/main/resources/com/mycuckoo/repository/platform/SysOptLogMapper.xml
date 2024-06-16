@@ -23,13 +23,13 @@
         <result property="userRole" column="user_role" />
         <result property="userOrgan" column="user_organ" />
         <result property="creator" column="creator" />
-        <result property="createDate" column="create_date" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
         opt_id, mod_name, name, content, busi_type, busi_id,
         host, ip, user_name, user_role, user_organ,
-        creator, create_date
+        creator, create_time
     </sql>
     
     <sql id="table">
@@ -53,7 +53,7 @@
             user_role,
             user_organ,
             creator,
-            create_date
+            create_time
         )
         values (
             #{optId},
@@ -68,7 +68,7 @@
             #{userRole},
             #{userOrgan},
             #{creator},
-            #{createDate}
+            #{createTime}
         )
     </insert>
     

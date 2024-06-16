@@ -6,13 +6,10 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.service.platform.OperateService;
-import com.mycuckoo.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 /**
  * 功能说明: 操作按钮Controller
@@ -55,8 +52,6 @@ public class OperateController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody Operate operate) {
-        operate.setCreateDate(new Date());
-        operate.setCreator(SessionUtil.getUserCode());
         optService.save(operate);
 
         return AjaxResponse.success("保存成功");

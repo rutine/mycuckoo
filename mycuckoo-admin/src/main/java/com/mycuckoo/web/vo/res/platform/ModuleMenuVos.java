@@ -42,14 +42,6 @@ public class ModuleMenuVos {
             this.level = level;
         }
 
-        public Boolean getParent() {
-            return isParent;
-        }
-
-        public void setParent(Boolean parent) {
-            isParent = parent;
-        }
-
         public String getCode() {
             return code;
         }

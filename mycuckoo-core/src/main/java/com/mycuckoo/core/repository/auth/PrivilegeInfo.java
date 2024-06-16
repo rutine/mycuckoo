@@ -8,20 +8,20 @@ package com.mycuckoo.core.repository.auth;
  * @time 2024/5/25 10:21
  */
 public class PrivilegeInfo {
-    private Integer orgId;
-    private Integer userId;
+    private Long orgId;
+    private Long userId;
     private boolean skip;
 
-    public PrivilegeInfo(Integer orgId, Integer userId) {
+    public PrivilegeInfo(Long orgId, Long userId) {
         this.orgId = orgId;
         this.userId = userId;
     }
 
-    public Integer getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

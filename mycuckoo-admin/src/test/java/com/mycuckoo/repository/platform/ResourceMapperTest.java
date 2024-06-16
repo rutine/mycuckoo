@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @SpringBootTest
@@ -26,7 +26,7 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testSave() {
         Resource entity = new Resource();
-        entity.setCreateDate(Calendar.getInstance().getTime());
+        entity.setCreateTime(LocalDateTime.now());
         entity.setCreator("rutine");
         entity.setMemo("测试");
         entity.setName("增加");
@@ -43,7 +43,7 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
     @Test
     public void testUpdate() {
         Resource entity = new Resource();
-        entity.setCreateDate(Calendar.getInstance().getTime());
+        entity.setCreateTime(LocalDateTime.now());
         entity.setCreator("rutine");
         entity.setMemo("测试");
         entity.setName("增加");

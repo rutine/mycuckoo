@@ -17,6 +17,7 @@ import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.util.TreeHelper;
+import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,8 +166,10 @@ public class OrganService {
         organ.setRoleId(null);
         organ.setLevel(null);
         organ.setStatus(null);
-        organ.setCreateDate(null);
+        organ.setCreateTime(null);
         organ.setCreator(null);
+        organ.setUpdator(SessionUtil.getUserCode());
+        organ.setUpdateTime(LocalDateTime.now());
         organMapper.update(organ);
 
         writeLog(organ, LogLevel.SECOND, OptName.MODIFY);
@@ -179,6 +183,10 @@ public class OrganService {
 
         organ.setLevel(parent.getLevel() + 1);
         organ.setStatus(ENABLE);
+        organ.setUpdator(SessionUtil.getUserCode());
+        organ.setUpdateTime(LocalDateTime.now());
+        organ.setCreator(SessionUtil.getUserCode());
+        organ.setCreateTime(LocalDateTime.now());
         organMapper.save(organ);
 
         Organ updateEntity = new Organ();
