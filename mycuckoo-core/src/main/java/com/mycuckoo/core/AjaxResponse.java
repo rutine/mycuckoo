@@ -9,7 +9,7 @@ package com.mycuckoo.core;
  */
 public class AjaxResponse<R> {
     private int code;
-    private String message;
+    private String msg;
     private R data;
 
     public static <R> AjaxResponse<R> create(R data) {
@@ -18,16 +18,16 @@ public class AjaxResponse<R> {
         return response;
     }
 
-    public static <R> AjaxResponse<R> create(int code, String message) {
+    public static <R> AjaxResponse<R> create(int code, String msg) {
         AjaxResponse<R> response = new AjaxResponse<>();
         response.setCode(code);
-        response.setMessage(message);
+        response.setMsg(msg);
         return response;
     }
 
-    public static <R> AjaxResponse<R> success(String message) {
+    public static <R> AjaxResponse<R> success(String msg) {
         AjaxResponse<R> response = new AjaxResponse<>();
-        response.setMessage(message);
+        response.setMsg(msg);
         return response;
     }
 
@@ -39,12 +39,12 @@ public class AjaxResponse<R> {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public R getData() {

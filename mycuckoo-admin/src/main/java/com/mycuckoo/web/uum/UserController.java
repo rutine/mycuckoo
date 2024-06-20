@@ -12,12 +12,9 @@ import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.req.UserPasswordUvo;
-import com.mycuckoo.web.vo.req.UserPhotoUvo;
 import com.mycuckoo.web.vo.req.UserReqVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
-import com.mycuckoo.web.vo.res.uum.UserVo;
 import com.mycuckoo.web.vo.res.uum.UserVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -54,8 +51,8 @@ public class UserController {
 
 
     @GetMapping
-    public AjaxResponse<Page<UserVo>> list(Querier querier) {
-        Page<UserVo> page = userService.findByPage(querier);
+    public AjaxResponse<Page<User>> list(Querier querier) {
+        Page<User> page = userService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -70,8 +67,8 @@ public class UserController {
     @GetMapping("/{id}/res-privilege")
     public AjaxResponse<AssignVo<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
         //todo
-        AssignVo<CheckboxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
-//        AssignVo<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+//        AssignVo<CheckboxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+        AssignVo<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
     }
@@ -99,7 +96,7 @@ public class UserController {
      * @time Oct 6, 2013 8:26:57 PM
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody UserVo user) {
+    public AjaxResponse<String> create(@RequestBody User user) {
         Assert.hasText(user.getCode(), "用户编码必填");
         Assert.state(user.getCode().length() <= 10
                         || StringUtils.isAlphanumeric(user.getCode()),
@@ -115,7 +112,7 @@ public class UserController {
     }
 
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody UserVo user) {
+    public AjaxResponse<String> update(@RequestBody User user) {
         userService.update(user);
 
         return AjaxResponse.success("修改用户成功");
@@ -154,8 +151,8 @@ public class UserController {
      * @time Oct 20, 2013 3:07:34 PM
      */
     @GetMapping("/selector")
-    public AjaxResponse<List<UserVos.UProfile>> listByName(@RequestParam(defaultValue = "") String userName) {
-        List<UserVos.UProfile> vos = userService.findByName(userName);
+    public AjaxResponse<List<UserVos.Profile>> listByName(@RequestParam(defaultValue = "") String userName) {
+        List<UserVos.Profile> vos = userService.findByName(userName);
 
         return AjaxResponse.create(vos);
     }
@@ -251,7 +248,7 @@ public class UserController {
      * @time Nov 6, 2014 9:13:20 PM
      */
     @PutMapping("/update/password")
-    public AjaxResponse<String> updatePassword(@RequestBody UserPasswordUvo vo) {
+    public AjaxResponse<String> updatePassword(@RequestBody UserReqVos.UPassword vo) {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
         String password = vo.getPassword();
@@ -268,7 +265,7 @@ public class UserController {
      * @time Nov 1, 2014 8:28:55 AM
      */
     @PutMapping("/update/photo")
-    public AjaxResponse<String> updatePhoto(@RequestBody UserPhotoUvo vo, HttpServletRequest request) {
+    public AjaxResponse<String> updatePhoto(@RequestBody UserReqVos.UPhoto vo, HttpServletRequest request) {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
         userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());

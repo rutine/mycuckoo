@@ -2,7 +2,7 @@ package com.mycuckoo.web.vo.res.uum;
 
 public class UserVos {
 
-    public static class UProfile {
+    public static class Profile {
         private Long userId;
         private String code;
         private String name;

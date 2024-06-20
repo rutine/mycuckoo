@@ -16,7 +16,6 @@ import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
 import com.mycuckoo.util.CommonUtils;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -73,12 +72,12 @@ public class ResourceService {
     }
 
     public List<ResourceVos.Tree> findAll() {
-        List<ModuleMenuVo> menuVos = moduleService.findAll();
+        List<ModuleMenu> menus = moduleService.findAll();
         List<Operate> operates = operateService.findAll();
         Map<Long, String> operateMap = operates.stream().collect(Collectors.toMap(Operate::getOperateId, Operate::getCode));
 
         List<ResourceVos.Tree> all = Lists.newArrayList();
-        for (ModuleMenuVo menu : menuVos) {
+        for (ModuleMenu menu : menus) {
             ResourceVos.Tree tree = new ResourceVos.Tree();
             tree.setId(menu.getId());
             tree.setParentId(menu.getParentId() + "");
@@ -93,7 +92,7 @@ public class ResourceService {
         List<Resource> resources = resourceMapper.findByPage(null, Querier.EMPTY).getContent();
         resources.forEach(o -> {
             ResourceVos.Tree tree = new ResourceVos.Tree();
-            tree.setId(LEAF_ID + o.getResourceId());
+            tree.setId(ID_LEAF + o.getResourceId());
             tree.setParentId(o.getModuleId() + "");
             tree.setIsParent(false);
             tree.setText(o.getName());

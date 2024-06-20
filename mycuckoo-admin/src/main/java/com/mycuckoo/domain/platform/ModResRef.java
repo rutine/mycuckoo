@@ -12,8 +12,8 @@ import java.io.Serializable;
 public class ModResRef implements Serializable {
 
     private Long modResId;
+    private Long moduleId;
     private Resource resource;
-    private ModuleMenu moduleMemu;
     private Integer group;
     private Integer order;
 
@@ -35,10 +35,10 @@ public class ModResRef implements Serializable {
     /**
      * full constructor
      */
-    public ModResRef(Long modResId, Resource resource, ModuleMenu moduleMemu, Integer group, Integer order) {
+    public ModResRef(Long modResId, Long moduleId, Resource resource, Integer group, Integer order) {
         this.modResId = modResId;
+        this.moduleId = moduleId;
         this.resource = resource;
-        this.moduleMemu = moduleMemu;
         this.group = group;
         this.order = order;
     }
@@ -51,20 +51,20 @@ public class ModResRef implements Serializable {
         this.modResId = modResId;
     }
 
+    public Long getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
     public Resource getResource() {
         return resource;
     }
 
     public void setResource(Resource resource) {
         this.resource = resource;
-    }
-
-    public ModuleMenu getModuleMemu() {
-        return moduleMemu;
-    }
-
-    public void setModuleMemu(ModuleMenu moduleMemu) {
-        this.moduleMemu = moduleMemu;
     }
 
     public Integer getGroup() {

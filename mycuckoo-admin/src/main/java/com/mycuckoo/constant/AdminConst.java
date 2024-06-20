@@ -25,9 +25,9 @@ public abstract class AdminConst extends BaseConst {
     public final static String ROLE_CSS = "rolemgr";
 
     //根节点
-    public final static String ROOT_ID_VALUE = "0";
+    public final static String ID_ROOT_VALUE = "0";
 
     //叶子节点前缀
-    public final static String LEAF_ID = "leaf-id-";
+    public final static String ID_LEAF = "id-leaf-";
 
 }

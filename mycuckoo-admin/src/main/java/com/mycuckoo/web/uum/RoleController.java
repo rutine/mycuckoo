@@ -58,8 +58,8 @@ public class RoleController {
     @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
         //todo
-        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
-//        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+//        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
                 baseVo.getPrivilegeScope(),

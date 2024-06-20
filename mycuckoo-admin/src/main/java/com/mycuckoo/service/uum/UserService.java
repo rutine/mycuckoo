@@ -86,13 +86,13 @@ public class UserService {
         return true;
     }
 
-    public List<UserVos.UProfile> findByName(String userName) {
+    public List<UserVos.Profile> findByName(String userName) {
         userName = "%" + userName + "%";
         List<User> list = userMapper.findByCodeAndName(null, userName);
 
-        List<UserVos.UProfile> vos = Lists.newArrayList();
+        List<UserVos.Profile> vos = Lists.newArrayList();
         list.forEach(entity -> {
-            UserVos.UProfile vo = new UserVos.UProfile();
+            UserVos.Profile vo = new UserVos.Profile();
             vo.setUserId(entity.getUserId());
             vo.setCode(entity.getCode());
             vo.setName(entity.getName());
@@ -106,23 +106,17 @@ public class UserService {
         return userMapper.findByPinyin(userNamePy, userId);
     }
 
-    public Page<UserVo> findByPage(Querier querier) {
+    public Page<User> findByPage(Querier querier) {
         Page<User> page2 = userMapper.findByPage(querier.getQ(), querier);;
-        List<UserVo> vos = Lists.newArrayList();
-        page2.forEach(entity -> {
-            UserVo vo = new UserVo();
-            BeanUtils.copyProperties(entity, vo);
-            vos.add(vo);
-        });
 
-        return new PageImpl<>(vos, querier, page2.getTotalElements());
+        return page2;
     }
 
     public List<UserExtend> findByAccountId(Long accountId) {
         return userMapper.findByAccountId(accountId);
     }
 
-    public UserVo getUserByUserCodeAndPwd(String userCode, String password) {
+    public User getUserByUserCodeAndPwd(String userCode, String password) {
         if (CommonUtils.isNullOrEmpty(userCode) || CommonUtils.isNullOrEmpty(userCode)) return null;
 
         User user = userMapper.getByUserCode(userCode);
@@ -133,10 +127,7 @@ public class UserService {
             throw new ApplicationException("用户密码不正确!");
         }
 
-        UserVo vo = new UserVo();
-        BeanUtils.copyProperties(user, vo);
-
-        return vo;
+        return user;
     }
 
     public UserExtend getByAccountIdAndUserId(Long accountId, Long userId) {
@@ -165,38 +156,34 @@ public class UserService {
         return userMapper.findByUserIds(userIds);
     }
 
-    public Page<UserVo> findUsersForSetAdmin(Querier querier) {
+    public Page<User> findUsersForSetAdmin(Querier querier) {
         Page<User> page2 = userMapper.findByPage(querier.getQ(), querier);
-        List<UserVo> vos = Lists.newArrayList();
+        List<User> result = Lists.newArrayList();
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         int count = 0;
         for (User user : page2.getContent()) {
             if (!systemAdminCode.contains(user.getCode())) {
                 count++;
-                UserVo vo = new UserVo();
-                BeanUtils.copyProperties(user, vo);
-                vos.add(vo);
+                result.add(user);
             }
         }
 
-        return new PageImpl<>(vos, querier, page2.getTotalElements() - count);
+        return new PageImpl<>(result, querier, page2.getTotalElements() - count);
     }
 
-    public Page<UserVo> findAdminUsers() {
+    public Page<User> findAdminUsers() {
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
-        List<UserVo> vos = new ArrayList<UserVo>();
+        List<User> result = new ArrayList<>();
         for (String userCode : systemAdminCode) {
             try {
                 User entity = userMapper.getByUserCode(userCode);
-                UserVo vo = new UserVo();
-                BeanUtils.copyProperties(entity, vo);
-                vos.add(vo);
+                result.add(entity);
             } catch (Exception e) {
                 logger.warn("用户编码'{}'存在重复!", userCode);
             }
         }
 
-        return new PageImpl<>(vos);
+        return new PageImpl<>(result);
     }
 
     public boolean existsByUserCode(String userCode) {
@@ -204,7 +191,7 @@ public class UserService {
     }
 
     @Transactional
-    public void update(UserVo user) {
+    public void update(User user) {
         user.setOrgId(null);
         user.setAccountId(null);
         user.setDeptId(null);
@@ -280,7 +267,7 @@ public class UserService {
     }
 
     @Transactional
-    public void save(UserVo user) {
+    public void save(User user) {
         Assert.state(!existsByUserCode(user.getCode()), "用户编码[" + user.getCode() + "]已存在!");
 
         user.setOrgId(SessionUtil.getOrganId());

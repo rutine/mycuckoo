@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
+import static com.mycuckoo.constant.AdminConst.ID_ROOT_VALUE;
 
 /**
  * 功能说明: 资源Controller
@@ -41,7 +41,7 @@ public class ResourceController {
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list() {
         List<? extends SimpleTree> all = resourceService.findAll();
-        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ROOT_ID_VALUE);
+        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ID_ROOT_VALUE);
 
         return AjaxResponse.create(list);
     }

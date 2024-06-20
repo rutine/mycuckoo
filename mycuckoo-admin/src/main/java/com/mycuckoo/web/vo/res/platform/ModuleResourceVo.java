@@ -2,6 +2,7 @@ package com.mycuckoo.web.vo.res.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mycuckoo.domain.platform.ModuleMenu;
 
 import java.util.List;
 import java.util.Map;
@@ -14,15 +15,15 @@ import java.util.Map;
  * @time 2024/6/16 7:36
  */
 public class ModuleResourceVo {
-    private List<ModuleMenuVo> menu  = Lists.newArrayList(); // 模块菜单list
+    private List<ModuleMenu> menu  = Lists.newArrayList(); // 模块菜单list
     private Map<Long, List<ResourceVo>> resource = Maps.newHashMap(); // 四级资源
 
-    public ModuleResourceVo(List<ModuleMenuVo> menu, Map<Long, List<ResourceVo>> resource) {
+    public ModuleResourceVo(List<ModuleMenu> menu, Map<Long, List<ResourceVo>> resource) {
         this.menu = menu;
         this.resource = resource;
     }
 
-    public List<ModuleMenuVo> getMenu() {
+    public List<ModuleMenu> getMenu() {
         return menu;
     }
 

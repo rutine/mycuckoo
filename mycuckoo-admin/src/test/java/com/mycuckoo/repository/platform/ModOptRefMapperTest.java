@@ -1,10 +1,9 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.ModOptRef;
-import com.mycuckoo.domain.platform.ModuleMenu;
-import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.ModOptRef;
+import com.mycuckoo.domain.platform.Operate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -60,7 +59,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testSave() {
         ModOptRef modOptRef = new ModOptRef();
-        modOptRef.setModuleMemu(new ModuleMenu(8L));
+        modOptRef.setModuleId(8L);
         modOptRef.setOperate(new Operate(2L, "enable"));
 
         mapper.save(modOptRef);
@@ -71,7 +70,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testUpdate() {
         ModOptRef modOptRef = new ModOptRef();
-        modOptRef.setModuleMemu(new ModuleMenu(8L));
+        modOptRef.setModuleId(8L);
         modOptRef.setOperate(new Operate(2L, "enable"));
         modOptRef.setModOptId(3L);
 
@@ -90,7 +89,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
         ModOptRef modOptRef = mapper.get(25L);
 
         Assert.assertNotNull(modOptRef);
-        Assert.assertEquals("技术", modOptRef.getModuleMemu().getIconCls());
+        Assert.assertEquals("技术", modOptRef.getOperate().getIconCls());
     }
 
     @Test

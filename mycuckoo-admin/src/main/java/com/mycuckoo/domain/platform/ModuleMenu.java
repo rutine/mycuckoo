@@ -38,6 +38,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
      */
     public ModuleMenu(Long moduleId) {
         this.moduleId = moduleId;
+        this.id = String.valueOf(moduleId);
     }
 
 

@@ -12,14 +12,11 @@
 <mapper namespace="com.mycuckoo.repository.platform.ModOptRefMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.ModOptRef">
         <id property="modOptId" column="mod_opt_id" />
+        <result property="moduleId" column="module_id" />
         <association property="operate"
             javaType="com.mycuckoo.domain.platform.Operate"
             resultMap="com.mycuckoo.repository.platform.OperateMapper.baseMap"
             columnPrefix="opt_"/>
-        <association property="moduleMemu"
-            javaType="com.mycuckoo.domain.platform.ModuleMenu"
-            resultMap="com.mycuckoo.repository.platform.ModuleMenuMapper.baseMap"
-            columnPrefix="modu_"/>
     </resultMap>
     
     <sql id="columns">
@@ -35,22 +32,23 @@
             useGeneratedKeys="true" keyProperty="modOptId" keyColumn="mod_opt_id">
         insert into <include refid="table" /> (
             mod_opt_id,
-            operate_id,
-            module_id
+            module_id,
+            operate_id
         )
         values (
             #{modOptId},
-            #{operate.operateId},
-            #{moduleMemu.moduleId}
+            #{moduleId},
+            #{operate.operateId}
         )
     </insert>
     
     <!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.ModOptRef">
         update <include refid="table" />
-        set
-            operate_id                = #{operate.operateId},
-            module_id                 = #{moduleMemu.moduleId}
+        <set>
+            <if test="moduleId != null">module_id = #{moduleId}, </if>
+            <if test="operate.operateId != null">operate_id = #{operate.operateId}, </if>
+        </set>
         where mod_opt_id = #{modOptId}
     </update>
     
@@ -65,26 +63,16 @@
     <select id="get" parameterType="long" resultMap="baseMap">
         select 
             t1.mod_opt_id                     as mod_opt_id,
+            t1.module_id                      as module_id,
             t1.operate_id                     as opt_operate_id,
-            t1.module_id                      as modu_module_id,
             t2.name                           as opt_name,
             t2.icon_cls                       as opt_icon_cls,
             t2.order                          as opt_order,
             t2.group                          as opt_group,
             t2.status                         as opt_status,
-            t2.code                           as opt_code,
-            t3.parent_id                      as modu_parent_id,
-            t3.name                           as modu_name,
-            t3.code                           as modu_code,
-            t3.icon_cls                       as modu_icon_cls,
-            t3.level                          as modu_level,
-            t3.`order`                        as modu_order,
-            t3.belong_sys                     as modu_belong_sys,
-            t3.page_type                      as modu_page_type,
-            t3.status                         as modu_status
+            t2.code                           as opt_code
         from <include refid="table" /> t1
         left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
         where mod_opt_id = #{id}
     </select>
     
@@ -100,26 +88,16 @@
     <select id="findByPage" resultMap="baseMap">
         select 
             t1.mod_opt_id               as mod_opt_id,
+            t1.module_id                as module_id,
             t1.operate_id               as opt_operate_id,
-            t1.module_id                as modu_module_id,
             t2.name                     as opt_name,
             t2.icon_cls                 as opt_icon_cls,
             t2.order                    as opt_order,
             t2.group                    as opt_group,
             t2.status                   as opt_status,
-            t2.code                     as opt_code,
-            t3.parent_id                as modu_parent_id,
-            t3.name                     as modu_name,
-            t3.code                     as modu_code,
-            t3.icon_cls                 as modu_icon_cls,
-            t3.level                    as modu_level,
-            t3.`order`                  as modu_order,
-            t3.belong_sys               as modu_belong_sys,
-            t3.page_type                as modu_page_type,
-            t3.status                   as modu_status
+            t2.code                     as opt_code
         from <include refid="table" /> t1
         left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
     </select>
     
     <!-- 根据模块ID删除模块操作关系,级联删除权限 1 -->
@@ -138,8 +116,8 @@
     <select id="findByOperateId" parameterType="long" resultMap="baseMap">
         select 
             mod_opt_id                    as mod_opt_id,
-            operate_id                    as opt_operate_id,
-            module_id                     as modu_module_id
+            module_id                     as module_id,
+            operate_id                    as opt_operate_id
         from <include refid="table" />
         where operate_id = #{id}
     </select>
@@ -148,8 +126,8 @@
     <select id="findByModuleId" parameterType="long" resultMap="baseMap">
         select 
             mod_opt_id                    as mod_opt_id,
-            operate_id                    as opt_operate_id,
-            module_id                     as modu_module_id
+            module_id                     as module_id,
+            operate_id                    as opt_operate_id
         from <include refid="table" />
         where module_id = #{id}
     </select>

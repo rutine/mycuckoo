@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class ModOptRef implements Serializable {
 
     private Long modOptId;
+    private Long moduleId;
     private Operate operate;
     private ModuleMenu moduleMemu;
 
@@ -31,11 +32,10 @@ public class ModOptRef implements Serializable {
     /**
      * full constructor
      */
-    public ModOptRef(Long modOptId, Operate operate,
-                     ModuleMenu moduleMemu) {
+    public ModOptRef(Long modOptId, Long moduleId, Operate operate) {
         this.modOptId = modOptId;
+        this.moduleId = moduleId;
         this.operate = operate;
-        this.moduleMemu = moduleMemu;
     }
 
     public Long getModOptId() {
@@ -46,6 +46,14 @@ public class ModOptRef implements Serializable {
         this.modOptId = modOptId;
     }
 
+    public Long getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
     public Operate getOperate() {
         return this.operate;
     }
@@ -54,13 +62,6 @@ public class ModOptRef implements Serializable {
         this.operate = operate;
     }
 
-    public ModuleMenu getModuleMemu() {
-        return this.moduleMemu;
-    }
-
-    public void setModuleMemu(ModuleMenu moduleMemu) {
-        this.moduleMemu = moduleMemu;
-    }
 
     @Override
     public boolean equals(Object obj) {

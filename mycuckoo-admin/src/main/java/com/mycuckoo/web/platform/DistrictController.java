@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
+import static com.mycuckoo.constant.AdminConst.ID_ROOT_VALUE;
 
 /**
  * 功能说明: 地区Controller
@@ -124,7 +124,7 @@ public class DistrictController {
         if (id == -1L) {
             List<SimpleTree> tmpTrees = Lists.newArrayList();
             SimpleTree root = new SimpleTree();
-            root.setId(ROOT_ID_VALUE);
+            root.setId(ID_ROOT_VALUE);
             root.setText("中国");
             root.setChildren(districtService.findChildNodes(0));
             tmpTrees.add(root);

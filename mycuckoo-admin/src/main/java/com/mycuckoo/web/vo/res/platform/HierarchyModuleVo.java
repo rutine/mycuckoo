@@ -1,5 +1,7 @@
 package com.mycuckoo.web.vo.res.platform;
 
+import com.mycuckoo.domain.platform.ModuleMenu;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,43 +13,31 @@ import java.util.Map;
  * @time Jul 2, 2017 6:17:29 PM
  */
 public class HierarchyModuleVo {
-    private List<ModuleMenuVo> first;
-    private Map<String, List<ModuleMenuVo>> second;
-    private Map<String, List<ModuleMenuVo>> third;
+    private List<Menu> first;
+    private Map<String, List<Menu>> second;
+    private Map<String, List<Menu>> third;
     private Map<Long, List<ResourceVo>> fourth;
     private String row;
 
     public HierarchyModuleVo(
-            List<ModuleMenuVo> first,
-            Map<String, List<ModuleMenuVo>> second,
-            Map<String, List<ModuleMenuVo>> third) {
+            List<Menu> first,
+            Map<String, List<Menu>> second,
+            Map<String, List<Menu>> third) {
         this.first = first;
         this.second = second;
         this.third = third;
     }
 
-    public List<ModuleMenuVo> getFirst() {
+    public List<Menu> getFirst() {
         return first;
     }
 
-    public void setFirst(List<ModuleMenuVo> first) {
-        this.first = first;
-    }
-
-    public Map<String, List<ModuleMenuVo>> getSecond() {
+    public Map<String, List<Menu>> getSecond() {
         return second;
     }
 
-    public void setSecond(Map<String, List<ModuleMenuVo>> second) {
-        this.second = second;
-    }
-
-    public Map<String, List<ModuleMenuVo>> getThird() {
+    public Map<String, List<Menu>> getThird() {
         return third;
-    }
-
-    public void setThird(Map<String, List<ModuleMenuVo>> third) {
-        this.third = third;
     }
 
     public Map<Long, List<ResourceVo>> getFourth() {
@@ -64,5 +54,66 @@ public class HierarchyModuleVo {
 
     public void setRow(String row) {
         this.row = row;
+    }
+
+
+    public static class Menu {
+        private String id;
+        private Long moduleId; //模块ID
+        private Long parentId; //上级模块
+        private String code; //模块编码
+        private String name; //模块名称
+        private String iconCls; //模块图片样式
+        private Integer level; //模块级别
+        private Integer order; //模块顺序
+        private String belongSys;//系统归属
+
+        public Menu(ModuleMenu menu) {
+            this.id = menu.getId();
+            this.moduleId = menu.getModuleId();
+            this.parentId = menu.getParentId();
+            this.code = menu.getCode();
+            this.name = menu.getName();
+            this.iconCls = menu.getIconCls();
+            this.level = menu.getLevel();
+            this.order = menu.getOrder();
+            this.belongSys = menu.getBelongSys();
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public Long getModuleId() {
+            return moduleId;
+        }
+
+        public Long getParentId() {
+            return parentId;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getIconCls() {
+            return iconCls;
+        }
+
+        public Integer getLevel() {
+            return level;
+        }
+
+        public Integer getOrder() {
+            return order;
+        }
+
+        public String getBelongSys() {
+            return belongSys;
+        }
     }
 }

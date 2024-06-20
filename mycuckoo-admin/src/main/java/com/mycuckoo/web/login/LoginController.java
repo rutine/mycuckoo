@@ -3,16 +3,16 @@ package com.mycuckoo.web.login;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.uum.User;
-import com.mycuckoo.domain.uum.UserExtend;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
+import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
-import com.mycuckoo.core.UserInfo;
-import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
+import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,8 +115,8 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:00:41 PM
      */
-    @PostMapping("/login/select-org")
-    public AjaxResponse<?> selectOrg(
+    @PostMapping("/login/orgs")
+    public AjaxResponse<?> listOrg(
             @RequestBody Long userId,
             HttpSession session) {
         /*
@@ -152,8 +152,8 @@ public class LoginController {
      * @author rutine
      * @time Nov 21, 2012 8:01:00 PM
      */
-    @PostMapping("/login/my-menu")
-    public AjaxResponse<LoginUserInfo> getMyMenu(HttpServletRequest request, HttpSession session) {
+    @PostMapping("/login/menus")
+    public AjaxResponse<LoginUserInfo> listMenu(HttpServletRequest request, HttpSession session) {
         /*
          *  8  通过配置XML获得管理员用户，管理员则不需要权限过滤
          *  9 模块权限过滤，用户是否有特殊权限，并过滤特殊权限

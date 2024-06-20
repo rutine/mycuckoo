@@ -1,6 +1,7 @@
 package com.mycuckoo.web.vo.res.platform;
 
 import com.mycuckoo.core.OrderTree;
+import com.mycuckoo.domain.platform.ModuleMenu;
 
 import java.util.Date;
 
@@ -115,4 +116,15 @@ public class ModuleMenuVos {
         }
     }
 
+    public static class Detail extends ModuleMenu {
+        private String parentName; //上级模块名称
+
+        public String getParentName() {
+            return parentName;
+        }
+
+        public void setParentName(String parentName) {
+            this.parentName = parentName;
+        }
+    }
 }

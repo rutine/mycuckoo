@@ -14,10 +14,7 @@
         <id property="modResId" column="mod_res_id" />
         <result property="group" column="group" />
         <result property="order" column="order" />
-        <association property="moduleMemu"
-            javaType="com.mycuckoo.domain.platform.ModuleMenu"
-            resultMap="com.mycuckoo.repository.platform.ModuleMenuMapper.baseMap"
-            columnPrefix="modu_"/>
+        <result property="moduleId" column="module_id" />
         <association property="resource"
                      javaType="com.mycuckoo.domain.platform.Resource"
                      resultMap="com.mycuckoo.repository.platform.ResourceMapper.baseMap"
@@ -44,7 +41,7 @@
         )
         values (
             #{modResId},
-            #{moduleMemu.moduleId},
+            #{moduleId},
             #{resource.resourceId},
             #{group},
             #{order}
@@ -54,11 +51,12 @@
     <!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
     <update id="update" parameterType="com.mycuckoo.domain.platform.ModResRef">
         update <include refid="table" />
-        set
-            resource_id     = #{resource.resourceId},
-            module_id       = #{moduleMemu.moduleId},
-            `group`         = #{group},
-            `order`         = #{order}
+        <set>
+            <if test="moduleId != null">module_id = #{moduleId}, </if>
+            <if test="group != null">`group` = #{group}, </if>
+            <if test="order != null">`order`  = #{order}, </if>
+            <if test="resource.resourceId != null">resource_id = #{resource.resourceId}, </if>
+        </set>
         where mod_res_id = #{modResId}
     </update>
     
@@ -76,33 +74,23 @@
             t1.mod_res_id         as mod_res_id,
             t1.`group`            as `group`,
             t1.`order`            as `order`,
-            t1.module_id          as modu_module_id,
+            t1.module_id          as module_id,
             t1.resource_id        as res_resource_id,
             t2.module_id          as res_module_id,
             t2.operate_id         as res_operate_id,
+            t2.identifier         as res_identifier,
             t2.name               as res_name,
             t2.`method`           as res_method,
             t2.path               as res_path,
-            t2.status             as res_status,
-            t3.parent_id          as modu_parent_id,
-            t3.name               as modu_name,
-            t3.code               as modu_code,
-            t3.icon_cls           as modu_icon_cls,
-            t3.level              as modu_level,
-            t3.`order`            as modu_order,
-            t3.belong_sys         as modu_belong_sys,
-            t3.page_type          as modu_page_type,
-            t3.status             as modu_status
+            t2.status             as res_status
         from <include refid="table" /> t1
         left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
         where mod_res_id = #{id}
     </select>
     
     <!-- 判断模块操作关系是否存在 -->
     <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
+        select count(1) > 0
         from <include refid="table" />
         where mod_res_id = #{id}
     </select>
@@ -113,26 +101,17 @@
             t1.mod_res_id         as mod_res_id,
             t1.`group`            as `group`,
             t1.`order`            as `order`,
-            t1.module_id          as modu_module_id,
+            t1.module_id          as module_id,
             t1.resource_id        as res_resource_id,
             t2.module_id          as res_module_id,
             t2.operate_id         as res_operate_id,
+            t2.identifier         as res_identifier,
             t2.name               as res_name,
             t2.`method`           as res_method,
             t2.path               as res_path,
-            t2.status             as res_status,
-            t3.parent_id          as modu_parent_id,
-            t3.name               as modu_name,
-            t3.code               as modu_code,
-            t3.icon_cls           as modu_icon_cls,
-            t3.level              as modu_level,
-            t3.`order`            as modu_order,
-            t3.belong_sys         as modu_belong_sys,
-            t3.page_type          as modu_page_type,
-            t3.status             as modu_status
+            t2.status             as res_status
         from <include refid="table" /> t1
         left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
-        left join cuckoo.sys_module_menu t3 on t3.module_id = t1.module_id
     </select>
 
     <!-- 根据模块ID删除,级联删除权限 1 -->
@@ -151,7 +130,7 @@
     <select id="findByResourceId" parameterType="long" resultMap="baseMap">
         select
             mod_res_id    as mod_res_id,
-            module_id     as modu_module_id,
+            module_id     as module_id,
             resource_id    as res_resource_id,
             `group`,
             `order`
@@ -163,7 +142,7 @@
     <select id="findByModuleId" parameterType="long" resultMap="baseMap">
         select
             mod_res_id    as mod_res_id,
-            module_id     as modu_module_id,
+            module_id     as module_id,
             resource_id   as res_resource_id,
             `group`,
             `order`

@@ -9,17 +9,18 @@ import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.service.platform.ModuleService;
 import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
+import com.mycuckoo.web.vo.res.platform.ModuleMenuVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.mycuckoo.constant.AdminConst.ROOT_ID_VALUE;
+import static com.mycuckoo.constant.AdminConst.ID_ROOT_VALUE;
 
 /**
  * 功能说明: 模块菜单Controller
@@ -50,7 +51,7 @@ public class ModuleController {
         querier.setPageSize(0);
         List<? extends SimpleTree> all = moduleService.findByPage(querier);
 
-        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ROOT_ID_VALUE);
+        List<? extends SimpleTree> list = TreeHelper.buildTree(all, ID_ROOT_VALUE);
 
         return AjaxResponse.create(list);
     }
@@ -116,12 +117,15 @@ public class ModuleController {
     }
 
     @GetMapping("/{id}")
-    public AjaxResponse<ModuleMenuVo> get(@PathVariable long id) {
-        ModuleMenuVo moduleMenu = moduleService.get(id);
-        ModuleMenuVo parentMenu = moduleService.get(moduleMenu.getParentId());
-        moduleMenu.setParentName(parentMenu.getName());
+    public AjaxResponse<ModuleMenuVos.Detail> get(@PathVariable long id) {
+        ModuleMenu menu = moduleService.get(id);
+        ModuleMenu parent = moduleService.get(menu.getParentId());
 
-        return AjaxResponse.create(moduleMenu);
+        ModuleMenuVos.Detail vo = new ModuleMenuVos.Detail();
+        BeanUtils.copyProperties(menu, vo);
+        vo.setParentName(parent.getName());
+
+        return AjaxResponse.create(vo);
     }
 
     /**

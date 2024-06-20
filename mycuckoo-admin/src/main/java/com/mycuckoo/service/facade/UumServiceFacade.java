@@ -5,9 +5,7 @@ import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
-import com.mycuckoo.web.vo.res.platform.ModuleMenuVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +56,7 @@ public class UumServiceFacade {
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {
-        return privilegeService.findPrivilegesForAdminLogin();
+        return privilegeService.findPrivilegesForAdminLoginNew();
     }
 
     public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
@@ -67,9 +65,5 @@ public class UumServiceFacade {
 
     public boolean existsSpecialPrivilegeForUser(long userId) {
         return privilegeService.existsSpecialPrivilegeByUserId(userId);
-    }
-
-    public List<CheckboxTree> convertToTree(List<ModuleMenuVo> vos) {
-        return privilegeService.convertToTree(vos);
     }
 }

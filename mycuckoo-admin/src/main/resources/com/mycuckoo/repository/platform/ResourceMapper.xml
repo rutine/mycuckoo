@@ -79,7 +79,7 @@
         update <include refid="table" />
         <set>
             <if test="moduleId != null">module_id = #{moduleId}, </if>
-            <if test="operateId != null">operate_id = #{operateId}, </if>
+            <if test="identifier != null and identifier != ''">operate_id = #{operateId}, </if>
             <if test="identifier != null">identifier = #{identifier}, </if>
             <if test="name != null">name = #{name}, </if>
             <if test="method != null">`method` = #{method}, </if>

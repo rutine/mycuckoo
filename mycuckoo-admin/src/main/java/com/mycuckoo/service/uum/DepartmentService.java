@@ -280,7 +280,7 @@ public class DepartmentService {
                 } else {
                     node = new SimpleTree();
                 }
-                node.setId(LEAF_ID + extend.getRoleId());
+                node.setId(ID_LEAF + extend.getRoleId());
                 node.setParentId(mapper.getDeptId() + "");
                 node.setText(extend.getRoleName());
                 node.setIsLeaf(true);

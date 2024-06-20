@@ -9,6 +9,7 @@ package com.mycuckoo.constant.enums;
  */
 public enum PrivilegeScope {
     ORGAN("org", "机构"),
+    DEPT("dept", "部门"),
     ROLE("rol", "角色"),
     USER("usr", "用户"),
     INCLUDE("inc", "包含"),

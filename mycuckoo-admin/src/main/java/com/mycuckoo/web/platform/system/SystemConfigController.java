@@ -5,9 +5,9 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.service.platform.SystemConfigService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.web.vo.res.uum.UserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +42,9 @@ public class SystemConfigController {
      * @time Nov 23, 2013 11:03:33 PM
      */
     @GetMapping("/users")
-    public AjaxResponse<Page<UserVo>> list(Querier querier) {
+    public AjaxResponse<Page<User>> list(Querier querier) {
         String userAddDelFlag = (String) querier.getRequired("userAddDelFlag");
-        Page<UserVo> page = null;
+        Page<User> page = null;
         if ("add".equalsIgnoreCase(userAddDelFlag)) {
             page = userService.findUsersForSetAdmin(querier);
         } else {
