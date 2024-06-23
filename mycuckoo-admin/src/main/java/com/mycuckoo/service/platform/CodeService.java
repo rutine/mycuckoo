@@ -9,7 +9,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.repository.platform.CodeMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
 import static com.mycuckoo.constant.AdminConst.ENABLE;
-import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.core.util.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: 编码管理业务类
@@ -108,7 +108,7 @@ public class CodeService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         codeMapper.update(entity);
 
@@ -184,9 +184,9 @@ public class CodeService {
         Assert.state(!existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreator(SessionUtil.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         codeMapper.save(entity);
 

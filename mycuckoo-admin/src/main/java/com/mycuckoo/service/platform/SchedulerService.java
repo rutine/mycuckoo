@@ -9,7 +9,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import com.mycuckoo.repository.platform.SchedulerJobMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +80,7 @@ public class SchedulerService {
                 || !existsByJobName(entity.getJobName()), "任务名称[" + entity.getJobName() + "]已存在!");
 
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         schedulerJobMapper.update(entity);
 
         LogOperator.begin()
@@ -100,9 +100,9 @@ public class SchedulerService {
 
         entity.setStatus(ENABLE);
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreator(SessionUtil.getUserId().toString());
         schedulerJobMapper.save(entity);
         if (ENABLE.equals(entity.getStatus())) { //增加任务且状态为启用将任务加入调度
             SchedulerHandle.getInstance().startJob(entity);

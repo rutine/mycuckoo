@@ -35,9 +35,9 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         role.setStatus("enable");
         role.setMemo("测试");
         role.setLevel((short) 3);
-        role.setUpdator("rutine");
+        role.setUpdator("1");
         role.setUpdateTime(LocalDateTime.now());
-        role.setCreator("rutine");
+        role.setCreator("1");
         role.setCreateTime(LocalDateTime.now());
 
         roleMapper.save(role);
@@ -54,7 +54,7 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         role.setMemo("测试");
         role.setLevel((short) 3);
         role.setRoleId(3L);
-        role.setUpdator("rutine");
+        role.setUpdator("1");
         role.setUpdateTime(LocalDateTime.now());
 
         int row = roleMapper.update(role);

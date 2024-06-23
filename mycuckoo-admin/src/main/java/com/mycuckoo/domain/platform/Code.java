@@ -64,7 +64,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getName() {
@@ -72,7 +72,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getModuleName() {
@@ -80,7 +80,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+        this.moduleName = moduleName == null ? moduleName : moduleName.trim();
     }
 
     public String getDelimiter() {
@@ -88,7 +88,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setDelimiter(String delimiter) {
-        this.delimiter = delimiter;
+        this.delimiter = delimiter == null ? delimiter : delimiter.trim();
     }
 
     public Integer getPartNum() {
@@ -104,7 +104,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart1(String part1) {
-        this.part1 = part1;
+        this.part1 = part1 == null ? part1 : part1.trim();
     }
 
     public String getPart1Con() {
@@ -112,7 +112,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart1Con(String part1Con) {
-        this.part1Con = part1Con;
+        this.part1Con = part1Con == null ? part1Con : part1Con.trim();
     }
 
     public String getPart2() {
@@ -120,7 +120,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart2(String part2) {
-        this.part2 = part2;
+        this.part2 = part2 == null ? part2 : part2.trim();
     }
 
     public String getPart2Con() {
@@ -128,7 +128,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart2Con(String part2Con) {
-        this.part2Con = part2Con;
+        this.part2Con = part2Con == null ? part2Con : part2Con.trim();
     }
 
     public String getPart3() {
@@ -136,7 +136,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart3(String part3) {
-        this.part3 = part3;
+        this.part3 = part3 == null ? part3 : part3.trim();
     }
 
     public String getPart3Con() {
@@ -144,7 +144,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart3Con(String part3Con) {
-        this.part3Con = part3Con;
+        this.part3Con = part3Con == null ? part3Con : part3Con.trim();
     }
 
     public String getPart4() {
@@ -152,7 +152,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart4(String part4) {
-        this.part4 = part4;
+        this.part4 = part4 == null ? part4 : part4.trim();
     }
 
     public String getPart4Con() {
@@ -160,7 +160,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setPart4Con(String part4Con) {
-        this.part4Con = part4Con;
+        this.part4Con = part4Con == null ? part4Con : part4Con.trim();
     }
 
     public String getEffect() {
@@ -168,7 +168,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setEffect(String effect) {
-        this.effect = effect;
+        this.effect = effect == null ? effect : effect.trim();
     }
 
     public String getMemo() {
@@ -176,7 +176,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     public String getStatus() {
@@ -184,7 +184,7 @@ public class Code extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public List<String> getPartList() {

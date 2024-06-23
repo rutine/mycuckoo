@@ -9,9 +9,10 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
+import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.req.UserReqVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
@@ -28,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.mycuckoo.constant.BaseConst.USER_DEFAULT_PWD;
-
 /**
  * 功能说明: 用户管理Controller
  *
@@ -44,6 +43,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AccountService accountService;
     @Autowired
     private PrivilegeService privilegeService;
     @Autowired
@@ -97,13 +98,7 @@ public class UserController {
      */
     @PostMapping
     public AjaxResponse<String> create(@RequestBody User user) {
-        Assert.hasText(user.getCode(), "用户编码必填");
-        Assert.state(user.getCode().length() <= 10
-                        || StringUtils.isAlphanumeric(user.getCode()),
-                "用户编码长度最大10的字符或数字");
         Assert.state(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
-        Assert.state(StringUtils.isNumeric(user.getFamilyTel()), "必须有效电话号");
-        Assert.state(StringUtils.isNumeric(user.getOfficeTel()), "必须有效电话号");
         Assert.notNull(user.getAvidate(), "用户有效期不能为空");
 
         userService.save(user);
@@ -220,24 +215,24 @@ public class UserController {
         return AjaxResponse.success("为用户分配行权限成功");
     }
 
-    /**
-     * 功能说明 : 重置用户密码
-     *
-     * @param id
-     * @author rutine
-     * @time Oct 20, 2013 4:48:55 PM
-     */
-    @PutMapping("/{id}/reset-password")
-    public AjaxResponse<String> resetPwd(
-            @PathVariable long id,
-            @RequestBody String userName) {
-
-        // 系统参数用户默认密码
-        String userDefaultPwd = platformServiceFacade.findSystemParaByKey(USER_DEFAULT_PWD);
-        userService.resetPwdByUserId(userDefaultPwd, userName, id);
-
-        return AjaxResponse.success("重置密码成功");
-    }
+//    /**
+//     * 功能说明 : 重置用户密码
+//     *
+//     * @param id
+//     * @author rutine
+//     * @time Oct 20, 2013 4:48:55 PM
+//     */
+//    @PutMapping("/{id}/reset-password")
+//    public AjaxResponse<String> resetPwd(
+//            @PathVariable long id,
+//            @RequestBody String userName) {
+//
+//        // 系统参数用户默认密码
+//        String userDefaultPwd = platformServiceFacade.findSystemParaByKey(USER_DEFAULT_PWD);
+//        userService.resetPwdByUserId(userDefaultPwd, userName, id);
+//
+//        return AjaxResponse.success("重置密码成功");
+//    }
 
 
     /**
@@ -252,7 +247,7 @@ public class UserController {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
         String password = vo.getPassword();
-        userService.updateUserInfo(password, vo.getNewPassword());
+        accountService.updatePassword(password, vo.getNewPassword());
 
         return AjaxResponse.success("修改成功");
     }

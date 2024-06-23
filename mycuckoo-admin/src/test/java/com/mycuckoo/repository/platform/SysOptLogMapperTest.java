@@ -54,7 +54,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
-        sysOptLog.setCreator("rutine");
+        sysOptLog.setCreator("1");
         sysOptLog.setCreateTime(LocalDateTime.now());
 
         mapper.save(sysOptLog);
@@ -76,7 +76,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
-        sysOptLog.setCreator("rutine");
+        sysOptLog.setCreator("1");
         sysOptLog.setCreateTime(LocalDateTime.now());
         sysOptLog.setOptId(4L);
 

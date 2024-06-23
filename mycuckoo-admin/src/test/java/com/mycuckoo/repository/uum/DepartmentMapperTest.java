@@ -53,9 +53,9 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testSave() {
         Department entity = new Department();
-        entity.setUpdator("rutine");
+        entity.setUpdator("1");
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator("rutine");
+        entity.setCreator("1");
         entity.setCreateTime(LocalDateTime.now());
         entity.setMemo("测试");
         entity.setCode("10010");
@@ -70,9 +70,9 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
     @Test
     public void testUpdate() {
         Department entity = new Department();
-        entity.setUpdator("rutine");
+        entity.setUpdator("1");
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator("rutine");
+        entity.setCreator("1");
         entity.setCreateTime(LocalDateTime.now());
         entity.setMemo("测试");
         entity.setCode("10010");

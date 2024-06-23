@@ -39,30 +39,6 @@ public class Department extends BasicDomain<Long> {
         this.status = status;
     }
 
-    /**
-     * full constructor
-     */
-    public Department(Long deptId, Long orgId,
-                      Long parentId, String treeId, Long roleId, Integer level,
-                      String code, String name, String status, String memo,
-                      String updator, LocalDateTime updateTime,
-                      String creator, LocalDateTime createTime) {
-        this.deptId = deptId;
-        this.orgId = orgId;
-        this.parentId = parentId;
-        this.treeId = treeId;
-        this.roleId = roleId;
-        this.level = level;
-        this.code = code;
-        this.name = name;
-        this.status = status;
-        this.memo = memo;
-        this.updator = updator;
-        this.updateTime = updateTime;
-        this.creator = creator;
-        this.createTime = createTime;
-    }
-
     public Long getDeptId() {
         return deptId;
     }
@@ -84,7 +60,7 @@ public class Department extends BasicDomain<Long> {
     }
 
     public void setTreeId(String treeId) {
-        this.treeId = treeId;
+        this.treeId = treeId == null ? treeId : treeId.trim();
     }
 
     public Long getRoleId() {
@@ -108,7 +84,7 @@ public class Department extends BasicDomain<Long> {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getName() {
@@ -116,7 +92,7 @@ public class Department extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getStatus() {
@@ -124,7 +100,7 @@ public class Department extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public String getMemo() {
@@ -132,7 +108,7 @@ public class Department extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
 

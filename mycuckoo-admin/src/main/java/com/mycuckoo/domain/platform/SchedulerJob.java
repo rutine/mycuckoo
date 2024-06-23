@@ -55,7 +55,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setJobName(String jobName) {
-        this.jobName = jobName;
+        this.jobName = jobName == null ? jobName : jobName.trim();
     }
 
     public String getJobClass() {
@@ -63,7 +63,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setJobClass(String jobClass) {
-        this.jobClass = jobClass;
+        this.jobClass = jobClass == null ? jobClass : jobClass.trim();
     }
 
     public String getTriggerType() {
@@ -71,7 +71,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setTriggerType(String triggerType) {
-        this.triggerType = triggerType;
+        this.triggerType = triggerType == null ? triggerType : triggerType.trim();
     }
 
     public String getCron() {
@@ -79,7 +79,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setCron(String cron) {
-        this.cron = cron;
+        this.cron = cron == null ? cron : cron.trim();
     }
 
     public Date getStartTime() {
@@ -119,7 +119,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public String getMemo() {
@@ -127,7 +127,7 @@ public class SchedulerJob extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
 

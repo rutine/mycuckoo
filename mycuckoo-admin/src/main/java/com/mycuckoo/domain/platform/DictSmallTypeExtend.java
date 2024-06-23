@@ -15,6 +15,6 @@ public class DictSmallTypeExtend extends DictSmallType {
     }
 
     public void setBigTypeCode(String bigTypeCode) {
-        this.bigTypeCode = bigTypeCode;
+        this.bigTypeCode = bigTypeCode == null ? bigTypeCode : bigTypeCode.trim();
     }
 }

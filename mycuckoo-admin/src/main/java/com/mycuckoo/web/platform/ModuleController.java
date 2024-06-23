@@ -8,7 +8,7 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.service.platform.ModuleService;
-import com.mycuckoo.util.TreeHelper;
+import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import org.slf4j.Logger;

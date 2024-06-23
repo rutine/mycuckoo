@@ -1,4 +1,4 @@
-package com.mycuckoo.util;
+package com.mycuckoo.core.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

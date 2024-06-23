@@ -3,7 +3,7 @@ package com.mycuckoo.core;
 import com.mycuckoo.core.repository.PageQuery;
 import com.mycuckoo.core.repository.Pageable;
 import com.mycuckoo.core.repository.param.Column;
-import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.core.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;

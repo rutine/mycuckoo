@@ -41,9 +41,9 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         dictBigType.setCode("bigTypeCode");
         dictBigType.setName("大字典类型");
         dictBigType.setUpdateTime(LocalDateTime.now());
-        dictBigType.setUpdator("rutine");
+        dictBigType.setUpdator("1");
         dictBigType.setCreateTime(LocalDateTime.now());
-        dictBigType.setCreator("rutine");
+        dictBigType.setCreator("1");
         dictBigType.setStatus("enable");
 
         mapper.save(dictBigType);
@@ -57,9 +57,9 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         dictBigType.setCode("bigTypeCode");
         dictBigType.setName("大字典类型");
         dictBigType.setUpdateTime(LocalDateTime.now());
-        dictBigType.setUpdator("rutine");
+        dictBigType.setUpdator("1");
         dictBigType.setCreateTime(LocalDateTime.now());
-        dictBigType.setCreator("rutine");
+        dictBigType.setCreator("1");
         dictBigType.setStatus("enable");
         dictBigType.setBigTypeId(5L);
 

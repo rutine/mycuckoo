@@ -3,7 +3,6 @@ package com.mycuckoo.domain.uum;
 import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -19,19 +18,13 @@ public class User extends BasicDomain<Long> {
     private Long accountId;
     private Long roleId;
     private Long deptId;
-    private String code; //用户号
     private String name; //用户名
     private String pinyin;
     private String phone; //用户手机
     private String email; //用户邮件
-    private String password; //用户密码
     private String gender; //用户性别
     private String position; //用户职位
     private String photoUrl; //用户照片
-    private String qq; //用户QQ
-    private String wechat; //用户wechat
-    private String officeTel; //办公电话
-    private String familyTel; //家庭电话
     private Date avidate; //用户有效期
     private String address; //家庭住址
     private String memo; //备注
@@ -49,49 +42,6 @@ public class User extends BasicDomain<Long> {
     public User(Long userId, String status) {
         this.userId = userId;
         this.status = status;
-    }
-
-    /**
-     * full constructor
-     */
-    public User(Long userId,
-                Long orgId, Long accountId,
-                Long roleId, Long deptId,
-                String code, String name,
-                String phone, String email,
-                String password, String gender,
-                String position, String photoUrl,
-                String qq, String wechat,
-                String officeTel, String familyTel,
-                Date avidate, String address, Long belongOrg,
-                String memo, String status,
-                String updator, LocalDateTime updateTime,
-                String creator, LocalDateTime createTime) {
-        this.userId = userId;
-        this.orgId = orgId;
-        this.accountId = accountId;
-        this.roleId = roleId;
-        this.deptId = deptId;
-        this.code = code;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.password = password;
-        this.gender = gender;
-        this.position = position;
-        this.photoUrl = photoUrl;
-        this.qq = qq;
-        this.wechat = wechat;
-        this.officeTel = officeTel;
-        this.familyTel = familyTel;
-        this.avidate = avidate;
-        this.address = address;
-        this.memo = memo;
-        this.status = status;
-        this.updator = updator;
-        this.updateTime = updateTime;
-        this.creator = creator;
-        this.createTime = createTime;
     }
 
     public Long getUserId() {
@@ -126,20 +76,12 @@ public class User extends BasicDomain<Long> {
         this.userId = userId;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getPinyin() {
@@ -155,7 +97,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone = phone == null ? phone : phone.trim();
     }
 
     public String getEmail() {
@@ -163,15 +105,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+        this.email = email == null ? email : email.trim();
     }
 
     public String getGender() {
@@ -179,7 +113,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setGender(String gender) {
-        this.gender = gender;
+        this.gender = gender == null ? gender : gender.trim();
     }
 
     public String getPosition() {
@@ -187,7 +121,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setPosition(String position) {
-        this.position = position;
+        this.position = position == null ? position : position.trim();
     }
 
     public String getPhotoUrl() {
@@ -195,39 +129,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public String getQq() {
-        return qq;
-    }
-
-    public void setQq(String qq) {
-        this.qq = qq;
-    }
-
-    public String getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(String wechat) {
-        this.wechat = wechat;
-    }
-
-    public String getOfficeTel() {
-        return officeTel;
-    }
-
-    public void setOfficeTel(String officeTel) {
-        this.officeTel = officeTel;
-    }
-
-    public String getFamilyTel() {
-        return familyTel;
-    }
-
-    public void setFamilyTel(String familyTel) {
-        this.familyTel = familyTel;
+        this.photoUrl = photoUrl == null ? photoUrl : photoUrl.trim();
     }
 
     public Date getAvidate() {
@@ -243,7 +145,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = address == null ? address : address.trim();
     }
 
     public String getMemo() {
@@ -251,7 +153,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     public String getStatus() {
@@ -259,7 +161,7 @@ public class User extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
 
@@ -269,7 +171,7 @@ public class User extends BasicDomain<Long> {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         User user = (User) obj;
-        if (code != null && code.equals(user.getCode()))
+        if (userId != null && userId.equals(user.getUserId()))
             return true;
         return false;
     }
@@ -279,7 +181,7 @@ public class User extends BasicDomain<Long> {
         int hashcode = 7;
 
         hashcode = hashcode * 37 + (userId == null ? 0 : userId.hashCode());
-        hashcode = hashcode * 37 + (code == null ? 0 : code.hashCode());
+        hashcode = hashcode * 37 + (userId == null ? 0 : userId.hashCode());
 
         return hashcode;
     }

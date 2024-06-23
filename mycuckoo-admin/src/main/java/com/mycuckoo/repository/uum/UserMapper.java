@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
+import com.mycuckoo.core.repository.Repository;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
-import com.mycuckoo.core.repository.Repository;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -17,29 +17,12 @@ import java.util.List;
 public interface UserMapper extends Repository<User, Long> {
 
     /**
-     * <p>通过用户代码和用户名称进行模糊查询用户记录</p>
+     * <p>通过用户名称进行模糊查询用户记录</p>
      *
-     * @param code 用户代码 like '%keyword%'
      * @param name 用户名称 like '%keyword%'
      * @return 用户对象列表
      */
-    List<User> findByCodeAndName(@Param("code") String code, @Param("name") String name);
-
-    /**
-     * <p>判断用户号是否存在</p>
-     *
-     * @param code 用户代码
-     * @return true 用户号重复
-     */
-    boolean existsByUserCode(String code);
-
-    /**
-     * <p>根据用户号获取用户信息</p>
-     *
-     * @param code     用户号
-     * @return 用户
-     */
-    User getByUserCode(@Param("code") String code);
+    List<User> findByName(@Param("name") String name);
 
     /**
      * <p>根据拼音代码查询用户信息, 返回值只有用户id和用户名称</p>

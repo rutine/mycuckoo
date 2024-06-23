@@ -33,24 +33,12 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testFindByCodeAndName() {
-        List<User> list = mapper.findByCodeAndName("ad", "管理");
+    public void testFindByName() {
+        List<User> list = mapper.findByName("管理");
 
         for (User entity : list) {
-            logger.info("------> findByCodeAndName: {}", entity);
+            logger.info("------> findByName: {}", entity);
         }
-    }
-
-    @Test
-    public void testExistsByUserCode() {
-        boolean exists = mapper.existsByUserCode("admis");
-
-        logger.info("------> existsByUserCode: {}", exists);
-    }
-
-    @Test
-    public void testGetByUserCodeAndPwd() {
-        fail("Not yet implemented");
     }
 
     @Test
@@ -80,12 +68,11 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testSave() {
         User user = new User();
-        user.setUpdator("rutine");
+        user.setUpdator("1");
         user.setUpdateTime(LocalDateTime.now());
-        user.setCreator("rutine");
+        user.setCreator("1");
         user.setCreateTime(LocalDateTime.now());
         user.setMemo("测试");
-        user.setCode("10110");
         user.setName("rutine");
         user.setStatus("enable");
 
@@ -98,12 +85,11 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setUpdator("rutine");
+        user.setUpdator("1");
         user.setUpdateTime(LocalDateTime.now());
-        user.setCreator("rutine");
+        user.setCreator("1");
         user.setCreateTime(LocalDateTime.now());
         user.setMemo("测试");
-        user.setCode("10110");
         user.setName("rutine");
         user.setStatus("enable");
         user.setUserId(0L);

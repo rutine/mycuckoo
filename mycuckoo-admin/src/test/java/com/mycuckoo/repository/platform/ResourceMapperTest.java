@@ -27,7 +27,7 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
     public void testSave() {
         Resource entity = new Resource();
         entity.setCreateTime(LocalDateTime.now());
-        entity.setCreator("rutine");
+        entity.setCreator("1");
         entity.setMemo("测试");
         entity.setName("增加");
         entity.setModuleId(7L);
@@ -44,7 +44,7 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
     public void testUpdate() {
         Resource entity = new Resource();
         entity.setCreateTime(LocalDateTime.now());
-        entity.setCreator("rutine");
+        entity.setCreator("1");
         entity.setMemo("测试");
         entity.setName("增加");
         entity.setModuleId(7L);

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class Account implements Serializable {
 
     private Long accountId; //ID
+    private String account; //用户号
     private String phone; //手机
     private String email; //邮件
     private String password; //密码
@@ -37,24 +38,6 @@ public class Account implements Serializable {
         this.accountId = accountId;
     }
 
-    /**
-     * full constructor
-     */
-    public Account(Long accountId,
-                   String phone, String email,
-                   String password,
-                   Integer errorCount, String ip,
-                   LocalDateTime loginTime, LocalDateTime updateTime, LocalDateTime createTime) {
-        this.accountId = accountId;
-        this.phone = phone;
-        this.email = email;
-        this.password = password;
-        this.errorCount = errorCount;
-        this.ip = ip;
-        this.loginTime = loginTime;
-        this.updateTime = updateTime;
-        this.createTime = createTime;
-    }
 
     public Long getAccountId() {
         return accountId;
@@ -64,12 +47,20 @@ public class Account implements Serializable {
         this.accountId = accountId;
     }
 
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account == null ? account : account.trim();;
+    }
+
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone = phone == null ? phone : phone.trim();
     }
 
     public String getEmail() {
@@ -77,7 +68,7 @@ public class Account implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email == null ? email : email.trim();
     }
 
     public String getPassword() {
@@ -85,7 +76,7 @@ public class Account implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password == null ? password : password.trim();
     }
 
     public Integer getErrorCount() {

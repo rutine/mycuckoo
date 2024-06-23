@@ -16,8 +16,8 @@ import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
-import com.mycuckoo.util.TreeHelper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.TreeHelper;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.uum.OrganVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +168,7 @@ public class OrganService {
         organ.setStatus(null);
         organ.setCreateTime(null);
         organ.setCreator(null);
-        organ.setUpdator(SessionUtil.getUserCode());
+        organ.setUpdator(SessionUtil.getUserId().toString());
         organ.setUpdateTime(LocalDateTime.now());
         organMapper.update(organ);
 
@@ -183,9 +183,9 @@ public class OrganService {
 
         organ.setLevel(parent.getLevel() + 1);
         organ.setStatus(ENABLE);
-        organ.setUpdator(SessionUtil.getUserCode());
+        organ.setUpdator(SessionUtil.getUserId().toString());
         organ.setUpdateTime(LocalDateTime.now());
-        organ.setCreator(SessionUtil.getUserCode());
+        organ.setCreator(SessionUtil.getUserId().toString());
         organ.setCreateTime(LocalDateTime.now());
         organMapper.save(organ);
 

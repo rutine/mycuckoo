@@ -1,4 +1,4 @@
-package com.mycuckoo.util;
+package com.mycuckoo.core.util;
 
 import java.util.Random;
 import java.util.UUID;

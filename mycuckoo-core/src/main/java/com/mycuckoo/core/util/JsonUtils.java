@@ -1,4 +1,4 @@
-package com.mycuckoo.util;
+package com.mycuckoo.core.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;

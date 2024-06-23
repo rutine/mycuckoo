@@ -50,7 +50,7 @@ public class Affiche extends BasicDomain<Long> {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title == null ? title : title.trim();
     }
 
     public String getContent() {
@@ -58,7 +58,7 @@ public class Affiche extends BasicDomain<Long> {
     }
 
     public void setContent(String content) {
-        this.content = content;
+        this.content = content == null ? content : content.trim();
     }
 
     public Date getInvalidate() {

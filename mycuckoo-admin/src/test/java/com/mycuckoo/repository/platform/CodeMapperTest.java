@@ -55,9 +55,9 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setPartNum(3);
         code.setStatus("enable");
         code.setUpdateTime(LocalDateTime.now());
-        code.setUpdator("rutine");
+        code.setUpdator("1");
         code.setCreateTime(LocalDateTime.now());
-        code.setCreator("rutine");
+        code.setCreator("1");
 
         mapper.save(code);
 
@@ -83,7 +83,7 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         code.setStatus("enable");
         code.setCodeId(25L);
         code.setUpdateTime(LocalDateTime.now());
-        code.setUpdator("rutine");
+        code.setUpdator("1");
 
         int row = mapper.update(code);
 

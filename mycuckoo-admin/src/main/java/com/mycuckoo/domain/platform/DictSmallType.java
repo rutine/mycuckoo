@@ -55,7 +55,7 @@ public class DictSmallType extends BasicDomain<Long> implements Dictionary {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getName() {
@@ -63,7 +63,7 @@ public class DictSmallType extends BasicDomain<Long> implements Dictionary {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
 

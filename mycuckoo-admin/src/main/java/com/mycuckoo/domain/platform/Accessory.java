@@ -31,14 +31,6 @@ public class Accessory implements Serializable {
         this.accessoryId = accessoryId;
     }
 
-    /**
-     * full constructor
-     */
-    public Accessory(Long accessoryId, String accessoryName, Long infoId) {
-        this.accessoryId = accessoryId;
-        this.accessoryName = accessoryName;
-        this.infoId = infoId;
-    }
 
     public Long getAccessoryId() {
         return this.accessoryId;
@@ -53,7 +45,7 @@ public class Accessory implements Serializable {
     }
 
     public void setAccessoryName(String accessoryName) {
-        this.accessoryName = accessoryName;
+        this.accessoryName = accessoryName == null ? accessoryName : accessoryName.trim();
     }
 
     public Long getInfoId() {

@@ -50,7 +50,7 @@ public class DictBigType extends BasicDomain<Long> {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getName() {
@@ -58,7 +58,7 @@ public class DictBigType extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getMemo() {
@@ -66,7 +66,7 @@ public class DictBigType extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     public String getStatus() {
@@ -74,7 +74,7 @@ public class DictBigType extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public List<DictSmallType> getSmallTypes() {

@@ -34,7 +34,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     public void testSave() {
         Operate operate = new Operate();
         operate.setCreateTime(LocalDateTime.now());
-        operate.setCreator("rutine");
+        operate.setCreator("1");
         operate.setMemo("测试");
         operate.setName("增加");
         operate.setCode("no-resource");
@@ -51,7 +51,7 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     public void testUpdate() {
         Operate operate = new Operate();
         operate.setCreateTime(LocalDateTime.now());
-        operate.setCreator("rutine");
+        operate.setCreator("1");
         operate.setMemo("测试");
         operate.setName("增加");
         operate.setCode("no-resource");

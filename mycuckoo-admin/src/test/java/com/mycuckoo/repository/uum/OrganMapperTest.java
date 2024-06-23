@@ -67,9 +67,9 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testSave() {
         Organ organ = new Organ();
-        organ.setUpdator("rutine");
+        organ.setUpdator("1");
         organ.setUpdateTime(LocalDateTime.now());
-        organ.setCreator("rutine");
+        organ.setCreator("1");
         organ.setCreateTime(LocalDateTime.now());
         organ.setMemo("测试");
         organ.setCode("10010");
@@ -84,9 +84,9 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     public void testUpdate() {
         Organ organ = new Organ();
-        organ.setUpdator("rutine");
+        organ.setUpdator("1");
         organ.setUpdateTime(LocalDateTime.now());
-        organ.setCreator("rutine");
+        organ.setCreator("1");
         organ.setCreateTime(LocalDateTime.now());
         organ.setMemo("测试");
         organ.setCode("10010");

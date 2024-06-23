@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform.job;
 
-import com.mycuckoo.util.web.SpringContextUtils;
-import com.mycuckoo.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.web.SpringContextUtils;
+import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

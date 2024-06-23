@@ -52,7 +52,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setTableCode(String tableCode) {
-        this.tableCode = tableCode;
+        this.tableCode = tableCode == null ? tableCode : tableCode.trim();
     }
 
     public Long getModuleId() {
@@ -68,7 +68,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.type = type == null ? type : type.trim();
     }
 
     public String getField() {
@@ -76,7 +76,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setField(String field) {
-        this.field = field;
+        this.field = field == null ? field : field.trim();
     }
 
     public String getTitle() {
@@ -84,7 +84,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title == null ? title : title.trim();
     }
 
     public String getFilterType() {
@@ -92,7 +92,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setFilterType(String filterType) {
-        this.filterType = filterType;
+        this.filterType = filterType == null ? filterType : filterType.trim();
     }
 
     public Boolean getFilter() {
@@ -132,7 +132,7 @@ public class TableConfig extends BasicDomain<Long> {
     }
 
     public void setExtra(String extra) {
-        this.extra = extra;
+        this.extra = extra == null ? extra : extra.trim();
     }
 
     public Integer getOrder() {

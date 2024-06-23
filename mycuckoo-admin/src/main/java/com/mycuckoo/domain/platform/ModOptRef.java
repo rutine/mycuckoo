@@ -14,7 +14,6 @@ public class ModOptRef implements Serializable {
     private Long modOptId;
     private Long moduleId;
     private Operate operate;
-    private ModuleMenu moduleMemu;
 
     /**
      * default constructor

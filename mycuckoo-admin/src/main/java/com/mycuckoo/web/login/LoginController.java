@@ -7,12 +7,14 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
+import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.login.LoginService;
-import com.mycuckoo.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
+import com.mycuckoo.web.vo.res.platform.ResourceVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.BaseConst.*;
 
@@ -79,9 +82,9 @@ public class LoginController {
 //        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
 //            throw new ApplicationException(4, "用户过期");
 //        }
-        Long accountId = loginService.getAccountByPhoneAndPwd(account, password);
+        Account act = loginService.getAccountBy(account, password);
 
-        List<UserExtend> vos = loginService.preLogin(accountId);
+        List<UserExtend> vos = loginService.preLogin(act.getAccountId());
         if (!isAdmin) {
             int len = vos.size();
             Iterator<UserExtend> it = vos.iterator();
@@ -100,8 +103,9 @@ public class LoginController {
             }
         }
 
-        session.setAttribute(ACCOUNT_ID, accountId);
-        session.setAttribute(ACCOUNT_ORG, vos);
+        session.setAttribute(SESSION_ACCOUNT_ID, act.getAccountId());
+        session.setAttribute(SESSION_ACCOUNT_CODE, act.getAccount());
+        session.setAttribute(SESSION_ACCOUNT_ORG, vos);
 
         return AjaxResponse.create(vos);
     }
@@ -122,7 +126,7 @@ public class LoginController {
         /*
          * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
          */
-        Long accountId = (Long) session.getAttribute(ACCOUNT_ID);
+        Long accountId = (Long) session.getAttribute(SESSION_ACCOUNT_ID);
         UserInfo user = loginService.getUserByAccountIdAndUserId(accountId, userId);
         Assert.notNull(user, "所选组织不存在, 请选择正确组织登录!");
         String userName = user.getUserName();
@@ -136,7 +140,7 @@ public class LoginController {
         Long roleId = user.getRoleId() == null ? -1L : user.getRoleId();
         String roleName = user.getRoleName() == null ? ADMIN_ROLENAME : user.getRoleName();
 
-        session.setAttribute(USER_INFO, user);
+        session.setAttribute(SESSION_USER_INFO, user);
 
         logger.info("organId:   {}  -  organName:  {}", organId, organName);
         logger.info("roleId:    {}  -  roleName:   {}", roleId, roleName);
@@ -163,15 +167,22 @@ public class LoginController {
         Long organId = user.getOrgId();
         Long roleId = user.getRoleId();
         Long userId = user.getId();
-        String userCode = user.getUserCode();
+        String account = SessionUtil.getAccountCode();
 
-        HierarchyModuleVo moduleVo = (HierarchyModuleVo) session.getAttribute(MODULE_MENU);
+        HierarchyModuleVo moduleVo = (HierarchyModuleVo) session.getAttribute(SESSION_MODULE_MENU);
         if (moduleVo == null) {
             // 加载用户菜单
-            moduleVo = loginService.filterPrivilege(userId, roleId, organId, -1L, userCode);
+            moduleVo = loginService.filterPrivilege(userId, roleId, organId, account);
             logger.info("user row privilege : 【{}】", moduleVo.getRow());
 
-            session.setAttribute(MODULE_MENU, moduleVo);
+            List<String> res = moduleVo.getFourth().values().stream()
+                    .flatMap(o -> o.stream())
+                    .map(ResourceVo::getId)
+                    .map(String::valueOf)
+                    .distinct()
+                    .collect(Collectors.toList());
+            session.setAttribute(SESSION_MODULE_MENU, moduleVo);
+            session.setAttribute(SESSION_RES_CODES, res);
 
             // 记录登录日志
             LogOperator.begin()

@@ -66,7 +66,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.identifier = identifier == null ? identifier : identifier.trim();
     }
 
     public String getName() {
@@ -74,7 +74,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getMethod() {
@@ -82,7 +82,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        this.method = method == null ? method : method.trim();
     }
 
     public String getPath() {
@@ -90,7 +90,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.path = path == null ? path : path.trim();
     }
 
     public Integer getOrder() {
@@ -106,7 +106,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     public String getStatus() {
@@ -114,7 +114,7 @@ public class Resource extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
 

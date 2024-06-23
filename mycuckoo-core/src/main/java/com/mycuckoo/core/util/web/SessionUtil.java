@@ -1,4 +1,4 @@
-package com.mycuckoo.util.web;
+package com.mycuckoo.core.util.web;
 
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.ApplicationException;
@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
-import static com.mycuckoo.constant.BaseConst.ACCOUNT_ID;
-import static com.mycuckoo.constant.BaseConst.USER_INFO;
+import static com.mycuckoo.constant.BaseConst.*;
 
 /**
  * 功能说明: 取会话信息工具类，主要是统一获取会话中的信息
@@ -86,7 +86,7 @@ public final class SessionUtil {
      * @time Jan 27, 2019 3:16:53 PM
      */
     public static UserInfo getUserInfo() {
-        return (UserInfo) getSession().getAttribute(USER_INFO);
+        return (UserInfo) getSession().getAttribute(SESSION_USER_INFO);
     }
 
     /**
@@ -148,7 +148,14 @@ public final class SessionUtil {
      * 功能说明 : 获取账号id, 此值登录后存入会话
      */
     public static Long getAccountId() {
-        return getSession() != null ? (Long) getSession().getAttribute(ACCOUNT_ID) : null;
+        return getSession() != null ? (Long) getSession().getAttribute(SESSION_ACCOUNT_ID) : null;
+    }
+
+    /**
+     * 功能说明 : 获取账号, 此值登录后存入会话
+     */
+    public static String getAccountCode() {
+        return getSession() != null ? (String) getSession().getAttribute(SESSION_ACCOUNT_CODE) : null;
     }
 
     /**
@@ -159,7 +166,7 @@ public final class SessionUtil {
      * @time Nov 1, 2014 1:36:38 PM
      */
     public static String getUserCode() {
-        return (String) getUserInfo().getUserCode();
+        return (String) getUserInfo().getPinyin();
     }
 
     /**
@@ -192,7 +199,14 @@ public final class SessionUtil {
 //     * @time Nov 2, 2014 12:11:23 PM
 //     */
 //    public static HierarchyModuleVo getHierarchyModule() {
-//        return (HierarchyModuleVo) getSession().getAttribute(MODULE_MENU);
+//        return (HierarchyModuleVo) getSession().getAttribute(SESSION_MODULE_MENU);
 //    }
+
+    /**
+     * 功能说明 : 获取用户资源, 此值登录后存入会话
+     */
+    public static List<String> getResources() {
+        return (List<String>) getSession().getAttribute(SESSION_RES_CODES);
+    }
 
 }

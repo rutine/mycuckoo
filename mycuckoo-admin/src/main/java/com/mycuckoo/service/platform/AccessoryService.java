@@ -6,7 +6,7 @@ import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.repository.platform.AccessoryMapper;
-import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.core.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -36,9 +36,9 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     public void testSave() {
         SysParameter sysParameter = new SysParameter();
         sysParameter.setCreateTime(LocalDateTime.now());
-        sysParameter.setCreator("rutine");
+        sysParameter.setCreator("1");
         sysParameter.setUpdateTime(LocalDateTime.now());
-        sysParameter.setUpdator("rutine");
+        sysParameter.setUpdator("1");
         sysParameter.setMemo("测试");
         sysParameter.setName("编号");
         sysParameter.setKey("no-key-name");
@@ -55,7 +55,7 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
     public void testUpdate() {
         SysParameter sysParameter = new SysParameter();
         sysParameter.setUpdateTime(LocalDateTime.now());
-        sysParameter.setUpdator("rutine");
+        sysParameter.setUpdator("1");
         sysParameter.setMemo("测试");
         sysParameter.setName("编号");
         sysParameter.setKey("no-key-name");

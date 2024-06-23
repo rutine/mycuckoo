@@ -10,7 +10,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.repository.uum.RoleMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +80,7 @@ public class RoleService {
                 || !existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
         role.setUpdateTime(LocalDateTime.now());
-        role.setUpdator(SessionUtil.getUserCode());
+        role.setUpdator(SessionUtil.getUserId().toString());
         roleMapper.update(role);
 
         writeLog(role, LogLevel.SECOND, OptName.MODIFY);
@@ -92,9 +92,9 @@ public class RoleService {
 
         role.setOrgId(SessionUtil.getOrganId());
         role.setUpdateTime(LocalDateTime.now());
-        role.setUpdator(SessionUtil.getUserCode());
+        role.setUpdator(SessionUtil.getUserId().toString());
         role.setCreateTime(LocalDateTime.now());
-        role.setCreator(SessionUtil.getUserCode());
+        role.setCreator(SessionUtil.getUserId().toString());
         role.setStatus(ENABLE);
         roleMapper.save(role);
 

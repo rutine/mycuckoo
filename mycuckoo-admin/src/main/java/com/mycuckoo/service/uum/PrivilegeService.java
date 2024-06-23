@@ -8,14 +8,15 @@ import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.operator.LogOperator;
+import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
-import com.mycuckoo.util.CommonUtils;
-import com.mycuckoo.util.SystemConfigXmlParse;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ModuleResourceVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
@@ -154,7 +155,10 @@ public class PrivilegeService {
         }
 
         // 查找所有模块资源关系
+        List<String> myRes = SessionUtil.getResources();
         List<ResourceVo> resources = platformServiceFacade.findAllModResRefs();
+        resources = resources.stream().filter(o -> myRes.contains(o.getId().toString())).collect(Collectors.toList());
+
         List<String> checkedOperations = resourceIdList.parallelStream()
                 .map(id -> {return AdminConst.ID_LEAF + id; })
                 .collect(Collectors.toList());
@@ -254,11 +258,11 @@ public class PrivilegeService {
         return hierarchyModuleVo;
     }
 
-    public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
+    public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId) {
         // 查找用户相关所有权限
-        Long[] ownerIds = { userId, roleId, organRoleId }; // 拥有者数组
+        Long[] ownerIds = { userId, roleId }; // 拥有者数组
         String[] ownerTypes =  { OwnerType.USR.value(), OwnerType.ROLE.value() }; // 拥有者类型数组
-        String[] privilegeTypes = { PrivilegeType.ROW.value(), PrivilegeType.OPT.value() }; // 权限类型数组
+        String[] privilegeTypes = { PrivilegeType.ROW.value(), PrivilegeType.RES.value() }; // 权限类型数组
         List<Privilege> privileges = privilegeMapper.findByOwnIdAndPrivilegeType(ownerIds, ownerTypes, privilegeTypes);
 
         // 1 ====== 用户, 角色权限划分 ======
@@ -270,14 +274,14 @@ public class PrivilegeService {
             OwnerType ownerType = OwnerType.of(privilege.getOwnerType());
             PrivilegeType privilegeType = PrivilegeType.of(privilege.getPrivilegeType());
             if (OwnerType.USR == ownerType) { // 用户
-                if (PrivilegeType.OPT == privilegeType) {
+                if (PrivilegeType.RES == privilegeType) {
                     optSpecialPrivileges.add(privilege);
                 } else if (PrivilegeType.ROW == privilegeType) {
                     rowSpecialPrivileges.add(privilege);
                 }
             }
             else if (OwnerType.ROLE == ownerType) {
-                if (PrivilegeType.OPT == privilegeType) {
+                if (PrivilegeType.RES == privilegeType) {
                     optPrivileges.add(privilege);
                 } else if (PrivilegeType.ROW == privilegeType) {
                     rowPrivileges.add(privilege);
@@ -306,12 +310,19 @@ public class PrivilegeService {
 
         List<ResourceVo> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
+//            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
+            List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> !resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
-            resources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
+//            resources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
+            resources = platformServiceFacade.findAllModResRefs(); // 所有资源
+        } else {
+            List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            resources = allResources.stream()
+                    .filter(r -> resourceIds.contains(r.getId()))
+                    .collect(Collectors.toList());
         }
 
         // 过滤所有的模块操作
@@ -351,7 +362,7 @@ public class PrivilegeService {
         sql.append(" AND ");
         if (OwnerType.ROLE == ownerTypeFlag) {
             if (PrivilegeScope.ROLE == privilegeScopeFlag) {
-                sql.append(ROLE_ID + " = " + organRoleId + " "); // 自我真实角色
+                sql.append(ROLE_ID + " = " + roleId + " "); // 自我真实角色
             } else if (PrivilegeScope.USER == privilegeScopeFlag) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {
@@ -372,7 +383,7 @@ public class PrivilegeService {
             SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean(); // 系统配置权限
             String rowPrivilegeLevel = systemConfigBean.getRowPrivilegeLevel();
             if (PrivilegeScope.ROLE.value().equals(rowPrivilegeLevel)) {
-                sql.append(ROLE_ID + " = " + organRoleId + " "); // 自我真实角色
+                sql.append(ROLE_ID + " = " + roleId + " "); // 自我真实角色
             } else if (PrivilegeScope.USER.value().equals(rowPrivilegeLevel)) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {

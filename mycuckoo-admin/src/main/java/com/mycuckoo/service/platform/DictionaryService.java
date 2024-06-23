@@ -12,7 +12,7 @@ import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.DictSmallTypeExtend;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
 import com.mycuckoo.repository.platform.DictSmallTypeMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,14 +69,14 @@ public class DictionaryService {
         return dictSmallTypeMapper.findByBigTypeCode(bigTypeCode);
     }
 
-    public Map<String, List<DictSmallTypeExtend>> findSmallTypeMapByBigTypeCodes(List<String> bigTypeCodes) {
+    public Map<String, List<DictSmallType>> findSmallTypeMapByBigTypeCodes(List<String> bigTypeCodes) {
         if (bigTypeCodes == null || bigTypeCodes.isEmpty()) {
             return Maps.newHashMap();
         }
 
         List<DictSmallTypeExtend> list = dictSmallTypeMapper.findByBigTypeCodes(bigTypeCodes);
 
-        return list.stream().collect(Collectors.groupingBy(DictSmallTypeExtend::getBigTypeCode));
+        return list.stream().collect(Collectors.groupingBy(DictSmallTypeExtend::getBigTypeCode, Collectors.toList()));
     }
 
     public DictBigType getBigTypeByBigTypeId(long bigTypeId) {
@@ -94,7 +94,7 @@ public class DictionaryService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         dictSmallTypeMapper.deleteByBigTypeId(entity.getBigTypeId());
         dictBigTypeMapper.update(entity);
@@ -111,9 +111,9 @@ public class DictionaryService {
     public void saveBigType(DictBigType entity) {
         Assert.state(!existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreator(SessionUtil.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         entity.setStatus(ENABLE);
         dictBigTypeMapper.save(entity);
@@ -129,7 +129,7 @@ public class DictionaryService {
     @Transactional
     public void saveDicSmallTypes(List<DictSmallType> smallTypes) {
         smallTypes.forEach(dicSmallType -> {
-            dicSmallType.setCreator(SessionUtil.getUserCode());
+            dicSmallType.setCreator(SessionUtil.getUserId().toString());
             dicSmallType.setCreateTime(LocalDateTime.now());
             dictSmallTypeMapper.save(dicSmallType);
         });

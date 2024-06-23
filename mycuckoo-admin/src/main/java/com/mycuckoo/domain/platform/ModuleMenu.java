@@ -63,7 +63,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getName() {
@@ -71,7 +71,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getIconCls() {
@@ -79,7 +79,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setIconCls(String iconCls) {
-        this.iconCls = iconCls;
+        this.iconCls = iconCls == null ? iconCls : iconCls.trim();
     }
 
     public Integer getLevel() {
@@ -103,7 +103,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setBelongSys(String belongSys) {
-        this.belongSys = belongSys;
+        this.belongSys = belongSys == null ? belongSys : belongSys.trim();
     }
 
     public String getPageType() {
@@ -111,7 +111,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setPageType(String pageType) {
-        this.pageType = pageType;
+        this.pageType = pageType == null ? pageType : pageType.trim();
     }
 
     public String getStatus() {
@@ -119,7 +119,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public String getMemo() {
@@ -127,7 +127,7 @@ public class ModuleMenu extends BasicDomain<String> implements Comparator<Module
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     @Override

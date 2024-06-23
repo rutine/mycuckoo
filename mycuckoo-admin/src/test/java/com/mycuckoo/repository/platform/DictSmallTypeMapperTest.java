@@ -51,7 +51,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         dictSmallType.setBigTypeId(21L);
         dictSmallType.setCode("小类型code");
         dictSmallType.setName("字典小类型");
-        dictSmallType.setCreator("rutine");
+        dictSmallType.setCreator("1");
         dictSmallType.setCreateTime(LocalDateTime.now());
 
         mapper.save(dictSmallType);
@@ -64,7 +64,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
         DictSmallType dictSmallType = new DictSmallType();
         dictSmallType.setCode("小类型code");
         dictSmallType.setName("字典小类型");
-        dictSmallType.setCreator("rutine");
+        dictSmallType.setCreator("1");
         dictSmallType.setCreateTime(LocalDateTime.now());
         dictSmallType.setSmallTypeId(8L);
 

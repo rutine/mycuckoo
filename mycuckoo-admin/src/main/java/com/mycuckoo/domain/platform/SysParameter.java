@@ -49,7 +49,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? name : name.trim();
     }
 
     public String getKey() {
@@ -57,7 +57,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setKey(String key) {
-        this.key = key;
+        this.key = key == null ? key : key.trim();
     }
 
     public String getValue() {
@@ -65,7 +65,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = value == null ? value : value.trim();
     }
 
     public String getType() {
@@ -73,7 +73,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.type = type == null ? type : type.trim();
     }
 
     public String getMemo() {
@@ -81,7 +81,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
     public String getStatus() {
@@ -89,7 +89,7 @@ public class SysParameter extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
 

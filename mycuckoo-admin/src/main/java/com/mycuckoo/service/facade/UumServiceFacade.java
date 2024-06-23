@@ -1,11 +1,12 @@
 package com.mycuckoo.service.facade;
 
-import com.mycuckoo.domain.uum.User;
+import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +40,8 @@ public class UumServiceFacade {
         this.privilegeService.deletePrivilegeByModResId(modOptRefIds);
     }
 
-    public Long getAccountByPhoneAndPwd(String phone, String password, String ip) {
-        return accountService.getAccountIdByPhoneOrEmail(phone, null, password, ip);
-    }
-
-    public User getUserByUserCodeAndPwd(String userCode, String password) {
-        return userService.getUserByUserCodeAndPwd(userCode, password);
+    public Account getAccountBy(String account, String password, String ip) {
+        return accountService.getBy(account, password, ip);
     }
 
     public UserExtend getUserByAccountIdAndUserId(Long accountId, Long userId) {
@@ -59,8 +56,8 @@ public class UumServiceFacade {
         return privilegeService.findPrivilegesForAdminLoginNew();
     }
 
-    public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId, long organRoleId) {
-        return privilegeService.findPrivilegesForUserLogin(userId, roleId, organId, organRoleId);
+    public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId) {
+        return privilegeService.findPrivilegesForUserLogin(userId, roleId, organId);
     }
 
     public boolean existsSpecialPrivilegeForUser(long userId) {

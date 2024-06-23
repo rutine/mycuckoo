@@ -46,9 +46,9 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
     public void testSave() {
         SchedulerJob schedulerJob = new SchedulerJob();
         schedulerJob.setCreateTime(LocalDateTime.now());
-        schedulerJob.setCreator("rutine");
+        schedulerJob.setCreator("1");
         schedulerJob.setUpdateTime(LocalDateTime.now());
-        schedulerJob.setUpdator("rutine");
+        schedulerJob.setUpdator("1");
         schedulerJob.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 24 * 60 * 60 * 1000L));
         schedulerJob.setJobClass("打酱油");
         schedulerJob.setJobName("闲职");
@@ -68,9 +68,9 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
     public void testUpdate() {
         SchedulerJob schedulerJob = new SchedulerJob();
         schedulerJob.setCreateTime(LocalDateTime.now());
-        schedulerJob.setCreator("rutine");
+        schedulerJob.setCreator("1");
         schedulerJob.setUpdateTime(LocalDateTime.now());
-        schedulerJob.setUpdator("rutine");
+        schedulerJob.setUpdator("1");
         schedulerJob.setEndTime(new Date(Calendar.getInstance().getTimeInMillis() + 24 * 60 * 60 * 1000L));
         schedulerJob.setJobClass("打酱油");
         schedulerJob.setJobName("闲职");

@@ -1,4 +1,4 @@
-package com.mycuckoo.util.web;
+package com.mycuckoo.core.util.web;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

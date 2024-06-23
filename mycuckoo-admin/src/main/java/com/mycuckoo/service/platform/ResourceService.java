@@ -14,8 +14,8 @@ import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
-import com.mycuckoo.util.CommonUtils;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.ResourceVos;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -135,7 +135,7 @@ public class ResourceService {
         Assert.state(resourceMapper.exists(entity.getResourceId()), "资源不存在!");
 
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         resourceMapper.update(entity);
 
         writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
@@ -151,9 +151,9 @@ public class ResourceService {
 
         entity.setStatus(ENABLE);
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setUpdator(SessionUtil.getUserCode());
+        entity.setUpdator(SessionUtil.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreator(SessionUtil.getUserId().toString());
         resourceMapper.save(entity);
 
         writeLog(entity, LogLevel.FIRST, OptName.SAVE);

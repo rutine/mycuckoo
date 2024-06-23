@@ -19,19 +19,23 @@ public class BaseConst {
     public final static String ROLE_ID = "roleId";
     public final static String ROLE_NAME = "roleName";
 
-    //账号ID
-    public final static String ACCOUNT_ID = "accountId";
-    public final static String ACCOUNT_ORG = "accountOrg";
-
     //用户名称 ID
     public final static String USER_ID = "userId";
     public final static String USER_CODE = "userCode";
     public final static String USER_NAME = "userName";
+
+    //账号ID
+    public final static String SESSION_ACCOUNT_ID = "session:accountId";
+    public final static String SESSION_ACCOUNT_CODE = "session:accountCode";
+    public final static String SESSION_ACCOUNT_ORG = "session:accountOrg";
+
     //用户信息
-    public final static String USER_INFO = "userInfo";
+    public final static String SESSION_USER_INFO = "session:userInfo";
 
     //用户菜单
-    public final static String MODULE_MENU = "moduleMenu";
+    public final static String SESSION_MODULE_MENU = "session:moduleMenu";
+    //用户资源ID
+    public final static String SESSION_RES_CODES = "session:resource";
 
     public final static String USER_DEFAULT_PWD = "userdefaultpassword";
 }

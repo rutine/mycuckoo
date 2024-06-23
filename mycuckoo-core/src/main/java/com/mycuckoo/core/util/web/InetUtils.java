@@ -1,6 +1,6 @@
-package com.mycuckoo.util.web;
+package com.mycuckoo.core.util.web;
 
-import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.core.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;

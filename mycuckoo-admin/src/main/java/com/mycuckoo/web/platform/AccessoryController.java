@@ -1,6 +1,6 @@
 package com.mycuckoo.web.platform;
 
-import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.core.util.CommonUtils;
 import com.mycuckoo.service.platform.AccessoryService;
 import com.mycuckoo.core.AjaxResponse;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -47,6 +47,6 @@ public class AccessoryController {
             accessoryService.deleteByIds(Arrays.asList(id));
         }
 
-        return AjaxResponse.create("附件删除成功");
+        return AjaxResponse.success("附件删除成功");
     }
 }

@@ -8,17 +8,8 @@ package com.mycuckoo.domain.uum;
  * @time Jul 9, 2017 6:11:51 PM
  */
 public class UserExtend extends User {
-    private Long orgRoleId;
     private String roleName;
     private String orgName;
-
-    public Long getOrgRoleId() {
-        return orgRoleId;
-    }
-
-    public void setOrgRoleId(Long orgRoleId) {
-        this.orgRoleId = orgRoleId;
-    }
 
     public String getRoleName() {
         return roleName;

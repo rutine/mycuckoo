@@ -62,9 +62,9 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     public void testSave() {
         District district = new District();
         district.setCreateTime(LocalDateTime.now());
-        district.setCreator("rutine");
+        district.setCreator("1");
         district.setUpdateTime(LocalDateTime.now());
-        district.setUpdator("rutine");
+        district.setUpdator("1");
         district.setCode("020");
         district.setLevel("1");
         district.setName("广州");
@@ -82,9 +82,9 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     public void testUpdate() {
         District district = new District();
         district.setCreateTime(LocalDateTime.now());
-        district.setCreator("rutine");
+        district.setCreator("1");
         district.setUpdateTime(LocalDateTime.now());
-        district.setUpdator("rutine");
+        district.setUpdator("1");
         district.setCode("020");
         district.setLevel("1");
         district.setName("广州");

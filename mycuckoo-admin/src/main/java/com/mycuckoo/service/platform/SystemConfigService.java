@@ -5,8 +5,8 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.util.SystemConfigXmlParse;
-import com.mycuckoo.util.XmlOptUtils;
+import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.XmlOptUtils;
 import com.mycuckoo.core.SystemConfigBean;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.mycuckoo.core.operator.LogOperator.COMMA;
-import static com.mycuckoo.util.CommonUtils.getClusterResourcePath;
+import static com.mycuckoo.core.util.CommonUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件维护业务类

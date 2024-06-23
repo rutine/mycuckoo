@@ -53,45 +53,6 @@ public class Organ extends BasicDomain<Long> {
         this.status = status;
     }
 
-    /**
-     * full constructor
-     */
-    public Organ(Long orgId, Long parentId, String treeId, Long roleId, Integer level, String code,
-                 String simpleName, String fullName, String address1,
-                 String address2, String tel1, String tel2,
-                 Date beginDate, String type, String fax, String postal,
-                 String legal, String taxNo, String regNo,
-                 Long belongDist, String status, String memo,
-                 String updator, LocalDateTime updateTime,
-                 String creator, LocalDateTime createTime) {
-        this.orgId = orgId;
-        this.parentId = parentId;
-        this.treeId = treeId;
-        this.roleId = roleId;
-        this.level = level;
-        this.code = code;
-        this.simpleName = simpleName;
-        this.fullName = fullName;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.tel1 = tel1;
-        this.tel2 = tel2;
-        this.beginDate = beginDate;
-        this.type = type;
-        this.fax = fax;
-        this.postal = postal;
-        this.legal = legal;
-        this.taxNo = taxNo;
-        this.regNo = regNo;
-        this.belongDist = belongDist;
-        this.status = status;
-        this.memo = memo;
-        this.updator = updator;
-        this.updateTime = updateTime;
-        this.creator = creator;
-        this.createTime = createTime;
-    }
-
     public Long getOrgId() {
         return this.orgId;
     }
@@ -113,7 +74,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setTreeId(String treeId) {
-        this.treeId = treeId;
+        this.treeId = treeId == null ? treeId : treeId.trim();
     }
 
     public Long getRoleId() {
@@ -137,7 +98,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code == null ? code : code.trim();
     }
 
     public String getSimpleName() {
@@ -145,7 +106,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
+        this.simpleName = simpleName == null ? simpleName : simpleName.trim();
     }
 
     public String getFullName() {
@@ -153,7 +114,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.fullName = fullName == null ? fullName : fullName.trim();
     }
 
     public String getAddress1() {
@@ -161,7 +122,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setAddress1(String address1) {
-        this.address1 = address1;
+        this.address1 = address1 == null ? address1 : address1.trim();
     }
 
     public String getAddress2() {
@@ -169,7 +130,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setAddress2(String address2) {
-        this.address2 = address2;
+        this.address2 = address2 == null ? address2 : address2.trim();
     }
 
     public String getTel1() {
@@ -177,7 +138,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setTel1(String tel1) {
-        this.tel1 = tel1;
+        this.tel1 = tel1 == null ? tel1 : tel1.trim();
     }
 
     public String getTel2() {
@@ -185,7 +146,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setTel2(String tel2) {
-        this.tel2 = tel2;
+        this.tel2 = tel2 == null ? tel2 : tel2.trim();
     }
 
     public Date getBeginDate() {
@@ -201,7 +162,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.type = type == null ? type : type.trim();
     }
 
     public String getFax() {
@@ -209,7 +170,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setFax(String fax) {
-        this.fax = fax;
+        this.fax = fax == null ? fax : fax.trim();
     }
 
     public String getPostal() {
@@ -217,7 +178,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setPostal(String postal) {
-        this.postal = postal;
+        this.postal = postal == null ? postal : postal.trim();
     }
 
     public String getLegal() {
@@ -225,7 +186,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setLegal(String legal) {
-        this.legal = legal;
+        this.legal = legal == null ? legal : legal.trim();
     }
 
     public String getTaxNo() {
@@ -233,7 +194,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setTaxNo(String taxNo) {
-        this.taxNo = taxNo;
+        this.taxNo = taxNo == null ? taxNo : taxNo.trim();
     }
 
     public String getRegNo() {
@@ -241,7 +202,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setRegNo(String regNo) {
-        this.regNo = regNo;
+        this.regNo = regNo == null ? regNo : regNo.trim();
     }
 
     public Long getBelongDist() {
@@ -257,7 +218,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status == null ? status : status.trim();
     }
 
     public String getMemo() {
@@ -265,7 +226,7 @@ public class Organ extends BasicDomain<Long> {
     }
 
     public void setMemo(String memo) {
-        this.memo = memo;
+        this.memo = memo == null ? memo : memo.trim();
     }
 
 

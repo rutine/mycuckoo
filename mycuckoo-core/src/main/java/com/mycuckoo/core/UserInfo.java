@@ -18,7 +18,6 @@ public class UserInfo {
     private Long roleId;
     private String roleName;
     private String userName;
-    private String userCode;
     private String phone;
     private String email;
     private String pinyin;
@@ -89,14 +88,6 @@ public class UserInfo {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getUserCode() {
-        return userCode;
-    }
-
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
     }
 
     public String getPhone() {

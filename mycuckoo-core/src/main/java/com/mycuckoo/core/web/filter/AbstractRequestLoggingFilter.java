@@ -1,7 +1,7 @@
 package com.mycuckoo.core.web.filter;
 
-import com.mycuckoo.util.IdGenerator;
-import com.mycuckoo.util.web.InetUtils;
+import com.mycuckoo.core.util.IdGenerator;
+import com.mycuckoo.core.util.web.InetUtils;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

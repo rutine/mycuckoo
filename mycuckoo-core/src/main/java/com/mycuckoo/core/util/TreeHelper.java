@@ -1,4 +1,4 @@
-package com.mycuckoo.util;
+package com.mycuckoo.core.util;
 
 import com.mycuckoo.core.OrderTree;
 import com.mycuckoo.core.SimpleTree;

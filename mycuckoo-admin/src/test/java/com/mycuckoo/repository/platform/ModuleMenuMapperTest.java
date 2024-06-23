@@ -68,7 +68,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         ModuleMenu moduleMenu = new ModuleMenu();
         moduleMenu.setBelongSys("用户");
         moduleMenu.setCreateTime(LocalDateTime.now());
-        moduleMenu.setCreator("rutine");
+        moduleMenu.setCreator("1");
         moduleMenu.setMemo("测试");
         moduleMenu.setCode("en10001");
         moduleMenu.setIconCls("no-resource");
@@ -88,7 +88,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         ModuleMenu moduleMenu = new ModuleMenu();
         moduleMenu.setBelongSys("用户");
         moduleMenu.setCreateTime(LocalDateTime.now());
-        moduleMenu.setCreator("rutine");
+        moduleMenu.setCreator("1");
         moduleMenu.setMemo("测试");
         moduleMenu.setCode("en10001");
         moduleMenu.setIconCls("no-resource");

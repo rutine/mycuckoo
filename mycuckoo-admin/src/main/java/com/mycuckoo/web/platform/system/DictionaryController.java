@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 功能说明: 字典Controller
@@ -106,10 +107,15 @@ public class DictionaryController {
      * @time Dec 15, 2012 4:21:10 PM
      */
     @GetMapping("/{bigTypeCode}/small-type")
-    public AjaxResponse<List<DictSmallType>> getSmallTypeByBigTypeCode(@PathVariable String bigTypeCode) {
+    public AjaxResponse<List<DictSmallType>> getSmallType(@PathVariable String bigTypeCode) {
 
         List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(bigTypeCode);
 
         return AjaxResponse.create(dictSmallTypeList);
+    }
+
+    @GetMapping("/small-type")
+    public AjaxResponse<Map<String, List<DictSmallType>>> getSmallTypeMap(@RequestParam List<String> typeCodes) {
+        return AjaxResponse.create(dictionaryService.findSmallTypeMapByBigTypeCodes(typeCodes));
     }
 }

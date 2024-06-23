@@ -5,6 +5,7 @@
 <mapper namespace="com.mycuckoo.repository.uum.AccountMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.uum.Account">
         <id property="accountId" column="account_id" />
+        <result property="account" column="account" />
         <result property="phone" column="phone" />
         <result property="email" column="email" />
         <result property="password" column="password" />
@@ -16,7 +17,7 @@
     </resultMap>
 
     <sql id="columns">
-        account_id, phone, email,
+        account_id, account, phone, email,
         password, error_count, ip,
         login_time, update_time, create_time
     </sql>
@@ -30,6 +31,7 @@
         insert into <include refid="table" />
         (
             account_id,
+            account,
             phone,
             email,
             password,
@@ -41,6 +43,7 @@
         )
         values (
             #{accountId},
+            #{account},
             #{phone},
             #{email},
             #{password},
@@ -55,6 +58,7 @@
     <update id="update" parameterType="com.mycuckoo.domain.uum.Account">
         update <include refid="table" />
         <set>
+            <if test="account != null">account = #{account}, </if>
             <if test="phone != null">phone = #{phone}, </if>
             <if test="email != null">email = #{email}, </if>
             <if test="password != null">password = #{password}, </if>
@@ -87,17 +91,20 @@
         from <include refid="table" />
     </select>
 
-    <select id="getByPhoneOrEmail" resultMap="baseMap">
+    <select id="getBy" resultMap="baseMap">
         select
             t1.account_id,
+            t1.account,
             t1.phone,
             t1.email,
             t1.password,
-            t1.error_count
+            t1.error_count,
+            t1.login_time
         from <include refid="table" /> t1
         <where>
-            <if test="phone != null and phone != ''">and t1.phone like #{phone}</if>
-            <if test="email != null and email != ''">and t1.email like #{email}</if>
+            <if test="account != null and account != ''">and t1.account = #{account}</if>
+            <if test="phone != null and phone != ''">and t1.phone = #{phone}</if>
+            <if test="email != null and email != ''">and t1.email = #{email}</if>
         </where>
     </select>
 

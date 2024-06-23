@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.uum;
 
-import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.core.repository.Repository;
+import com.mycuckoo.domain.uum.Account;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,8 +16,9 @@ public interface AccountMapper extends Repository<Account, Long> {
     /**
      * <p>通过手机号或邮箱查询记录</p>
      *
+     * @param account
      * @param phone
      * @param email
      */
-   Account getByPhoneOrEmail(@Param("phone") String phone, @Param("email") String email);
+   Account getBy(@Param("account") String account, @Param("phone") String phone, @Param("email") String email);
 }

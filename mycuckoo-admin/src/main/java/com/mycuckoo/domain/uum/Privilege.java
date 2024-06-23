@@ -34,18 +34,6 @@ public class Privilege implements Serializable {
         this.privilegeId = privilegeId;
     }
 
-    /**
-     * full constructor
-     */
-    public Privilege(Long privilegeId, String resourceId, Long ownerId,
-                     String ownerType, String privilegeScope, String privilegeType) {
-        this.privilegeId = privilegeId;
-        this.resourceId = resourceId;
-        this.ownerId = ownerId;
-        this.ownerType = ownerType;
-        this.privilegeScope = privilegeScope;
-        this.privilegeType = privilegeType;
-    }
 
     public Long getPrivilegeId() {
         return this.privilegeId;

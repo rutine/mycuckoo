@@ -9,8 +9,8 @@ import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.repository.platform.SysOptLogMapper;
-import com.mycuckoo.util.SystemConfigXmlParse;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
-import static com.mycuckoo.util.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.core.util.CommonUtils.isNullOrEmpty;
 
 /**
  * 功能说明: TODO(这里用一句话描述这个类的作用)
@@ -82,7 +82,7 @@ public class SystemOptLogService {
         sysOptLog.setUserName(SessionUtil.getUserName());
         sysOptLog.setUserRole(SessionUtil.getRoleName());
         sysOptLog.setUserOrgan(SessionUtil.getOrganName());
-        sysOptLog.setCreator(SessionUtil.getUserCode());
+        sysOptLog.setCreator(SessionUtil.getUserId().toString());
         sysOptLog.setCreateTime(LocalDateTime.now());
 
         sysOptLogMapper.save(sysOptLog);

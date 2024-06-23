@@ -5,7 +5,7 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.service.platform.ResourceService;
-import com.mycuckoo.util.TreeHelper;
+import com.mycuckoo.core.util.TreeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

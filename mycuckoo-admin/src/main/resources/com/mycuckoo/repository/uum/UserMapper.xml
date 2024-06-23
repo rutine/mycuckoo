@@ -16,19 +16,13 @@
         <result property="accountId" column="account_id" />
         <result property="roleId" column="role_id" />
         <result property="deptId" column="dept_id" />
-        <result property="code" column="code" />
         <result property="name" column="name" />
         <result property="pinyin" column="pinyin" />
         <result property="phone" column="phone" />
         <result property="email" column="email" />
-        <result property="password" column="password" />
         <result property="gender" column="gender" />
         <result property="position" column="position" />
         <result property="photoUrl" column="photo_url" />
-        <result property="qq" column="qq" />
-        <result property="wechat" column="wechat" />
-        <result property="officeTel" column="office_tel" />
-        <result property="familyTel" column="family_tel" />
         <result property="address" column="address" />
         <result property="avidate" column="avidate" />
         <result property="memo" column="memo" />
@@ -38,18 +32,16 @@
         <result property="creator" column="creator" />
         <result property="createTime" column="create_time" />
         <!-- 其他用途 -->
-        <result property="orgRoleId" column="org_role_id" />
         <result property="roleName" column="role_name" />
         <result property="orgName" column="org_name" />
     </resultMap>
 
     <sql id="columns">
         user_id, org_id, account_id, role_id, dept_id,
-        code, name, pinyin, phone, email,
-        password, gender, position, photo_url,
-        qq, wechat, office_tel, family_tel,
+        name, pinyin, phone, email,
+        gender, position, photo_url,
         address, avidate, memo, status,
-       updator, update_time, creator, create_time
+        updator, update_time, creator, create_time
     </sql>
 
     <sql id="table">
@@ -66,19 +58,13 @@
             account_id,
             role_id,
             dept_id,
-            code,
             name,
             pinyin,
             phone,
             email,
-            password,
             gender,
             position,
             photo_url,
-            qq,
-            wechat,
-            office_tel,
-            family_tel,
             address,
             avidate,
             memo,
@@ -94,19 +80,13 @@
             #{accountId},
             #{roleId},
             #{deptId},
-            #{code},
             #{name},
             #{pinyin},
             #{phone},
             #{email},
-            #{password},
             #{gender},
             #{position},
             #{photoUrl},
-            #{qq},
-            #{wechat},
-            #{officeTel},
-            #{familyTel},
             #{address},
             #{avidate},
             #{memo},
@@ -126,19 +106,13 @@
             <if test="accountId != null">account_id = #{accountId}, </if>
             <if test="roleId != null">role_id = #{roleId}, </if>
             <if test="deptId != null">dept_id = #{deptId}, </if>
-            <if test="code != null">code = #{code}, </if>
             <if test="name != null">name = #{name}, </if>
             <if test="pinyin != null">pinyin = #{pinyin}, </if>
             <if test="phone != null">phone = #{phone}, </if>
             <if test="email != null">email = #{email}, </if>
-            <if test="password != null">password = #{password}, </if>
             <if test="gender != null">gender = #{gender}, </if>
             <if test="position != null">position = #{position}, </if>
             <if test="photoUrl != null">photo_url = #{photoUrl}, </if>
-            <if test="qq != null">qq = #{qq}, </if>
-            <if test="wechat != null">wechat = #{wechat}, </if>
-            <if test="officeTel != null">office_tel = #{officeTel}, </if>
-            <if test="familyTel != null">family_tel = #{familyTel}, </if>
             <if test="address != null">address = #{address}, </if>
             <if test="avidate != null">avidate = #{avidate}, </if>
             <if test="memo != null">memo = #{memo}, </if>
@@ -180,9 +154,6 @@
         left join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
         left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
         <where>
-            <if test="q.code != null and q.code != ''">
-                and t1.code like concat('%', #{q.code}, '%')
-            </if>
             <if test="q.name != null and q.name != ''">
                 and t1.name like concat('%', #{q.name}, '%')
             </if>
@@ -191,31 +162,15 @@
     </select>
 
     <!-- 根据用户代码、用户名称查询用户记录, 演示: 1.输入传入多个参数 2.输出直接映射对象 -->
-    <select id="findByCodeAndName" resultMap="baseMap">
+    <select id="findByName" resultMap="baseMap">
         select
             t1.user_id,
-            t1.code,
             t1.name
         from <include refid="table" /> t1
         <where>
-            <if test="code != null and code != ''">and t1.code like #{code}</if>
             <if test="name != null and name != ''">and t1.name like #{name}</if>
         </where>
         order by user_id desc
-    </select>
-
-    <!-- 判断用户号是否存在 -->
-    <select id="existsByUserCode" parameterType="string" resultType="boolean">
-        select count(1) > 0
-        from <include refid="table" />
-        where code = #{code}
-    </select>
-
-        <!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
-    <select id="getByUserCode" parameterType="com.mycuckoo.domain.uum.User" resultMap="baseMap">
-        select <include refid="columns"/>
-        from <include refid="table" />
-        where code = #{code}
     </select>
 
     <!-- 根据拼音代码查询用户信息 -->
@@ -248,7 +203,6 @@
             t1.account_id,
             t1.role_id,
             t1.dept_id,
-            t1.code,
             t1.name,
             t1.avidate,
             t1.status,
@@ -266,7 +220,6 @@
             t1.account_id,
             t1.role_id,
             t1.dept_id,
-            t1.code,
             t1.name,
             t1.pinyin,
             t1.gender,

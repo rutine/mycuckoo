@@ -3,11 +3,11 @@ package com.mycuckoo.service.platform;
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.repository.param.FilterType;
-import com.mycuckoo.domain.platform.DictSmallTypeExtend;
+import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.TableConfig;
 import com.mycuckoo.repository.platform.TableConfigMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.req.TableConfigReqVos;
 import com.mycuckoo.web.vo.res.TableConfigVos;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public class TableConfigService {
         List<TableConfig> old = tableConfigMapper.findByModuleId(vo.getModuleId());
         List<Long> oldIds = old.stream().map(TableConfig::getTableId).collect(Collectors.toList());
 
-        String user = SessionUtil.getUserCode();
+        String user = SessionUtil.getUserId().toString();
         int i = 0;
         List<TableConfig> configs = Lists.newArrayList();
         for (TableConfigReqVos.CreateConfig config : vo.getConfigs()) {
@@ -88,7 +89,7 @@ public class TableConfigService {
     public List<TableConfigVos.Detail> findByModuleId(Long moduleId) {
         List<TableConfig> list = tableConfigMapper.findByModuleId(moduleId);
 
-        return list.stream().map(s -> {
+        return list.stream().sorted(Comparator.comparing(TableConfig::getOrder)).map(s -> {
             TableConfigVos.Detail t = new TableConfigVos.Detail();
             BeanUtils.copyProperties(s, t);
             return t;
@@ -102,9 +103,9 @@ public class TableConfigService {
                 .filter(o -> o.getType().equals("dict") && StringUtils.isNotBlank(o.getExtra()))
                 .map(TableConfig::getExtra)
                 .collect(Collectors.toList());
-        Map<String, List<DictSmallTypeExtend>> dictMap = dictionaryService.findSmallTypeMapByBigTypeCodes(dictCodes);
+        Map<String, List<DictSmallType>> dictMap = dictionaryService.findSmallTypeMapByBigTypeCodes(dictCodes);
 
-        return list.stream().map(s -> {
+        return list.stream().sorted(Comparator.comparing(TableConfig::getOrder)).map(s -> {
             TableConfigVos.Config t = new TableConfigVos.Config();
             BeanUtils.copyProperties(s, t);
             t.setDict(dictMap.get(t.getExtra()));

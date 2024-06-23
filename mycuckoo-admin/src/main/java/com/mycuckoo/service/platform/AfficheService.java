@@ -8,9 +8,8 @@ import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
 import com.mycuckoo.repository.platform.AfficheMapper;
-import com.mycuckoo.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.core.operator.LogOperator.DUNHAO;
@@ -120,7 +118,7 @@ public class AfficheService {
     @Transactional
     public void save(Affiche entity) {
         // 1. 保存公告
-        entity.setCreator(SessionUtil.getUserCode());
+        entity.setCreator(SessionUtil.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         afficheMapper.save(entity);
 

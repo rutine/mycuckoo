@@ -1,7 +1,7 @@
 package com.mycuckoo.web.login;
 
 import com.mycuckoo.constant.enums.BusinessType;
-import com.mycuckoo.util.CommonUtils;
+import com.mycuckoo.core.util.CommonUtils;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.FileMeta;
