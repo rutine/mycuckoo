@@ -71,7 +71,7 @@ public class OrganService {
             if (childCount > 0) throw new ApplicationException("机构有下级");
 
             organMapper.update(new Organ(organId, DISABLE));
-            privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
+//            privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
         } else {
             organMapper.update(new Organ(organId, ENABLE));
         }

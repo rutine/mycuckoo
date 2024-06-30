@@ -142,9 +142,8 @@ public class LoginController {
 
         session.setAttribute(SESSION_USER_INFO, user);
 
-        logger.info("organId:   {}  -  organName:  {}", organId, organName);
-        logger.info("roleId:    {}  -  roleName:   {}", roleId, roleName);
-        logger.info("userId:    {}  -  userName:  {}", userId, userName);
+        logger.info("organId: {} organName: {} roleId: {} roleName: {} userId: {} userName: {}",
+                organId, organName, roleId, roleName, userId, userName);
 
         return AjaxResponse.create("登录成功");
     }

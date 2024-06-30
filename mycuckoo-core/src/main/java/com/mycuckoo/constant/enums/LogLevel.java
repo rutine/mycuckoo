@@ -9,33 +9,33 @@ package com.mycuckoo.constant.enums;
  */
 public enum LogLevel {
     WITHOD(0) {
-        public Integer value() {
+        public int code() {
             return 0;
         }
     },
     FIRST(1) {
-        public Integer value() {
+        public int code() {
             return 1;
         }
     },
     SECOND(2) {
-        public Integer value() {
+        public int code() {
             return 2;
         }
     },
     THIRD(3) {
-        public Integer value() {
+        public int code() {
             return 3;
         }
     };
 
-    private Integer level;
+    private int level;
 
     LogLevel(Integer level) {
         this.level = level;
     }
 
-    public Integer value() {
+    public int code() {
         return level;
     }
 }

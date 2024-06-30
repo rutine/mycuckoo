@@ -4,8 +4,10 @@ import com.mycuckoo.core.repository.param.*;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.update.Update;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.Configuration;
@@ -42,7 +44,7 @@ public class SqlEnhancer {
     private QueryContext queryContext;
     private RowResolver rowResolver;
 
-    private PlainSelect plainSelect;
+    private Statement stmt;
     private List<ParameterMapping> parameterMappings;
     private Map<String, Object> additionalParameters;
     private int paramIndex;
@@ -61,11 +63,12 @@ public class SqlEnhancer {
     private void init() throws IllegalArgumentException, IllegalAccessException {
         try {
             Statement stmt = CCJSqlParserUtil.parse(boundSql.getSql());
-            if (stmt instanceof PlainSelect) {
-                plainSelect = (PlainSelect) stmt;
-            } else if (stmt instanceof ParenthesedSelect && ((ParenthesedSelect) stmt).getSelect() instanceof PlainSelect) {
-                plainSelect = ((ParenthesedSelect) stmt).getPlainSelect();
-            }
+            this.stmt = stmt;
+//            if (stmt instanceof PlainSelect) {
+//                plainSelect = (PlainSelect) stmt;
+//            } else if (stmt instanceof ParenthesedSelect && ((ParenthesedSelect) stmt).getSelect() instanceof PlainSelect) {
+//                plainSelect = ((ParenthesedSelect) stmt).getPlainSelect();
+//            }
         } catch (JSQLParserException e) {
             // 无法解析的用一般方法返回count语句
             logger.error("can't enhance original sql: {}", boundSql.getSql(), e);
@@ -79,15 +82,40 @@ public class SqlEnhancer {
     }
 
     public BoundSql enhance() {
+        if (stmt instanceof PlainSelect) {
+            return this.enhance((PlainSelect) stmt);
+        } else if (stmt instanceof ParenthesedSelect && ((ParenthesedSelect) stmt).getSelect() instanceof PlainSelect) {
+            return this.enhance(((ParenthesedSelect) stmt).getPlainSelect());
+        } else if (stmt instanceof Update || stmt instanceof Delete) {
+            return this.enhance(stmt);
+        }
+
+        return boundSql;
+    }
+
+    public BoundSql enhance(Statement stmt) {
+        if (stmt == null) {
+            return boundSql;
+        }
+
+        UpdateRowSqlBuilder sqlBuilder = new UpdateRowSqlBuilder((rowResolver != null && rowResolver.isPreFiltered()) ? rowResolver.getSelect() : stmt, paramIndex, rowResolver);
+        sqlBuilder.row(this::addParameterMapping);
+
+        BoundSql newBoundSql = new BoundSql(configuration, sqlBuilder.build(), parameterMappings, parameter);
+        additionalParameters.forEach(newBoundSql::setAdditionalParameter);
+
+        return newBoundSql;
+    }
+
+    public BoundSql enhance(PlainSelect plainSelect) {
         if (plainSelect == null) {
             return boundSql;
         }
 
-
-        RowSqlBuilder sqlBuilder = new RowSqlBuilder((rowResolver != null && rowResolver.isPreFiltered()) ? rowResolver.getSelect() : plainSelect, paramIndex, rowResolver);
+        SelectRowSqlBuilder sqlBuilder = new SelectRowSqlBuilder((rowResolver != null && rowResolver.isPreFiltered()) ? rowResolver.getSelect() : plainSelect, paramIndex, rowResolver);
         if (queryContext != null) {
             if (queryContext.getDeduplicate() != null && !queryContext.getDeduplicate().trim().isEmpty()) {
-                return this.enhanceDistinct();
+                return this.enhanceDistinct(plainSelect);
             } else if (queryContext.isSkip() && rowResolver == null) {
                 //原样输出
                 return boundSql;
@@ -139,7 +167,7 @@ public class SqlEnhancer {
                 }
             }
         }
-        sqlBuilder.auth(this::addParameterMapping);
+        sqlBuilder.row(this::addParameterMapping);
 
         BoundSql newBoundSql = new BoundSql(configuration, sqlBuilder.build(), parameterMappings, parameter);
         additionalParameters.forEach(newBoundSql::setAdditionalParameter);
@@ -147,14 +175,14 @@ public class SqlEnhancer {
         return newBoundSql;
     }
 
-    private BoundSql enhanceDistinct() {
+    private BoundSql enhanceDistinct(PlainSelect plainSelect) {
         String deduplicate = queryContext.getDeduplicate();
         //验证有效性，无效返回原先的BoundSql对象
         Column col = queryContext.getColumn(deduplicate);
         if (col != null && (col.getFilterType().equalsIgnoreCase(FilterType.TEXT.getCode()) || col.getFilterType().equalsIgnoreCase(FilterType.MULTI.getCode()))) {
-            RowSqlBuilder sqlBuilder = new RowSqlBuilder(plainSelect, paramIndex, rowResolver);
+            SelectRowSqlBuilder sqlBuilder = new SelectRowSqlBuilder(plainSelect, paramIndex, rowResolver);
             sqlBuilder.distinct(deduplicate);
-            sqlBuilder.auth(this::addParameterMapping);
+            sqlBuilder.row(this::addParameterMapping);
 
             BoundSql newBoundSql = new BoundSql(configuration, sqlBuilder.build(), parameterMappings, parameter);
             additionalParameters.forEach(newBoundSql::setAdditionalParameter);

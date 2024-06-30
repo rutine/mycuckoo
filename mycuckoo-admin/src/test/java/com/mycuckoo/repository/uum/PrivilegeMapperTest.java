@@ -48,10 +48,10 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testDeleteRowPrivilegeByOrgId() {
-        privilegeMapper.deleteRowPrivilegeByOrgId("1",
+    public void testDeleteRowPrivilegeByDeptId() {
+        privilegeMapper.deleteRowPrivilegeByDeptId("1",
                 PrivilegeType.ROW.value(),
-                PrivilegeScope.ORGAN.value());
+                PrivilegeScope.DEPT.value());
     }
 
     @Test

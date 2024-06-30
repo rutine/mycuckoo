@@ -3,7 +3,11 @@ package com.mycuckoo.core.util;
 import com.mycuckoo.core.OrderTree;
 import com.mycuckoo.core.SimpleTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -49,5 +53,31 @@ public abstract class TreeHelper {
             nodeIds.add(vo.getId());
             collectNodeIds(nodeIds, vo.getChildren());
         }
+    }
+
+    public static List<? extends SimpleTree> treeFilter(List<? extends SimpleTree> trees, String keyword, BiFunction<SimpleTree, String, Boolean> filter) {
+        if (CommonUtils.isEmpty(keyword)) {
+            //无关键词, 无需匹配
+            return trees;
+        }
+        if (trees == null || trees.isEmpty()) {
+            //无节点, 匹配失败
+            return trees;
+        }
+
+        trees = trees.stream()
+                .filter(node -> {
+                    if (filter.apply(node, keyword)) {
+                        return true;
+                    }
+                    node.setChildren(treeFilter(node.getChildren(), keyword, filter));
+                    return node.getChildren() != null && !node.getChildren().isEmpty();
+                })
+                .collect(Collectors.toList());
+
+        return trees;
+    }
+    public static boolean filterNode(SimpleTree node, String keyword) {
+        return node.getText().contains(keyword);
     }
 }

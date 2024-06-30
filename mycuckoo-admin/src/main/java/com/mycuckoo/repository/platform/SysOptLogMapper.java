@@ -1,5 +1,6 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.repository.annotation.PreAuth;
 import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.core.repository.Repository;
 
@@ -12,6 +13,7 @@ import java.util.Date;
  * @version 3.0.0
  * @time Sep 24, 2014 10:41:18 AM
  */
+@PreAuth(table = "sys_opt_log")
 public interface SysOptLogMapper extends Repository<SysOptLog, Long> {
 
     /**

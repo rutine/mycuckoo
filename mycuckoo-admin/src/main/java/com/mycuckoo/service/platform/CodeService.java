@@ -7,9 +7,9 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.repository.platform.CodeMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
 import static com.mycuckoo.constant.AdminConst.ENABLE;
-import static com.mycuckoo.core.util.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.core.util.CommonUtils.isEmpty;
 
 /**
  * 功能说明: 编码管理业务类
@@ -220,14 +220,14 @@ public class CodeService {
      * @time Oct 14, 2012 8:03:22 PM
      */
     private String getPartContent(String part, String partCon, String currentCode, int partFlag, String delimite) {
-        if (isNullOrEmpty(part) || isNullOrEmpty(partCon)) return "";
+        if (isEmpty(part) || isEmpty(partCon)) return "";
         if ("date".equalsIgnoreCase(part)) {
             SimpleDateFormat sf = new SimpleDateFormat(partCon);
             partCon = sf.format(new Date());
         } else if ("char".equalsIgnoreCase(part)) {
             // do nothing
         } else if ("number".equalsIgnoreCase(part)) {
-            if (!isNullOrEmpty(currentCode)) {
+            if (!isEmpty(currentCode)) {
                 String[] partArr = currentCode.split(delimite);
                 String numStr = partArr[partFlag - 1];
                 int numLength = numStr.length();

@@ -7,12 +7,12 @@ package com.mycuckoo.core.repository.auth;
  * @version 4.1.0
  * @time 2024/5/25 10:21
  */
-public class PrivilegeInfo {
+public class RowInfo {
     private Long orgId;
     private Long userId;
     private boolean skip;
 
-    public PrivilegeInfo(Long orgId, Long userId) {
+    public RowInfo(Long orgId, Long userId) {
         this.orgId = orgId;
         this.userId = userId;
     }

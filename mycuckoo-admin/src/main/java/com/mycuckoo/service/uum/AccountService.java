@@ -46,7 +46,7 @@ public class AccountService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Account getBy(String account, String password, String ip) {
-        if (CommonUtils.isNullOrEmpty(account)) return null;
+        if (CommonUtils.isEmpty(account)) return null;
         String[] arr = getActAndPhoneAndEmail(account);
         String code = arr[0];
         String phone = arr[1];
@@ -106,7 +106,7 @@ public class AccountService {
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         List<AccountInfo> result = new ArrayList<>();
         for (String code : systemAdminCode) {
-            if (CommonUtils.isNullOrEmpty(code)) continue;
+            if (CommonUtils.isEmpty(code)) continue;
             String[] arr = getActAndPhoneAndEmail(code);
             String act = arr[0];
             String phone = arr[1];

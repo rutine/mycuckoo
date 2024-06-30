@@ -28,11 +28,15 @@ public class PreAuthBeanPostProcessor implements BeanPostProcessor {
                     method -> authMap.compute(mapper.getCanonicalName() + "." + method.getName(), (key, value) -> {
                         String table = null;
                         String alias = null;
-                        String column = null;
+                        String tenant = null;
+                        String user = null;
+                        Integer row = null;
                         if (baseAuth != null) {
                             table = baseAuth.table();
                             alias = baseAuth.alias();
-                            column = baseAuth.column();
+                            tenant = baseAuth.tenant();
+                            user = baseAuth.user();
+                            row = baseAuth.row().getValue();
                         }
                         PreAuth preAuth = method.getAnnotation(PreAuth.class);
                         if (preAuth != null) {
@@ -42,12 +46,22 @@ public class PreAuthBeanPostProcessor implements BeanPostProcessor {
                             if (preAuth.alias() != null) {
                                 alias = preAuth.alias();
                             }
-                            if (preAuth.column() != null) {
-                                column = preAuth.column();
+                            if (preAuth.tenant() != null) {
+                                tenant = preAuth.tenant();
+                            }
+                            if (preAuth.user() != null) {
+                                user = preAuth.user();
+                            }
+                            if (preAuth.row() != null) {
+                                if (preAuth.row().getValue() == 0) {
+                                    row = 0;
+                                } else {
+                                    row |= preAuth.row().getValue();
+                                }
                             }
                         }
 
-                        return new PreAuthInfo(table, alias, column);
+                        return new PreAuthInfo(table, alias, tenant, user, row);
                     }),
                     method -> baseAuth != null || method.getAnnotation(PreAuth.class) != null );
         }

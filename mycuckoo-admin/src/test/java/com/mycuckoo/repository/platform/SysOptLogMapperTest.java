@@ -48,9 +48,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setBusiId("4");
         sysOptLog.setContent("测试");
         sysOptLog.setIp("127.0.0.1");
-        sysOptLog.setHost("localhost");
         sysOptLog.setUserName("rutine");
-        sysOptLog.setUserOrgan("no-organ");
         sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
@@ -70,9 +68,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         sysOptLog.setBusiId("4");
         sysOptLog.setContent("测试");
         sysOptLog.setIp("127.0.0.1");
-        sysOptLog.setHost("localhost");
         sysOptLog.setUserName("rutine");
-        sysOptLog.setUserOrgan("no-organ");
         sysOptLog.setUserRole("admin");
         sysOptLog.setStartTime(Calendar.getInstance().getTime());
         sysOptLog.setEndTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000));

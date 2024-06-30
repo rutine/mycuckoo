@@ -3,15 +3,17 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.repository.platform.AccessoryMapper;
 import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.domain.platform.Accessory;
+import com.mycuckoo.repository.platform.AccessoryMapper;
+import org.assertj.core.util.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.core.operator.LogOperator.DUNHAO;
@@ -34,22 +36,26 @@ public class AccessoryService {
     public void deleteByIds(List<Long> ids) {
         if (!ids.isEmpty()) {
             // 删除文件
+            Set<Long> afficheIds = Sets.newHashSet();
             for (long id : ids) {
                 Accessory entity = this.get(id);
                 CommonUtils.deleteFile("", entity.getAccessoryName());
 
                 accessoryMapper.delete(id);
+                afficheIds.add(entity.getInfoId());
             }
 
-            LogOperator.begin()
-                    .module(ModuleName.SYS_ACCESSORY)
-                    .operate(OptName.DELETE)
-                    .id("")
-                    .title(null)
-                    .content("删除附件ID：%s",
-                            ids.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
-                    .level(LogLevel.THIRD)
-                    .emit();
+            for (Long afficheId : afficheIds) {
+                LogOperator.begin()
+                        .module(ModuleName.SYS_ACCESSORY)
+                        .operate(OptName.DELETE)
+                        .id(afficheId)
+                        .title(null)
+                        .content("删除附件ID：%s",
+                                ids.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
+                        .level(LogLevel.THIRD)
+                        .emit();
+            }
         }
     }
 

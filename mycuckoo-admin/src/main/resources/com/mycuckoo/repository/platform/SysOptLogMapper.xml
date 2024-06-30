@@ -12,23 +12,22 @@
 <mapper namespace="com.mycuckoo.repository.platform.SysOptLogMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysOptLog">
         <id property="optId" column="opt_id" />
+        <result property="orgId" column="org_id" />
         <result property="modName" column="mod_name" />
-        <result property="name" column="name" />
+        <result property="optName" column="opt_name" />
         <result property="content" column="content" />
         <result property="busiType" column="busi_type" />
         <result property="busiId" column="busi_id" />
-        <result property="host" column="host" />
         <result property="ip" column="ip" />
         <result property="userName" column="user_name" />
         <result property="userRole" column="user_role" />
-        <result property="userOrgan" column="user_organ" />
         <result property="creator" column="creator" />
         <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
-        opt_id, mod_name, name, content, busi_type, busi_id,
-        host, ip, user_name, user_role, user_organ,
+        opt_id, org_id, mod_name, opt_name, content, busi_type, busi_id,
+        ip, user_name, user_role,
         creator, create_time
     </sql>
     
@@ -42,31 +41,29 @@
         insert into <include refid="table" />
         (
             opt_id,
+            org_id,
             mod_name,
-            name,
+            opt_name,
             content,
             busi_type,
             busi_id,
-            host,
             ip,
             user_name,
             user_role,
-            user_organ,
             creator,
             create_time
         )
         values (
             #{optId},
+            #{orgId},
             #{modName},
-            #{name},
+            #{optName},
             #{content},
             #{busiType},
             #{busiId},
-            #{host},
             #{ip},
             #{userName},
             #{userRole},
-            #{userOrgan},
             #{creator},
             #{createTime}
         )
@@ -77,15 +74,13 @@
         update <include refid="table" />
         <set>
             <if test="modName != null">mod_name = #{modName}, </if>
-            <if test="name != null">name = #{name}, </if>
+            <if test="optName != null">opt_name = #{optName}, </if>
             <if test="content != null">content = #{content}, </if>
             <if test="busiType != null">busi_type = #{busiType}, </if>
             <if test="busiId != null">busi_id = #{busiId}, </if>
-            <if test="host != null">host = #{host}, </if>
             <if test="ip != null">ip = #{ip}, </if>
             <if test="userName != null">user_name = #{userName}, </if>
             <if test="userRole != null">user_role = #{userRole}, </if>
-            <if test="userOrgan != null">user_organ = #{userOrgan}, </if>
         </set>
         where opt_id = #{optId}
     </update>
@@ -121,7 +116,7 @@
                 mod_name like concat('%', #{q.modName}, '%')
             </if>
             <if test="q.name != null">
-                and name like concat('%', #{q.name}, '%')
+                and opt_name like concat('%', #{q.optName}, '%')
             </if>
             <if test="q.userName != null">
                 and user_name concat('%', #{q.userName}, '%')

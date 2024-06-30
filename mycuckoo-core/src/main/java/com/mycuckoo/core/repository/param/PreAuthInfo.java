@@ -10,18 +10,20 @@ package com.mycuckoo.core.repository.param;
 public class PreAuthInfo {
     private String table;
     private String alias;
-    private String column;
+    private String tenant;
+    private String user;
     private Integer row; //行权限类型, 1: 组织 2: 用户
 
-    public PreAuthInfo(String table, String alias, String column) {
-        this(table, alias, column, 2);
+    public PreAuthInfo(String table, String alias, String tenant, String user) {
+        this(table, alias, tenant, user, 1);
     }
 
-    public PreAuthInfo(String table, String alias, String column, Integer row) {
+    public PreAuthInfo(String table, String alias, String tenant, String user, int row) {
         this.table = table;
         this.alias = alias == null || "".equals(alias.trim()) ? null : alias.trim();
-        this.column = column;
-        this.row = row == null ? 2 : row;
+        this.tenant = tenant;
+        this.user = user;
+        this.row = row;
     }
 
     public String getTable() {
@@ -32,8 +34,12 @@ public class PreAuthInfo {
         return alias;
     }
 
-    public String getColumn() {
-        return column;
+    public String getTenant() {
+        return tenant;
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public Integer getRow() {

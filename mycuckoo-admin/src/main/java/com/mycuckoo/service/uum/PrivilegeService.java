@@ -22,7 +22,6 @@ import com.mycuckoo.web.vo.res.platform.ModuleResourceVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +76,8 @@ public class PrivilegeService {
         privilegeMapper.deleteByOwnerIdAndOwnerType(ownerId, ownerType);
     }
 
-    public void deleteRowPrivilegeByOrgId(String orgId) {
-        privilegeMapper.deleteRowPrivilegeByOrgId(orgId, PrivilegeType.ROW.value(), PrivilegeScope.ORGAN.value());
+    public void deleteRowPrivilegeByDeptId(String deptId) {
+        privilegeMapper.deleteRowPrivilegeByDeptId(deptId, PrivilegeType.ROW.value(), PrivilegeScope.DEPT.value());
     }
 
     public String findRowPrivilegeByRoleId(long roleId) {
@@ -112,7 +111,7 @@ public class PrivilegeService {
             } catch (NumberFormatException e) {
                 logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
             }
-            if (StringUtils.isBlank(privilegeScope)) {
+            if (CommonUtils.isEmpty(privilegeScope)) {
                 privilegeScope = privilege.getPrivilegeScope();
             }
         }
@@ -149,7 +148,7 @@ public class PrivilegeService {
             } catch (NumberFormatException e) {
                 logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
             }
-            if (StringUtils.isBlank(privilegeScope)) {
+            if (CommonUtils.isEmpty(privilegeScope)) {
                 privilegeScope = privilege.getPrivilegeScope();
             }
         }
@@ -423,7 +422,7 @@ public class PrivilegeService {
         } else {
             if (modOptIds != null) {
                 for (String modOptId : modOptIds) {
-                    if (CommonUtils.isNullOrEmpty(modOptId)) continue;
+                    if (CommonUtils.isEmpty(modOptId)) continue;
                     Privilege privilege = new Privilege();
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);

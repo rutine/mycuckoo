@@ -1,5 +1,6 @@
 package com.mycuckoo.repository.uum;
 
+import com.mycuckoo.core.repository.annotation.PreAuth;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.core.repository.Repository;
@@ -14,6 +15,7 @@ import java.util.List;
  * @version 4.1.0
  * @time May 19, 2024 11:40:13 AM
  */
+@PreAuth(table = "uum_department")
 public interface DepartmentMapper extends Repository<Department, Long> {
 
     int updateTreeId(@Param("oldParentTreeId") String oldParentTreeId,

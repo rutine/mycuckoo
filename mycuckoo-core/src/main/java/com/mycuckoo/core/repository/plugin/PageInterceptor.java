@@ -4,10 +4,12 @@ import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.repository.PageQuery;
 import com.mycuckoo.core.repository.Pageable;
 import com.mycuckoo.core.repository.auth.PreAuthBeanPostProcessor;
+import com.mycuckoo.core.repository.auth.RowResolver;
+import com.mycuckoo.core.repository.auth.SqlEnhancer;
+import com.mycuckoo.core.repository.param.PreAuthInfo;
 import com.mycuckoo.core.repository.param.QueryContext;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.result.DefaultResultHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
@@ -76,19 +78,19 @@ public class PageInterceptor extends PreAuthBeanPostProcessor implements Interce
             boundSql = (BoundSql)args[5];
         }
 
-//        PreAuthInfo auth = authMap.get(ms.getId());
-//        RowResolver rowResolver = auth == null ? null : RowResolver.from(auth, this.find(parameter, PreAuthInfo.class));
-//        if (context != null || rowResolver != null) {
-//            SqlEnhancer enhancer = new SqlEnhancer(ms.getConfiguration(), parameter, boundSql, context, rowResolver);
-//            boundSql = enhancer.enhance();
-//
-//            cacheKey = executor.createCacheKey(ms, parameter, rowBounds, boundSql);
-//        }
-//        return executor.query(ms, parameter, rowBounds, resultHandler, cacheKey, boundSql);
+        PreAuthInfo auth = authMap.get(ms.getId());
+        RowResolver rowResolver = auth == null || auth.getRow() == 0 ? null : RowResolver.from(auth, this.find(parameter, PreAuthInfo.class));
+        if (context != null || rowResolver != null) {
+            SqlEnhancer enhancer = new SqlEnhancer(ms.getConfiguration(), parameter, boundSql, context, rowResolver);
+            boundSql = enhancer.enhance();
+
+            cacheKey = executor.createCacheKey(ms, parameter, rowBounds, boundSql);
+        }
 
         if (page == null) {
             logger.debug("------> 没有分页参数, 不是分页查询");
-            return invocation.proceed();
+            return executor.query(ms, parameter, rowBounds, resultHandler, cacheKey, boundSql);
+//            return invocation.proceed();
         }
         logger.debug("------> 检测到分页参数, 使用分页查询");
 

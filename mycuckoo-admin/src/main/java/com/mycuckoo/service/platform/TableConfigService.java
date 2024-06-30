@@ -3,14 +3,14 @@ package com.mycuckoo.service.platform;
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.repository.param.FilterType;
+import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.TableConfig;
 import com.mycuckoo.repository.platform.TableConfigMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.req.TableConfigReqVos;
 import com.mycuckoo.web.vo.res.TableConfigVos;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,7 +100,7 @@ public class TableConfigService {
         List<TableConfig> list = tableConfigMapper.findByTableCode(tableCode);
 
         List<String> dictCodes = list.stream()
-                .filter(o -> o.getType().equals("dict") && StringUtils.isNotBlank(o.getExtra()))
+                .filter(o -> o.getType().equals("dict") && CommonUtils.isNotBlank(o.getExtra()))
                 .map(TableConfig::getExtra)
                 .collect(Collectors.toList());
         Map<String, List<DictSmallType>> dictMap = dictionaryService.findSmallTypeMapByBigTypeCodes(dictCodes);

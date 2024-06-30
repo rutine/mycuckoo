@@ -155,7 +155,7 @@
     </delete>
     
     <!-- 根据条件删除权限 -->
-    <delete id="deleteRowPrivilegeByOrgId" parameterType="map">
+    <delete id="deleteRowPrivilegeByDeptId" parameterType="map">
         delete from <include refid="table" /> 
         <where>
             <if test="resourceId != null">

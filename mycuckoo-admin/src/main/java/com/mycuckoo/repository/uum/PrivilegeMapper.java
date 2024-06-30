@@ -32,7 +32,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * <p>统计用户特殊权限记录</p>
      *
      * @param userId
-     * @param ownerType @see com.mycuckoo.common.constant.Common.OWNER_TYPE_USR
+     * @param ownerType {@link com.mycuckoo.constant.enums.OwnerType#USR}
      * @return
      */
     int countByUserIdAndOwnerType(@Param("userId") Long userId, @Param("ownerType") String ownerType);
@@ -63,10 +63,10 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * <p>停用机构时根据机构ID删除行权限</p>
      *
      * @param orgId
-     * @param privilegeType  @see com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_ROW
-     * @param privilegeScope @see com.mycuckoo.common.constant.Common.PRIVILEGE_SCOPE_ORG
+     * @param privilegeType  {@link com.mycuckoo.constant.enums.PrivilegeType#ROW}
+     * @param privilegeScope {@link com.mycuckoo.constant.enums.PrivilegeScope#DEPT}
      */
-    int deleteRowPrivilegeByOrgId(
+    int deleteRowPrivilegeByDeptId(
             @Param("resourceId") String orgId,
             @Param("privilegeType") String privilegeType,
             @Param("privilegeScope") String privilegeScope);
@@ -75,7 +75,7 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
      * <p>删除模块操作关系时同时, 也删除模块操作权限</p>
      *
      * @param modOptRefIds
-     * @param privilegeType @see com.mycuckoo.common.constant.Common.PRIVILEGE_TYPE_OPT
+     * @param privilegeType {@link com.mycuckoo.constant.enums.PrivilegeType#OPT}
      */
     int deleteByModOptId(
             @Param("modOptRefIds") String[] modOptRefIds,

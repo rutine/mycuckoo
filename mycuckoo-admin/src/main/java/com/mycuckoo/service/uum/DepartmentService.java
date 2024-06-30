@@ -10,11 +10,11 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.util.TreeHelper;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.repository.uum.DepartmentMapper;
-import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.DeptVos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,8 @@ public class DepartmentService {
 
     @Autowired
     private DepartmentMapper departmentMapper;
+    @Autowired
+    private PrivilegeService privilegeService;
 
 
     @Transactional
@@ -61,6 +63,7 @@ public class DepartmentService {
             if (childCount > 0) throw new ApplicationException("存在下级");
 
             departmentMapper.update(new Department(deptId, DISABLE));
+            privilegeService.deleteRowPrivilegeByDeptId(deptId + ""); // 删除行权限
         } else {
             departmentMapper.update(new Department(deptId, ENABLE));
         }

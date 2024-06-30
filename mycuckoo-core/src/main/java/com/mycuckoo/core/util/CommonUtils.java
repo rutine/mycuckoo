@@ -5,13 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 
 /**
@@ -114,17 +108,8 @@ public class CommonUtils {
         return false;
     }
 
-    /**
-     * 检查字符串是否为空或null
-     *
-     * @param str 被检查字符串
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:10:16 PM
-     */
-    public static boolean isNullOrEmpty(String str) {
-        if (isNull(str) || isEmpty(str)) return true;
-        return false;
+    public static boolean isNotBlank(String str) {
+        return !isEmpty(str);
     }
 
     /**

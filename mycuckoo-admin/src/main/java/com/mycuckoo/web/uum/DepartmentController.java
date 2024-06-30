@@ -1,11 +1,12 @@
 package com.mycuckoo.web.uum;
 
+import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.service.uum.DepartmentService;
-import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.AjaxResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,11 @@ public class DepartmentController {
      */
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list(Querier querier) {
-        List<? extends SimpleTree> all = deptService.findAll(querier);
+        List<? extends SimpleTree> all = deptService.findAll(Querier.EMPTY);
+        String name = (String) querier.getRequired("name");
+        if (CommonUtils.isNotBlank(name)) {
+            all = TreeHelper.treeFilter(all, name, (node, keyword) -> node.getText().contains(keyword));
+        }
 
         return AjaxResponse.create(all);
     }

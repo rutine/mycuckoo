@@ -3,6 +3,7 @@ package com.mycuckoo.service.platform;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mycuckoo.constant.enums.LogLevel;
+import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
@@ -10,14 +11,13 @@ import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.Pageable;
+import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ResourceMapper;
-import com.mycuckoo.core.util.CommonUtils;
-import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.web.vo.res.platform.ResourceVos;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +86,7 @@ public class ResourceService {
             tree.setLevel(menu.getLevel());
             tree.setOrder(menu.getOrder());
             tree.setIsLeaf(false);
+            tree.setSpread(menu.getLevel() < ModuleLevel.THREE.value());
             all.add(tree);
         }
 
@@ -106,6 +107,7 @@ public class ResourceService {
             tree.setCreateTime(o.getCreateTime());
             tree.setLevel(FOUR.value());
             tree.setIsLeaf(true);
+            tree.setSpread(false);
             all.add(tree);
         });
 
@@ -114,7 +116,7 @@ public class ResourceService {
 
     public Page<Resource> findByPage(String name, Pageable page) {
         Map<String, Object> params = Maps.newHashMap();
-        if (!CommonUtils.isNullOrEmpty(name)) {
+        if (!CommonUtils.isEmpty(name)) {
             params.put("name", "%" + name + "%");
         }
 
@@ -130,7 +132,7 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.state(StringUtils.isNotBlank(entity.getIdentifier())
+        Assert.state(CommonUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
         Assert.state(resourceMapper.exists(entity.getResourceId()), "资源不存在!");
 
@@ -146,7 +148,7 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.state(StringUtils.isNotBlank(entity.getIdentifier())
+        Assert.state(CommonUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
 
         entity.setStatus(ENABLE);

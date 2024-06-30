@@ -284,7 +284,9 @@ public class SqlBuilder {
         String field = param.getField();
         Expression column = this.getColumn(field);
         // name = true
-        Expression left = this.newEq(column, new net.sf.jsqlparser.schema.Column(null, String.valueOf(Boolean.TRUE.equals(param.getValue()))));
+        Expression left = new IsBooleanExpression()
+                .withLeftExpression(column)
+                .withIsTrue(Boolean.TRUE.equals(param.getValue()));
 
         this.wheres.add(left);
         return this;

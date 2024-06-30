@@ -160,7 +160,7 @@ public class Querier implements PageQuery, Pageable {
 //    }
 
     public void putQ(String key, Object value) {
-        if (StringUtils.isNotBlank(key) && value != null) {
+        if (CommonUtils.isNotBlank(key) && value != null) {
             this.q.put(key, value);
         }
     }

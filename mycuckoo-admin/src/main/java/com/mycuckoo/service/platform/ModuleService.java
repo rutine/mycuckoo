@@ -133,10 +133,23 @@ public class ModuleService {
                 .map(String::valueOf)
                 .collect(Collectors.toList());
 
-        // 删除模块时自动删除权限下的模块
+        // 删除模块时自动删除权限下的权限
         uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
         // 删除模块时自动删除模块下的操作
         modOptRefMapper.deleteByModuleId(moduleId);
+
+        // 查询当前模块的所有资源
+        List<ModResRef> modResRefs = modResRefMapper.findByModuleId(moduleId);
+        List<String> modResRefIds = modResRefs.stream()
+                .map(ModResRef::getModResId)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        // 删除模块时自动删除权限下的权限
+        uumServiceFacade.deletePrivilegeByModResId(modResRefIds.toArray(new String[modResRefIds.size()]));
+        // 删除模块时自动删除模块下的资源
+        modResRefMapper.deleteByModuleId(moduleId);
+
         moduleMenuMapper.delete(moduleId);
 
         this.writeLog(moduleMenu, LogLevel.THIRD, OptName.DELETE);
@@ -292,7 +305,7 @@ public class ModuleService {
             ResourceVo vo = new ResourceVo();
             vo.setId(ref.getModResId());
             vo.setParentId(ref.getModuleId()); // 将第三级菜单设置为父
-            vo.setCode(String.format("%s:%s", menu.getCode(), operate == null ? ref.getResource().getIdentifier() : operate.getCode()));
+            vo.setCode(String.format("res:%s:%s", menu.getCode(), operate == null ? ref.getResource().getIdentifier() : operate.getCode()));
             vo.setName(ref.getResource().getName());
             vo.setMethod(ref.getResource().getMethod());
             vo.setPath(ref.getResource().getPath());
@@ -555,6 +568,7 @@ public class ModuleService {
         tree.setIconSkin(menu.getIconCls());
         tree.setIsLeaf(id != null && id.startsWith(ID_LEAF));
         tree.setChildren(subMenuVos);
+        tree.setSpread(!(ModuleLevel.THREE.value().equals(menu.getLevel()) || (id != null && id.startsWith(ID_LEAF))));
 
         return tree;
     }

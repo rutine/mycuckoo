@@ -7,10 +7,10 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.ApplicationException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.domain.platform.SysOptLog;
-import com.mycuckoo.repository.platform.SysOptLogMapper;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.domain.platform.SysOptLog;
+import com.mycuckoo.repository.platform.SysOptLogMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
-import static com.mycuckoo.core.util.CommonUtils.isNullOrEmpty;
+import static com.mycuckoo.core.util.CommonUtils.isEmpty;
 
 /**
  * 功能说明: TODO(这里用一句话描述这个类的作用)
@@ -59,29 +59,27 @@ public class SystemOptLogService {
         SystemConfigXmlParse.getInstance();
         SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
         String sysConfigLevel = systemConfigBean.getLoggerLevel();
-        String[] levelArray = { level.value().toString(), sysConfigLevel };
+        String[] levelArray = { level.code() + "", sysConfigLevel };
         for (String myLevel : levelArray) {//检查日志级别是否合法
-            if (isNullOrEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {
+            if (isEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {
                 throw new ApplicationException("日志级别错误,值为: " + myLevel);
             }
         }
-        int iLevel = level.value();
+        int iLevel = level.code();
         int iSysConfigLevel = Integer.parseInt(sysConfigLevel);
         if (iSysConfigLevel == 0 || iLevel < iSysConfigLevel) {
             return;
         }
 
         SysOptLog sysOptLog = new SysOptLog();
-        sysOptLog.setModName(module.value());
-        sysOptLog.setName(operate.value());
+        sysOptLog.setModName(module.title());
+        sysOptLog.setOptName(operate.title());
         sysOptLog.setContent(content);
-//        sysOptLog.setBusiType(module.name());
+        sysOptLog.setBusiType(module.code());
         sysOptLog.setBusiId(busiId);
-        sysOptLog.setHost(SessionUtil.getHostName()); //得到计算机名称
         sysOptLog.setIp(SessionUtil.getIP());
         sysOptLog.setUserName(SessionUtil.getUserName());
         sysOptLog.setUserRole(SessionUtil.getRoleName());
-        sysOptLog.setUserOrgan(SessionUtil.getOrganName());
         sysOptLog.setCreator(SessionUtil.getUserId().toString());
         sysOptLog.setCreateTime(LocalDateTime.now());
 

@@ -5,6 +5,7 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.util.CommonUtils;
 import com.mycuckoo.domain.platform.ModResRef;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.service.platform.ModuleService;
@@ -48,10 +49,17 @@ public class ModuleController {
      */
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list(Querier querier) {
-        querier.setPageSize(0);
-        List<? extends SimpleTree> all = moduleService.findByPage(querier);
+        List<? extends SimpleTree> all = moduleService.findByPage(Querier.EMPTY);
 
         List<? extends SimpleTree> list = TreeHelper.buildTree(all, ID_ROOT_VALUE);
+        String code = (String) querier.getRequired("code");
+        String name = (String) querier.getRequired("name");
+        if (CommonUtils.isNotBlank(code)) {
+            list = TreeHelper.treeFilter(list, code, (node, keyword) -> ((ModuleMenuVos.Tree) node).getCode().contains(keyword));
+        }
+        if (CommonUtils.isNotBlank(name)) {
+            list = TreeHelper.treeFilter(list, name, (node, keyword) -> ((ModuleMenuVos.Tree) node).getName().contains(keyword));
+        }
 
         return AjaxResponse.create(list);
     }

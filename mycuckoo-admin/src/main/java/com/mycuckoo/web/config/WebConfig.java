@@ -1,21 +1,26 @@
 package com.mycuckoo.web.config;
 
+import com.mycuckoo.core.web.filter.PrivilegeFilter;
+import com.mycuckoo.service.platform.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.WebAppRootListener;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.BaseConst.WEB_APP_ROOT_KEY;
 
@@ -28,22 +33,22 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
         registry.addResourceHandler("/static/**", "/view/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/static/", "classpath:/META-INF/resources/webjars/view/");
     }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/static/**",
-                        "/view/**",
-                        "/swagger-resources/**",
-                        "/v2/api-docs/**",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/**/*.png"
-                );
-    }
+//
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(new LoginInterceptor())
+//                .addPathPatterns("/**")
+//                .excludePathPatterns(
+//                        "/static/**",
+//                        "/view/**",
+//                        "/swagger-resources/**",
+//                        "/v2/api-docs/**",
+//                        "/**/*.html",
+//                        "/**/*.css",
+//                        "/**/*.js",
+//                        "/**/*.png"
+//                );
+//    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -65,6 +70,17 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
 
 
     @Bean
+//    @Order(3)
+    public PrivilegeFilter privilegeFilter(ModuleService service) {
+        List<PrivilegeFilter.ResourceInfo>  resources = service.findAllModResRefs().stream()
+                .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
+                .collect(Collectors.toList());
+
+        return new PrivilegeFilter(resources);
+    }
+
+    @Bean
+
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -80,6 +96,13 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
 
-        return new CorsFilter(source);
+        return new OrderCorsFilter(source);
+    }
+
+    @Order(2)
+    public static class OrderCorsFilter extends CorsFilter {
+        public OrderCorsFilter(CorsConfigurationSource configSource) {
+            super(configSource);
+        }
     }
 }

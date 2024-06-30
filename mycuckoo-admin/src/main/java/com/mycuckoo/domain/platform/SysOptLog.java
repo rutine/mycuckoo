@@ -17,15 +17,13 @@ public class SysOptLog extends BasicDomain<Long> {
 
     private Long optId;
     private String modName;
-    private String name;
+    private String optName;
     private String content;
     private Integer busiType;
     private String busiId;
-    private String host;
     private String ip;
     private String userName;
     private String userRole;
-    private String userOrgan;
 
     private Date startTime;
     private Date endTime;
@@ -60,12 +58,12 @@ public class SysOptLog extends BasicDomain<Long> {
         this.modName = modName;
     }
 
-    public String getName() {
-        return name;
+    public String getOptName() {
+        return optName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOptName(String optName) {
+        this.optName = optName;
     }
 
     public String getContent() {
@@ -92,14 +90,6 @@ public class SysOptLog extends BasicDomain<Long> {
         this.busiId = busiId;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
     public String getIp() {
         return ip;
     }
@@ -122,14 +112,6 @@ public class SysOptLog extends BasicDomain<Long> {
 
     public void setUserRole(String userRole) {
         this.userRole = userRole;
-    }
-
-    public String getUserOrgan() {
-        return userOrgan;
-    }
-
-    public void setUserOrgan(String userOrgan) {
-        this.userOrgan = userOrgan;
     }
 
     public Date getStartTime() {

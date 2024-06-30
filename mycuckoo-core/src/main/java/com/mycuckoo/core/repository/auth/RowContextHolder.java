@@ -11,15 +11,15 @@ import javax.annotation.Nonnull;
  * @version 4.1.0
  * @time 2024/5/25 10:19
  */
-public abstract class PrivilegeContextHolder {
-    private static final ThreadLocal<PrivilegeInfo> contextHolder = new NamedThreadLocal<>("Privilege Context");
+public abstract class RowContextHolder {
+    private static final ThreadLocal<RowInfo> contextHolder = new NamedThreadLocal<>("Privilege Context");
 
 
-    public static void set(@Nonnull PrivilegeInfo info){
+    public static void set(@Nonnull RowInfo info){
         contextHolder.set(info);
     }
 
-    public static PrivilegeInfo get(){
+    public static RowInfo get(){
         return contextHolder.get();
     }
 
@@ -32,7 +32,7 @@ public abstract class PrivilegeContextHolder {
      * 跳过数据权限过滤
      */
     public static void skip() {
-        PrivilegeInfo info = get();
+        RowInfo info = get();
         if (info != null) {
             info.setSkip(true);
         }

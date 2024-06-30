@@ -17,21 +17,21 @@ import java.util.function.BiConsumer;
  * @version 4.1.0
  * @time 2024/5/25 10:35
  */
-public class RowSqlBuilder extends SqlBuilder {
+public class SelectRowSqlBuilder extends SqlBuilder {
     private RowResolver resolver;
 
-    public RowSqlBuilder(PlainSelect select, int paramIndex, RowResolver resolver) {
+    public SelectRowSqlBuilder(PlainSelect select, int paramIndex, RowResolver resolver) {
         super(select, paramIndex);
 
         this.resolver = resolver;
     }
 
 
-    protected void auth(BiConsumer<String, Object> consumer) {
+    protected void row(BiConsumer<String, Object> consumer) {
         if (this.resolver == null) {
             return;
         }
-        PrivilegeInfo info = PrivilegeContextHolder.get();
+        RowInfo info = RowContextHolder.get();
         if (info == null || info.isSkip()) {
             return;
         }
@@ -43,7 +43,7 @@ public class RowSqlBuilder extends SqlBuilder {
             //组织行权限
             if (resolver.getDefaultAuth().getRow() == 1) {
                 consumer.accept("orgId", info.getOrgId());
-                this.wheres.add(this.newEq(new net.sf.jsqlparser.schema.Column(resolver.getDefaultAuth().getColumn()), this.newJdbcParameter()));
+                this.wheres.add(this.newEq(new net.sf.jsqlparser.schema.Column(resolver.getDefaultAuth().getTenant()), this.newJdbcParameter()));
                 return;
             }
         }
@@ -51,7 +51,7 @@ public class RowSqlBuilder extends SqlBuilder {
     }
 
 
-    private boolean processSelect(Select select, BiConsumer<String, Object> consumer, boolean filter) {
+    private boolean processSelect(Select select, BiConsumer<String, Object> consumer, boolean lookup) {
         if (select == null) {
             return false;
         }
@@ -59,83 +59,68 @@ public class RowSqlBuilder extends SqlBuilder {
         if (select instanceof SetOperationList) {
             SetOperationList operationList = (SetOperationList)select;
             for (Select plainSelect : operationList.getSelects()) {
-                this.processSelect(plainSelect, consumer, filter);
+                this.processSelect(plainSelect, consumer, lookup);
             }
         } else if (select instanceof ParenthesedSelect) {
-            this.processSelect(((ParenthesedSelect) select).getSelect(), consumer, filter);
+            this.processSelect(((ParenthesedSelect) select).getSelect(), consumer, lookup);
         } else if (select instanceof PlainSelect){
-            return this.processPlainSelect(select.getPlainSelect(), consumer, filter);
+            return this.processPlainSelect(select.getPlainSelect(), consumer, lookup);
         }
 
         return false;
     }
-    private boolean processPlainSelect(PlainSelect plainSelect, BiConsumer<String, Object> consumer, boolean justQuery) {
+    private boolean processPlainSelect(PlainSelect plainSelect, BiConsumer<String, Object> consumer, boolean lookup) {
         Table table = null;
         boolean found = false;
         if (plainSelect.getFromItem() instanceof Table) {
             table = getTable((Table) plainSelect.getFromItem());
-        } else if ((plainSelect.getJoins() == null || plainSelect.getJoins().isEmpty()) //没有join sql, 无法继续
-                && plainSelect.getFromItem().getAlias() != null
-                && (found = this.processFromItem(plainSelect.getFromItem(), consumer, justQuery))) {
-            Alias alias = plainSelect.getFromItem().getAlias();
-            PreAuthInfo authData = resolver.getProperty(alias.getName());
-            if (authData != null && authData.getAlias() == null) {
-                table = new Table(alias.getName());
-            }
         }
-
-        if (table != null) {
-            if (justQuery) {
-                return true;
-            }
-
-            if (plainSelect == this.source) {
-                this.wheres.add(resolver.rowExpression(table, consumer));
-            } else {
-//                plainSelect.setWhere(this.newAnd(plainSelect.getWhere(), resolver.rowExpression(table, consumer)));
-                plainSelect.addJoins(resolver.rowJoins(table, consumer));
-            }
-            return true;
-        }
-
-        if (plainSelect.getJoins() != null) {
+        if (table == null && plainSelect.getJoins() != null) {
             for (Join join : plainSelect.getJoins()) {
                 if (join.getFromItem() instanceof Table) {
                     table = getTable((Table) join.getFromItem());
-                } else if (join.getFromItem().getAlias() != null
-                        && (found = this.processFromItem(join.getFromItem(), consumer, true))) {
+                } else if (join.getFromItem().getAlias() != null && (found = this.processFromItem(join.getFromItem(), consumer, true))) {
                     table = new Table(join.getFromItem().getAlias().getName());
                 }
 
                 if (table != null) {
-                    if (justQuery) {
-                        return true;
-                    }
-
-                    if (plainSelect == this.source) {
-                        this.wheres.add(resolver.rowExpression(table, consumer));
-                    } else {
-//                        plainSelect.setWhere(this.newAnd(plainSelect.getWhere(), resolver.rowExpression(table, consumer)));
-                        plainSelect.addJoins(resolver.rowJoins(table, consumer));
-                    }
-                    return true;
+                    break;
                 }
             }
         }
-
-        if (!found && plainSelect == this.source) {
-            found = this.processWhere(source.getWhere(), consumer);
-
-            if (!found) {
-                Table authTable = new Table(resolver.getPropertyNames()[0]);
-                this.wheres.add(resolver.rowExpression(authTable, consumer));
+        if (table == null && plainSelect.getFromItem().getAlias() != null
+                && (found = this.processFromItem(plainSelect.getFromItem(), consumer, lookup))) {
+            Alias alias = plainSelect.getFromItem().getAlias();
+            PreAuthInfo authData = resolver.getProperty(alias.getName());
+            if (authData != null && authData.getAlias() == null) {
+                table = new Table(alias.getName());
+            } else {
                 return true;
+            }
+        }
+        if (table == null && !found && plainSelect == this.source) {
+            found = this.processWhere(source.getWhere(), consumer);
+            if (!found) {
+                table = new Table(resolver.getPropertyNames()[0]);
+            }
+        }
+
+        if (table != null) {
+            if (lookup) {
+                return found;
+            }
+
+            if (plainSelect == this.source) {
+                this.wheres.add(resolver.rowExpression(table, false, consumer));
+            } else {
+                plainSelect.addJoins(resolver.rowJoins(table, consumer));
+                this.wheres.add(resolver.rowExpression(table, true, consumer));
             }
         }
 
         return found;
     }
-    private boolean processFromItem(FromItem fromItem, BiConsumer<String, Object> consumer, boolean justQuery) {
+    private boolean processFromItem(FromItem fromItem, BiConsumer<String, Object> consumer, boolean lookup) {
         if (fromItem == null) {
             return false;
         }
@@ -144,15 +129,14 @@ public class RowSqlBuilder extends SqlBuilder {
             ParenthesedFromItem parenthesedFromItem = (ParenthesedFromItem) fromItem;
             if (parenthesedFromItem.getJoins() != null) {
                 for (Join join : parenthesedFromItem.getJoins()) {
-                    boolean found = this.processFromItem(join.getFromItem(), consumer, true);
-                    if (found) {
+                    if (this.processFromItem(join.getFromItem(), consumer, true)) {
                         return true;
                     }
                 }
             }
         } else if (fromItem instanceof Select) {
             Select select = (Select)fromItem;
-            return this.processSelect(select, consumer, justQuery);
+            return this.processSelect(select, consumer, lookup);
         }
 
         return false;
