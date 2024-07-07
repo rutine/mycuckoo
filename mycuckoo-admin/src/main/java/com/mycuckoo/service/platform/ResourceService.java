@@ -7,11 +7,11 @@ import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.Pageable;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.Operate;
@@ -116,7 +116,7 @@ public class ResourceService {
 
     public Page<Resource> findByPage(String name, Pageable page) {
         Map<String, Object> params = Maps.newHashMap();
-        if (!CommonUtils.isEmpty(name)) {
+        if (!StrUtils.isEmpty(name)) {
             params.put("name", "%" + name + "%");
         }
 
@@ -132,7 +132,7 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.state(CommonUtils.isNotBlank(entity.getIdentifier())
+        Assert.state(StrUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
         Assert.state(resourceMapper.exists(entity.getResourceId()), "资源不存在!");
 
@@ -148,7 +148,7 @@ public class ResourceService {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
         Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
-        Assert.state(CommonUtils.isNotBlank(entity.getIdentifier())
+        Assert.state(StrUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
 
         entity.setStatus(ENABLE);
@@ -170,7 +170,7 @@ public class ResourceService {
      * @param entity  对象
      * @param logLevel 日志级别
      * @param opt      操作名称
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time May 5, 2024 12:07:21 AM
      */

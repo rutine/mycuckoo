@@ -87,13 +87,6 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(45L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<DictSmallType> page = mapper.findByPage(null, new PageRequest(0, 10));
 

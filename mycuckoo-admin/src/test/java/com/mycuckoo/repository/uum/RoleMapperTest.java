@@ -73,13 +73,6 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testExists() {
-        boolean exists = roleMapper.exists(34L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<Role> page = roleMapper.findByPage(Maps.newHashMap(), new PageRequest(0, 5));
 

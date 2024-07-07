@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.core.repository.Repository;
+import com.mycuckoo.domain.platform.ModuleMenu;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -14,6 +14,15 @@ import java.util.List;
  * @time Sep 24, 2014 10:37:19 AM
  */
 public interface ModuleMenuMapper extends Repository<ModuleMenu, Long> {
+
+    /**
+     * 判断是否存在所给id的实体对象
+     *
+     * @param id 不能为null
+     * @return true 如果id对应的实体, 否则为false
+     * @throws
+     */
+    boolean exists(long id);
 
     /**
      * 根据父模块<code>ID</code>统计下级模块数

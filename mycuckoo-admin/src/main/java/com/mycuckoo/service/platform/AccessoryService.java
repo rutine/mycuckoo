@@ -4,7 +4,7 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.FileUtils;
 import com.mycuckoo.domain.platform.Accessory;
 import com.mycuckoo.repository.platform.AccessoryMapper;
 import org.assertj.core.util.Sets;
@@ -39,7 +39,7 @@ public class AccessoryService {
             Set<Long> afficheIds = Sets.newHashSet();
             for (long id : ids) {
                 Accessory entity = this.get(id);
-                CommonUtils.deleteFile("", entity.getAccessoryName());
+                FileUtils.deleteFile("", entity.getAccessoryName());
 
                 accessoryMapper.delete(id);
                 afficheIds.add(entity.getInfoId());

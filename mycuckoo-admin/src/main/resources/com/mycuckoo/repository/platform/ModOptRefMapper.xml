@@ -30,16 +30,17 @@
     <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModOptRef对象 2.嵌套属性输入#{operate.operateId}-->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.ModOptRef"
             useGeneratedKeys="true" keyProperty="modOptId" keyColumn="mod_opt_id">
-        insert into <include refid="table" /> (
-            mod_opt_id,
-            module_id,
-            operate_id
-        )
-        values (
-            #{modOptId},
-            #{moduleId},
-            #{operate.operateId}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modOptId != null">mod_opt_id, </if>
+            <if test="moduleId != null">module_id, </if>
+            <if test="operate.operateId != null">operate_id, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modOptId != null">#{modOptId}, </if>
+            <if test="moduleId != null">#{moduleId}, </if>
+            <if test="operate.operateId != null">#{operate.operateId}, </if>
+        </trim>
     </insert>
     
     <!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->
@@ -73,14 +74,6 @@
             t2.code                           as opt_code
         from <include refid="table" /> t1
         left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
-        where mod_opt_id = #{id}
-    </select>
-    
-    <!-- 判断模块操作关系是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
-        from <include refid="table" />
         where mod_opt_id = #{id}
     </select>
 

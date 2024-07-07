@@ -33,24 +33,24 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.Affiche"
             useGeneratedKeys="true" keyProperty="afficheId" keyColumn="affiche_id">
         insert into <include refid="table" />
-        (
-            affiche_id,
-            title,
-            content,
-            invalidate,
-            publish,
-            creator,
-            create_time
-        )
-        values (
-            #{afficheId},
-            #{title},
-            #{content},
-            #{invalidate},
-            #{publish},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="afficheId != null">affiche_id, </if>
+            <if test="title != null and title != ''">title, </if>
+            <if test="content != null and content != ''">content, </if>
+            <if test="invalidate != null">invalidate, </if>
+            <if test="publish != null">publish, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="afficheId != null">#{afficheId}, </if>
+            <if test="title != null and title != ''">#{title}, </if>
+            <if test="content != null and content != ''">#{content}, </if>
+            <if test="invalidate != null">#{invalidate}, </if>
+            <if test="publish != null">#{publish}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新公告： 1.输入对象参数  -->
@@ -75,13 +75,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where affiche_id = #{id}
-    </select>
-    
-    <!-- 判断公告是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where affiche_id = #{id}
     </select>

@@ -1,7 +1,8 @@
 package com.mycuckoo.core.util.web;
 
 import com.mycuckoo.core.UserInfo;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
+import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
@@ -37,8 +38,8 @@ public final class SessionUtil {
         }
     }
 
-    private static HttpSession getSession() {
-        return localRequest.get().getSession();
+    private static HttpSession getSession(boolean b) {
+        return localRequest.get().getSession(b);
     }
 
     /**
@@ -52,7 +53,7 @@ public final class SessionUtil {
         HttpServletRequest request = localRequest.get();
         if (request == null) {
             logger.error("request is null.");
-            throw new ApplicationException("request is null.");
+            throw new MyCuckooException("request is null.");
         }
 
         return InetUtils.getIp(request);
@@ -78,6 +79,10 @@ public final class SessionUtil {
         return computName;
     }
 
+    public static void setUserInfo(UserInfo user) {
+        getSession(true).setAttribute(SESSION_USER_INFO, user);
+    }
+
     /**
      * 功能说明 : 获取用户信息, 此值登录后存入会话
      *
@@ -86,7 +91,7 @@ public final class SessionUtil {
      * @time Jan 27, 2019 3:16:53 PM
      */
     public static UserInfo getUserInfo() {
-        return (UserInfo) getSession().getAttribute(SESSION_USER_INFO);
+        return getSession(false) == null ? null : (UserInfo) getSession(false).getAttribute(SESSION_USER_INFO);
     }
 
     /**
@@ -148,14 +153,14 @@ public final class SessionUtil {
      * 功能说明 : 获取账号id, 此值登录后存入会话
      */
     public static Long getAccountId() {
-        return getSession() != null ? (Long) getSession().getAttribute(SESSION_ACCOUNT_ID) : null;
+        return getSession(false) != null ? (Long) getSession(false).getAttribute(SESSION_ACCOUNT_ID) : null;
     }
 
     /**
      * 功能说明 : 获取账号, 此值登录后存入会话
      */
     public static String getAccountCode() {
-        return getSession() != null ? (String) getSession().getAttribute(SESSION_ACCOUNT_CODE) : null;
+        return getSession(false) != null ? (String) getSession(false).getAttribute(SESSION_ACCOUNT_CODE) : null;
     }
 
     /**
@@ -206,7 +211,7 @@ public final class SessionUtil {
      * 功能说明 : 获取用户资源, 此值登录后存入会话
      */
     public static List<String> getResources() {
-        return (List<String>) getSession().getAttribute(SESSION_RES_CODES);
+        return getSession(false) == null ? Lists.newArrayList() : (List < String >) getSession(false).getAttribute(SESSION_RES_CODES);
     }
 
 }

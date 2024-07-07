@@ -5,13 +5,19 @@ import com.mycuckoo.core.util.PwdCrypt;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.uum.Account;
+import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.service.facade.UumServiceFacade;
+import com.mycuckoo.service.uum.AccountService;
+import com.mycuckoo.service.uum.OrganService;
+import com.mycuckoo.service.uum.RoleService;
+import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -27,7 +33,25 @@ import java.util.List;
 public class LoginService {
 
     @Autowired
+    private OrganService organService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
     private UumServiceFacade uumServiceFacade;
+
+
+    @Transactional
+    public void register(String username, String phone, String password, String orgName) {
+        Role defaultRole = roleService.getRegDefault("web");
+        Assert.notNull(defaultRole, "暂不支持注册");
+        long accountId = accountService.save(null, phone, null, password);
+        long orgId = organService.save(orgName, defaultRole.getRoleId());
+        long userId = userService.save(orgId, accountId, -1L, username, phone, null);
+    }
 
 
     public boolean isAdmin(String account) {
@@ -43,11 +67,11 @@ public class LoginService {
     public Account getAccountBy(String account, String password) {
         password = PwdCrypt.getInstance().encrypt(password);//明文加密成密文
 
-        return uumServiceFacade.getAccountBy(account, password, SessionUtil.getIP());
+        return accountService.getBy(account, password, SessionUtil.getIP());
     }
 
     public UserInfo getUserByAccountIdAndUserId(Long accountId, Long userId) {
-        UserExtend user = uumServiceFacade.getUserByAccountIdAndUserId(accountId, userId);
+        UserExtend user = userService.getByAccountIdAndUserId(accountId, userId);
         if (user == null) {
             return null;
         }
@@ -61,8 +85,8 @@ public class LoginService {
         return info;
     }
 
-    public List<UserExtend> preLogin(Long accountId) {
-        return uumServiceFacade.findByAccountId(accountId);
+    public List<UserExtend> login(Long accountId) {
+        return userService.findByAccountId(accountId);
     }
 
     public HierarchyModuleVo filterPrivilege(Long userId, Long roleId, Long organId, String account) {

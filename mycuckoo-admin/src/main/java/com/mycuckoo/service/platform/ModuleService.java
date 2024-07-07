@@ -8,7 +8,7 @@ import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.AdminConst.*;
 import static com.mycuckoo.core.operator.LogOperator.DUNHAO;
-import static com.mycuckoo.core.util.CommonUtils.getResourcePath;
+import static com.mycuckoo.core.util.FileUtils.getResourcePath;
 
 /**
  * 功能说明: 系统模块业务类
@@ -162,7 +162,7 @@ public class ModuleService {
         if (!enable) {
             int count = moduleMenuMapper.countByParentId(moduleId);
             if (count > 0) { // 有下级菜单
-                throw new ApplicationException("存在下级菜单");
+                throw new MyCuckooException("存在下级菜单");
             }
 
             // 查询当前模块的所有操作
@@ -580,7 +580,7 @@ public class ModuleService {
      * @param entity 模块对象
      * @param level
      * @param opt
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */

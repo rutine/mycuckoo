@@ -5,13 +5,15 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
+import com.mycuckoo.service.login.CaptchaService;
 import com.mycuckoo.service.login.LoginService;
+import com.mycuckoo.web.vo.req.RegisterVo;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
@@ -47,18 +49,33 @@ public class LoginController {
 
     @Autowired
     private LoginService loginService;
+    @Autowired
+    private CaptchaService captchaService;
 
 
-    /**
-     * 功能说明 : 登录系统第一阶段 代理 多角色
-     *
-     * @param account
-     * @param password
-     * @param session
-     * @return
-     * @author rutine
-     * @time Nov 21, 2012 8:00:26 PM
-     */
+
+    @PostMapping("/register")
+    public AjaxResponse<String> register(@RequestBody RegisterVo vo) {
+        Assert.state(vo.getPassword().equals(vo.getConfirmPassword()), "两次输入密码不一致!");
+
+        captchaService.validate(vo.getCaptchaId(), vo.getCode());
+        loginService.register(vo.getUsername(), vo.getPhone(), vo.getPassword(), vo.getOrgName());
+
+        return AjaxResponse.success("注册成功");
+    }
+
+
+
+        /**
+         * 功能说明 : 登录系统第一阶段 代理 多角色
+         *
+         * @param account
+         * @param password
+         * @param session
+         * @return
+         * @author rutine
+         * @time Nov 21, 2012 8:00:26 PM
+         */
     @PostMapping("/login")
     public AjaxResponse<List<UserExtend>> login(
             @RequestParam String account,
@@ -76,15 +93,15 @@ public class LoginController {
         boolean isAdmin = loginService.isAdmin(account);
 //        User user = loginService.getUserByUserCodePwd(userCode, password);
 //        if (user == null) {
-//            throw new ApplicationException(1, "用户不存在");
+//            throw new MyCuckooException(1, "用户不存在");
 //        } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
-//            throw new ApplicationException(3, "用户已被停用");
+//            throw new MyCuckooException(3, "用户已被停用");
 //        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
-//            throw new ApplicationException(4, "用户过期");
+//            throw new MyCuckooException(4, "用户过期");
 //        }
         Account act = loginService.getAccountBy(account, password);
 
-        List<UserExtend> vos = loginService.preLogin(act.getAccountId());
+        List<UserExtend> vos = loginService.login(act.getAccountId());
         if (!isAdmin) {
             int len = vos.size();
             Iterator<UserExtend> it = vos.iterator();
@@ -92,16 +109,20 @@ public class LoginController {
                 User vo = it.next();
                 if (vo.getRoleId() == null || vo.getRoleId() == 0) {
                     if (len == 1) {
-                        throw new ApplicationException(4, "用户为无角色用户没有使用权限");
+                        throw new MyCuckooException(4, "用户为无角色用户没有使用权限");
                     }
                     it.remove();
                 }
             }
 
             if (vos.isEmpty()) {
-                throw new ApplicationException(2, "用户没有权限");
+                throw new MyCuckooException(2, "用户没有权限");
             }
         }
+
+        session.setAttribute(SESSION_USER_INFO, null);
+        session.setAttribute(SESSION_MODULE_MENU, null);
+        session.setAttribute(SESSION_RES_CODES, null);
 
         session.setAttribute(SESSION_ACCOUNT_ID, act.getAccountId());
         session.setAttribute(SESSION_ACCOUNT_CODE, act.getAccount());

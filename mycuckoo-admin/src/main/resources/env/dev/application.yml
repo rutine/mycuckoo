@@ -11,7 +11,7 @@ spring:
     default-catalog: cuckoo
     #type: com.alibaba.druid.pool.DruidDataSource
     type: org.apache.commons.dbcp2.BasicDataSource
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: cuckoo
     password: 123456

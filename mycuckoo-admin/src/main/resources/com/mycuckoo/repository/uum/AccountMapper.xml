@@ -29,30 +29,30 @@
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Account"
             useGeneratedKeys="true" keyProperty="accountId" keyColumn="account_id">
         insert into <include refid="table" />
-        (
-            account_id,
-            account,
-            phone,
-            email,
-            password,
-            error_count,
-            ip,
-            login_time,
-            update_time,
-            create_time
-        )
-        values (
-            #{accountId},
-            #{account},
-            #{phone},
-            #{email},
-            #{password},
-            #{errorCount},
-            #{ip},
-            #{loginTime},
-            #{updateTime},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">account_id, </if>
+            <if test="account != null and account != ''">account, </if>
+            <if test="phone != null and phone != ''">phone, </if>
+            <if test="email != null and email != ''">email, </if>
+            <if test="password != null and password != ''">password, </if>
+            <if test="errorCount != null">error_count, </if>
+            <if test="ip != null and ip != ''">ip, </if>
+            <if test="loginTime != null">login_time, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">#{accountId}, </if>
+            <if test="account != null and account != ''">#{account}, </if>
+            <if test="phone != null and phone != ''">#{phone}, </if>
+            <if test="email != null and email != ''">#{email}, </if>
+            <if test="password != null and password != ''">#{password}, </if>
+            <if test="errorCount != null">#{errorCount}, </if>
+            <if test="ip != null and ip != ''">#{ip}, </if>
+            <if test="loginTime != null">#{loginTime}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
 
     <update id="update" parameterType="com.mycuckoo.domain.uum.Account">
@@ -76,12 +76,6 @@
 
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where account_id = #{accountId}
-    </select>
-
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(account_id) > 0
         from <include refid="table" />
         where account_id = #{accountId}
     </select>

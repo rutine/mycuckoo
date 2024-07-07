@@ -1,20 +1,16 @@
 package com.mycuckoo.web.login;
 
 import com.mycuckoo.constant.enums.BusinessType;
-import com.mycuckoo.core.util.CommonUtils;
-import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.FileMeta;
+import com.mycuckoo.core.exception.SystemException;
+import com.mycuckoo.core.util.FileUtils;
+import com.mycuckoo.core.util.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -58,16 +54,14 @@ public class FileController {
             String originFilename = file.getOriginalFilename();
             int index = originFilename.lastIndexOf('.');
 
-            StringBuilder nameBuilder = new StringBuilder();
-            nameBuilder.append(originFilename.substring(0, index)).append("_");
-            for (int i = 0; i < 6; i++) {
-                nameBuilder.append(CommonUtils.getRandomChar());
-            }
-            nameBuilder.append(".").append(originFilename.substring(index + 1));
+            StringBuilder nameBuilder = new StringBuilder()
+                    .append(originFilename.substring(0, index))
+                    .append("_").append(IdGenerator.randomId(6))
+                    .append(".").append(originFilename.substring(index + 1));
             String fileName = nameBuilder.toString();
 
             String dirPath = StringUtils.cleanPath(basePath) + "/" + business.name();
-            String path = CommonUtils.saveFile(dirPath, fileName, file.getInputStream());
+            String path = FileUtils.saveFile(dirPath, fileName, file.getInputStream());
 
             logger.debug("filename : {}, size : {}", fileName, file.getSize());
 
@@ -110,7 +104,7 @@ public class FileController {
 
         try {
             String dirPath = StringUtils.cleanPath(basePath) + business.name();
-            CommonUtils.downloadFile(dirPath, filename, "Y".equals(isOnline), response);
+            FileUtils.downloadFile(dirPath, filename, "Y".equals(isOnline), response);
         } catch (SystemException e) {
             logger.error("下载文件失败: {}/{}", business.name(), filename, e);
         }
@@ -129,7 +123,7 @@ public class FileController {
     public AjaxResponse<String> delete(@RequestParam BusinessType business,
                                        @RequestParam String filename) {
         String dirPath = StringUtils.cleanPath(basePath) + business.name();
-        CommonUtils.deleteFile(dirPath, filename);
+        FileUtils.deleteFile(dirPath, filename);
 
         return AjaxResponse.create("附件删除成功");
     }

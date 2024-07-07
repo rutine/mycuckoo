@@ -8,7 +8,7 @@ import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.ModuleMenu;
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,7 @@ public class PrivilegeService {
             } catch (NumberFormatException e) {
                 logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
             }
-            if (CommonUtils.isEmpty(privilegeScope)) {
+            if (StrUtils.isEmpty(privilegeScope)) {
                 privilegeScope = privilege.getPrivilegeScope();
             }
         }
@@ -148,7 +149,7 @@ public class PrivilegeService {
             } catch (NumberFormatException e) {
                 logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
             }
-            if (CommonUtils.isEmpty(privilegeScope)) {
+            if (StrUtils.isEmpty(privilegeScope)) {
                 privilegeScope = privilege.getPrivilegeScope();
             }
         }
@@ -324,6 +325,11 @@ public class PrivilegeService {
                     .collect(Collectors.toList());
         }
 
+        //过滤仅组织管理员拥有的资源权限
+        List<Long> orgResIds = this.findOrgRes(roleId);
+        resources = resources.stream().filter(res -> orgResIds.contains(res.getId())).collect(Collectors.toList());
+
+
         // 过滤所有的模块操作
         ModuleResourceVo moduleResourceVo = this.filterModOpt(resources, false);
         List<ModuleMenu> moduleMenuList = moduleResourceVo.getMenu();
@@ -397,8 +403,8 @@ public class PrivilegeService {
     }
 
     @Transactional
-    public void save(List<String> modOptIds, long ownerId, PrivilegeType privilegeType,
-                     OwnerType ownerType, String privilegeScope) {
+    public void save(List<String> modOptIds, OwnerType ownerType, long ownerId,
+                     PrivilegeType privilegeType, String privilegeScope) {
 
         modOptIds = modOptIds.parallelStream()
                 .map(mapper -> {
@@ -413,22 +419,28 @@ public class PrivilegeService {
 
         if (PrivilegeScope.ALL.value().equals(privilegeScope)) {
             Privilege privilege = new Privilege();
+            privilege.setOrgId(SessionUtil.getOrganId());
             privilege.setResourceId(PrivilegeScope.ALL.value());
             privilege.setOwnerId(ownerId);
             privilege.setOwnerType(ownerType.value());
             privilege.setPrivilegeType(privilegeType.value());
             privilege.setPrivilegeScope(privilegeScope);
+            privilege.setCreator(SessionUtil.getUserId().toString());
+            privilege.setCreateTime(LocalDateTime.now());
             privilegeMapper.save(privilege);
         } else {
             if (modOptIds != null) {
                 for (String modOptId : modOptIds) {
-                    if (CommonUtils.isEmpty(modOptId)) continue;
+                    if (StrUtils.isEmpty(modOptId)) continue;
                     Privilege privilege = new Privilege();
+                    privilege.setOrgId(SessionUtil.getOrganId());
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);
                     privilege.setOwnerType(ownerType.value());
                     privilege.setPrivilegeType(privilegeType.value());
                     privilege.setPrivilegeScope(privilegeScope);
+                    privilege.setCreator(SessionUtil.getUserId().toString());
+                    privilege.setCreateTime(LocalDateTime.now());
                     privilegeMapper.save(privilege);
                 }
 
@@ -446,10 +458,10 @@ public class PrivilegeService {
     }
 
 
+
+
+
     // --------------------------- 私有方法 -------------------------------
-
-
-
     private ModuleResourceVo filterModOpt(List<ResourceVo> resources, boolean isTreeFlag) {
         List<ModuleMenu> modOptList = Lists.newArrayList(); // 四级模块操作
         List<ModuleMenu> moduleMenuList = Lists.newArrayList(); // 模块菜单list
@@ -518,5 +530,39 @@ public class PrivilegeService {
         List<Long> deptIds = deptService.findChildIds(deptId, 0);
         return deptIds.stream()
                 .map(String::valueOf).collect(Collectors.joining("," ));
+    }
+
+    private List<Long> findOrgRes(long roleId) {
+        List<Privilege> privileges = privilegeMapper.findByOwnIdAndPrivilegeType(
+                new Long[] { roleId }, new String[] { OwnerType.ROLE.value() }, new String[] { PrivilegeType.RES.value() });
+
+
+        // 2 ====== 资源权限 ======
+        List<Long> resourceIds = new ArrayList<>();
+        PrivilegeScope privilegeScope = null;
+        for (Privilege privilege : privileges) {
+            String resourceId = privilege.getResourceId();
+            resourceIds.add(Long.parseLong(resourceId));
+            if (null == privilegeScope) {
+                privilegeScope = PrivilegeScope.of(privilege.getPrivilegeScope());
+            }
+        }
+
+        List<ResourceVo> resources = Lists.newArrayList();
+        if (PrivilegeScope.EXCLUDE == privilegeScope) {
+            List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            resources = allResources.stream()
+                    .filter(r -> !resourceIds.contains(r.getId()))
+                    .collect(Collectors.toList());
+        } else if (PrivilegeScope.ALL == privilegeScope) {
+            resources = platformServiceFacade.findAllModResRefs(); // 所有资源
+        } else {
+            List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            resources = allResources.stream()
+                    .filter(r -> resourceIds.contains(r.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        return resources.stream().map(res -> res.getId()).collect(Collectors.toList());
     }
 }

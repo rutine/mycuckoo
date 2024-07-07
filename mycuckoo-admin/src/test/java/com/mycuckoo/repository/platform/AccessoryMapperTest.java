@@ -66,13 +66,6 @@ public class AccessoryMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(34L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<Accessory> page = mapper.findByPage(null, new PageRequest(0, 5));
 

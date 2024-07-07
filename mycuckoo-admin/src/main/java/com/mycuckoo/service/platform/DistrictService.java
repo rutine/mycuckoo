@@ -6,7 +6,7 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
@@ -56,7 +56,7 @@ public class DistrictService {
         if (!enable) {
             int count = districtMapper.countByParentId(districtId);
             if (count > 0) { //有下级地区
-                throw new ApplicationException("存在下级地区, 停用失败!");
+                throw new MyCuckooException("存在下级地区, 停用失败!");
             }
 
             districtMapper.update(new District(districtId, DISABLE));
@@ -166,7 +166,7 @@ public class DistrictService {
      * @param entity 地区对象
      * @param logLevel
      * @param opt
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 16, 2012 7:38:53 PM
      */

@@ -74,6 +74,12 @@
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.ramostear</groupId>
+        <artifactId>Happy-Captcha</artifactId>
+        <version>1.0.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

@@ -1,6 +1,6 @@
 package com.mycuckoo.core.util.web;
 
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -38,9 +38,9 @@ public abstract class InetUtils {
      */
     public static String getIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Real-IP");
-        if (CommonUtils.isEmpty(ip) || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+        if (StrUtils.isEmpty(ip) || IP_UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Forwarded-For");
-            if (!CommonUtils.isEmpty(ip)) {
+            if (!StrUtils.isEmpty(ip)) {
                 // 多次反向代理后会有多个ip值，第一个ip才是真实ip
                 int index = ip.indexOf(",");
                 if (index != -1) {
@@ -51,7 +51,7 @@ public abstract class InetUtils {
             }
         }
 
-        if (CommonUtils.isEmpty(ip) || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+        if (StrUtils.isEmpty(ip) || IP_UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
 

@@ -7,7 +7,7 @@ import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.TreeHelper;
@@ -60,7 +60,7 @@ public class DepartmentService {
              * 0、停用启用成功
              */
             int childCount = departmentMapper.countByParentId(deptId);
-            if (childCount > 0) throw new ApplicationException("存在下级");
+            if (childCount > 0) throw new MyCuckooException("存在下级");
 
             departmentMapper.update(new Department(deptId, DISABLE));
             privilegeService.deleteRowPrivilegeByDeptId(deptId + ""); // 删除行权限

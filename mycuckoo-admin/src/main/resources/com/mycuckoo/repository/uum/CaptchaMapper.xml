@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.repository.uum.CaptchaMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.uum.Captcha">
+        <id property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="code" column="code" />
+        <result property="status" column="status" />
+        <result property="expireTime" column="expire_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, type, code, status, expire_time, update_time, create_time
+    </sql>
+
+    <sql id="table">
+        cuckoo.uum_captcha
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.uum.Captcha"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id, </if>
+            <if test="type != null and type != ''">type, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="status != null">status, </if>
+            <if test="expireTime != null">expire_time, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id}, </if>
+            <if test="type != null and type != ''">#{type}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="expireTime != null">#{expireTime}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.uum.Captcha">
+        update <include refid="table" />
+        <set>
+            <if test="type != null">type = #{type}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="expireTime != null">expire_time = #{expireTime}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="string" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+    </select>
+
+</mapper> 

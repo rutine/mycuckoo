@@ -79,13 +79,6 @@ public class OperateMapperTest extends AbstractTransactionalJUnit4SpringContextT
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(3L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
         params.put("optName", "%删%");

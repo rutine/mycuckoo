@@ -56,7 +56,7 @@ public abstract class TreeHelper {
     }
 
     public static List<? extends SimpleTree> treeFilter(List<? extends SimpleTree> trees, String keyword, BiFunction<SimpleTree, String, Boolean> filter) {
-        if (CommonUtils.isEmpty(keyword)) {
+        if (StrUtils.isEmpty(keyword)) {
             //无关键词, 无需匹配
             return trees;
         }

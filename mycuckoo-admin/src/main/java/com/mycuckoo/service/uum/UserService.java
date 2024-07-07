@@ -6,10 +6,11 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.UserInfo;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.Role;
@@ -60,7 +61,7 @@ public class UserService {
      * @param userId        用户ID
      * @param disEnableFlag 停用启用标志
      * @return boolean true成功
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 20, 2012 3:50:29 PM
      * <p>
@@ -145,7 +146,7 @@ public class UserService {
     public void update(User user) {
         user.setOrgId(null);
         user.setAccountId(null);
-        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
+        user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setUpdator(SessionUtil.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
         user.setStatus(null);
@@ -182,29 +183,10 @@ public class UserService {
         userMapper.update(user);
     }
 
-//    @Transactional
-//    public void resetPwdByUserId(String userDefaultPwd, String userName, long userId) {
-//        User user = new User();
-//        user.setUserId(userId);
-//        user.setPassword(CommonUtils.encrypt(userDefaultPwd));
-//        user.setUpdator(SessionUtil.getUserId().toString());
-//        user.setUpdateTime(LocalDateTime.now());
-//        userMapper.update(user);
-//
-//        LogOperator.begin()
-//                .module(ModuleName.ROLE_MGR)
-//                .operate(OptName.RESET_PWD)
-//                .id(userId)
-//                .title(null)
-//                .content("重置密码用户：%s", userName)
-//                .level(LogLevel.SECOND)
-//                .emit();
-//    }
-
     @Transactional
     public void save(User user) {
         user.setOrgId(SessionUtil.getOrganId());
-        user.setPinyin(CommonUtils.getFirstLetters(user.getName()));
+        user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);
         user.setUpdator(SessionUtil.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
@@ -213,6 +195,41 @@ public class UserService {
         userMapper.save(user);
 
         writeLog(user, LogLevel.FIRST, OptName.SAVE);
+    }
+
+    @Transactional
+    public long save(Long orgId, Long accountId, Long roleId, String name, String phone, String email) {
+        User entity = new User();
+        entity.setOrgId(orgId);
+        entity.setAccountId(accountId);
+        entity.setRoleId(roleId);
+        entity.setName(name);
+        entity.setPinyin(StrUtils.getFirstLetters(name));
+        entity.setPhone(phone);
+        entity.setEmail(email);
+        entity.setStatus(ENABLE);
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreateTime(LocalDateTime.now());
+        userMapper.save(entity);
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(entity.getUserId());
+        userInfo.setOrgId(orgId);
+        userInfo.setAccountId(accountId);
+        userInfo.setRoleId(roleId);
+        userInfo.setUserName(name);
+        SessionUtil.setUserInfo(userInfo);
+
+        LogOperator.begin()
+                .module(ModuleName.USER_MGR)
+                .operate(OptName.SAVE)
+                .id(entity.getUserId())
+                .title(null)
+                .content("%s注册了新账号", entity.getName())
+                .level(LogLevel.FIRST)
+                .emit();
+
+        return entity.getUserId();
     }
 
 
@@ -224,7 +241,7 @@ public class UserService {
      * @param entity
      * @param logLevel
      * @param opt
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 20, 2012 4:17:57 PM
      */

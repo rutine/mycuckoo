@@ -42,36 +42,37 @@
     -->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.District"
             useGeneratedKeys="true" keyProperty="districtId" keyColumn="district_id">
-        insert into <include refid="table" /> (
-            district_id,
-            parent_id,
-            code,
-            name,
-            postal,
-            telcode,
-            level,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{districtId},
-            #{parentId},
-            #{code},
-            #{name},
-            #{postal},
-            #{telcode},
-            #{level},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="districtId != null">district_id, </if>
+            <if test="parentId != null">parent_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="postal != null and postal != ''">postal, </if>
+            <if test="telcode != null and telcode != ''">telcode, </if>
+            <if test="level != null">`level`, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="districtId != null">#{districtId}, </if>
+            <if test="parentId != null">#{parentId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="postal != null and postal != ''">#{postal}, </if>
+            <if test="telcode != null and telcode != ''">#{telcode}, </if>
+            <if test="level != null">#{level}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新地区： 1.输入对象参数 -->
@@ -102,14 +103,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where district_id = #{id}
-    </select>
-    
-    <!-- 判断地区是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
         from <include refid="table" />
         where district_id = #{id}
     </select>

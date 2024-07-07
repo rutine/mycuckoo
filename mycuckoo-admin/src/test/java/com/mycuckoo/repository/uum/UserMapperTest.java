@@ -116,13 +116,6 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(3L);
-
-        assertEquals(Boolean.FALSE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = new HashMap<>(2);
         params.put("code", "ad%");

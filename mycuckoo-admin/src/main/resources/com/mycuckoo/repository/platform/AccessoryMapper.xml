@@ -28,16 +28,16 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.Accessory"
             useGeneratedKeys="true" keyProperty="accessoryId" keyColumn="accessory_id">
         insert into <include refid="table" />
-        (
-            accessory_id,
-            info_id,
-            accessory_name
-        )
-        values (
-            #{accessoryId},
-            #{infoId},
-            #{accessoryName}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accessoryId != null">accessory_id, </if>
+            <if test="infoId != null">info_id, </if>
+            <if test="accessoryName != null and accessoryName != ''">accessory_name, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accessoryId != null">#{accessoryId}, </if>
+            <if test="infoId != null">#{infoId}, </if>
+            <if test="accessoryName != null and accessoryName != ''">#{accessoryName}, </if>
+        </trim>
     </insert>
     
     <!-- 更新附件： 1.输入用对象  -->
@@ -55,18 +55,9 @@
         delete from <include refid="table" /> where accessory_id = #{id}
     </delete>
     
-    <!--
-        获取附件: 输出直接映射到对象
-    -->
+    <!-- 获取附件: 输出直接映射到对象 -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where accessory_id = #{id}
-    </select>
-    
-    <!-- 判断附件是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where accessory_id = #{id}
     </select>

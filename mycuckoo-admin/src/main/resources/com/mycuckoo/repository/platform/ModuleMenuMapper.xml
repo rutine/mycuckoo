@@ -41,40 +41,41 @@
     <!-- 插入模块菜单： 1.由数据库生成id并赋值到 ModuleMemu对象 -->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.ModuleMenu"
             useGeneratedKeys="true" keyProperty="moduleId" keyColumn="module_id">
-        insert into <include refid="table" /> (
-            module_id,
-            parent_id,
-            code,
-            name,
-            icon_cls,
-            level,
-            `order`,
-            belong_sys,
-            page_type,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{moduleId},
-            #{parentId},
-            #{code},
-            #{name},
-            #{iconCls},
-            #{level},
-            #{order},
-            #{belongSys},
-            #{pageType},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="moduleId != null">module_id, </if>
+            <if test="parentId != null">parent_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="iconCls != null and iconCls != ''">icon_cls, </if>
+            <if test="level != null">level, </if>
+            <if test="order != null">`order`, </if>
+            <if test="belongSys != null and belongSys != ''">belong_sys, </if>
+            <if test="pageType != null and pageType != ''">page_type, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="moduleId != null">#{moduleId}, </if>
+            <if test="parentId != null">#{parentId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="iconCls != null and iconCls != ''">#{iconCls}, </if>
+            <if test="level != null">#{level}, </if>
+            <if test="order != null">#{order}, </if>
+            <if test="belongSys != null and belongSys != ''">#{belongSys}, </if>
+            <if test="pageType != null and pageType != ''">#{pageType}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新模块菜单： 1.输入对象参数 -->

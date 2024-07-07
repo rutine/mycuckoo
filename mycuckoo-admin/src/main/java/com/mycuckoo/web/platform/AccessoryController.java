@@ -1,8 +1,8 @@
 package com.mycuckoo.web.platform;
 
-import com.mycuckoo.core.util.CommonUtils;
-import com.mycuckoo.service.platform.AccessoryService;
 import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.util.FileUtils;
+import com.mycuckoo.service.platform.AccessoryService;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class AccessoryController {
     public AjaxResponse<String> delete(@PathVariable String filenameOrId) {
         long id = NumberUtils.toLong(filenameOrId, -1L);
         if (id == -1L) {
-            CommonUtils.deleteFile("", filenameOrId);
+            FileUtils.deleteFile("", filenameOrId);
         } else {
             accessoryService.deleteByIds(Arrays.asList(id));
         }

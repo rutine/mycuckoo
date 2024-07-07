@@ -9,108 +9,30 @@ import java.io.*;
 import java.net.URL;
 
 /**
- * 功能说明: 常用工具类
+ * 功能说明:
  *
  * @author rutine
- * @version 2.0.0
- * @time Sep 22, 2014 9:36:10 PM
+ * @version 4.1.0
+ * @time 2024/7/7 9:33
  */
-public class CommonUtils {
-    private static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
-
+public abstract class FileUtils {
+    private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
     public final static String MYCUCKOO_CONFIG_LOCATION = "config";
 
-    /**
-     * 加密操作
-     *
-     * @param data
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:08:18 PM
-     */
-    public static String encrypt(String data) {
-        return PwdCrypt.getInstance().encrypt(data);
-    }
 
-    /**
-     * 解密操作
-     *
-     * @param data
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:08:36 PM
-     */
-    public static String decrypt(String data) {
-        return PwdCrypt.getInstance().decrypt(data);
-    }
-
-    /**
-     * 获得一句话的首字母
-     *
-     * @param words
-     * @return
-     * @author rutine
-     * @time Oct 6, 2012 2:38:11 PM
-     */
-    public static String getFirstLetters(String words) {
-        return FirstLetter.getFirstLetters(words);
-    }
-
-    /**
-     * 随机生成字符，含大写、小写、数字
-     *
-     * @return
-     * @author rutine
-     * @time Oct 6, 2012 10:43:40 AM
-     */
-    public static String getRandomChar() {
-        int index = (int) Math.round(Math.random() * 2);
-        String randChar = "";
-        switch (index) {
-            case 0:// 大写字符
-                randChar = String.valueOf((char) Math.round(Math.random() * 25 + 65));
-                break;
-            case 1:// 小写字符
-                randChar = String.valueOf((char) Math.round(Math.random() * 25 + 97));
-                break;
-            default:// 数字
-                randChar = String.valueOf(Math.round(Math.random() * 9));
-                break;
+    public static void main(String[] args) {
+        String fileSeparator = System.getProperties().getProperty("file.separator");
+        FileUtils.class.getResourceAsStream(fileSeparator);
+        System.out.println(getResourcePath());
+        System.out.println(System.getProperty("mycuckoo.root"));
+        File[] drive = File.listRoots();
+        for (int i = 0; i < drive.length; i++) {
+            System.out.println("\t" + drive[i]);
         }
-
-        return randChar;
     }
 
-    /**
-     * 检查是否为null
-     *
-     * @param obj 被检查对象
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:08:52 PM
-     */
-    public static boolean isNull(Object obj) {
-        if (obj == null) return true;
-        return false;
-    }
-
-    /**
-     * 检查字符串是否为空
-     *
-     * @param str
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:09:16 PM
-     */
-    public static boolean isEmpty(String str) {
-        if (str == null || "".equals(str.trim())) return true;
-        return false;
-    }
-
-    public static boolean isNotBlank(String str) {
-        return !isEmpty(str);
-    }
+    private FileUtils() {}
 
     /**
      * 获得web根路径
@@ -230,7 +152,7 @@ public class CommonUtils {
             displayFilename = new String(displayFilename.getBytes("utf8"), "ISO8859-1") + "\"";
 
             if (isOnline) { // 在线打开方式
-                URL url = new URL("file:///" + CommonUtils.getClusterResourcePath("") + dirPath + File.separator + filename);
+                URL url = new URL("file:///" + getClusterResourcePath("") + dirPath + File.separator + filename);
                 response.setContentType(url.openConnection().getContentType());
                 response.setHeader("Content-Disposition", "inline; filename=" + displayFilename);
             } else {// 纯下载方式
@@ -342,18 +264,6 @@ public class CommonUtils {
         File dirFile = new File(absolutePath);
         if (dirFile.exists()) {
             dirFile.delete();
-        }
-    }
-
-
-    public static void main(String[] args) {
-        String fileSeparator = System.getProperties().getProperty("file.separator");
-        CommonUtils.class.getResourceAsStream(fileSeparator);
-        System.out.println(CommonUtils.getResourcePath());
-        System.out.println(System.getProperty("mycuckoo.root"));
-        File[] drive = File.listRoots();
-        for (int i = 0; i < drive.length; i++) {
-            System.out.println("\t" + drive[i]);
         }
     }
 }

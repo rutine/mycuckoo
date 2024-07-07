@@ -8,17 +8,17 @@ import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
+import com.mycuckoo.core.util.TreeHelper;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
-import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.web.SessionUtil;
-import com.mycuckoo.web.vo.res.uum.OrganVo;
+import com.mycuckoo.web.vo.res.uum.OrganVos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -68,7 +68,7 @@ public class OrganService {
              * 0、停用启用成功
              */
             int childCount = organMapper.countByParentId(organId);
-            if (childCount > 0) throw new ApplicationException("机构有下级");
+            if (childCount > 0) throw new MyCuckooException("机构有下级");
 
             organMapper.update(new Organ(organId, DISABLE));
 //            privilegeService.deleteRowPrivilegeByOrgId(organId + ""); // 删除机构行权限
@@ -111,29 +111,30 @@ public class OrganService {
         return treeVoList;
     }
 
-    public Page<OrganVo> findByPage(Querier querier) {
-        String treeId = "1"; //最顶级机构
+    public Page<OrganVos.ListVo> findByPage(Querier querier) {
+        String treeId = SessionUtil.getOrganId() + ""; //最顶级机构
         querier.putQ("treeId", treeId);
         Page<Organ> entityPage = organMapper.findByPage(querier.getQ(), querier);
 
-        List<OrganVo> vos = Lists.newArrayList();
+        List<OrganVos.ListVo> vos = Lists.newArrayList();
         for (Organ entity : entityPage.getContent()) {
-            OrganVo vo = new OrganVo();
+            OrganVos.ListVo vo = new OrganVos.ListVo();
             BeanUtils.copyProperties(entity, vo);
+            vo.setRoleName(entity.getMemo());
             vos.add(vo);
         }
 
         return new PageImpl<>(vos, querier, entityPage.getTotalElements());
     }
 
-    public OrganVo get(Long organId) {
+    public OrganVos.Detail get(Long organId) {
         if (organId == null) {
             return null;
         }
 
         Organ organ = organMapper.get(organId);
         Organ parentOrgan = organMapper.get(organ.getParentId());
-        OrganVo vo = new OrganVo();
+        OrganVos.Detail vo = new OrganVos.Detail();
         BeanUtils.copyProperties(organ, vo);
         vo.setParentName(parentOrgan == null ? null: parentOrgan.getSimpleName());
 
@@ -153,8 +154,6 @@ public class OrganService {
 
     @Transactional
     public void update(Organ organ) {
-        Organ parent = get(organ.getParentId());
-        Assert.notNull(parent, "上级组织不存在!");
         Organ old = get(organ.getOrgId());
         Assert.notNull(old, "机构不存在!");
         Assert.state(old.getSimpleName().equals(organ.getSimpleName())
@@ -177,10 +176,11 @@ public class OrganService {
 
     @Transactional
     public void save(Organ organ) {
-        Organ parent = get(organ.getParentId());
+        Organ parent = get(SessionUtil.getOrganId());
         Assert.notNull(parent, "上级组织不存在!");
         Assert.state(!existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
+        organ.setParentId(SessionUtil.getOrganId());
         organ.setLevel(parent.getLevel() + 1);
         organ.setStatus(ENABLE);
         organ.setUpdator(SessionUtil.getUserId().toString());
@@ -190,10 +190,38 @@ public class OrganService {
         organMapper.save(organ);
 
         Organ updateEntity = new Organ();
+        updateEntity.setOrgId(organ.getOrgId());
         updateEntity.setTreeId(String.format("%s.%s", parent.getTreeId(), organ.getOrgId()));
         organMapper.update(updateEntity);
 
         writeLog(organ, LogLevel.FIRST, OptName.SAVE);
+    }
+
+    @Transactional
+    public long save(String orgName, long roleId) {
+        Organ parent = new Organ(1L, ENABLE);
+        parent.setTreeId("1");
+
+        Assert.notNull(parent, "上级组织不存在!");
+        Assert.state(!existByOrganName(orgName), "机构[" + orgName+ "]已存在!");
+
+        Organ entity = new Organ();
+        entity.setParentId(parent.getOrgId());
+        entity.setRoleId(roleId);
+        entity.setSimpleName(orgName);
+        entity.setFullName(orgName);
+        entity.setLevel(2);
+        entity.setStatus(ENABLE);
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreateTime(LocalDateTime.now());
+        organMapper.save(entity);
+
+        Organ updateEntity = new Organ();
+        updateEntity.setOrgId(entity.getOrgId());
+        updateEntity.setTreeId(String.format("%s.%s", parent.getTreeId(), entity.getOrgId()));
+        organMapper.update(updateEntity);
+
+        return entity.getOrgId();
     }
 
 
@@ -205,7 +233,7 @@ public class OrganService {
      * @param entity    机构对象
      * @param logLevel
      * @param opt
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */

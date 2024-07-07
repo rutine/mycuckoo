@@ -34,28 +34,29 @@
     <!-- 插入字典大类： 1.由数据库生成id并赋值到DicBigType对象 -->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.DictBigType"
             useGeneratedKeys="true" keyProperty="bigTypeId" keyColumn="big_type_id">
-        insert into <include refid="table" /> (
-            big_type_id,
-            code,
-            name,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{bigTypeId},
-            #{code},
-            #{name},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bigTypeId != null">big_type_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bigTypeId != null">#{bigTypeId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新字典大类： 1.输入对象参数  -->
@@ -82,13 +83,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where big_type_id = #{id}
-    </select>
-    
-    <!-- 判断字典大类是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where big_type_id = #{id}
     </select>

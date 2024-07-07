@@ -1,8 +1,5 @@
 package com.mycuckoo.core.repository;
 
-import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.Pageable;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -47,15 +44,6 @@ public interface Repository<T, ID extends Serializable> {
      * @throws
      */
     T get(ID id);
-
-    /**
-     * 判断是否存在所给id的实体对象
-     *
-     * @param id 不能为null
-     * @return true 如果id对应的实体, 否则为false
-     * @throws
-     */
-    boolean exists(ID id);
 
     /**
      * 返回符合 {@code Pageable} object 限制的页面{@link Page} .

@@ -1,9 +1,11 @@
 package com.mycuckoo.domain.uum;
 
+import com.sun.scenario.effect.impl.prism.ps.PPSBlend_ADDPeer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 功能说明: 域对象
@@ -13,13 +15,15 @@ import java.io.Serializable;
  * @time Sep 23, 2014 10:48:29 AM
  */
 public class Privilege implements Serializable {
-
+    private Long orgId;
     private Long privilegeId;
     private String resourceId;
     private Long ownerId;
     private String ownerType;
     private String privilegeScope;
     private String privilegeType;
+    private String creator;
+    private LocalDateTime createTime;
 
     /**
      * default constructor
@@ -34,6 +38,15 @@ public class Privilege implements Serializable {
         this.privilegeId = privilegeId;
     }
 
+
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
+    }
 
     public Long getPrivilegeId() {
         return this.privilegeId;
@@ -81,6 +94,22 @@ public class Privilege implements Serializable {
 
     public void setPrivilegeType(String privilegeType) {
         this.privilegeType = privilegeType;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
 
     @Override

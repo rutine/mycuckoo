@@ -39,34 +39,34 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.SysOptLog"
             useGeneratedKeys="true" keyProperty="optId" keyColumn="opt_id">
         insert into <include refid="table" />
-        (
-            opt_id,
-            org_id,
-            mod_name,
-            opt_name,
-            content,
-            busi_type,
-            busi_id,
-            ip,
-            user_name,
-            user_role,
-            creator,
-            create_time
-        )
-        values (
-            #{optId},
-            #{orgId},
-            #{modName},
-            #{optName},
-            #{content},
-            #{busiType},
-            #{busiId},
-            #{ip},
-            #{userName},
-            #{userRole},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="optId != null">opt_id, </if>
+            <if test="orgId != null">org_id, </if>
+            <if test="modName != null and modName != ''">mod_name, </if>
+            <if test="optName != null and optName != ''">opt_name, </if>
+            <if test="content != null and content != ''">content, </if>
+            <if test="busiType != null">busi_type, </if>
+            <if test="busiId != null and busiId != ''">busi_id, </if>
+            <if test="ip != null and ip != ''">ip, </if>
+            <if test="userName != null and userName != ''">user_name, </if>
+            <if test="userRole != null and userRole != ''">user_role, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="optId != null">#{optId}, </if>
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="modName != null and modName != ''">#{modName}, </if>
+            <if test="optName != null and optName != ''">#{optName}, </if>
+            <if test="content != null and content != ''">#{content}, </if>
+            <if test="busiType != null">#{busiType}, </if>
+            <if test="busiId != null and busiId != ''">#{busiId}, </if>
+            <if test="ip != null and ip != ''">#{ip}, </if>
+            <if test="userName != null and userName != ''">#{userName}, </if>
+            <if test="userRole != null and userRole != ''">#{userRole}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新系统操作日志： 1.输入对象参数 -->
@@ -95,14 +95,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where opt_id = #{id}
-    </select>
-    
-    <!-- 判断系统操作日志是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
         from <include refid="table" />
         where opt_id = #{id}
     </select>

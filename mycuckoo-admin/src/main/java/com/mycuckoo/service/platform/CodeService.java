@@ -4,7 +4,7 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.web.SessionUtil;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
 import static com.mycuckoo.constant.AdminConst.ENABLE;
-import static com.mycuckoo.core.util.CommonUtils.isEmpty;
+import static com.mycuckoo.core.util.StrUtils.isEmpty;
 
 /**
  * 功能说明: 编码管理业务类
@@ -180,7 +180,7 @@ public class CodeService {
     }
 
     @Transactional
-    public void save(Code entity) throws ApplicationException {
+    public void save(Code entity) throws MyCuckooException {
         Assert.state(!existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);

@@ -4,7 +4,7 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.operator.event.LogEvent;
-import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * 功能说明: 日志操作器
@@ -17,7 +17,7 @@ public final class LogOperator {
     public final static String COMMA = ",";
     public final static String DUNHAO = "、";
 
-    private static ApplicationEventMulticaster multicaster;
+    private static ApplicationEventPublisher publisher;
     private static Object[] EMPTY = new Object[0];
 
     private ModuleName module;
@@ -30,9 +30,9 @@ public final class LogOperator {
     private LogOperator() {
     }
 
-    public static void setEventMulticaster(ApplicationEventMulticaster multicaster) {
-        if (multicaster != null) {
-            LogOperator.multicaster = multicaster;
+    public static void setEventMulticaster(ApplicationEventPublisher publisher) {
+        if (publisher != null) {
+            LogOperator.publisher = publisher;
         }
 
     }
@@ -110,7 +110,7 @@ public final class LogOperator {
         }
 
         LogEvent event = new LogEvent(new LogEvent.Payload(this.module, this.operate, idStr, this.title, content, this.level));
-        multicaster.multicastEvent(event);
+        publisher.publishEvent(event);
     }
 
     static class Argument {

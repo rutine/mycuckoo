@@ -58,6 +58,7 @@ public interface UserMapper extends Repository<User, Long> {
      * @param accountId
      * @return
      */
+    @PreAuth(table = "uum_user", row = PreAuth.Row.NONE)
     List<UserExtend> findByAccountId(Long accountId);
 
     /**

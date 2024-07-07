@@ -5,12 +5,12 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.util.web.SessionUtil;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.repository.uum.RoleMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +72,10 @@ public class RoleService {
         return roleMapper.get(roleId);
     }
 
+    public Role getRegDefault(String regDefault) {
+        return roleMapper.getByRegDefault(regDefault);
+    }
+
     @Transactional
     public void update(Role role) {
         Role old = get(role.getRoleId());
@@ -110,7 +114,7 @@ public class RoleService {
      * @param entity     角色对象
      * @param logLevel
      * @param opt
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */

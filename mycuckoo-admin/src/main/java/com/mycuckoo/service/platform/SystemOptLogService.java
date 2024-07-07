@@ -5,7 +5,7 @@ import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SystemConfigBean;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionUtil;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
-import static com.mycuckoo.core.util.CommonUtils.isEmpty;
+import static com.mycuckoo.core.util.StrUtils.isEmpty;
 
 /**
  * 功能说明: TODO(这里用一句话描述这个类的作用)
@@ -62,7 +62,7 @@ public class SystemOptLogService {
         String[] levelArray = { level.code() + "", sysConfigLevel };
         for (String myLevel : levelArray) {//检查日志级别是否合法
             if (isEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {
-                throw new ApplicationException("日志级别错误,值为: " + myLevel);
+                throw new MyCuckooException("日志级别错误,值为: " + myLevel);
             }
         }
         int iLevel = level.code();
@@ -72,6 +72,7 @@ public class SystemOptLogService {
         }
 
         SysOptLog sysOptLog = new SysOptLog();
+        sysOptLog.setOrgId(SessionUtil.getOrganId());
         sysOptLog.setModName(module.title());
         sysOptLog.setOptName(operate.title());
         sysOptLog.setContent(content);

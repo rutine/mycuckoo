@@ -42,40 +42,40 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.SchedulerJob"
             useGeneratedKeys="true" keyProperty="jobId" keyColumn="job_id">
         insert into <include refid="table" />
-        (
-            job_id,
-            job_name,
-            job_class,
-            trigger_type,
-            cron,
-            start_time,
-            end_time,
-            repeat_count,
-            interval_time,
-            status,
-            memo,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{jobId},
-            #{jobName},
-            #{jobClass},
-            #{triggerType},
-            #{cron},
-            #{startTime},
-            #{endTime},
-            #{repeatCount},
-            #{intervalTime},
-            #{status},
-            #{memo},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">job_id, </if>
+            <if test="jobName != null and jobName != ''">job_name, </if>
+            <if test="jobClass != null and jobClass != ''">job_class, </if>
+            <if test="triggerType != null and triggerType != ''">trigger_type, </if>
+            <if test="cron != null and cron != ''">cron, </if>
+            <if test="startTime != null">start_time, </if>
+            <if test="endTime != null">end_time, </if>
+            <if test="repeatCount != null">repeat_count, </if>
+            <if test="intervalTime != null">interval_time, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">#{jobId}, </if>
+            <if test="jobName != null and jobName != ''">#{jobName}, </if>
+            <if test="jobClass != null and jobClass != ''">#{jobClass}, </if>
+            <if test="triggerType != null and triggerType != ''">#{triggerType}, </if>
+            <if test="cron != null and cron != ''">#{cron}, </if>
+            <if test="startTime != null">#{startTime}, </if>
+            <if test="endTime != null">#{endTime}, </if>
+            <if test="repeatCount != null">#{repeatCount}, </if>
+            <if test="intervalTime != null">#{intervalTime}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新计划任务： 1.输入对象参数 -->
@@ -108,15 +108,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where job_id = #{id}
-    </select>
-    
-    
-    <!-- 判断计划任务是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
         from <include refid="table" />
         where job_id = #{id}
     </select>

@@ -143,7 +143,7 @@ public class RoleController {
             @PathVariable String privilegeScope,
             @RequestBody Set<String> operationIds) {
 
-        privilegeService.save(Lists.newArrayList(operationIds), id, PrivilegeType.OPT, OwnerType.ROLE, privilegeScope);
+        privilegeService.save(Lists.newArrayList(operationIds), OwnerType.ROLE, id, PrivilegeType.OPT, privilegeScope);
 
         return AjaxResponse.success("分配角色操作权限成功");
     }
@@ -164,7 +164,7 @@ public class RoleController {
             @PathVariable String privilegeScope,
             @RequestBody Set<String> resIds) {
 
-        privilegeService.save(Lists.newArrayList(resIds), id, PrivilegeType.RES, OwnerType.ROLE, privilegeScope);
+        privilegeService.save(Lists.newArrayList(resIds), OwnerType.ROLE, id, PrivilegeType.RES, privilegeScope);
 
         return AjaxResponse.success("分配角色资源权限成功");
     }
@@ -184,7 +184,7 @@ public class RoleController {
             @RequestBody String rowPrivilege) {
 
         List<String> optIdList = Lists.newArrayList(rowPrivilege);
-        privilegeService.save(optIdList, id, PrivilegeType.ROW, OwnerType.ROLE, rowPrivilege);
+        privilegeService.save(optIdList, OwnerType.ROLE, id, PrivilegeType.ROW, rowPrivilege);
 
         return AjaxResponse.success("设置角色行权限成功");
     }

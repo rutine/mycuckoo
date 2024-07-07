@@ -3,7 +3,7 @@ package com.mycuckoo.core;
 import com.mycuckoo.core.repository.PageQuery;
 import com.mycuckoo.core.repository.Pageable;
 import com.mycuckoo.core.repository.param.Column;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -140,7 +140,7 @@ public class Querier implements PageQuery, Pageable {
     public Map<String, Object> getQ() {
         if (q != null) {
             this.q = q.entrySet().stream()
-                    .filter(entry -> Objects.nonNull(entry.getValue()) && entry.getValue() instanceof String && !CommonUtils.isEmpty((String) entry.getValue()))
+                    .filter(entry -> Objects.nonNull(entry.getValue()) && entry.getValue() instanceof String && !StrUtils.isEmpty((String) entry.getValue()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
@@ -160,7 +160,7 @@ public class Querier implements PageQuery, Pageable {
 //    }
 
     public void putQ(String key, Object value) {
-        if (CommonUtils.isNotBlank(key) && value != null) {
+        if (StrUtils.isNotBlank(key) && value != null) {
             this.q.put(key, value);
         }
     }

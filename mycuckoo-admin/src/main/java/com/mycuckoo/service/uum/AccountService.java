@@ -2,14 +2,15 @@ package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.domain.uum.Account;
-import com.mycuckoo.repository.uum.AccountMapper;
-import com.mycuckoo.core.util.CommonUtils;
+import com.mycuckoo.core.util.StrUtils;
+import com.mycuckoo.core.util.PwdCrypt;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.domain.uum.Account;
+import com.mycuckoo.repository.uum.AccountMapper;
 import com.mycuckoo.web.vo.res.AccountInfo;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class AccountService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Account getBy(String account, String password, String ip) {
-        if (CommonUtils.isEmpty(account)) return null;
+        if (StrUtils.isEmpty(account)) return null;
         String[] arr = getActAndPhoneAndEmail(account);
         String code = arr[0];
         String phone = arr[1];
@@ -54,14 +55,14 @@ public class AccountService {
 
         Account entity = accountMapper.getBy(code, phone, email);
         if (entity == null) {
-            throw new ApplicationException("账号不存在!");
+            throw new MyCuckooException("账号不存在!");
         }
         if (entity.getErrorCount() >= 3) {
-            throw new ApplicationException("密码多次错误, 禁止登录!");
+            throw new MyCuckooException("密码多次错误, 禁止登录!");
         }
         if (!entity.getPassword().equals(password)) {
             helpService.updateErrorLogin(entity, ip);
-            throw new ApplicationException("用户密码不正确!");
+            throw new MyCuckooException("用户密码不正确!");
         }
 
         Account updateEntity = new Account(entity.getAccountId());
@@ -106,7 +107,7 @@ public class AccountService {
         List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
         List<AccountInfo> result = new ArrayList<>();
         for (String code : systemAdminCode) {
-            if (CommonUtils.isEmpty(code)) continue;
+            if (StrUtils.isEmpty(code)) continue;
             String[] arr = getActAndPhoneAndEmail(code);
             String act = arr[0];
             String phone = arr[1];
@@ -133,10 +134,30 @@ public class AccountService {
 
         Account update = new Account();
         update.setAccountId(SessionUtil.getAccountId());
-        update.setPassword(CommonUtils.encrypt(newPassword));
+        update.setPassword(StrUtils.encrypt(newPassword));
         update.setUpdateTime(LocalDateTime.now());
         accountMapper.update(update);
     }
+
+
+    @Transactional
+    public long save(String account, String phone, String email, String password) {
+        Account old = accountMapper.getBy(account, phone, email);
+        Assert.isNull(old, "账号已存在!");
+
+        Account entity = new Account();
+        entity.setAccount(account);
+        entity.setPhone(phone);
+        entity.setEmail(email);
+        entity.setPassword(PwdCrypt.getInstance().encrypt(password));
+        entity.setIp(SessionUtil.getIP());
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreateTime(LocalDateTime.now());
+        accountMapper.save(entity);
+
+        return entity.getAccountId();
+    }
+
 
     private String[] getActAndPhoneAndEmail(String account) {
         if (account == null || account.trim().equals("")) {

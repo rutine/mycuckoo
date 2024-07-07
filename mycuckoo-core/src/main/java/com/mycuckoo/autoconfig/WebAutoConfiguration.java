@@ -3,9 +3,10 @@ package com.mycuckoo.autoconfig;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.web.filter.RequestLoggingFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,21 +26,12 @@ public class WebAutoConfiguration {
         return new RequestLoggingFilter();
     }
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(ApplicationEventMulticaster.class)
-    static class OperatorConfiguration {
-        OperatorConfiguration(ApplicationEventMulticaster multicaster) {
-            LogOperator.setEventMulticaster(multicaster);
-        }
-    }
+    @RestControllerAdvice
+    public class MycuckooExceptionHandler extends com.mycuckoo.core.exception.MycuckooExceptionHandler implements ApplicationEventPublisherAware {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(RestControllerAdvice.class)
-    static class ExceptionHandlerConfiguration {
-
-        @RestControllerAdvice
-        public class MycuckooExceptionHandler extends com.mycuckoo.core.exception.MycuckooExceptionHandler {
-
+        @Override
+        public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+            LogOperator.setEventMulticaster(publisher);
         }
     }
 }

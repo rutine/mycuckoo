@@ -32,22 +32,23 @@
     <!-- 插入字典小类： 1.由数据库生成id并赋值到SysplDicSmallType对象 -->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.DictSmallType"
             useGeneratedKeys="true" keyProperty="smallTypeId" keyColumn="small_type_id">
-        insert into <include refid="table" /> (
-            small_type_id,
-            big_type_id,
-            code,
-            name,
-            creator,
-            create_time
-        )
-        values (
-            #{smallTypeId},
-            #{bigTypeId},
-            #{code},
-            #{name},
-            #{creator},
-            #{createTime}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="smallTypeId != null">small_type_id, </if>
+            <if test="bigTypeId != null">big_type_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="smallTypeId != null">#{smallTypeId}, </if>
+            <if test="bigTypeId != null">#{bigTypeId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新字典小类： 1.输入对象参数 -->
@@ -71,13 +72,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where small_type_id = #{id}
-    </select>
-    
-    <!-- 判断字典小类是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where small_type_id = #{id}
     </select>

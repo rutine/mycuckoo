@@ -37,32 +37,34 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.SysParameter"
             useGeneratedKeys="true" keyProperty="paraId" keyColumn="para_id">
         insert into <include refid="table" />
-        (
-            para_id,
-            name,
-            `key`,
-            `value`,
-            type,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{paraId},
-            #{name},
-            #{key},
-            #{value},
-            #{type},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="paraId != null">para_id, </if>
+            <if test="orgId != null">org_id, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="key != null and key != ''">`key`, </if>
+            <if test="value != null and value != ''">`value`, </if>
+            <if test="type != null">type, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="paraId != null">#{paraId}, </if>
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="key != null and key != ''">#{key}, </if>
+            <if test="value != null and value != ''">#{value}, </if>
+            <if test="type != null">#{type}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新系统参数： 1.输入对象参数 -->
@@ -91,13 +93,6 @@
     -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where para_id = #{id}
-    </select>
-    
-    <!-- 系统参数是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where para_id = #{id}
     </select>

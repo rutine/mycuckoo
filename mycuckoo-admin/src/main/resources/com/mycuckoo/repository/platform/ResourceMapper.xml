@@ -40,38 +40,38 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.Resource"
             useGeneratedKeys="true" keyProperty="operateId" keyColumn="operate_id">
         insert into <include refid="table" />
-        (
-            resource_id,
-            module_id,
-            operate_id,
-            identifier,
-            name,
-            `method`,
-            `order`,
-            path,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{resourceId},
-            #{moduleId},
-            #{operateId},
-            #{identifier},
-            #{name},
-            #{method},
-            #{order},
-            #{path},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resourceId != null">resource_id, </if>
+            <if test="moduleId != null">module_id, </if>
+            <if test="operateId != null">operate_id, </if>
+            <if test="identifier != null and identifier != ''">identifier, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="method != null and method != ''">`method`, </if>
+            <if test="path != null and path != ''">path, </if>
+            <if test="order != null">`order`, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="resourceId != null">#{resourceId}, </if>
+            <if test="moduleId != null">#{moduleId}, </if>
+            <if test="operateId != null">#{operateId}, </if>
+            <if test="identifier != null and identifier != ''">#{identifier}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="method != null and method != ''">#{method}, </if>
+            <if test="path != null and path != ''">#{path}, </if>
+            <if test="order != null">#{order}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新操作： 1.输入对象参数 -->

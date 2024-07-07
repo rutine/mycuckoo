@@ -100,13 +100,6 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(3L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = new HashMap<String, Object>(4);
         params.put("jobName", "%log%");

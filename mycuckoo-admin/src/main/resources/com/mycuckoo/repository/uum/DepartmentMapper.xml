@@ -36,37 +36,38 @@
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Department"
             useGeneratedKeys="true" keyProperty="deptId" keyColumn="dept_id">
         insert into <include refid="table" />
-        (
-            dept_id,
-            org_id,
-            parent_id,
-            tree_id,
-            role_id,
-            level,
-            code,
-            name,
-            status,
-            memo,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{deptId},
-            #{orgId},
-            #{parentId},
-            #{treeId},
-            #{level},
-            #{code},
-            #{name},
-            #{status},
-            #{memo},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id, </if>
+            <if test="orgId != null">org_id, </if>
+            <if test="parentId != null">parent_id, </if>
+            <if test="treeId != null and treeId != ''">tree_id, </if>
+            <if test="roleId != null">role_id, </if>
+            <if test="level != null">level, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId}, </if>
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="parentId != null">#{parentId}, </if>
+            <if test="treeId != null and treeId != ''">#{treeId}, </if>
+            <if test="roleId != null">#{roleId}, </if>
+            <if test="level != null">#{memo}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
 
     <update id="update" parameterType="com.mycuckoo.domain.uum.Department">
@@ -92,12 +93,6 @@
 
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
-        from <include refid="table" />
-        where dept_id = #{deptId}
-    </select>
-
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
         from <include refid="table" />
         where dept_id = #{deptId}
     </select>

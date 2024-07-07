@@ -18,6 +18,7 @@ public class Role extends BasicDomain<Long> {
     private Short level;    //角色级别
     private String status;        //角色状态
     private String memo;        //备注
+    private String regDefault;  //注册默认
 
     /**
      * default constructor
@@ -73,6 +74,13 @@ public class Role extends BasicDomain<Long> {
         this.memo = memo == null ? memo : memo.trim();
     }
 
+    public String getRegDefault() {
+        return regDefault;
+    }
+
+    public void setRegDefault(String regDefault) {
+        this.regDefault = regDefault == null ? regDefault : regDefault.trim();
+    }
 
     @Override
     public boolean equals(Object obj) {

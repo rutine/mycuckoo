@@ -12,15 +12,18 @@
 <mapper namespace="com.mycuckoo.repository.uum.PrivilegeMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.uum.Privilege">
         <id property="privilegeId" column="privilege_id" />
+        <result property="orgId" column="org_id" />
         <result property="resourceId" column="resource_id" />
         <result property="ownerId" column="owner_id" />
         <result property="ownerType" column="owner_type" />              <!-- rol 角色 usr 用户 -->
         <result property="privilegeScope" column="privilege_scope" />    <!-- 针对操作 inc 包含 exc 不包含 all 全部 针对行 org 机构 rol 角色 usr 用户 -->
         <result property="privilegeType" column="privilege_type" />      <!-- row 行 opt 操作 -->
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
     </resultMap>
     
-    <sql id="colums">
-        privilege_id, resource_id, owner_id, owner_type, privilege_scope, privilege_type
+    <sql id="columns">
+        privilege_id, org_id, resource_id, owner_id, owner_type, privilege_scope, privilege_type, creator, create_time
     </sql>
     
     <sql id="table">
@@ -35,22 +38,28 @@
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Privilege"
             useGeneratedKeys="true" keyProperty="privilegeId" keyColumn="privilege_id">
         insert into <include refid="table" />
-        (
-            privilege_id,
-            resource_id,
-            owner_id,
-            owner_type,
-            privilege_scope,
-            privilege_type
-        )
-        values (
-            #{privilegeId},
-            #{resourceId},
-            #{ownerId},
-            #{ownerType},
-            #{privilegeScope},
-            #{privilegeType}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="privilegeId != null">privilege_id, </if>
+            <if test="orgId != null">org_id, </if>
+            <if test="resourceId != null and resourceId != ''">resource_id, </if>
+            <if test="ownerId != null">owner_id, </if>
+            <if test="ownerType != null and ownerType != ''">owner_type, </if>
+            <if test="privilegeScope != null and privilegeScope != ''">privilege_scope, </if>
+            <if test="privilegeType != null and privilegeType != ''">privilege_type, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="privilegeId != null">#{privilegeId}, </if>
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="resourceId != null and resourceId != ''">#{resourceId}, </if>
+            <if test="ownerId != null">#{ownerId}, </if>
+            <if test="ownerType != null and ownerType != ''">#{ownerType}, </if>
+            <if test="privilegeScope != null and privilegeScope != ''">#{privilegeScope}, </if>
+            <if test="privilegeType != null and privilegeType != ''">#{privilegeType}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新数据： 1.输入对象参数 -->
@@ -71,32 +80,22 @@
         delete from <include refid="table" /> where privilege_id = #{id}
     </delete>
     
-    <!--
-        获取数据: 输出直接映射到对象
-    -->
+    <!-- 获取数据: 输出直接映射到对象 -->
     <select id="get" parameterType="long" resultMap="baseMap">
-        select <include refid="colums" />
-        from <include refid="table" />
-        where privilege_id = #{id}
-    </select>
-    
-    <!-- 数据记录是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select
-            count(1) > 0 
+        select <include refid="columns" />
         from <include refid="table" />
         where privilege_id = #{id}
     </select>
 
     <!-- 查询所有数据, 映射到 Privilege-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
     </select>
     
     <!-- 根据资源拥有者ID，拥有者类型和权限类型查询权限记录 1.输入map对象-->
     <select id="findByOwnIdAndPrivilegeType" parameterType="map" resultMap="baseMap">
-        select <include refid="colums" />
+        select <include refid="columns" />
         from <include refid="table" />
         <where>
             <if test="ownerIds !=null"> owner_id in
@@ -122,52 +121,30 @@
         select count(1)
         from <include refid="table" />
         where owner_id = #{userId}
-        and and owner_type = #{ownerType}
+        and owner_type = #{ownerType}
     </select>
     
     <!-- 根据条件删除权限 -->
     <delete id="deleteByOwnerIdAndOwnerType" parameterType="map">
         delete from <include refid="table" />
-        <where>
-            <if test="ownerId != null">
-                owner_id = #{ownerId}
-            </if>
-            <if test="ownerType != null">
-                and owner_type = #{ownerType}
-            </if>
-        </where>
+        where owner_id = #{ownerId}
+        and owner_type = #{ownerType}
     </delete>
     
     <!-- 根据条件删除权限 -->
     <delete id="deleteByOwnerIdAndPrivilegeType" parameterType="map">
-        delete from <include refid="table" /> 
-        <where>
-            <if test="ownerId != null">
-                owner_id = #{ownerId}
-            </if>
-            <if test="ownerType != null">
-                and owner_type = #{ownerType}
-            </if>
-            <if test="privilegeType != null">
-                and privilege_type = #{privilegeType}
-            </if>
-        </where>
+        delete from <include refid="table" />
+        where owner_id = #{ownerId}
+        and owner_type = #{ownerType}
+        and privilege_type = #{privilegeType}
     </delete>
     
     <!-- 根据条件删除权限 -->
     <delete id="deleteRowPrivilegeByDeptId" parameterType="map">
-        delete from <include refid="table" /> 
-        <where>
-            <if test="resourceId != null">
-                and resource_id = #{resourceId}
-            </if>
-            <if test="privilegeType != null">
-                and privilege_type = #{privilegeType}
-            </if>
-            <if test="privilegeScope != null">
-                and privilege_scope = #{privilegeScope}
-            </if>
-        </where>
+        delete from <include refid="table" />
+        where resource_id = #{resourceId}
+        and privilege_type = #{privilegeType}
+        and privilege_scope = #{privilegeScope}
     </delete>
     
     <!-- 删除模块操作关系时同时也删除模块操作权限 -->

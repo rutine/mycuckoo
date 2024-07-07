@@ -113,13 +113,6 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
     }
 
     @Test
-    public void testExists() {
-        boolean exists = organMapper.exists(34L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<Organ> page = organMapper.findByPage(null, new PageRequest(0, 5));
 

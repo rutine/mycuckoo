@@ -82,13 +82,6 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(25L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
         params.put("name", null);

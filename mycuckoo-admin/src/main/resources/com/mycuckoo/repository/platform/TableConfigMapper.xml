@@ -36,44 +36,44 @@
     <insert id="save" parameterType="com.mycuckoo.domain.platform.TableConfig"
             useGeneratedKeys="true" keyProperty="tableId" keyColumn="table_id">
         insert into <include refid="table" />
-        (
-            table_id,
-            table_code,
-            module_id,
-            type,
-            field,
-            `title`,
-            `filter_type`,
-            filter,
-            sort,
-            blank,
-            width,
-            extra,
-            `order`,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{tableId},
-            #{tableCode},
-            #{moduleId},
-            #{type},
-            #{field},
-            #{title},
-            #{filterType},
-            #{filter},
-            #{sort},
-            #{blank},
-            #{width},
-            #{extra},
-            #{order},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">table_id, </if>
+            <if test="tableCode != null">table_code, </if>
+            <if test="moduleId != null">module_id, </if>
+            <if test="type != null">type, </if>
+            <if test="field != null">field, </if>
+            <if test="title != null and title != ''">`title`, </if>
+            <if test="filterType != null and filterType != ''">`filter_type`, </if>
+            <if test="filter != null and filter != ''">filter, </if>
+            <if test="sort != null">sort, </if>
+            <if test="blank != null">blank, </if>
+            <if test="width != null">width, </if>
+            <if test="extra != null and extra != ''">extra, </if>
+            <if test="order != null">`order`, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableId != null">#{tableId}, </if>
+            <if test="tableCode != null">#{tableCode}, </if>
+            <if test="moduleId != null">#{moduleId}, </if>
+            <if test="type != null">#{type}, </if>
+            <if test="field != null">#{field}, </if>
+            <if test="title != null and title != ''">#{title}, </if>
+            <if test="filterType != null and filterType != ''">#{filterType}, </if>
+            <if test="filter != null and filter != ''">#{phone}, </if>
+            <if test="sort != null">#{sort}, </if>
+            <if test="blank != null">#{blank}, </if>
+            <if test="width != null">#{width}, </if>
+            <if test="extra != null and extra != ''">#{extra}, </if>
+            <if test="order != null">#{order}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
 
     <insert id="batchInsert" parameterType="com.mycuckoo.domain.platform.TableConfig"

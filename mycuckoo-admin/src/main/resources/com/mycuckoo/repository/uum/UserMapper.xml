@@ -52,50 +52,50 @@
     <insert id="save" parameterType="com.mycuckoo.domain.uum.User"
             useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
         insert into <include refid="table" />
-        (
-            user_id,
-            org_id,
-            account_id,
-            role_id,
-            dept_id,
-            name,
-            pinyin,
-            phone,
-            email,
-            gender,
-            position,
-            photo_url,
-            address,
-            avidate,
-            memo,
-            status,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{userId},
-            #{orgId},
-            #{accountId},
-            #{roleId},
-            #{deptId},
-            #{name},
-            #{pinyin},
-            #{phone},
-            #{email},
-            #{gender},
-            #{position},
-            #{photoUrl},
-            #{address},
-            #{avidate},
-            #{memo},
-            #{status},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id, </if>
+            <if test="orgId != null">org_id, </if>
+            <if test="accountId != null">account_id, </if>
+            <if test="roleId != null">role_id, </if>
+            <if test="deptId != null">dept_id, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="pinyin != null and pinyin != ''">pinyin, </if>
+            <if test="phone != null and phone != ''">phone, </if>
+            <if test="email != null and email != ''">email, </if>
+            <if test="gender != null and gender != ''">gender, </if>
+            <if test="position != null and position != ''">position, </if>
+            <if test="photoUrl != null and photoUrl != ''">photo_url, </if>
+            <if test="address != null and address != ''">address, </if>
+            <if test="avidate != null">avidate, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId}, </if>
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="accountId != null">#{accountId}, </if>
+            <if test="roleId != null">#{roleId}, </if>
+            <if test="deptId != null">#{deptId}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="pinyin != null and pinyin != ''">#{pinyin}, </if>
+            <if test="phone != null and phone != ''">#{phone}, </if>
+            <if test="email != null and email != ''">#{email}, </if>
+            <if test="gender != null and gender != ''">#{gender}, </if>
+            <if test="position != null and position != ''">#{position}, </if>
+            <if test="photoUrl != null and photoUrl != ''">#{photoUrl}, </if>
+            <if test="address != null and address != ''">#{address}, </if>
+            <if test="avidate != null">#{avidate}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
 
     <!-- 更新用户： 1.输入用对象 -->
@@ -137,17 +137,20 @@
         where user_id = #{id}
     </select>
 
-    <!-- 判断用户是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(user_id) > 0
-        from <include refid="table" />
-        where user_id=#{id}
-    </select>
-
     <!-- 返回所有用户,映射到'uumUser'-->
     <select id="findByPage" resultMap="baseMap">
         select
-            t1.*,
+            t1.user_id,
+            t1.name,
+            t1.pinyin,
+            t1.phone,
+            t1.email,
+            t1.gender,
+            t1.address,
+            t1.avidate,
+            t1.status,
+            t1.creator,
+            t1.create_time,
             t2.simple_name org_name,
             t5.name role_name
         from <include refid="table" /> t1
@@ -218,7 +221,7 @@
             t1.user_id,
             t1.org_id,
             t1.account_id,
-            t1.role_id,
+            if(t1.role_id = -1, t2.role_id, t1.role_id) role_id,
             t1.dept_id,
             t1.name,
             t1.pinyin,

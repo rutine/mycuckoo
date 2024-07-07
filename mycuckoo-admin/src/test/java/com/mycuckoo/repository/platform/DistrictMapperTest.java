@@ -113,13 +113,6 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(2003L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
         params.put("array", new Long[]{0l, 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l});

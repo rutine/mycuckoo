@@ -4,7 +4,7 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Operate;
@@ -136,7 +136,7 @@ public class OperateService {
      * @param entity  模块对象
      * @param logLevel 日志级别
      * @param opt      操作名称
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 14, 2012 1:17:12 PM
      */

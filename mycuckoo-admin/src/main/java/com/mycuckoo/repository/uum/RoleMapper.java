@@ -22,4 +22,6 @@ public interface RoleMapper extends Repository<Role, Long> {
      */
     int countByRoleName(String roleName);
 
+    @PreAuth(table = "uum_role", row = PreAuth.Row.NONE)
+    Role getByRegDefault(String regDefault);
 }

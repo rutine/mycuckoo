@@ -95,13 +95,6 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(3L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = new HashMap<String, Object>(10);
         params.put("modName", "%登录%");

@@ -16,7 +16,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -33,8 +32,10 @@ import java.util.stream.Stream;
 @Order
 public class PrivilegeFilter extends OncePerRequestFilter {
     private String[] allowPaths = {
+            "/register",
             "/login",
             "/login/logout",
+            "/captcha/**",
             "/file/**",
             "/static/**",
             "/view/**",
@@ -71,8 +72,7 @@ public class PrivilegeFilter extends OncePerRequestFilter {
                 return;
             }
 
-            HttpSession session = request.getSession(false);
-            if (session == null || SessionUtil.getAccountId() == null) {
+            if (SessionUtil.getAccountId() == null) {
                 logger.info("未登录被拦截");
 
                 response.setCharacterEncoding("UTF-8");

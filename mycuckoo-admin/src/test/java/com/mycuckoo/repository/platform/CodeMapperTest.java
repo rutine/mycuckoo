@@ -104,13 +104,6 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(25L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
         params.put("code", "%RKD%");

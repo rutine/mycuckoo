@@ -99,13 +99,6 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testExists() {
-        boolean exists = privilegeMapper.exists(34L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<Privilege> page = privilegeMapper.findByPage(null, new PageRequest(0, 5));
 

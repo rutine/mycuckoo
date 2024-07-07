@@ -1,6 +1,6 @@
 package com.mycuckoo.core.util;
 
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -46,7 +46,7 @@ public class XmlOptUtils {
             doc = DocumentHelper.parseText(str);
         } catch (Exception e) {
             logger.error("readString occur error : ", e);
-            throw new ApplicationException("readString occur error : ", e);
+            throw new MyCuckooException("readString occur error : ", e);
         }
 
         return doc;
@@ -72,7 +72,7 @@ public class XmlOptUtils {
             str = out.toString("UTF-8");
         } catch (Exception e) {
             logger.error("writeString occur error : ", e);
-            throw new ApplicationException("writeString occur error : ", e);
+            throw new MyCuckooException("writeString occur error : ", e);
         }
 
         return str;
@@ -84,7 +84,7 @@ public class XmlOptUtils {
      *
      * @param fileName uri 文件路径
      * @return 成功返回Document对象，失败返回null
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 3, 2012 11:14:43 AM
      */
@@ -93,7 +93,7 @@ public class XmlOptUtils {
         SAXReader saxReader = new SAXReader();
         File file = new File(fileName);
         if (!file.exists()) {
-            throw new ApplicationException("对不起，文件" + fileName + "找不到.");
+            throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
         }
 
         try {
@@ -112,7 +112,7 @@ public class XmlOptUtils {
      * @param document 需要保存的document对象
      * @param fileName 保存的文件名
      * @return true : 保存成功  flase : 失败
-     * @throws ApplicationException
+     * @throws MyCuckooException
      * @author rutine
      * @time Oct 3, 2012 11:32:33 AM
      */
@@ -123,7 +123,7 @@ public class XmlOptUtils {
         format.setEncoding("UTF-8");
         File file = new File(fileName);
         if (!file.exists()) {
-            throw new ApplicationException("对不起，文件" + fileName + "找不到.");
+            throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
         }
 
         try {

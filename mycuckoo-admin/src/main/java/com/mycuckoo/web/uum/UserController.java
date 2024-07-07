@@ -168,7 +168,7 @@ public class UserController {
                                                  @RequestBody Set<String> operationIds) {
 
         List<String> list = Lists.newArrayList(operationIds);
-        privilegeService.save(list, id, PrivilegeType.OPT, OwnerType.USR, privilegeScope);
+        privilegeService.save(list, OwnerType.USR, id, PrivilegeType.OPT, privilegeScope);
 
         return AjaxResponse.success("为用户分配操作权限成功");
     }
@@ -189,7 +189,7 @@ public class UserController {
                                                  @RequestBody Set<String> resIds) {
 
         List<String> list = Lists.newArrayList(resIds);
-        privilegeService.save(list, id, PrivilegeType.RES, OwnerType.USR, privilegeScope);
+        privilegeService.save(list, OwnerType.USR, id, PrivilegeType.RES, privilegeScope);
 
         return AjaxResponse.success("为用户分配资源权限成功");
     }
@@ -210,7 +210,7 @@ public class UserController {
             @RequestBody Set<String> rowIds) {
 
         List<String> list = new ArrayList<>(rowIds);
-        privilegeService.save(list, id, PrivilegeType.ROW, OwnerType.USR, privilegeScope);
+        privilegeService.save(list, OwnerType.USR, id, PrivilegeType.ROW, privilegeScope);
 
         return AjaxResponse.success("为用户分配行权限成功");
     }

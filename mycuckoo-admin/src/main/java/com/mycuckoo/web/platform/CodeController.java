@@ -2,7 +2,7 @@ package com.mycuckoo.web.platform;
 
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.service.platform.CodeService;
@@ -82,7 +82,7 @@ public class CodeController {
     @DeleteMapping("/{id}")
     public AjaxResponse<String> delete(@PathVariable long id) {
 
-        throw new ApplicationException("找不到删除记录的方法!");
+        throw new MyCuckooException("找不到删除记录的方法!");
 
 //        return AjaxResponse.create("删除系统编码成功");
     }

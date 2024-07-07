@@ -68,6 +68,11 @@
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.ramostear</groupId>
+      <artifactId>Happy-Captcha</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

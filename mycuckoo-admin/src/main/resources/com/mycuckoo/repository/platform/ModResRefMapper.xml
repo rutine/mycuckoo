@@ -32,20 +32,21 @@
     <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModResRef对象 2.嵌套属性输入#{operate.operateId}-->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.ModResRef"
             useGeneratedKeys="true" keyProperty="modResId" keyColumn="mod_res_id">
-        insert into <include refid="table" /> (
-            mod_res_id,
-            module_id,
-            resource_id,
-            `group`,
-            `order`
-        )
-        values (
-            #{modResId},
-            #{moduleId},
-            #{resource.resourceId},
-            #{group},
-            #{order}
-        )
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modResId != null">mod_res_id, </if>
+            <if test="moduleId != null">module_id, </if>
+            <if test="resource.resourceId != null">resource_id, </if>
+            <if test="group != null">`group`, </if>
+            <if test="order != null">`order`, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modResId != null">#{modResId}, </if>
+            <if test="moduleId != null">#{moduleId}, </if>
+            <if test="resource.resourceId != null">#{resource.resourceId}, </if>
+            <if test="group != null">#{group}, </if>
+            <if test="order != null">#{order}, </if>
+        </trim>
     </insert>
     
     <!-- 更新模块操作关系： 1.输入对象参数 2.嵌套属性输入#{operate.operateId} -->

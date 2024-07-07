@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MycuckooExceptionHandler {
     private static Logger logger = LoggerFactory.getLogger(MycuckooExceptionHandler.class);
 
-    @ExceptionHandler(value = {ApplicationException.class})
+    @ExceptionHandler(value = {MyCuckooException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public AjaxResponse<String> applicationException(ApplicationException ex) {
+    public AjaxResponse<String> mycuckooException(MyCuckooException ex) {
         logger.error("应用异常", ex);
 
         return AjaxResponse.create(ex.getCode(), ex.getMessage());

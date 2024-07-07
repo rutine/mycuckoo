@@ -93,13 +93,6 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
     }
 
     @Test
-    public void testExists() {
-        boolean exists = mapper.exists(3L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<ModOptRef> page = mapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
 

@@ -1,6 +1,6 @@
 package com.mycuckoo.core.util;
 
-import com.mycuckoo.core.exception.ApplicationException;
+import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.SystemConfigBean;
 import org.dom4j.Document;
@@ -52,7 +52,7 @@ public class SystemConfigXmlParse {
 
     public void loadSystemConfigDoc() {
         try {
-            String fileName = CommonUtils.getClusterResourcePath(sysConfigFileXml);
+            String fileName = FileUtils.getClusterResourcePath(sysConfigFileXml);
             File systemConfigFile = new File(fileName);
             if (!systemConfigFile.exists()) {
                 try {
@@ -63,7 +63,7 @@ public class SystemConfigXmlParse {
             }
 
             if (!systemConfigFile.exists()) {
-                throw new ApplicationException("对不起，文件" + fileName + "找不到.");
+                throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
             }
             fileName = systemConfigFile.getAbsolutePath();
             logger.info("系统配置文件 ---> {}", fileName);

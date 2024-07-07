@@ -99,13 +99,6 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
     }
 
     @Test
-    public void testExists() {
-        boolean exists = departmentMapper.exists(34L);
-
-        Assert.assertEquals(Boolean.TRUE, exists);
-    }
-
-    @Test
     public void testFindByPage() {
         Page<Department> page = departmentMapper.findByPage(null, new PageRequest(0, 5));
 

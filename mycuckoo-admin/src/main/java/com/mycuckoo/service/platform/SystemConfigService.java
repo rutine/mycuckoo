@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.mycuckoo.core.operator.LogOperator.COMMA;
-import static com.mycuckoo.core.util.CommonUtils.getClusterResourcePath;
+import static com.mycuckoo.core.util.FileUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件维护业务类

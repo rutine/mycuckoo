@@ -58,61 +58,62 @@
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Organ"
             useGeneratedKeys="true" keyProperty="orgId" keyColumn="org_id">
         insert into <include refid="table" />
-        (
-            org_id,
-            parent_id,
-            tree_id,
-            role_id,
-            level,
-            code,
-            simple_name,
-            full_name,
-            address1,
-            address2,
-            tel1,
-            tel2,
-            begin_date,
-            type,
-            fax,
-            postal,
-            legal,
-            tax_no,
-            reg_no,
-            belong_dist,
-            status,
-            memo,
-            updator,
-            update_time,
-            creator,
-            create_time
-        )
-        values (
-            #{orgId},
-            #{parentId},
-            #{treeId},
-            #{level},
-            #{code},
-            #{simpleName},
-            #{fullName},
-            #{address1},
-            #{address2},
-            #{tel1},
-            #{tel2},
-            #{beginDate},
-            #{type},
-            #{fax},
-            #{postal},
-            #{legal},
-            #{taxNo},
-            #{regNo},
-            #{belongDist},
-            #{status},
-            #{memo},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
-        )
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orgId != null">org_id, </if>
+            <if test="parentId != null">parent_id, </if>
+            <if test="treeId != null and treeId != ''">tree_id, </if>
+            <if test="roleId != null">role_id, </if>
+            <if test="level != null">level, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="simpleName != null and simpleName != ''">simple_name, </if>
+            <if test="fullName != null and fullName != ''">full_name, </if>
+            <if test="address1 != null and address1 != ''">address1, </if>
+            <if test="address2 != null and address2 != ''">address2, </if>
+            <if test="tel1 != null and tel1 != ''">tel1, </if>
+            <if test="tel2 != null and tel2 != ''">tel2, </if>
+            <if test="beginDate != null">begin_date, </if>
+            <if test="type != null and type != ''">type, </if>
+            <if test="fax != null and fax != ''">fax, </if>
+            <if test="postal != null and postal != ''">postal, </if>
+            <if test="legal != null and legal != ''">legal, </if>
+            <if test="taxNo != null and taxNo != ''">tax_no, </if>
+            <if test="regNo != null and regNo != ''">reg_no, </if>
+            <if test="belongDist != null">belong_dist </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updator != null">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orgId != null">#{orgId}, </if>
+            <if test="parentId != null">#{parentId}, </if>
+            <if test="treeId != null and treeId != ''">#{treeId}, </if>
+            <if test="roleId != null">#{roleId}, </if>
+            <if test="level != null">#{memo}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="simpleName != null and simpleName != ''">#{simpleName}, </if>
+            <if test="fullName != null and fullName != ''">#{fullName}, </if>
+            <if test="address1 != null and address1 != ''">#{address1}, </if>
+            <if test="address2 != null and address2 != ''">#{address2}, </if>
+            <if test="tel1 != null and tel1 != ''">#{tel1}, </if>
+            <if test="tel2 != null and tel2 != ''">#{tel2}, </if>
+            <if test="beginDate != null">#{beginDate}, </if>
+            <if test="type != null and type != ''">#{type}, </if>
+            <if test="fax != null and fax != ''">#{fax}, </if>
+            <if test="postal != null and postal != ''">#{postal}, </if>
+            <if test="legal != null and legal != ''">#{legal}, </if>
+            <if test="taxNo != null and taxNo != ''">#{taxNo}, </if>
+            <if test="regNo != null and regNo != ''">#{regNo}, </if>
+            <if test="belongDist != null">#{belongDist} </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updator != null and">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
     </insert>
     
     <!-- 更新数据： 1.输入是对象参数 -->
@@ -159,20 +160,24 @@
         from <include refid="table" />
         where org_id = #{id}
     </select>
-    
-        <!-- 数据记录是否存在 -->
-    <select id="exists" parameterType="long" resultType="boolean">
-        select count(1) > 0
-        from <include refid="table" />
-        where org_id = #{id}
-    </select>
 
     <!-- 查询数据, 映射到resultMap-->
     <select id="findByPage" resultMap="baseMap">
-        select <include refid="columns" />
-        from <include refid="table" />
+        select
+            t1.org_id,
+            t1.role_id,
+            t1.code,
+            t1.simple_name,
+            t1.address1,
+            t1.tel1,
+            t1.begin_date,
+            t1.status,
+            t1.create_time,
+            t2.name memo
+        from <include refid="table" /> t1
+        left join cuckoo.uum_role t2 on t2.role_id = t1.role_id
         <include refid="whereStatement"/>
-        order by parent_id, org_id
+        order by t1.parent_id, t1.org_id
     </select>
     
     <!-- 根据机构orgId查询所有直接下级机构, 映射到Organ -->
@@ -215,13 +220,13 @@
     <sql id="whereStatement">
         <where>
             <if test="q.treeId != null">
-                and tree_id like concat(#{q.treeId}, '.%')
+                and t1.tree_id like concat(#{q.treeId}, '.%')
             </if>
             <if test="q.code != null and q.code != ''">
-                code like concat('%', #{q.code}, '%')
+                and t1.code like concat('%', #{q.code}, '%')
             </if>
             <if test="q.name != null and q.name != ''">
-                and simple_name like concat('%', #{q.name}, '%')
+                and t1.simple_name like concat('%', #{q.name}, '%')
             </if>
         </where>
     </sql>
