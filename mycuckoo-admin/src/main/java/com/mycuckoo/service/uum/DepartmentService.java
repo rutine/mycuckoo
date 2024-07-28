@@ -11,7 +11,7 @@ import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.repository.uum.DepartmentMapper;
@@ -175,7 +175,7 @@ public class DepartmentService {
             entity.setLevel(parent.getLevel() + 1);
         }
 
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         departmentMapper.update(entity);
 
@@ -187,10 +187,10 @@ public class DepartmentService {
         Department parent = get(entity.getParentId());
         Assert.notNull(parent, "上级不存在!");
 
-        entity.setOrgId(SessionUtil.getOrganId());
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setOrgId(SessionContextHolder.getOrganId());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserId().toString());
+        entity.setCreator(SessionContextHolder.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         entity.setLevel(parent.getLevel() + 1);
         entity.setStatus(ENABLE);
@@ -211,7 +211,7 @@ public class DepartmentService {
         Department updateEntity = new Department();
         updateEntity.setDeptId(deptId);
         updateEntity.setRoleId(roleId);
-        updateEntity.setUpdator(SessionUtil.getUserId().toString());
+        updateEntity.setUpdator(SessionContextHolder.getUserId().toString());
         updateEntity.setUpdateTime(LocalDateTime.now());
         departmentMapper.update(updateEntity);
 

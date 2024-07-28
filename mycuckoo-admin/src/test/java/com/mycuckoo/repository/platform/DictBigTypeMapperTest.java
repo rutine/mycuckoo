@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.DictBigType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -86,7 +86,7 @@ public class DictBigTypeMapperTest extends AbstractTransactionalJUnit4SpringCont
         Map<String, Object> params = Maps.newHashMap();
         params.put("name", null);
         params.put("code", "%mod%");
-        Page<DictBigType> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<DictBigType> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (DictBigType entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

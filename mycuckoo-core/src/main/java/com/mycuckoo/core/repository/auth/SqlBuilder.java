@@ -158,7 +158,7 @@ public class SqlBuilder {
         expressionList.addExpression(this.newJdbcParameter());
         expressionList.addExpression(new StringValue("%"));
 
-        consumer.accept(String.format("wheres.%s", field), String.class);
+        consumer.accept(String.format("where.%s", field), String.class);
 
         this.wheres.add(left);
 
@@ -181,7 +181,7 @@ public class SqlBuilder {
 
         // name = ?
         Expression left = this.newEq(column, this.newJdbcParameter());
-        consumer.accept(String.format("wheres.%s", field), String.class);
+        consumer.accept(String.format("where.%s", field), String.class);
 
         this.wheres.add(left);
 
@@ -200,14 +200,14 @@ public class SqlBuilder {
             if (param.getStart() != null) {
                 // name >= ?
                 greaterThanEquals = this.newGE(column, this.newJdbcParameter());
-                consumer.accept(String.format("wheres.%s.start", field), param.getStart().getClass());
+                consumer.accept(String.format("where.%s.start", field), param.getStart().getClass());
             }
 
             MinorThanEquals minorThanEquals = null;
             if (param.getEnd() != null) {
                 // name <= ?
                 minorThanEquals = this.newLE(column, this.newJdbcParameter());
-                consumer.accept(String.format("wheres.%s.end", field), param.getEnd().getClass());
+                consumer.accept(String.format("where.%s.end", field), param.getEnd().getClass());
             }
 
             // name >= ? || name <= ?
@@ -218,10 +218,10 @@ public class SqlBuilder {
 
         // name = ?
         Expression start = this.newJdbcParameter();
-        consumer.accept(String.format("wheres.%s.start", field), param.getStart().getClass());
+        consumer.accept(String.format("where.%s.start", field), param.getStart().getClass());
         // name = ?
         Expression end = this.newJdbcParameter();
-        consumer.accept(String.format("wheres.%s.end", field), param.getEnd().getClass());
+        consumer.accept(String.format("where.%s.end", field), param.getEnd().getClass());
         // between ? and ?
         Expression left = this.newBetween(column, start, end);
 
@@ -239,7 +239,7 @@ public class SqlBuilder {
         // name in (?, ?, ?)
         for (int i = 0; i < list.size(); ++i) {
             parameters.add(this.newJdbcParameter());
-            consumer.accept(String.format("wheres_%s_%d", field, i), list.get(i));
+            consumer.accept(String.format("where_%s_%d", field, i), list.get(i));
         }
 
         ExpressionList expressionList = new ExpressionList(parameters);
@@ -256,19 +256,19 @@ public class SqlBuilder {
         EqualsTo province = null;
         if (param.getProvince() != null) {
             province = this.newEq(this.getColumn("province"), this.newJdbcParameter());
-            consumer.accept(String.format("wheres.%s.province", field), String.class);
+            consumer.accept(String.format("where.%s.province", field), String.class);
         }
 
         EqualsTo city = null;
         if (param.getCity() != null) {
             city = this.newEq(this.getColumn("city"), this.newJdbcParameter());
-            consumer.accept(String.format("wheres.%s.city", field), String.class);
+            consumer.accept(String.format("where.%s.city", field), String.class);
         }
 
         EqualsTo area = null;
         if (param.getArea() != null) {
             area = this.newEq(this.getColumn("area"), this.newJdbcParameter());
-            consumer.accept(String.format("wheres.%s.area", field), String.class);
+            consumer.accept(String.format("where.%s.area", field), String.class);
         }
 
         // province = ? and city = ? and area = ?

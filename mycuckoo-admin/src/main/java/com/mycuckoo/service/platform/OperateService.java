@@ -9,7 +9,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Operate;
 import com.mycuckoo.repository.platform.OperateMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public class OperateService {
         //不允许修改
         operate.setCode(null);
 
-        operate.setUpdator(SessionUtil.getUserId().toString());
+        operate.setUpdator(SessionContextHolder.getUserId().toString());
         operate.setUpdateTime(LocalDateTime.now());
         operateMapper.update(operate);
 
@@ -118,9 +118,9 @@ public class OperateService {
         Assert.state(!existsByName(operate.getName()), "操作名[" + operate.getName() + "]已存在!");
 
         operate.setStatus(ENABLE);
-        operate.setUpdator(SessionUtil.getUserId().toString());
+        operate.setUpdator(SessionContextHolder.getUserId().toString());
         operate.setUpdateTime(LocalDateTime.now());
-        operate.setCreator(SessionUtil.getUserId().toString());
+        operate.setCreator(SessionContextHolder.getUserId().toString());
         operate.setCreateTime(LocalDateTime.now());
         operateMapper.save(operate);
 

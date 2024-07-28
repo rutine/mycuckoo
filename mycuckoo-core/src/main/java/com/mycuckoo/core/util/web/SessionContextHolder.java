@@ -6,6 +6,7 @@ import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,8 +23,8 @@ import static com.mycuckoo.constant.BaseConst.*;
  * @version 3.0.0
  * @time Nov 1, 2014 1:19:16 PM
  */
-public final class SessionUtil {
-    private static Logger logger = LoggerFactory.getLogger(SessionUtil.class);
+public final class SessionContextHolder {
+    private static Logger logger = LoggerFactory.getLogger(SessionContextHolder.class);
 
     private static NamedThreadLocal<HttpServletRequest> localRequest = new NamedThreadLocal<>("Session Util");
 
@@ -50,6 +51,7 @@ public final class SessionUtil {
      * @time Jul 2, 2017 8:47:25 AM
      */
     public static String getIP() {
+        RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = localRequest.get();
         if (request == null) {
             logger.error("request is null.");

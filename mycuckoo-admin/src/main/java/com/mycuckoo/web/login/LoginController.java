@@ -7,7 +7,7 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
@@ -183,11 +183,11 @@ public class LoginController {
          *  9 模块权限过滤，用户是否有特殊权限，并过滤特殊权限
          * 10 portal?
          */
-        UserInfo user = SessionUtil.getUserInfo();
+        UserInfo user = SessionContextHolder.getUserInfo();
         Long organId = user.getOrgId();
         Long roleId = user.getRoleId();
         Long userId = user.getId();
-        String account = SessionUtil.getAccountCode();
+        String account = SessionContextHolder.getAccountCode();
 
         HierarchyModuleVo moduleVo = (HierarchyModuleVo) session.getAttribute(SESSION_MODULE_MENU);
         if (moduleVo == null) {
@@ -211,7 +211,7 @@ public class LoginController {
                     .id(userId)
                     .title(null)
                     .content("组织：%s, 角色：%s, 用户: %s",
-                            SessionUtil.getOrganName(), SessionUtil.getRoleName(), SessionUtil.getUserName())
+                            SessionContextHolder.getOrganName(), SessionContextHolder.getRoleName(), SessionContextHolder.getUserName())
                     .level(LogLevel.THIRD)
                     .emit();
         }

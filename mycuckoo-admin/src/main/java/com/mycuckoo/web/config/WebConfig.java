@@ -70,17 +70,36 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
 
 
     @Bean
-//    @Order(3)
     public PrivilegeFilter privilegeFilter(ModuleService service) {
+        String[] allowPaths = {
+                "/register",
+                "/login",
+                "/login/logout",
+                "/captcha/**",
+                "/file/**",
+                "/static/**",
+                "/view/**",
+                "/swagger-resources/**",
+                "/v2/api-docs/**",
+                "/**/*.html",
+                "/**/*.css",
+                "/**/*.js",
+                "/**/*.png"
+        };
+        String[] sessionPaths = {
+                "/login/orgs",
+                "/login/menus",
+                "/platform/config/list-table-config",
+                "/platform/system/dictionary/mgr/small-type"
+        };
+
         List<PrivilegeFilter.ResourceInfo>  resources = service.findAllModResRefs().stream()
                 .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
                 .collect(Collectors.toList());
-
-        return new PrivilegeFilter(resources);
+        return new PrivilegeFilter(allowPaths, sessionPaths, resources);
     }
 
     @Bean
-
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();

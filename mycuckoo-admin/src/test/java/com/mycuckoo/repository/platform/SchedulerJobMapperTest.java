@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.SchedulerJob;
 import org.junit.Assert;
 import org.junit.Test;
@@ -104,7 +104,7 @@ public class SchedulerJobMapperTest extends AbstractTransactionalJUnit4SpringCon
         Map<String, Object> params = new HashMap<String, Object>(4);
         params.put("jobName", "%log%");
         params.put("triggerType", null); //like
-        Page<SchedulerJob> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<SchedulerJob> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (SchedulerJob entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

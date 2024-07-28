@@ -7,7 +7,7 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.Code;
 import com.mycuckoo.repository.platform.CodeMapper;
 import org.slf4j.Logger;
@@ -108,7 +108,7 @@ public class CodeService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         codeMapper.update(entity);
 
@@ -184,9 +184,9 @@ public class CodeService {
         Assert.state(!existByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
         entity.setStatus(ENABLE);
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserId().toString());
+        entity.setCreator(SessionContextHolder.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         codeMapper.save(entity);
 
@@ -241,11 +241,11 @@ public class CodeService {
             }
         } else if ("sysPara".equalsIgnoreCase(part)) {
             if ("userName".equals(partCon)) {
-                partCon = SessionUtil.getUserCode();
+                partCon = SessionContextHolder.getUserCode();
             } else if ("roleUser".equals(partCon)) {
-                partCon = SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
+                partCon = SessionContextHolder.getRoleName() + "~" + SessionContextHolder.getUserCode();
             } else if ("organRoleUser".equals(partCon)) {
-                partCon = SessionUtil.getOrganName() + "~" + SessionUtil.getRoleName() + "~" + SessionUtil.getUserCode();
+                partCon = SessionContextHolder.getOrganName() + "~" + SessionContextHolder.getRoleName() + "~" + SessionContextHolder.getUserCode();
             }
         }
 

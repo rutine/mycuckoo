@@ -11,7 +11,7 @@ import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.StrUtils;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.User;
@@ -147,7 +147,7 @@ public class UserService {
         user.setOrgId(null);
         user.setAccountId(null);
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
-        user.setUpdator(SessionUtil.getUserId().toString());
+        user.setUpdator(SessionContextHolder.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
         user.setStatus(null);
 
@@ -168,7 +168,7 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setPhotoUrl(photoUrl);
-        user.setUpdator(SessionUtil.getUserId().toString());
+        user.setUpdator(SessionContextHolder.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
     }
@@ -178,19 +178,19 @@ public class UserService {
         User user = new User();
         user.setUserId(userId);
         user.setRoleId(roleId);
-        user.setUpdator(SessionUtil.getUserId().toString());
+        user.setUpdator(SessionContextHolder.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
     }
 
     @Transactional
     public void save(User user) {
-        user.setOrgId(SessionUtil.getOrganId());
+        user.setOrgId(SessionContextHolder.getOrganId());
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);
-        user.setUpdator(SessionUtil.getUserId().toString());
+        user.setUpdator(SessionContextHolder.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
-        user.setCreator(SessionUtil.getUserId().toString());
+        user.setCreator(SessionContextHolder.getUserId().toString());
         user.setCreateTime(LocalDateTime.now());
         userMapper.save(user);
 
@@ -218,7 +218,7 @@ public class UserService {
         userInfo.setAccountId(accountId);
         userInfo.setRoleId(roleId);
         userInfo.setUserName(name);
-        SessionUtil.setUserInfo(userInfo);
+        SessionContextHolder.setUserInfo(userInfo);
 
         LogOperator.begin()
                 .module(ModuleName.USER_MGR)

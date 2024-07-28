@@ -1,6 +1,6 @@
 package com.mycuckoo.web.config;
 
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.core.util.JsonUtils;
 import com.mycuckoo.core.AjaxResponse;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        SessionUtil.setRequest(request);
+        SessionContextHolder.setRequest(request);
 
         String uri = request.getRequestURI();
         logger.info("request uri:{}", uri);
@@ -33,7 +33,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         HttpSession session = request.getSession(false);
-        if (session == null || SessionUtil.getAccountId() == null) {
+        if (session == null || SessionContextHolder.getAccountId() == null) {
             logger.info("未登录被拦截");
 
             response.setCharacterEncoding("UTF-8");
@@ -63,7 +63,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) throws Exception {
-        SessionUtil.setRequest(null);
+        SessionContextHolder.setRequest(null);
     }
 
 }

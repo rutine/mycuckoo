@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     public void testFindAll() {
-        Page<ModuleMenu> page = mapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
+        Page<ModuleMenu> page = mapper.findByPage(null, new Querier(1, Integer.MAX_VALUE));
 
         for (ModuleMenu entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);
@@ -129,7 +129,7 @@ public class ModuleMenuMapperTest extends AbstractTransactionalJUnit4SpringConte
         Map<String, Object> params = Maps.newHashMap();
         params.put("modName", "%管理%");
         params.put("modEnName", "%Group%");
-        Page<ModuleMenu> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<ModuleMenu> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (ModuleMenu entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

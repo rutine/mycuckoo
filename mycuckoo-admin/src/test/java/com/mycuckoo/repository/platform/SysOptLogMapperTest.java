@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.SysOptLog;
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,7 +106,7 @@ public class SysOptLogMapperTest extends AbstractTransactionalJUnit4SpringContex
         params.put("startTime", null);
         params.put("endTime", null);
 
-        Page<SysOptLog> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<SysOptLog> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (SysOptLog entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

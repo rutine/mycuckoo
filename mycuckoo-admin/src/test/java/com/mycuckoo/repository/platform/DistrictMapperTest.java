@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.District;
 import org.junit.Assert;
 import org.junit.Test;
@@ -118,7 +118,7 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
         params.put("array", new Long[]{0l, 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l});
         params.put("districtName", null); //like
         params.put("districtLevel", null);
-        Page<District> page = this.mapper.findByPage(params, new PageRequest(0, 10));
+        Page<District> page = this.mapper.findByPage(params, new Querier(1, 10));
 
         for (District entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

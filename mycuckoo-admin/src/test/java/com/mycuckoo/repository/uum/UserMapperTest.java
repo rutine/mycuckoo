@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.uum;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.uum.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -120,7 +120,7 @@ public class UserMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         Map<String, Object> params = new HashMap<>(2);
         params.put("code", "ad%");
         params.put("name", "管理%");
-        Page<User> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<User> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (User entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

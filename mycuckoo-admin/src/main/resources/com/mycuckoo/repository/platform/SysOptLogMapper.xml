@@ -111,7 +111,7 @@
                 and opt_name like concat('%', #{q.optName}, '%')
             </if>
             <if test="q.userName != null">
-                and user_name concat('%', #{q.userName}, '%')
+                and user_name like concat('%', #{q.userName}, '%')
             </if>
         </where>
         order by opt_id desc

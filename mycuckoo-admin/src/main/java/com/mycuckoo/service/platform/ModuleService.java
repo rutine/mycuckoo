@@ -19,7 +19,7 @@ import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.core.util.XmlOptUtils;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVos;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
@@ -431,7 +431,7 @@ public class ModuleService {
         //不允许修改
         entity.setCode(null);
 
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         moduleMenuMapper.update(entity);
 
@@ -460,9 +460,9 @@ public class ModuleService {
         Assert.state(!existsByCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
         entity.setStatus(ENABLE);
         entity.setLevel(parent.getLevel() + 1);
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserId().toString());
+        entity.setCreator(SessionContextHolder.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         moduleMenuMapper.save(entity);
 

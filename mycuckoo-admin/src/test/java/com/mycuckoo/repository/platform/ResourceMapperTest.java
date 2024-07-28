@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.Resource;
 import org.junit.Assert;
 import org.junit.Test;
@@ -82,7 +82,7 @@ public class ResourceMapperTest extends AbstractTransactionalJUnit4SpringContext
     public void testFindByPage() {
         Map<String, Object> params = Maps.newHashMap();
         params.put("name", "%增加%");
-        Page<Resource> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<Resource> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (Resource entity : page.getContent()) {
             logger.info("------> count: {}", entity);

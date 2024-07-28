@@ -8,7 +8,7 @@ import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.repository.platform.SysOptLogMapper;
 import org.slf4j.Logger;
@@ -72,16 +72,16 @@ public class SystemOptLogService {
         }
 
         SysOptLog sysOptLog = new SysOptLog();
-        sysOptLog.setOrgId(SessionUtil.getOrganId());
+        sysOptLog.setOrgId(SessionContextHolder.getOrganId());
         sysOptLog.setModName(module.title());
         sysOptLog.setOptName(operate.title());
         sysOptLog.setContent(content);
         sysOptLog.setBusiType(module.code());
         sysOptLog.setBusiId(busiId);
-        sysOptLog.setIp(SessionUtil.getIP());
-        sysOptLog.setUserName(SessionUtil.getUserName());
-        sysOptLog.setUserRole(SessionUtil.getRoleName());
-        sysOptLog.setCreator(SessionUtil.getUserId().toString());
+        sysOptLog.setIp(SessionContextHolder.getIP());
+        sysOptLog.setUserName(SessionContextHolder.getUserName());
+        sysOptLog.setUserRole(SessionContextHolder.getRoleName());
+        sysOptLog.setCreator(SessionContextHolder.getUserId().toString());
         sysOptLog.setCreateTime(LocalDateTime.now());
 
         sysOptLogMapper.save(sysOptLog);

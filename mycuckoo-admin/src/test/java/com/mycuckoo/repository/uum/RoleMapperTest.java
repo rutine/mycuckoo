@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.uum.Role;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class RoleMapperTest extends AbstractTransactionalJUnit4SpringContextTest
 
     @Test
     public void testFindByPage() {
-        Page<Role> page = roleMapper.findByPage(Maps.newHashMap(), new PageRequest(0, 5));
+        Page<Role> page = roleMapper.findByPage(Maps.newHashMap(), new Querier(1, 5));
 
         for (Role role : page.getContent()) {
             logger.info("------> findByPage: {}", role);

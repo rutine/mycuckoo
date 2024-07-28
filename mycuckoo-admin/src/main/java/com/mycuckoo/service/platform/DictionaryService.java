@@ -12,7 +12,7 @@ import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.DictSmallTypeExtend;
 import com.mycuckoo.repository.platform.DictBigTypeMapper;
 import com.mycuckoo.repository.platform.DictSmallTypeMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +94,7 @@ public class DictionaryService {
         Assert.state(old.getCode().equals(entity.getCode())
                 || !existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
         dictSmallTypeMapper.deleteByBigTypeId(entity.getBigTypeId());
         dictBigTypeMapper.update(entity);
@@ -111,9 +111,9 @@ public class DictionaryService {
     public void saveBigType(DictBigType entity) {
         Assert.state(!existBigTypeByBigTypeCode(entity.getCode()), "编码[" + entity.getCode() + "]已存在!");
 
-        entity.setUpdator(SessionUtil.getUserId().toString());
+        entity.setUpdator(SessionContextHolder.getUserId().toString());
         entity.setUpdateTime(LocalDateTime.now());
-        entity.setCreator(SessionUtil.getUserId().toString());
+        entity.setCreator(SessionContextHolder.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         entity.setStatus(ENABLE);
         dictBigTypeMapper.save(entity);
@@ -129,7 +129,7 @@ public class DictionaryService {
     @Transactional
     public void saveDicSmallTypes(List<DictSmallType> smallTypes) {
         smallTypes.forEach(dicSmallType -> {
-            dicSmallType.setCreator(SessionUtil.getUserId().toString());
+            dicSmallType.setCreator(SessionContextHolder.getUserId().toString());
             dicSmallType.setCreateTime(LocalDateTime.now());
             dictSmallTypeMapper.save(dicSmallType);
         });

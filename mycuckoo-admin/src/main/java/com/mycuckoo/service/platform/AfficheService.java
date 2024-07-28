@@ -9,7 +9,7 @@ import com.mycuckoo.domain.platform.Affiche;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.repository.platform.AfficheMapper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,7 +118,7 @@ public class AfficheService {
     @Transactional
     public void save(Affiche entity) {
         // 1. 保存公告
-        entity.setCreator(SessionUtil.getUserId().toString());
+        entity.setCreator(SessionContextHolder.getUserId().toString());
         entity.setCreateTime(LocalDateTime.now());
         afficheMapper.save(entity);
 

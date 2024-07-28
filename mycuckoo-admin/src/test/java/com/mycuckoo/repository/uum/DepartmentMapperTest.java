@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.uum.Department;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import org.assertj.core.util.Arrays;
@@ -38,7 +38,7 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
         Map<String, Object> params = Maps.newHashMap();
         params.put("treeId", "1");
         params.put("name", "%董事%");
-        Page<Department> page = departmentMapper.findByPage(params, new PageRequest(0, 5));
+        Page<Department> page = departmentMapper.findByPage(params, new Querier(1, 5));
 
         logger.info("------> findByPage2: {}", page);
     }
@@ -100,7 +100,7 @@ public class DepartmentMapperTest extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     public void testFindByPage() {
-        Page<Department> page = departmentMapper.findByPage(null, new PageRequest(0, 5));
+        Page<Department> page = departmentMapper.findByPage(null, new Querier(1, 5));
 
         logger.info("------> findByPage: {}", page);
     }

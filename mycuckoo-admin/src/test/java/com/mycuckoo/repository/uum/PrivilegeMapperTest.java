@@ -3,9 +3,9 @@ package com.mycuckoo.repository.uum;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.constant.enums.PrivilegeScope;
 import com.mycuckoo.constant.enums.PrivilegeType;
-import com.mycuckoo.domain.uum.Privilege;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.uum.Privilege;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testFindByPage() {
-        Page<Privilege> page = privilegeMapper.findByPage(null, new PageRequest(0, 5));
+        Page<Privilege> page = privilegeMapper.findByPage(null, new Querier(1, 5));
 
         logger.info("------> findByPage: {}", page);
     }

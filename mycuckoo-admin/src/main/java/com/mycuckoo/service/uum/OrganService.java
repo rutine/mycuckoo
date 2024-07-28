@@ -13,7 +13,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
@@ -112,7 +112,7 @@ public class OrganService {
     }
 
     public Page<OrganVos.ListVo> findByPage(Querier querier) {
-        String treeId = SessionUtil.getOrganId() + ""; //最顶级机构
+        String treeId = SessionContextHolder.getOrganId() + ""; //最顶级机构
         querier.putQ("treeId", treeId);
         Page<Organ> entityPage = organMapper.findByPage(querier.getQ(), querier);
 
@@ -167,7 +167,7 @@ public class OrganService {
         organ.setStatus(null);
         organ.setCreateTime(null);
         organ.setCreator(null);
-        organ.setUpdator(SessionUtil.getUserId().toString());
+        organ.setUpdator(SessionContextHolder.getUserId().toString());
         organ.setUpdateTime(LocalDateTime.now());
         organMapper.update(organ);
 
@@ -176,16 +176,16 @@ public class OrganService {
 
     @Transactional
     public void save(Organ organ) {
-        Organ parent = get(SessionUtil.getOrganId());
+        Organ parent = get(SessionContextHolder.getOrganId());
         Assert.notNull(parent, "上级组织不存在!");
         Assert.state(!existByOrganName(organ.getSimpleName()), "机构[" + organ.getSimpleName() + "]已存在!");
 
-        organ.setParentId(SessionUtil.getOrganId());
+        organ.setParentId(SessionContextHolder.getOrganId());
         organ.setLevel(parent.getLevel() + 1);
         organ.setStatus(ENABLE);
-        organ.setUpdator(SessionUtil.getUserId().toString());
+        organ.setUpdator(SessionContextHolder.getUserId().toString());
         organ.setUpdateTime(LocalDateTime.now());
-        organ.setCreator(SessionUtil.getUserId().toString());
+        organ.setCreator(SessionContextHolder.getUserId().toString());
         organ.setCreateTime(LocalDateTime.now());
         organMapper.save(organ);
 

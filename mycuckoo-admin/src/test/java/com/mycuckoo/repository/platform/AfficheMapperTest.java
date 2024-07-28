@@ -1,9 +1,9 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.domain.platform.Affiche;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Affiche;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class AfficheMapperTest extends AbstractTransactionalJUnit4SpringContextT
         Map<String, Object> params = Maps.newHashMap();
         params.put("title", "%工%");
         params.put("publish", null);
-        Page<Affiche> page = this.mapper.findByPage(params, new PageRequest(0, 10));
+        Page<Affiche> page = this.mapper.findByPage(params, new Querier(1, 10));
 
         for (Affiche entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
-import com.mycuckoo.domain.platform.Accessory;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
+import com.mycuckoo.domain.platform.Accessory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class AccessoryMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testFindByPage() {
-        Page<Accessory> page = mapper.findByPage(null, new PageRequest(0, 5));
+        Page<Accessory> page = mapper.findByPage(null, new Querier(1, 5));
 
         for (Accessory entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

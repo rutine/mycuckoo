@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.uum;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.uum.Organ;
 import org.assertj.core.util.Arrays;
 import org.junit.Assert;
@@ -52,7 +52,7 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
         params.put("filterOrgIds", new Long[]{0L, 1L, 2L, 3L, 4L, 8L, 9L, 10L});
         params.put("orgCode", "%2%");
         params.put("orgName", "%董事%");
-        Page<Organ> page = organMapper.findByPage(params, new PageRequest(0, 5));
+        Page<Organ> page = organMapper.findByPage(params, new Querier(1, 5));
 
         logger.info("------> findByPage2: {}", page);
     }
@@ -114,7 +114,7 @@ public class OrganMapperTest extends AbstractTransactionalJUnit4SpringContextTes
 
     @Test
     public void testFindByPage() {
-        Page<Organ> page = organMapper.findByPage(null, new PageRequest(0, 5));
+        Page<Organ> page = organMapper.findByPage(null, new Querier(1, 5));
 
         logger.info("------> findByPage: {}", page);
     }

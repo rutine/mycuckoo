@@ -10,7 +10,7 @@ import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.domain.uum.Privilege;
@@ -155,7 +155,7 @@ public class PrivilegeService {
         }
 
         // 查找所有模块资源关系
-        List<String> myRes = SessionUtil.getResources();
+        List<String> myRes = SessionContextHolder.getResources();
         List<ResourceVo> resources = platformServiceFacade.findAllModResRefs();
         resources = resources.stream().filter(o -> myRes.contains(o.getId().toString())).collect(Collectors.toList());
 
@@ -419,13 +419,13 @@ public class PrivilegeService {
 
         if (PrivilegeScope.ALL.value().equals(privilegeScope)) {
             Privilege privilege = new Privilege();
-            privilege.setOrgId(SessionUtil.getOrganId());
+            privilege.setOrgId(SessionContextHolder.getOrganId());
             privilege.setResourceId(PrivilegeScope.ALL.value());
             privilege.setOwnerId(ownerId);
             privilege.setOwnerType(ownerType.value());
             privilege.setPrivilegeType(privilegeType.value());
             privilege.setPrivilegeScope(privilegeScope);
-            privilege.setCreator(SessionUtil.getUserId().toString());
+            privilege.setCreator(SessionContextHolder.getUserId().toString());
             privilege.setCreateTime(LocalDateTime.now());
             privilegeMapper.save(privilege);
         } else {
@@ -433,13 +433,13 @@ public class PrivilegeService {
                 for (String modOptId : modOptIds) {
                     if (StrUtils.isEmpty(modOptId)) continue;
                     Privilege privilege = new Privilege();
-                    privilege.setOrgId(SessionUtil.getOrganId());
+                    privilege.setOrgId(SessionContextHolder.getOrganId());
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);
                     privilege.setOwnerType(ownerType.value());
                     privilege.setPrivilegeType(privilegeType.value());
                     privilege.setPrivilegeScope(privilegeScope);
-                    privilege.setCreator(SessionUtil.getUserId().toString());
+                    privilege.setCreator(SessionContextHolder.getUserId().toString());
                     privilege.setCreateTime(LocalDateTime.now());
                     privilegeMapper.save(privilege);
                 }

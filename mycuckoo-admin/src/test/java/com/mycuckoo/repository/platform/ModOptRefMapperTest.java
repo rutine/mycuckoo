@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.ModOptRef;
 import com.mycuckoo.domain.platform.Operate;
 import org.junit.Assert;
@@ -94,7 +94,7 @@ public class ModOptRefMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testFindByPage() {
-        Page<ModOptRef> page = mapper.findByPage(null, new PageRequest(0, Integer.MAX_VALUE));
+        Page<ModOptRef> page = mapper.findByPage(null, new Querier(1, Integer.MAX_VALUE));
 
         Assert.assertTrue(page.getContent().size() > 0);
 

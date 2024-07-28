@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.repository.param.FilterType;
 import com.mycuckoo.core.util.StrUtils;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.TableConfig;
@@ -51,7 +51,7 @@ public class TableConfigService {
         List<TableConfig> old = tableConfigMapper.findByModuleId(vo.getModuleId());
         List<Long> oldIds = old.stream().map(TableConfig::getTableId).collect(Collectors.toList());
 
-        String user = SessionUtil.getUserId().toString();
+        String user = SessionContextHolder.getUserId().toString();
         int i = 0;
         List<TableConfig> configs = Lists.newArrayList();
         for (TableConfigReqVos.CreateConfig config : vo.getConfigs()) {

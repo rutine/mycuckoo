@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.SysParameter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,7 +87,7 @@ public class SysParameterMapperTest extends AbstractTransactionalJUnit4SpringCon
         Map<String, Object> params = new HashMap<String, Object>(4);
         params.put("name", null); //like
         params.put("key", "%user%");
-        Page<SysParameter> page = mapper.findByPage(params, new PageRequest(0, 10));
+        Page<SysParameter> page = mapper.findByPage(params, new Querier(1, 10));
 
         for (SysParameter entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

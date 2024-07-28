@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.DictSmallType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public class DictSmallTypeMapperTest extends AbstractTransactionalJUnit4SpringCo
 
     @Test
     public void testFindByPage() {
-        Page<DictSmallType> page = mapper.findByPage(null, new PageRequest(0, 10));
+        Page<DictSmallType> page = mapper.findByPage(null, new Querier(1, 10));
 
         for (DictSmallType entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);

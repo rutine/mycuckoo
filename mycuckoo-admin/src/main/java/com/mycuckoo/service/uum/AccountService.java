@@ -8,7 +8,7 @@ import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.PwdCrypt;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.repository.uum.AccountMapper;
 import com.mycuckoo.web.vo.res.AccountInfo;
@@ -129,11 +129,11 @@ public class AccountService {
 
     @Transactional
     public void updatePassword(String password, String newPassword) {
-        Account old = accountMapper.get(SessionUtil.getAccountId());
+        Account old = accountMapper.get(SessionContextHolder.getAccountId());
         Assert.state(password.equals(old.getPassword()), "密码错误");
 
         Account update = new Account();
-        update.setAccountId(SessionUtil.getAccountId());
+        update.setAccountId(SessionContextHolder.getAccountId());
         update.setPassword(StrUtils.encrypt(newPassword));
         update.setUpdateTime(LocalDateTime.now());
         accountMapper.update(update);
@@ -150,7 +150,7 @@ public class AccountService {
         entity.setPhone(phone);
         entity.setEmail(email);
         entity.setPassword(PwdCrypt.getInstance().encrypt(password));
-        entity.setIp(SessionUtil.getIP());
+        entity.setIp(SessionContextHolder.getIP());
         entity.setUpdateTime(LocalDateTime.now());
         entity.setCreateTime(LocalDateTime.now());
         accountMapper.save(entity);

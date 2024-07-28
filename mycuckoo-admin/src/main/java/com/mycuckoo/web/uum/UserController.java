@@ -12,7 +12,7 @@ import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.web.vo.req.UserReqVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
@@ -263,8 +263,8 @@ public class UserController {
     public AjaxResponse<String> updatePhoto(@RequestBody UserReqVos.UPhoto vo, HttpServletRequest request) {
         Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
 
-        userService.updateUserPhotoUrl(vo.getPhoto(), SessionUtil.getUserId());
-        SessionUtil.getUserInfo().setPhotoUrl(vo.getPhoto());
+        userService.updateUserPhotoUrl(vo.getPhoto(), SessionContextHolder.getUserId());
+        SessionContextHolder.getUserInfo().setPhotoUrl(vo.getPhoto());
 
         return AjaxResponse.success("上传头像成功");
     }

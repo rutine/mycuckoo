@@ -8,7 +8,7 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.repository.uum.RoleMapper;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class RoleService {
                 || !existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
         role.setUpdateTime(LocalDateTime.now());
-        role.setUpdator(SessionUtil.getUserId().toString());
+        role.setUpdator(SessionContextHolder.getUserId().toString());
         roleMapper.update(role);
 
         writeLog(role, LogLevel.SECOND, OptName.MODIFY);
@@ -94,11 +94,11 @@ public class RoleService {
     public void save(Role role) {
         Assert.state(!existByRoleName(role.getName()), "角色[" + role.getName() + "]已存在!");
 
-        role.setOrgId(SessionUtil.getOrganId());
+        role.setOrgId(SessionContextHolder.getOrganId());
         role.setUpdateTime(LocalDateTime.now());
-        role.setUpdator(SessionUtil.getUserId().toString());
+        role.setUpdator(SessionContextHolder.getUserId().toString());
         role.setCreateTime(LocalDateTime.now());
-        role.setCreator(SessionUtil.getUserId().toString());
+        role.setCreator(SessionContextHolder.getUserId().toString());
         role.setStatus(ENABLE);
         roleMapper.save(role);
 

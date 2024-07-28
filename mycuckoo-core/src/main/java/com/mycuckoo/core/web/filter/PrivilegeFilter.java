@@ -5,7 +5,7 @@ import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.repository.auth.RowContextHolder;
 import com.mycuckoo.core.repository.auth.RowInfo;
 import com.mycuckoo.core.util.JsonUtils;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
@@ -31,39 +31,21 @@ import java.util.stream.Stream;
  */
 @Order
 public class PrivilegeFilter extends OncePerRequestFilter {
-    private String[] allowPaths = {
-            "/register",
-            "/login",
-            "/login/logout",
-            "/captcha/**",
-            "/file/**",
-            "/static/**",
-            "/view/**",
-            "/swagger-resources/**",
-            "/v2/api-docs/**",
-            "/**/*.html",
-            "/**/*.css",
-            "/**/*.js",
-            "/**/*.png"
-    };
-    private String[] sessionPaths = {
-            "/login/orgs",
-            "/login/menus",
-            "/platform/config/list-table-config",
-            "/platform/system/dictionary/mgr/small-type"
-    };
-
+    private String[] allowPaths = {};
+    private String[] sessionPaths = {};
     private PathMatcher pathMatcher = new AntPathMatcher();
     private ResourceMather resourceMather;
 
 
-    public PrivilegeFilter(List<ResourceInfo> resources) {
-        resourceMather = new ResourceMather(resources, pathMatcher);
+    public PrivilegeFilter(String[] allowPaths, String[] sessionPaths, List<ResourceInfo> resources) {
+        this.allowPaths = allowPaths;
+        this.sessionPaths = sessionPaths;
+        this.resourceMather = new ResourceMather(resources, pathMatcher);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        SessionUtil.setRequest(request);
+        SessionContextHolder.setRequest(request);
         try {
             String uri = request.getRequestURI();
             logger.info("request uri:" + uri);
@@ -72,7 +54,7 @@ public class PrivilegeFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if (SessionUtil.getAccountId() == null) {
+            if (SessionContextHolder.getAccountId() == null) {
                 logger.info("未登录被拦截");
 
                 response.setCharacterEncoding("UTF-8");
@@ -84,7 +66,7 @@ public class PrivilegeFilter extends OncePerRequestFilter {
                 writer.close();
 
                 return;
-            } else if (!checkPath(sessionPaths, uri) && !resourceMather.match(new ResourceInfo(uri, request.getMethod()), SessionUtil.getResources())) {
+            } else if (!checkPath(sessionPaths, uri) && !resourceMather.match(new ResourceInfo(uri, request.getMethod()), SessionContextHolder.getResources())) {
                 logger.info("无权被拦截");
 
                 response.setCharacterEncoding("UTF-8");
@@ -98,14 +80,14 @@ public class PrivilegeFilter extends OncePerRequestFilter {
                 return;
             }
 
-            UserInfo user = SessionUtil.getUserInfo();
+            UserInfo user = SessionContextHolder.getUserInfo();
             if (user != null) {
                 RowContextHolder.set(new RowInfo(user.getOrgId(), user.getId()));
             }
 
             chain.doFilter(request, response);
         } finally {
-            SessionUtil.setRequest(null);
+            SessionContextHolder.setRequest(null);
         }
     }
 

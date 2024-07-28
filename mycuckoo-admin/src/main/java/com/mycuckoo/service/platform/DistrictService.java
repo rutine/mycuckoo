@@ -14,7 +14,7 @@ import com.mycuckoo.domain.platform.DictSmallType;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.platform.DistrictMapper;
 import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.web.vo.res.platform.DistrictVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +137,7 @@ public class DistrictService {
                 || !existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
 
         district.setUpdateTime(LocalDateTime.now());
-        district.setUpdator(SessionUtil.getUserId().toString());
+        district.setUpdator(SessionContextHolder.getUserId().toString());
         districtMapper.update(district);
 
         writeLog(district, LogLevel.SECOND, OptName.MODIFY);
@@ -149,9 +149,9 @@ public class DistrictService {
         district.setParentId(district.getParentId());
         district.setStatus(ENABLE);
         district.setUpdateTime(LocalDateTime.now());
-        district.setUpdator(SessionUtil.getUserId().toString());
+        district.setUpdator(SessionContextHolder.getUserId().toString());
         district.setCreateTime(LocalDateTime.now());
-        district.setCreator(SessionUtil.getUserId().toString());
+        district.setCreator(SessionContextHolder.getUserId().toString());
         districtMapper.save(district);
 
         writeLog(district, LogLevel.FIRST, OptName.SAVE);

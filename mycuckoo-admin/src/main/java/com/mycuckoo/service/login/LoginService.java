@@ -3,7 +3,7 @@ package com.mycuckoo.service.login;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.util.PwdCrypt;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
-import com.mycuckoo.core.util.web.SessionUtil;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.UserExtend;
@@ -67,7 +67,7 @@ public class LoginService {
     public Account getAccountBy(String account, String password) {
         password = PwdCrypt.getInstance().encrypt(password);//明文加密成密文
 
-        return accountService.getBy(account, password, SessionUtil.getIP());
+        return accountService.getBy(account, password, SessionContextHolder.getIP());
     }
 
     public UserInfo getUserByAccountIdAndUserId(Long accountId, Long userId) {

@@ -50,7 +50,7 @@ public class Querier implements PageQuery, Pageable {
         if (pageNo == null) {
             return 1;
         } else if (pageNo <= 0) {
-            return 0;
+            return 1;
         } else {
             return pageNo;
         }

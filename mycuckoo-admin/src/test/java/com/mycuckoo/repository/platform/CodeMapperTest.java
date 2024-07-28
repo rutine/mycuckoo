@@ -1,8 +1,8 @@
 package com.mycuckoo.repository.platform;
 
 import com.google.common.collect.Maps;
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.repository.PageRequest;
 import com.mycuckoo.domain.platform.Code;
 import org.junit.Assert;
 import org.junit.Test;
@@ -109,7 +109,7 @@ public class CodeMapperTest extends AbstractTransactionalJUnit4SpringContextTest
         params.put("code", "%RKD%");
         params.put("name", null);
         params.put("moduleName", null);
-        Page<Code> page = this.mapper.findByPage(params, new PageRequest(0, 10));
+        Page<Code> page = this.mapper.findByPage(params, new Querier(1, 10));
 
         for (Code entity : page.getContent()) {
             logger.info("------> findByPage: {}", entity);
