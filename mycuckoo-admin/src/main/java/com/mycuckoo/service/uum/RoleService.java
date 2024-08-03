@@ -45,7 +45,7 @@ public class RoleService {
     public void disEnable(long roleId, String disEnableFlag) {
         boolean enable = ENABLE.equals(disEnableFlag);
         if (!enable) {
-            privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.value());  //删除用户所拥有操作、行权限
+            privilegeService.deleteByOwnerIdAndOwnerType(roleId, OwnerType.ROLE.code);  //删除用户所拥有操作、行权限
 
             roleMapper.update(new Role(roleId, DISABLE));
         } else {

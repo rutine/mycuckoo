@@ -18,7 +18,7 @@ set MYCUCKOO_OPTS= -Dmycuckoo.config.location=%CONF_DIR% -Dspring.config.locatio
 
 set JAVA_OPTS= %JAVA_MEM_OPTS% %JAVA_OPTS_EXT% %JAVA_DEBUG_OPT% %MYCUCKOO_OPTS%
 
-set CMD_STR= java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-web.jar
+set CMD_STR= java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-admin.jar
 echo start cmd : %CMD_STR%
 
-java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-web.jar
+java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-admin.jar

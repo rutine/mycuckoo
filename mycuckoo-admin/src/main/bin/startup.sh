@@ -86,7 +86,7 @@ if [ -e $CONF_PATH ] ; then
 
   echo mycuckoo config : $CONF_PATH
   echo CLASSPATH : $CLASSPATH
-  $JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $MYCUCKOO_OPTS -classpath .:$CLASSPATH -jar mycuckoo-web.jar 1>>$BASE_PATH/logs/std.out 2>&1 &
+  $JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $MYCUCKOO_OPTS -classpath .:$CLASSPATH -jar mycuckoo-admin.jar 1>>$BASE_PATH/logs/std.out 2>&1 &
   echo $! > $BASE_PATH/bin/cuckoo.pid
 
   echo "cd to $CURRENT_PATH for continue"

@@ -16,6 +16,6 @@ public enum BusinessType {
         this.name = name;
     }
 
-    private int code;
-    private String name;
+    public final int code;
+    public final String name;
 }

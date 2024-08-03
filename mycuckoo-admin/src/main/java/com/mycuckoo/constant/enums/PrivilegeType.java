@@ -12,26 +12,19 @@ public enum  PrivilegeType {
     OPT("opt", "操作权限"),
     RES("res", "资源权限");
 
-    private String type;
-    private String desc;
+    public final String code;
+    public final String desc;
 
-    PrivilegeType(String type, String desc) {
-        this.type = type;
+    PrivilegeType(String code, String desc) {
+        this.code = code;
         this.desc = desc;
     }
 
-    public String value() {
-        return type;
-    }
-
-    public String desc() {
-        return desc;
-    }
 
     public static PrivilegeType of(String privilegeType) {
         PrivilegeType[] enums = PrivilegeType.values();
         for (PrivilegeType myEnum : enums) {
-            if (myEnum.value().equals(privilegeType)) {
+            if (myEnum.code.equals(privilegeType)) {
                 return myEnum;
             }
         }

@@ -24,7 +24,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_mod_opt_ref
+        sys_mod_opt_ref
     </sql>
 
     <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModOptRef对象 2.嵌套属性输入#{operate.operateId}-->
@@ -73,7 +73,7 @@
             t2.status                         as opt_status,
             t2.code                           as opt_code
         from <include refid="table" /> t1
-        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
+        left join sys_operate t2 on t2.operate_id = t1.operate_id
         where mod_opt_id = #{id}
     </select>
 
@@ -90,7 +90,7 @@
             t2.status                   as opt_status,
             t2.code                     as opt_code
         from <include refid="table" /> t1
-        left join cuckoo.sys_operate t2 on t2.operate_id = t1.operate_id
+        left join sys_operate t2 on t2.operate_id = t1.operate_id
     </select>
     
     <!-- 根据模块ID删除模块操作关系,级联删除权限 1 -->

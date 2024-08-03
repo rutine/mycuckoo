@@ -29,13 +29,9 @@ public enum LogLevel {
         }
     };
 
-    private int level;
+    public final int code;
 
-    LogLevel(Integer level) {
-        this.level = level;
-    }
-
-    public int code() {
-        return level;
+    LogLevel(Integer code) {
+        this.code = code;
     }
 }

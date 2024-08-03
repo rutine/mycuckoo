@@ -26,7 +26,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_mod_res_ref
+        sys_mod_res_ref
     </sql>
 
     <!-- 插入模块操作关系： 1.由数据库生成id并赋值到ModResRef对象 2.嵌套属性输入#{operate.operateId}-->
@@ -85,7 +85,7 @@
             t2.path               as res_path,
             t2.status             as res_status
         from <include refid="table" /> t1
-        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
+        left join sys_resource t2 on t2.resource_id = t1.resource_id
         where mod_res_id = #{id}
     </select>
     
@@ -112,7 +112,7 @@
             t2.path               as res_path,
             t2.status             as res_status
         from <include refid="table" /> t1
-        left join cuckoo.sys_resource t2 on t2.resource_id = t1.resource_id
+        left join sys_resource t2 on t2.resource_id = t1.resource_id
     </select>
 
     <!-- 根据模块ID删除,级联删除权限 1 -->

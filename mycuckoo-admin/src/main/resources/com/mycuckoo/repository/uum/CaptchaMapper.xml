@@ -18,7 +18,7 @@
     </sql>
 
     <sql id="table">
-        cuckoo.uum_captcha
+        uum_captcha
     </sql>
 
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Captcha"

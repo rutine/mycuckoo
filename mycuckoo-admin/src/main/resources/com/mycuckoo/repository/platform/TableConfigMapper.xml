@@ -30,7 +30,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_table_config
+        sys_table_config
     </sql>
 
     <insert id="save" parameterType="com.mycuckoo.domain.platform.TableConfig"

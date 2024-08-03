@@ -58,19 +58,19 @@ public class PrivilegeService {
 
 
     public void delete(long ownerId, OwnerType ownerType, PrivilegeType privilegeType) {
-        privilegeMapper.deleteByOwnerIdAndPrivilegeType(ownerId, ownerType.value(), privilegeType.value());
+        privilegeMapper.deleteByOwnerIdAndPrivilegeType(ownerId, ownerType.code, privilegeType.code);
     }
 
     public void deletePrivilegeByModOptId(String[] modOptRefIds) {
         if (modOptRefIds == null || modOptRefIds.length == 0) return;
 
-        privilegeMapper.deleteByModOptId(modOptRefIds, PrivilegeType.OPT.value());
+        privilegeMapper.deleteByModOptId(modOptRefIds, PrivilegeType.OPT.code);
     }
 
     public void deletePrivilegeByModResId(String[] modResRefIds) {
         if (modResRefIds == null || modResRefIds.length == 0) return;
 
-        privilegeMapper.deleteByModOptId(modResRefIds, PrivilegeType.RES.value());
+        privilegeMapper.deleteByModOptId(modResRefIds, PrivilegeType.RES.code);
     }
 
     public void deleteByOwnerIdAndOwnerType(long ownerId, String ownerType) {
@@ -78,16 +78,16 @@ public class PrivilegeService {
     }
 
     public void deleteRowPrivilegeByDeptId(String deptId) {
-        privilegeMapper.deleteRowPrivilegeByDeptId(deptId, PrivilegeType.ROW.value(), PrivilegeScope.DEPT.value());
+        privilegeMapper.deleteRowPrivilegeByDeptId(deptId, PrivilegeType.ROW.code, PrivilegeScope.DEPT.scope);
     }
 
     public String findRowPrivilegeByRoleId(long roleId) {
         // 查找已经分配的权限
         Long[] roleIds = { roleId };
-        String[] ownerTypes = { OwnerType.ROLE.value() };
-        String[] privilegeTypes = { PrivilegeType.ROW.value() };
+        String[] ownerTypes = { OwnerType.ROLE.code };
+        String[] privilegeTypes = { PrivilegeType.ROW.code };
         List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
-        if (privilegeList.isEmpty()) return PrivilegeScope.ORGAN.value();
+        if (privilegeList.isEmpty()) return PrivilegeScope.ORGAN.scope;
 
         Privilege privilege = privilegeList.get(0);
         String resourceId = privilege.getResourceId();
@@ -98,8 +98,8 @@ public class PrivilegeService {
     public AssignVo<CheckboxTree, String> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
-        String[] ownerTypes = { ownerType.value() };
-        String[] privilegeTypes = { PrivilegeType.OPT.value() };
+        String[] ownerTypes = { ownerType.code };
+        String[] privilegeTypes = { PrivilegeType.OPT.code };
         List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
 
         // 操作id集
@@ -135,8 +135,8 @@ public class PrivilegeService {
     public AssignVo<CheckboxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
-        String[] ownerTypes = { ownerType.value() };
-        String[] privilegeTypes = { PrivilegeType.RES.value() };
+        String[] ownerTypes = { ownerType.code };
+        String[] privilegeTypes = { PrivilegeType.RES.code };
         List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
 
         // 操作id集
@@ -175,8 +175,8 @@ public class PrivilegeService {
     public RowPrivilegeVo findRowPrivilegeByUserId(long userId) {
         // 查找已经分配的权限
         Long[] userIds = { userId };
-        String[] ownerTypes = { OwnerType.USR.value() };
-        String[] privilegeTypes = { PrivilegeType.ROW.value() };
+        String[] ownerTypes = { OwnerType.USR.code };
+        String[] privilegeTypes = { PrivilegeType.ROW.code };
         List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(userIds, ownerTypes, privilegeTypes);
 
         List<Long> resourceIdList = new ArrayList<>();
@@ -221,11 +221,11 @@ public class PrivilegeService {
             });
         }
 
-        return new RowPrivilegeVo(privilegeScope == null ? "" : privilegeScope.value(), rowVos);
+        return new RowPrivilegeVo(privilegeScope == null ? "" : privilegeScope.scope, rowVos);
     }
 
     public boolean existsSpecialPrivilegeByUserId(long userId) {
-        int count = privilegeMapper.countByUserIdAndOwnerType(userId, OwnerType.USR.value());
+        int count = privilegeMapper.countByUserIdAndOwnerType(userId, OwnerType.USR.code);
 
         return count > 0;
     }
@@ -261,8 +261,8 @@ public class PrivilegeService {
     public HierarchyModuleVo findPrivilegesForUserLogin(long userId, long roleId, long organId) {
         // 查找用户相关所有权限
         Long[] ownerIds = { userId, roleId }; // 拥有者数组
-        String[] ownerTypes =  { OwnerType.USR.value(), OwnerType.ROLE.value() }; // 拥有者类型数组
-        String[] privilegeTypes = { PrivilegeType.ROW.value(), PrivilegeType.RES.value() }; // 权限类型数组
+        String[] ownerTypes =  { OwnerType.USR.code, OwnerType.ROLE.code }; // 拥有者类型数组
+        String[] privilegeTypes = { PrivilegeType.ROW.code, PrivilegeType.RES.code }; // 权限类型数组
         List<Privilege> privileges = privilegeMapper.findByOwnIdAndPrivilegeType(ownerIds, ownerTypes, privilegeTypes);
 
         // 1 ====== 用户, 角色权限划分 ======
@@ -387,9 +387,9 @@ public class PrivilegeService {
         else {
             SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean(); // 系统配置权限
             String rowPrivilegeLevel = systemConfigBean.getRowPrivilegeLevel();
-            if (PrivilegeScope.ROLE.value().equals(rowPrivilegeLevel)) {
+            if (PrivilegeScope.ROLE.scope.equals(rowPrivilegeLevel)) {
                 sql.append(ROLE_ID + " = " + roleId + " "); // 自我真实角色
-            } else if (PrivilegeScope.USER.value().equals(rowPrivilegeLevel)) {
+            } else if (PrivilegeScope.USER.scope.equals(rowPrivilegeLevel)) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {
                 String organChildren = getPrivilegeDeptChildren(organId);
@@ -417,13 +417,13 @@ public class PrivilegeService {
         // 删除角色或用戶拥有操作权限
         delete(ownerId, ownerType, privilegeType);
 
-        if (PrivilegeScope.ALL.value().equals(privilegeScope)) {
+        if (PrivilegeScope.ALL.scope.equals(privilegeScope)) {
             Privilege privilege = new Privilege();
             privilege.setOrgId(SessionContextHolder.getOrganId());
-            privilege.setResourceId(PrivilegeScope.ALL.value());
+            privilege.setResourceId(PrivilegeScope.ALL.scope);
             privilege.setOwnerId(ownerId);
-            privilege.setOwnerType(ownerType.value());
-            privilege.setPrivilegeType(privilegeType.value());
+            privilege.setOwnerType(ownerType.code);
+            privilege.setPrivilegeType(privilegeType.code);
             privilege.setPrivilegeScope(privilegeScope);
             privilege.setCreator(SessionContextHolder.getUserId().toString());
             privilege.setCreateTime(LocalDateTime.now());
@@ -436,8 +436,8 @@ public class PrivilegeService {
                     privilege.setOrgId(SessionContextHolder.getOrganId());
                     privilege.setResourceId(modOptId);
                     privilege.setOwnerId(ownerId);
-                    privilege.setOwnerType(ownerType.value());
-                    privilege.setPrivilegeType(privilegeType.value());
+                    privilege.setOwnerType(ownerType.code);
+                    privilege.setPrivilegeType(privilegeType.code);
                     privilege.setPrivilegeScope(privilegeScope);
                     privilege.setCreator(SessionContextHolder.getUserId().toString());
                     privilege.setCreateTime(LocalDateTime.now());
@@ -447,7 +447,7 @@ public class PrivilegeService {
                 LogOperator.begin()
                         .module(ModuleName.SYS_PRIVILEGE)
                         .operate(OptName.SAVE)
-                        .id(ownerId + ":" + privilegeType.value())
+                        .id(ownerId + ":" + privilegeType.code)
                         .title(null)
                         .content("模块操作关系IDs: %s",
                                 modOptIds.stream().collect(Collectors.joining(DUNHAO)))
@@ -479,7 +479,7 @@ public class PrivilegeService {
                 modOpt.setName(resource.getName());
                 modOpt.setIconCls(resource.getIconCls());
                 modOpt.setOrder(resource.getOrder()); // 操作按钮的顺序
-                modOpt.setLevel(ModuleLevel.FOUR.value());
+                modOpt.setLevel(ModuleLevel.FOUR.code);
                 modOptList.add(modOpt);
             }
 
@@ -534,7 +534,7 @@ public class PrivilegeService {
 
     private List<Long> findOrgRes(long roleId) {
         List<Privilege> privileges = privilegeMapper.findByOwnIdAndPrivilegeType(
-                new Long[] { roleId }, new String[] { OwnerType.ROLE.value() }, new String[] { PrivilegeType.RES.value() });
+                new Long[] { roleId }, new String[] { OwnerType.ROLE.code }, new String[] { PrivilegeType.RES.code });
 
 
         // 2 ====== 资源权限 ======

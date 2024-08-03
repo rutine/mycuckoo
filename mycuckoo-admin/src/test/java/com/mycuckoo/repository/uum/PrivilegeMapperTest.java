@@ -28,8 +28,8 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
     public void testFindByOwnIdAndPrivilegeType() {
         List<Privilege> list = privilegeMapper.findByOwnIdAndPrivilegeType(
                 new Long[]{ 0L, 1L, 2L, 8L, 9L, 10L },
-                new String[]{ OwnerType.ROLE.value(), OwnerType.USR.value() },
-                new String[]{ PrivilegeScope.ALL.value() });
+                new String[]{ OwnerType.ROLE.code, OwnerType.USR.code },
+                new String[]{ PrivilegeScope.ALL.scope });
 
         logger.info("------> findByOwnIdAndPrivilegeType: {}", list);
     }
@@ -40,7 +40,7 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
 
     @Test
     public void testDeleteByOwnerIdAndOwnerType() {
-        privilegeMapper.deleteByOwnerIdAndOwnerType(1L, OwnerType.USR.value());
+        privilegeMapper.deleteByOwnerIdAndOwnerType(1L, OwnerType.USR.code);
     }
 
     @Test
@@ -50,8 +50,8 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
     @Test
     public void testDeleteRowPrivilegeByDeptId() {
         privilegeMapper.deleteRowPrivilegeByDeptId("1",
-                PrivilegeType.ROW.value(),
-                PrivilegeScope.DEPT.value());
+                PrivilegeType.ROW.code,
+                PrivilegeScope.DEPT.scope);
     }
 
     @Test

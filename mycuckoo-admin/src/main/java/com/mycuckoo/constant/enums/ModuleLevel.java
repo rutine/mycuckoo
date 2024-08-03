@@ -13,22 +13,18 @@ public enum ModuleLevel {
     THREE(3, "三级菜单"),
     FOUR(4, "四级操作");
 
-    private Integer level;
-    private String desc;
+    public final Integer code;
+    public final String desc;
 
-    ModuleLevel(Integer level, String desc) {
-        this.level = level;
+    ModuleLevel(Integer code, String desc) {
+        this.code = code;
         this.desc = desc;
-    }
-
-    public Integer value() {
-        return level;
     }
 
     public static ModuleLevel of(Integer level) {
         ModuleLevel[] levels = ModuleLevel.values();
         for (ModuleLevel levelEnum : levels) {
-            if (levelEnum.value().equals(level)) {
+            if (levelEnum.code.equals(level)) {
                 return levelEnum;
             }
         }

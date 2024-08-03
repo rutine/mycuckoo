@@ -28,19 +28,11 @@ public enum ModuleName {
     USER_LOGIN(17, "用户登录");
 
 
-    private int code;
-    private String title;
+    public final int code;
+    public final String title;
 
     ModuleName(int code, String title) {
         this.code = code;
         this.title = title;
-    }
-
-    public int code() {
-        return code;
-    }
-
-    public String title() {
-        return title;
     }
 }

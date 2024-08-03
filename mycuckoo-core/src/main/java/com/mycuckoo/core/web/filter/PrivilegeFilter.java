@@ -34,13 +34,14 @@ public class PrivilegeFilter extends OncePerRequestFilter {
     private String[] allowPaths = {};
     private String[] sessionPaths = {};
     private PathMatcher pathMatcher = new AntPathMatcher();
+    private ResourceLoaderHandler loaderHandler;
     private ResourceMather resourceMather;
 
 
-    public PrivilegeFilter(String[] allowPaths, String[] sessionPaths, List<ResourceInfo> resources) {
+    public PrivilegeFilter(String[] allowPaths, String[] sessionPaths, ResourceLoader loader) {
         this.allowPaths = allowPaths;
         this.sessionPaths = sessionPaths;
-        this.resourceMather = new ResourceMather(resources, pathMatcher);
+        this.loaderHandler = new ResourceLoaderHandler(loader);
     }
 
     @Override
@@ -53,6 +54,9 @@ public class PrivilegeFilter extends OncePerRequestFilter {
                 chain.doFilter(request, response);
                 return;
             }
+
+            //加载资源
+            loaderHandler.handle();
 
             if (SessionContextHolder.getAccountId() == null) {
                 logger.info("未登录被拦截");
@@ -218,6 +222,34 @@ public class PrivilegeFilter extends OncePerRequestFilter {
 
         public String getCode() {
             return code;
+        }
+    }
+
+    @FunctionalInterface
+    public interface ResourceLoader {
+        List<ResourceInfo> load();
+    }
+
+    public class ResourceLoaderHandler {
+        //2小时
+        private static final long HOUR = 2 * 60 * 60 * 1000L;
+
+        private volatile long expireAt;
+        private ResourceLoader loader;
+
+        public ResourceLoaderHandler(ResourceLoader loader) {
+            this.loader = loader;
+        }
+
+        public void handle() {
+            if (loader == null) {
+                return;
+            }
+
+            if (expireAt <= System.currentTimeMillis()) {
+                resourceMather = new ResourceMather(loader.load(), pathMatcher);
+                expireAt = System.currentTimeMillis() + HOUR;
+            }
         }
     }
 }

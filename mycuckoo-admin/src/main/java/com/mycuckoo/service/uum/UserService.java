@@ -74,7 +74,7 @@ public class UserService {
         if (!enable) {
             User user = new User(userId, DISABLE);
             // 移除用户所拥有操作、行权限
-            privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.value());
+            privilegeService.deleteByOwnerIdAndOwnerType(userId, OwnerType.USR.code);
         } else {
             userMapper.update(new User(userId, ENABLE));
         }

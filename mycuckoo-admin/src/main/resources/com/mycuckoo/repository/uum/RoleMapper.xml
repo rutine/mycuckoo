@@ -30,7 +30,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.uum_role
+        uum_role
     </sql>
 
     <!-- 插入数据： 1.由数据库生成id并赋值到Role对象 2.输入对象参数 -->

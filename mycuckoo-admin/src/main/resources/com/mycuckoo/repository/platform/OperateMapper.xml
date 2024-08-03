@@ -31,7 +31,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_operate
+        sys_operate
     </sql>
 
     <!-- 插入操作： 1.由数据库生成id并赋值到 SysOperate 对象 -->

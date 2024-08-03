@@ -16,25 +16,19 @@ public enum PrivilegeScope {
     EXCLUDE("exc", "排除"),
     ALL("all", "全部");
 
-    private String scope;
-    private String desc;
+    public final String scope;
+    public final String desc;
 
     PrivilegeScope(String scope, String desc) {
         this.scope = scope;
         this.desc = desc;
     }
 
-    public String value() {
-        return scope;
-    }
-
-    public String desc() {return desc; }
-
 
     public static PrivilegeScope of(String scope) {
         PrivilegeScope[] enums = PrivilegeScope.values();
         for (PrivilegeScope myEnum : enums) {
-            if (myEnum.value().equals(scope)) {
+            if (myEnum.scope.equals(scope)) {
                 return myEnum;
             }
         }

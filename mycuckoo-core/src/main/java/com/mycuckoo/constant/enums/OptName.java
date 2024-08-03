@@ -22,13 +22,9 @@ public enum OptName {
     RESET_PWD("重置密码");
 
 
-    private String title;
+    public final String title;
 
     OptName(String title) {
         this.title = title;
-    }
-
-    public String title() {
-        return title;
     }
 }

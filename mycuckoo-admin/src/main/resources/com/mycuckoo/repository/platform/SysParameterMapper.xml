@@ -30,7 +30,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_parameter
+        sys_parameter
     </sql>
 
     <!-- 插入系统参数： 1.由数据库生成id并赋值到SysParameter对象 -->

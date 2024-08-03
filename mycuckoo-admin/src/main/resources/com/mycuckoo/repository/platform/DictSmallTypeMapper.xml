@@ -26,7 +26,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_dict_small_type
+       sys_dict_small_type
     </sql>
 
     <!-- 插入字典小类： 1.由数据库生成id并赋值到SysplDicSmallType对象 -->
@@ -103,7 +103,7 @@
         where big_type_id in
         (
             select big_type_id
-            from cuckoo.sys_dict_big_type
+            from sys_dict_big_type
             where code = #{bigTypeCode}
         )
     </select>
@@ -115,7 +115,7 @@
             t1.name,
             t2.code big_type_code
         from <include refid="table" /> t1
-        inner join cuckoo.sys_dict_big_type t2 on t2.big_type_id = t1.big_type_id
+        inner join sys_dict_big_type t2 on t2.big_type_id = t1.big_type_id
           and t2.code in
           <foreach collection="list" item="code" open="(" close=")" separator=",">
             #{code}

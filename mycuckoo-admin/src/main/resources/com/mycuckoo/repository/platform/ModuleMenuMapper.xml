@@ -35,7 +35,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_module_menu
+        sys_module_menu
     </sql>
 
     <!-- 插入模块菜单： 1.由数据库生成id并赋值到 ModuleMemu对象 -->

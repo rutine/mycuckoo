@@ -27,7 +27,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.uum_privilege
+        uum_privilege
     </sql>
 
     <!-- 

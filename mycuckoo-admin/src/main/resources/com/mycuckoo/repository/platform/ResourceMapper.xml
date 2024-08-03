@@ -33,7 +33,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_resource
+        sys_resource
     </sql>
 
     <!-- 插入操作： 1.由数据库生成id并赋值到 SysResource 对象 -->

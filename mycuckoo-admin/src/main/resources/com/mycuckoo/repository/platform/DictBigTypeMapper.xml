@@ -28,7 +28,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_dict_big_type
+        sys_dict_big_type
     </sql>
 
     <!-- 插入字典大类： 1.由数据库生成id并赋值到DicBigType对象 -->

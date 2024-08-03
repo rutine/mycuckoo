@@ -252,7 +252,7 @@ public class ModuleService {
             vo.setName(operate.getName());
             vo.setIconCls(operate.getIconCls());
             vo.setOrder(operate.getOrder()); //顺序
-            vo.setLevel(ModuleLevel.FOUR.value());
+            vo.setLevel(ModuleLevel.FOUR.code);
             vo.setIsLeaf(true);
 
             return vo;
@@ -312,7 +312,7 @@ public class ModuleService {
             vo.setIconCls(operate == null ? "" : operate.getIconCls());
             vo.setGroup(ref.getGroup());
             vo.setOrder(ref.getOrder()); //顺序
-            vo.setLevel(ModuleLevel.FOUR.value());
+            vo.setLevel(ModuleLevel.FOUR.code);
             vo.setIsLeaf(true);
 
             return vo;
@@ -380,8 +380,8 @@ public class ModuleService {
             BeanUtils.copyProperties(entity, vo);
             vo.setId(entity.getModuleId() + "");
             vo.setParentId(entity.getParentId() + "");
-            vo.setIsParent(!vo.getLevel().equals(ModuleLevel.THREE.value()));
-            vo.setIsLeaf(vo.getLevel().equals(ModuleLevel.THREE.value()));
+            vo.setIsParent(!vo.getLevel().equals(ModuleLevel.THREE.code));
+            vo.setIsLeaf(vo.getLevel().equals(ModuleLevel.THREE.code));
             vos.add(vo);
         }
 
@@ -568,7 +568,7 @@ public class ModuleService {
         tree.setIconSkin(menu.getIconCls());
         tree.setIsLeaf(id != null && id.startsWith(ID_LEAF));
         tree.setChildren(subMenuVos);
-        tree.setSpread(!(ModuleLevel.THREE.value().equals(menu.getLevel()) || (id != null && id.startsWith(ID_LEAF))));
+        tree.setSpread(!(ModuleLevel.THREE.code.equals(menu.getLevel()) || (id != null && id.startsWith(ID_LEAF))));
 
         return tree;
     }

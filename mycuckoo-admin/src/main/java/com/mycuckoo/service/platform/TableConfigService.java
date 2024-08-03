@@ -47,7 +47,7 @@ public class TableConfigService {
     public int save(TableConfigReqVos.Create vo) {
         ModuleMenu menu = moduleService.get(vo.getModuleId());
         Assert.notNull(menu, "所属模块不存在");
-        Assert.state(menu.getLevel().equals(ModuleLevel.THREE.value()), "所属模块应该是三级模块");
+        Assert.state(menu.getLevel().equals(ModuleLevel.THREE.code), "所属模块应该是三级模块");
         List<TableConfig> old = tableConfigMapper.findByModuleId(vo.getModuleId());
         List<Long> oldIds = old.stream().map(TableConfig::getTableId).collect(Collectors.toList());
 

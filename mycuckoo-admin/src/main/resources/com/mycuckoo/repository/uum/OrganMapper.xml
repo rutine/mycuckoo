@@ -48,7 +48,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.uum_organ
+        uum_organ
     </sql>
 
     <!-- 
@@ -109,7 +109,7 @@
             <if test="belongDist != null">#{belongDist} </if>
             <if test="memo != null and memo != ''">#{memo}, </if>
             <if test="status != null">#{status}, </if>
-            <if test="updator != null and">#{updator}, </if>
+            <if test="updator != null">#{updator}, </if>
             <if test="updateTime != null">#{updateTime}, </if>
             <if test="creator != null">#{creator}, </if>
             <if test="createTime != null">#{createTime}, </if>
@@ -175,7 +175,7 @@
             t1.create_time,
             t2.name memo
         from <include refid="table" /> t1
-        left join cuckoo.uum_role t2 on t2.role_id = t1.role_id
+        left join uum_role t2 on t2.role_id = t1.role_id
         <include refid="whereStatement"/>
         order by t1.parent_id, t1.org_id
     </select>

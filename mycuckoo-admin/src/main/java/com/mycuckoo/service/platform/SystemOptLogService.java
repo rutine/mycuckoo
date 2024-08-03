@@ -59,13 +59,13 @@ public class SystemOptLogService {
         SystemConfigXmlParse.getInstance();
         SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
         String sysConfigLevel = systemConfigBean.getLoggerLevel();
-        String[] levelArray = { level.code() + "", sysConfigLevel };
+        String[] levelArray = { level.code + "", sysConfigLevel };
         for (String myLevel : levelArray) {//检查日志级别是否合法
             if (isEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {
                 throw new MyCuckooException("日志级别错误,值为: " + myLevel);
             }
         }
-        int iLevel = level.code();
+        int iLevel = level.code;
         int iSysConfigLevel = Integer.parseInt(sysConfigLevel);
         if (iSysConfigLevel == 0 || iLevel < iSysConfigLevel) {
             return;
@@ -73,10 +73,10 @@ public class SystemOptLogService {
 
         SysOptLog sysOptLog = new SysOptLog();
         sysOptLog.setOrgId(SessionContextHolder.getOrganId());
-        sysOptLog.setModName(module.title());
-        sysOptLog.setOptName(operate.title());
+        sysOptLog.setModName(module.title);
+        sysOptLog.setOptName(operate.title);
         sysOptLog.setContent(content);
-        sysOptLog.setBusiType(module.code());
+        sysOptLog.setBusiType(module.code);
         sysOptLog.setBusiId(busiId);
         sysOptLog.setIp(SessionContextHolder.getIP());
         sysOptLog.setUserName(SessionContextHolder.getUserName());

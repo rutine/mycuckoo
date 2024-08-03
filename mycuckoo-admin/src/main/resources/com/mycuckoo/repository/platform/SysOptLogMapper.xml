@@ -32,7 +32,7 @@
     </sql>
     
     <sql id="table">
-        cuckoo.sys_opt_log
+        sys_opt_log
     </sql>
 
     <!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->
@@ -107,7 +107,7 @@
             <if test="q.modName != null">
                 mod_name like concat('%', #{q.modName}, '%')
             </if>
-            <if test="q.name != null">
+            <if test="q.optName != null">
                 and opt_name like concat('%', #{q.optName}, '%')
             </if>
             <if test="q.userName != null">

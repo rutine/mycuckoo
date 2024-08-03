@@ -86,7 +86,7 @@ public class ResourceService {
             tree.setLevel(menu.getLevel());
             tree.setOrder(menu.getOrder());
             tree.setIsLeaf(false);
-            tree.setSpread(menu.getLevel() < ModuleLevel.THREE.value());
+            tree.setSpread(menu.getLevel() < ModuleLevel.THREE.code);
             all.add(tree);
         }
 
@@ -105,7 +105,7 @@ public class ResourceService {
             tree.setStatus(o.getStatus());
             tree.setCreator(o.getCreator());
             tree.setCreateTime(o.getCreateTime());
-            tree.setLevel(FOUR.value());
+            tree.setLevel(FOUR.code);
             tree.setIsLeaf(true);
             tree.setSpread(false);
             all.add(tree);
@@ -131,7 +131,7 @@ public class ResourceService {
     public void update(Resource entity) {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
-        Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
+        Assert.state(THREE.code.equals(menu.getLevel()), "请选择三个菜单!");
         Assert.state(StrUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
         Assert.state(resourceMapper.exists(entity.getResourceId()), "资源不存在!");
@@ -147,7 +147,7 @@ public class ResourceService {
     public void save(Resource entity) {
         ModuleMenu menu = moduleService.get(entity.getModuleId());
         Assert.notNull(menu, "菜单不存在!");
-        Assert.state(THREE.value().equals(menu.getLevel()), "请选择三个菜单!");
+        Assert.state(THREE.code.equals(menu.getLevel()), "请选择三个菜单!");
         Assert.state(StrUtils.isNotBlank(entity.getIdentifier())
                 || operateService.get(entity.getOperateId()) != null, "操作或资源标识符不能同时为空!");
 

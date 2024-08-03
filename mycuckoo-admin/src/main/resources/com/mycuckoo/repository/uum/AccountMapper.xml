@@ -23,7 +23,7 @@
     </sql>
 
     <sql id="table">
-        cuckoo.uum_account
+        uum_account
     </sql>
 
     <insert id="save" parameterType="com.mycuckoo.domain.uum.Account"

@@ -79,6 +79,7 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
                 "/file/**",
                 "/static/**",
                 "/view/**",
+                "/h2/**",
                 "/swagger-resources/**",
                 "/v2/api-docs/**",
                 "/**/*.html",
@@ -93,10 +94,11 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
                 "/platform/system/dictionary/mgr/small-type"
         };
 
-        List<PrivilegeFilter.ResourceInfo>  resources = service.findAllModResRefs().stream()
-                .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
-                .collect(Collectors.toList());
-        return new PrivilegeFilter(allowPaths, sessionPaths, resources);
+        return new PrivilegeFilter(allowPaths, sessionPaths, () -> {
+            return service.findAllModResRefs().stream()
+                    .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
+                    .collect(Collectors.toList());
+        });
     }
 
     @Bean

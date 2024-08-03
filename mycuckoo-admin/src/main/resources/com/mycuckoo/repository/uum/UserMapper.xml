@@ -45,7 +45,7 @@
     </sql>
 
     <sql id="table">
-        cuckoo.uum_user
+        uum_user
     </sql>
 
     <!-- 插入用户： 1.由数据库生成id并赋值到user对象 2.输入用对象, 嵌套属性表达式#{department.id} -->
@@ -154,8 +154,8 @@
             t2.simple_name org_name,
             t5.name role_name
         from <include refid="table" /> t1
-        left join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
-        left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
+        left join uum_organ t2 on t2.org_id = t1.org_id
+        left join uum_role t5 on t5.role_id = t1.role_id
         <where>
             <if test="q.name != null and q.name != ''">
                 and t1.name like concat('%', #{q.name}, '%')
@@ -211,7 +211,7 @@
             t1.status,
             t2.simple_name org_name
         from <include refid="table" /> t1
-        inner join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
+        inner join uum_organ t2 on t2.org_id = t1.org_id
         where t1.account_id = #{accountId}
         order by t1.user_id desc
     </select>
@@ -221,7 +221,13 @@
             t1.user_id,
             t1.org_id,
             t1.account_id,
-            if(t1.role_id = -1, t2.role_id, t1.role_id) role_id,
+            (
+            case
+            when t1.role_id = -1
+            then t2.role_id
+            else t1.role_id
+            end
+            ) role_id,
             t1.dept_id,
             t1.name,
             t1.pinyin,
@@ -235,9 +241,9 @@
             t3.email,
             t5.name role_name
         from <include refid="table" /> t1
-        inner join cuckoo.uum_organ t2 on t2.org_id = t1.org_id
-        inner join cuckoo.uum_account t3 on t3.account_id = t1.account_id
-        left join cuckoo.uum_role t5 on t5.role_id = t1.role_id
+        inner join uum_organ t2 on t2.org_id = t1.org_id
+        inner join uum_account t3 on t3.account_id = t1.account_id
+        left join uum_role t5 on t5.role_id = t1.role_id
         where t1.account_id = #{accountId}
         and t1.user_id = #{userId}
     </select>
