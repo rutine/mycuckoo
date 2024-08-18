@@ -1,7 +1,12 @@
 package com.mycuckoo.web.config;
 
+import com.mycuckoo.core.UserInfo;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.core.web.filter.PrivilegeFilter;
+import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.service.platform.ModuleService;
+import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
+import com.mycuckoo.web.vo.res.platform.ResourceVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -70,7 +75,7 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
 
 
     @Bean
-    public PrivilegeFilter privilegeFilter(ModuleService service) {
+    public PrivilegeFilter privilegeFilter(ModuleService service, LoginService loginService) {
         String[] allowPaths = {
                 "/register",
                 "/login",
@@ -95,6 +100,25 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
         };
 
         return new PrivilegeFilter(allowPaths, sessionPaths, () -> {
+            UserInfo user = SessionContextHolder.getUserInfo();
+            if (user != null && SessionContextHolder.getResources() == null) {
+                Long organId = user.getOrgId();
+                Long roleId = user.getRoleId();
+                Long userId = user.getId();
+                String account = SessionContextHolder.getAccountCode();
+
+                // 加载用户菜单
+                HierarchyModuleVo moduleVo = loginService.filterPrivilege(userId, roleId, organId, account);
+                List<String> res = moduleVo.getFourth().values().stream()
+                        .flatMap(o -> o.stream())
+                        .map(ResourceVo::getId)
+                        .map(String::valueOf)
+                        .distinct()
+                        .collect(Collectors.toList());
+
+                SessionContextHolder.setResources(res);
+            }
+
             return service.findAllModResRefs().stream()
                     .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
                     .collect(Collectors.toList());
@@ -111,9 +135,11 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
         config.addAllowedHeader("X-Requested-With");
         config.addAllowedHeader("Access-Control-Request-Method");
         config.addAllowedHeader("Access-Control-Request-Headers");
+        config.addAllowedHeader("Access-Control-Allow-Headers");
         config.addAllowedHeader("Access-Control-Allow-Origin");
         config.addAllowedOrigin("*");
         config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
 

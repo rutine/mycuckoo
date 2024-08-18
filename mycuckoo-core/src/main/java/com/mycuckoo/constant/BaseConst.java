@@ -11,6 +11,8 @@ public class BaseConst {
     //web.xml web根目录名称
     public final static String WEB_APP_ROOT_KEY = "mycuckoo.root";
 
+    public final static String SECRET = "+AU16bVi7F5Mid1TzuH4RFVeQkGFIGykPF813cyCQIo=";
+
     //机构名称 ID
     public final static String ORGAN_ID = "organId";
     public final static String ORGAN_NAME = "organName";

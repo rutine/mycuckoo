@@ -152,10 +152,24 @@ public final class SessionContextHolder {
     }
 
     /**
+     * 功能说明 : 设置账号id
+     */
+    public static void setAccountId(Long act) {
+        getSession(true).setAttribute(SESSION_ACCOUNT_ID, act);
+    }
+
+    /**
      * 功能说明 : 获取账号id, 此值登录后存入会话
      */
     public static Long getAccountId() {
         return getSession(false) != null ? (Long) getSession(false).getAttribute(SESSION_ACCOUNT_ID) : null;
+    }
+
+    /**
+     * 功能说明 : 设置账号
+     */
+    public static void setAccountCode(String actCode) {
+        getSession(true).setAttribute(SESSION_ACCOUNT_CODE, actCode);
     }
 
     /**
@@ -164,6 +178,8 @@ public final class SessionContextHolder {
     public static String getAccountCode() {
         return getSession(false) != null ? (String) getSession(false).getAttribute(SESSION_ACCOUNT_CODE) : null;
     }
+
+
 
     /**
      * 功能说明 : 获取用户编码, 此值登录后存入会话
@@ -208,6 +224,14 @@ public final class SessionContextHolder {
 //    public static HierarchyModuleVo getHierarchyModule() {
 //        return (HierarchyModuleVo) getSession().getAttribute(SESSION_MODULE_MENU);
 //    }
+
+
+    /**
+     * 功能说明 : 设置用户资源
+     */
+    public static void setResources(List<String> res) {
+        getSession(true).setAttribute(SESSION_RES_CODES, res);
+    }
 
     /**
      * 功能说明 : 获取用户资源, 此值登录后存入会话

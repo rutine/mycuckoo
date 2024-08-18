@@ -7,6 +7,8 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
+import com.mycuckoo.core.util.IdGenerator;
+import com.mycuckoo.core.util.JsonUtils;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.User;
@@ -15,8 +17,12 @@ import com.mycuckoo.service.login.CaptchaService;
 import com.mycuckoo.service.login.LoginService;
 import com.mycuckoo.web.vo.req.RegisterVo;
 import com.mycuckoo.web.vo.res.LoginUserInfo;
+import com.mycuckoo.web.vo.res.OrgInfo;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +32,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.BaseConst.*;
@@ -71,16 +81,14 @@ public class LoginController {
          *
          * @param account
          * @param password
-         * @param session
          * @return
          * @author rutine
          * @time Nov 21, 2012 8:00:26 PM
          */
     @PostMapping("/login")
-    public AjaxResponse<List<UserExtend>> login(
+    public AjaxResponse<OrgInfo> login(
             @RequestParam String account,
-            @RequestParam String password,
-            HttpSession session) {
+            @RequestParam String password) {
         
         /*
          * 1. 验证用户是否存在 并得到用户对象
@@ -91,14 +99,6 @@ public class LoginController {
          * 6. 获得系统定义的角色切换方式，如果用户拥有多个角色则提示用户选择角色
          */
         boolean isAdmin = loginService.isAdmin(account);
-//        User user = loginService.getUserByUserCodePwd(userCode, password);
-//        if (user == null) {
-//            throw new MyCuckooException(1, "用户不存在");
-//        } else if (!isAdmin && DISABLE.equals(user.getStatus())) {
-//            throw new MyCuckooException(3, "用户已被停用");
-//        } else if (!isAdmin && (user.getAvidate() == null || (new Date()).after(user.getAvidate()))) {
-//            throw new MyCuckooException(4, "用户过期");
-//        }
         Account act = loginService.getAccountBy(account, password);
 
         List<UserExtend> vos = loginService.login(act.getAccountId());
@@ -120,34 +120,35 @@ public class LoginController {
             }
         }
 
-        session.setAttribute(SESSION_USER_INFO, null);
-        session.setAttribute(SESSION_MODULE_MENU, null);
-        session.setAttribute(SESSION_RES_CODES, null);
+        String token = Jwts.builder().header()
+                .keyId("mycuckoo")
+                .and()
+                .id(IdGenerator.uuid())
+                .subject("mycuckoo")
+                .issuedAt(new Date())
+                .expiration(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()))
+                .claim("actId", act.getAccountId())
+                .claim("actCode", act.getAccount())
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET)))
+                .compact();
 
-        session.setAttribute(SESSION_ACCOUNT_ID, act.getAccountId());
-        session.setAttribute(SESSION_ACCOUNT_CODE, act.getAccount());
-        session.setAttribute(SESSION_ACCOUNT_ORG, vos);
-
-        return AjaxResponse.create(vos);
+        return AjaxResponse.create(new OrgInfo(token, vos));
     }
 
     /**
      * 功能说明 : 登录系统第二阶段, 设置用户会话信息
      *
      * @param userId
-     * @param session
      * @return
      * @author rutine
      * @time Nov 21, 2012 8:00:41 PM
      */
     @PostMapping("/login/orgs")
-    public AjaxResponse<?> listOrg(
-            @RequestBody Long userId,
-            HttpSession session) {
+    public AjaxResponse<?> listOrg(@RequestBody Long userId) {
         /*
          * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
          */
-        Long accountId = (Long) session.getAttribute(SESSION_ACCOUNT_ID);
+        Long accountId = SessionContextHolder.getAccountId();
         UserInfo user = loginService.getUserByAccountIdAndUserId(accountId, userId);
         Assert.notNull(user, "所选组织不存在, 请选择正确组织登录!");
         String userName = user.getUserName();
@@ -161,12 +162,24 @@ public class LoginController {
         Long roleId = user.getRoleId() == null ? -1L : user.getRoleId();
         String roleName = user.getRoleName() == null ? ADMIN_ROLENAME : user.getRoleName();
 
-        session.setAttribute(SESSION_USER_INFO, user);
-
         logger.info("organId: {} organName: {} roleId: {} roleName: {} userId: {} userName: {}",
                 organId, organName, roleId, roleName, userId, userName);
 
-        return AjaxResponse.create("登录成功");
+        String token = Jwts.builder().header()
+                .keyId("mycuckoo")
+                .and()
+                .id(IdGenerator.uuid())
+                .subject("mycuckoo")
+                .issuedAt(new Date())
+                .expiration(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()))
+                .claim("cltIp", SessionContextHolder.getIP())
+                .claim("actId", SessionContextHolder.getAccountId())
+                .claim("actCode", SessionContextHolder.getAccountCode())
+                .claims(JsonUtils.fromJson(JsonUtils.toJson(user), Map.class))
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET)))
+                .compact();
+
+        return AjaxResponse.create(token);
     }
 
     /**
@@ -201,6 +214,7 @@ public class LoginController {
                     .map(String::valueOf)
                     .distinct()
                     .collect(Collectors.toList());
+
             session.setAttribute(SESSION_MODULE_MENU, moduleVo);
             session.setAttribute(SESSION_RES_CODES, res);
 

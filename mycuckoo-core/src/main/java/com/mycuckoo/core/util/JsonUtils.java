@@ -65,7 +65,7 @@ public class JsonUtils {
     private static final Object[] EMPTY_OBJECT = new Object[0];
 
     private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
-    private static ObjectMapper mapper = new ObjectMapper(); // 一个变量对象, 提供性能.
+    private static ObjectMapper mapper = newMapper(Include.USE_DEFAULTS); // 一个变量对象, 提供性能.
 
 
     /**
