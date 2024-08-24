@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * @time May 1, 2024 8:55:26 AM
  * @see org.springframework.web.filter.CommonsRequestLoggingFilter
  */
-@Order(1)
+@Order(2)
 public class RequestLoggingFilter extends AbstractRequestLoggingFilter {
     private static Logger logger = LoggerFactory.getLogger(RequestLoggingFilter.class);
 

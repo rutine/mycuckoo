@@ -4,15 +4,18 @@ import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.util.PwdCrypt;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.web.SessionContextHolder;
+import com.mycuckoo.core.web.filter.PrivilegeFilter;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.UserExtend;
+import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.OrganService;
 import com.mycuckoo.service.uum.RoleService;
 import com.mycuckoo.service.uum.UserService;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
+import com.mycuckoo.web.vo.res.platform.ResourceVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 功能说明: 用户登录service
@@ -40,8 +44,11 @@ public class LoginService {
     private UserService userService;
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private UumServiceFacade uumServiceFacade;
+    @Autowired
+    private PlatformServiceFacade platformServiceFacade;
 
 
     @Transactional
@@ -101,5 +108,22 @@ public class LoginService {
         }
 
         return moduleVo;
+    }
+
+    // 加载用户资源
+    public List<String> getUserResources(Long userId, Long roleId, Long organId, String account) {
+        return this.filterPrivilege(userId, roleId, organId, account)
+                .getFourth().values().stream()
+                .flatMap(o -> o.stream())
+                .map(ResourceVo::getId)
+                .map(String::valueOf)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<PrivilegeFilter.ResourceInfo> getAllResources() {
+        return platformServiceFacade.findAllModResRefs().stream()
+                .map(o -> new PrivilegeFilter.ResourceInfo(o.getPath(), o.getMethod(), o.getId().toString()))
+                .collect(Collectors.toList());
     }
 }

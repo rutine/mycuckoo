@@ -17,6 +17,7 @@ import com.mycuckoo.domain.uum.Privilege;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.repository.uum.PrivilegeMapper;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
+import com.mycuckoo.service.facade.UumServiceFacade;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ModuleResourceVo;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
@@ -49,12 +50,11 @@ public class PrivilegeService {
 
     @Autowired
     private PrivilegeMapper privilegeMapper;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private DepartmentService deptService;
+
     @Autowired
     private PlatformServiceFacade platformServiceFacade;
+    @Autowired
+    private UumServiceFacade uumServiceFacade;
 
 
     public void delete(long ownerId, OwnerType ownerType, PrivilegeType privilegeType) {
@@ -192,7 +192,7 @@ public class PrivilegeService {
         Long[] resourceIdArray = resourceIdList.toArray(new Long[resourceIdList.size()]);
         final List<RowPrivilegeVo.RowVo> rowVos = new ArrayList();
         if (PrivilegeScope.USER == privilegeScope) {
-            List<User> userList = userService.findByUserIds(resourceIdArray);
+            List<User> userList = uumServiceFacade.findByUserIds(resourceIdArray);
             userList.forEach(item -> {
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
                 vo.setId(item.getUserId());
@@ -201,7 +201,7 @@ public class PrivilegeService {
             });
         }
         else if (PrivilegeScope.ROLE == privilegeScope) {
-            List<DepartmentExtend> deptList = deptService.findByDeptIds(resourceIdArray);
+            List<DepartmentExtend> deptList = uumServiceFacade.findByDeptIds(resourceIdArray);
             deptList.forEach(item -> {
                 String deptName = item.getName();
                 String roleName = item.getRoleName();
@@ -212,7 +212,7 @@ public class PrivilegeService {
             });
         }
         else {
-            List<DepartmentExtend> deptList = deptService.findByDeptIds(resourceIdArray);
+            List<DepartmentExtend> deptList = uumServiceFacade.findByDeptIds(resourceIdArray);
             deptList.forEach(item -> {
                 RowPrivilegeVo.RowVo vo = new RowPrivilegeVo.RowVo();
                 vo.setId(item.getDeptId());
@@ -527,7 +527,7 @@ public class PrivilegeService {
      * @time Oct 21, 2012 4:37:53 PM
      */
     private String getPrivilegeDeptChildren(long deptId) {
-        List<Long> deptIds = deptService.findChildIds(deptId, 0);
+        List<Long> deptIds = uumServiceFacade.findChildIds(deptId, 0);
         return deptIds.stream()
                 .map(String::valueOf).collect(Collectors.joining("," ));
     }

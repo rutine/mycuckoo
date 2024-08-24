@@ -1,17 +1,11 @@
 package com.mycuckoo.core.web.filter;
 
-import com.mycuckoo.constant.BaseConst;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.repository.auth.RowContextHolder;
 import com.mycuckoo.core.repository.auth.RowInfo;
 import com.mycuckoo.core.util.JsonUtils;
 import com.mycuckoo.core.util.web.SessionContextHolder;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
@@ -35,7 +29,7 @@ import java.util.stream.Stream;
  * @version 4.1.0
  * @time 2024/6/24 20:25
  */
-@Order
+@Order(3)
 public class PrivilegeFilter extends OncePerRequestFilter {
     private String[] allowPaths = {};
     private String[] sessionPaths = {};
@@ -52,84 +46,45 @@ public class PrivilegeFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        SessionContextHolder.setRequest(request);
-        try {
-            String uri = request.getRequestURI();
-            logger.info("request uri:" + uri);
+        String uri = request.getRequestURI();
+        logger.info("request uri:" + uri);
 
-            try {
-                //提取jwt
-                this.readJwt(request);
-            } catch (Exception e) {
-                logger.error("提取jwt失败!", e);
-                nonLogin(response);
-                return;
-            }
-
-            if (checkPath(allowPaths, uri)) {
-                chain.doFilter(request, response);
-                return;
-            }
-
-            if (SessionContextHolder.getAccountId() == null) {
-                nonLogin(response);
-
-                return;
-            }
-
-            //加载资源
-            resourceHandle.load();
-
-            if (!checkPath(sessionPaths, uri) && !resourceMather.match(new ResourceInfo(uri, request.getMethod()), SessionContextHolder.getResources())) {
-                logger.info("无权被拦截");
-
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("application/json; charset=UTF-8");
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                PrintWriter writer = response.getWriter();
-                writer.write(JsonUtils.toJson(AjaxResponse.create(HttpStatus.FORBIDDEN.value(), "无权访问")));
-                writer.flush();
-                writer.close();
-
-                return;
-            }
-
-            UserInfo user = SessionContextHolder.getUserInfo();
-            if (user != null) {
-                RowContextHolder.set(new RowInfo(user.getOrgId(), user.getId()));
-            }
-
+        if (checkPath(allowPaths, uri)) {
             chain.doFilter(request, response);
-        } finally {
-            SessionContextHolder.setRequest(null);
+            return;
         }
+
+        if (SessionContextHolder.getAccountId() == null) {
+            nonLogin(response);
+
+            return;
+        }
+
+        //加载资源
+        resourceHandle.load();
+
+        if (!checkPath(sessionPaths, uri) && !resourceMather.match(new ResourceInfo(uri, request.getMethod()), SessionContextHolder.getResources())) {
+            logger.info("无权被拦截");
+
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            PrintWriter writer = response.getWriter();
+            writer.write(JsonUtils.toJson(AjaxResponse.create(HttpStatus.FORBIDDEN.value(), "无权访问")));
+            writer.flush();
+            writer.close();
+
+            return;
+        }
+
+        UserInfo user = SessionContextHolder.getUserInfo();
+        if (user != null) {
+            RowContextHolder.set(new RowInfo(user.getOrgId(), user.getId()));
+        }
+
+        chain.doFilter(request, response);
     }
 
-    private void readJwt(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        String token = null;
-        if (authorization != null && authorization.startsWith("Bearer")) {
-            token = authorization.substring("Bearer".length() + 1);
-            Jwt jwt = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(BaseConst.SECRET)))
-                    .build()
-                    .parse(token);
-
-            Map payload = (Map) jwt.getPayload();
-            Object actId = payload.get("actId");
-            Object actCode = payload.get("actCode");
-            if (actId != null) {
-                SessionContextHolder.setAccountId(NumberUtils.toLong(actId.toString()));
-            }
-            if (actCode != null) {
-                SessionContextHolder.setAccountCode(actCode.toString());
-            }
-            if (payload.containsKey("id")) {
-                UserInfo user = JsonUtils.fromJson(JsonUtils.toJson(payload), UserInfo.class);
-                SessionContextHolder.setUserInfo(user);
-            }
-        }
-    }
     private void nonLogin(HttpServletResponse response) throws IOException {
         logger.info("未登录被拦截");
 

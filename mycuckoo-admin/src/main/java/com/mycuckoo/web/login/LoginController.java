@@ -10,6 +10,7 @@ import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.IdGenerator;
 import com.mycuckoo.core.util.JsonUtils;
 import com.mycuckoo.core.util.web.SessionContextHolder;
+import com.mycuckoo.core.web.filter.PrivilegeFilter;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
@@ -29,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -76,27 +76,26 @@ public class LoginController {
 
 
 
-        /**
-         * 功能说明 : 登录系统第一阶段 代理 多角色
-         *
-         * @param account
-         * @param password
-         * @return
-         * @author rutine
-         * @time Nov 21, 2012 8:00:26 PM
-         */
+    /**
+     * 功能说明 : 登录系统第一阶段 代理 多角色
+     *
+     * @param account
+     * @param password
+     * @return
+     * @author rutine
+     * @time Nov 21, 2012 8:00:26 PM
+     */
     @PostMapping("/login")
     public AjaxResponse<OrgInfo> login(
             @RequestParam String account,
             @RequestParam String password) {
-        
+
         /*
          * 1. 验证用户是否存在 并得到用户对象
          * 2. 用户没有相应角色则提示没有使用系统权限
          * 3. 用户状态是否可用
          * 4. 用户有效期是否已到
          * 5. 存在并已经登录则踢出
-         * 6. 获得系统定义的角色切换方式，如果用户拥有多个角色则提示用户选择角色
          */
         boolean isAdmin = loginService.isAdmin(account);
         Account act = loginService.getAccountBy(account, password);
@@ -121,10 +120,12 @@ public class LoginController {
         }
 
         String token = Jwts.builder().header()
-                .keyId("mycuckoo")
+                .keyId(IdGenerator.uuid())
+                .type("jwt")
                 .and()
                 .id(IdGenerator.uuid())
-                .subject("mycuckoo")
+                .issuer("mycuckoo")
+                .subject("web")
                 .issuedAt(new Date())
                 .expiration(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()))
                 .claim("actId", act.getAccountId())
@@ -146,7 +147,7 @@ public class LoginController {
     @PostMapping("/login/orgs")
     public AjaxResponse<?> listOrg(@RequestBody Long userId) {
         /*
-         * 7. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
+         * 6. 用户机构名称及ID、用户角色名称及ID角色级别、用户名称及ID、放入session
          */
         Long accountId = SessionContextHolder.getAccountId();
         UserInfo user = loginService.getUserByAccountIdAndUserId(accountId, userId);
@@ -190,11 +191,10 @@ public class LoginController {
      * @time Nov 21, 2012 8:01:00 PM
      */
     @PostMapping("/login/menus")
-    public AjaxResponse<LoginUserInfo> listMenu(HttpServletRequest request, HttpSession session) {
+    public AjaxResponse<LoginUserInfo> listMenu(HttpSession session) {
         /*
-         *  8  通过配置XML获得管理员用户，管理员则不需要权限过滤
-         *  9 模块权限过滤，用户是否有特殊权限，并过滤特殊权限
-         * 10 portal?
+         *  7 通过配置XML获得管理员用户，管理员则不需要权限过滤
+         *  8 模块权限过滤，用户是否有特殊权限，并过滤特殊权限
          */
         UserInfo user = SessionContextHolder.getUserInfo();
         Long organId = user.getOrgId();
@@ -242,6 +242,16 @@ public class LoginController {
         session.invalidate();
 
         return AjaxResponse.create("成功退出登录");
+    }
+
+    @GetMapping("/login/usr-resources")
+    public List<String> userResources() {
+        return SessionContextHolder.getResources();
+    }
+
+    @GetMapping("/login/all-resources")
+    public List<PrivilegeFilter.ResourceInfo> allResources() {
+        return loginService.getAllResources();
     }
 
 

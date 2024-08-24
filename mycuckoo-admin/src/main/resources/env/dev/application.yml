@@ -6,6 +6,8 @@ server:
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+  main:
+    allow-circular-references: true
   datasource:
     name: cuckoo
     default-catalog: cuckoo
@@ -31,3 +33,26 @@ spring:
 mycuckoo:
   url: http://localhost:8080
   basePath: /mycuckoo/upload
+  sec:
+    allow-paths:
+      - /register
+      - /login
+      - /login/logout
+      - /captcha/**
+      - /file/**
+      - /static/**
+      - /view/**
+      - /h2/**
+      - /swagger-resources/**
+      - /v3/api-docs/**
+      - /**/*.html
+      - /**/*.css
+      - /**/*.js
+      - /**/*.png
+    session-paths:
+      - /login/orgs
+      - /login/menus
+      - /login/usr-resources
+      - /login/all-resources
+      - /platform/config/list-table-config
+      - /platform/system/dictionary/mgr/small-type
