@@ -3,13 +3,14 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.SystemConfigXmlParse;
 import com.mycuckoo.core.util.XmlOptUtils;
-import com.mycuckoo.core.SystemConfigBean;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,9 +57,9 @@ public class SystemConfigService {
                 }
             } else if ("delete".equals(userAddDelFlag)) { // 删除
                 Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemMgr");
-                List<Element> elList = doc.selectNodes("//systemConfig/systemMgr/userCode");
+                List<Node> elList = doc.selectNodes("//systemConfig/systemMgr/userCode");
                 for (String userCode : systemMgr) {
-                    for (Element userCodeEl : elList) {
+                    for (Node userCodeEl : elList) {
                         if (userCodeEl.getText().equals(userCode)) {
                             el.remove(userCodeEl);
                         }

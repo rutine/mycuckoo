@@ -36,9 +36,9 @@
     <guava.version>32.0.0-jre</guava.version>
     <quartz.version>2.3.2</quartz.version>
     <commons-lang3.version>3.8</commons-lang3.version>
-    <mysql.version>8.0.19</mysql.version>
+    <mysql.version>8.0.28</mysql.version>
     <jsqlparser.version>4.9</jsqlparser.version>
-    <dom4j.version>1.6.1</dom4j.version>
+    <dom4j.version>2.1.4</dom4j.version>
     <jjwt.version>0.12.6</jjwt.version>
   </properties>
 
@@ -60,7 +60,7 @@
       </dependency>
 
       <dependency>
-        <groupId>dom4j</groupId>
+        <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
         <version>${dom4j.version}</version>
       </dependency>

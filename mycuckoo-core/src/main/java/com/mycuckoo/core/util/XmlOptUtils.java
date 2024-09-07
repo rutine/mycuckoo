@@ -2,10 +2,7 @@ package com.mycuckoo.core.util;
 
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -192,8 +189,8 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 1:37:36 PM
      */
     @SuppressWarnings("unchecked")
-    public static List<Element> selectNodes(Document doc, String xmlPath) {
-        List<Element> elList = (List<Element>) doc.selectNodes(xmlPath);
+    public static List<Node> selectNodes(Document doc, String xmlPath) {
+        List<Node> elList = (List<Node>) doc.selectNodes(xmlPath);
         return elList;
     }
 
@@ -209,9 +206,9 @@ public class XmlOptUtils {
     @SuppressWarnings("unchecked")
     public static List<String> selectNodesText(Document doc, String xmlPath) {
         List<String> textList = new ArrayList<String>();
-        List<Element> elements = (List<Element>) doc.selectNodes(xmlPath);
+        List<Node> elements = (List<Node>) doc.selectNodes(xmlPath);
         if (elements != null && elements.size() > 0) {
-            for (Element element : elements) {
+            for (Node element : elements) {
                 textList.add(element.getText());
             }
         }
@@ -230,9 +227,9 @@ public class XmlOptUtils {
             e.printStackTrace();
         }
 
-        List<Element> elList = doc.selectNodes("//JMX/tomcat");
-        for (Element e : elList) {
-            String val = e.attributeValue("default");
+        List<Node> elList = doc.selectNodes("//JMX/tomcat");
+        for (Node e : elList) {
+            String val = ((Element) e).attributeValue("default");
             System.out.println("-------->  " + val);
         }
     }
