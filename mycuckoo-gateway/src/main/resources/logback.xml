@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="info">
+  <property name="logger.encoding" value="UTF-8"/>
+  <property name="logger.name" value="mycuckoo"/>
+  <property name="logger.path" value="./logs"/>
+  <property name="logger.level" value="info"/>
+
+  <!-- RollingFile -->
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logger.path}/${logger.name}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${logger.path}/${logger.name}.log.%d{yyyyMMdd}-%i</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>50MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+    </rollingPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%-5level] [%X{traceId:-traceId}] [%logger:%line] - %msg%n</pattern>
+      <charset>${logger.encoding}</charset>
+    </encoder>
+  </appender>
+
+  <!-- Console -->
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!--格式化输出：%d表示日期, %thread表示线程名, %-5level：级别从左显示5个字符宽度%msg：日志消息, %n是换行符 -->
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%-5level] [%X{traceId:-traceId}] [%logger:%line] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="com.mycuckoo" level="DEBUG"/>
+
+  <!-- 日志输出级别 -->
+  <root level="${logger.level}">
+    <appender-ref ref="Console"/>
+    <appender-ref ref="RollingFile"/>
+  </root>
+</configuration>

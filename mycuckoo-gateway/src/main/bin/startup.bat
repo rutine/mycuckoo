@@ -22,11 +22,11 @@ REM echo %class_path%
 set JAVA_MEM_OPTS= -Xms128m -Xmx512m -XX:MetaspaceSize=128m
 set JAVA_OPTS_EXT= -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dapplication.codeset=UTF-8 -Dfile.encoding=UTF-8
 set JAVA_DEBUG_OPT= -server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=9099,server=y,suspend=n
-set MYCUCKOO_OPTS= -Dmycuckoo.config.location=%CONF_DIR% -Dspring.config.location=%CONF_DIR%\application.yml
+set MYCUCKOO_OPTS= -Dmycuckoo.config.location=%CONF_DIR% -Dspring.config.location=%CONF_DIR%\bootstrap.yml
 
 set JAVA_OPTS= %JAVA_MEM_OPTS% %JAVA_OPTS_EXT% %JAVA_DEBUG_OPT% %MYCUCKOO_OPTS%
 
-set CMD_STR= java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-admin.jar
+set CMD_STR= java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-gateway.jar
 echo start cmd : %CMD_STR%
 
-java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-admin.jar
+java %JAVA_OPTS% -classpath %CLASSPATH% -jar mycuckoo-gateway.jar

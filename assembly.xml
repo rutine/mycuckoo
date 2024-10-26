@@ -6,18 +6,20 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>src/main/resources/env/${env}</directory>
+            <directory>${basedir}/src/main/resources/env/${env}</directory>
             <outputDirectory>/config</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/</directory>
+            <directory>${basedir}/src/main/resources/</directory>
             <outputDirectory>/config</outputDirectory>
             <includes>
-                <include>*xml</include>
+                <include>*.xml</include>
+                <include>*.yml</include>
+                <include>*.properties</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/bin</directory>
+            <directory>${basedir}/src/main/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>

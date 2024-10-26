@@ -16,12 +16,28 @@
   <packaging>pom</packaging>
   <version>${mycuckoo.version}</version>
   <name>mycuckoo:parent</name>
-  <url>http://maven.apache.org</url>
 
   <modules>
     <module>mycuckoo-core</module>
     <module>mycuckoo-admin</module>
+    <module>mycuckoo-gateway</module>
   </modules>
+
+  <developers>
+    <developer>
+      <name>rutine</name>
+      <email>rutine@163.com</email>
+      <url>https://github.com/rutine</url>
+    </developer>
+  </developers>
+
+  <url>https://github.com/rutine/mycuckoo</url>
+
+  <scm>
+    <connection>scm:git:https://github.com/rutine/mycuckoo.git</connection>
+    <developerConnection>scm:git:https://github.com/rutine/mycuckoo.git</developerConnection>
+    <url>https://github.com/rutine/captcha</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,6 +56,8 @@
     <jsqlparser.version>4.9</jsqlparser.version>
     <dom4j.version>2.1.4</dom4j.version>
     <jjwt.version>0.12.6</jjwt.version>
+    <knife4j.version>4.4.0</knife4j.version>
+    <springdoc.version>1.8.0</springdoc.version>
   </properties>
 
   <dependencyManagement>
@@ -103,6 +121,29 @@
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt-jackson</artifactId>
         <version>${jjwt.version}</version>
+      </dependency>
+
+      <!-- 接口文档 -->
+      <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
+        <version>${knife4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+        <version>${knife4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>${springdoc.version}</version>
       </dependency>
 
       <dependency>

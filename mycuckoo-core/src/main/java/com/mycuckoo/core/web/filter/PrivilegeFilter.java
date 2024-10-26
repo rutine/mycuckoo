@@ -203,6 +203,8 @@ public class PrivilegeFilter extends OncePerRequestFilter {
         private String method;
         private String code; //授权码
 
+        public ResourceInfo() {}
+
         public ResourceInfo(String path, String method) {
             this(path, method, null);
         }

@@ -18,10 +18,10 @@ MyCuckoo
 之前也有过**VUE**的**UI**版本，后面放弃维护了，当前版本完全不兼容。
 
 # 特性 
-1. 核心模块 `core`, 提供基础工具, `admin` 提供用户权限服务
-2. 分页插件 `PageIntercepter`, 通过识别接口`Page`分页参数, 自动完成分页查询功能
-3. SQL增强器 `SqlEnhance`, 实现对请求参数提取和`@PreAuth`注解行数据权限识别, 动态组装过滤`SQL`, 最终构建新的查询SQL，达到`SQL`增强目的
-4. 日志操作器工具 `LogOperator`, 在每个方法增加操作日志记录, 数据持久入库, 每个操作动作都有迹可循
+1. 核心模块`core`提供基础工具依赖, `admin`用户权限服务，`gateway`网关服务(试验性，依赖nacos服务注册与发现)
+2. 分页插件 `PageIntercepter`, 通过识别接口`Page`类型分页参数, 完成自动分页查询功能
+3. SQL增强器 `SqlEnhance`, 实现根据请求参数动态添加参数的SQL过滤条件，解析`@PreAuth`注解添加行数据权限的SQL过滤条件, 最终构建新的查询SQL，达到`SQL`增强目的
+4. 日志操作器工具 `LogOperator`, 链式操作，在需要的每个方法增加操作日志记录, 持久入库, 实现每个动作都有迹可循
 5. url资源权限过滤器 `PrivilegeFilterr`, 每一个接口都是资源，都有自己的标识, 实现精确控制; 前端页面基于标识实现按钮显示
 6. 全局异常处理 `MycuckooExceptionHandler`, 统一异常处理
 7. MySQL数据库, 数据库: cuckoo, 附带结构和数据SQL脚本
@@ -32,7 +32,9 @@ MyCuckoo
 1. 下载mycuckoo、mycuckoo-ui两个项目源码  
    `git clone https://github.com/rutine/mycuckoo.git`  
    `git clone https://github.com/rutine/mycuckoo-ui.git`
-2. 使用`maven`, `install` `mycuckoo-ui` 项目安装到本地. 然后修改`mycuckoo`的`pom`文件, 取消对`mycuckoo-ui`依赖注释.  
+2. 打开mycuckoo-ui前端项目, 修改`static/mycuckoo.api.js`文件`host`指向后台接口地址,  
+   默认指向: http://localhost:8080
+3. 使用`maven`, `install` `mycuckoo-ui` 项目安装到本地. 然后修改`mycuckoo-admin`的`pom`文件, 放开对`mycuckoo-ui`的依赖注释.  
    如果使用`nginx`代理静态资源的话, 可以跳过这步, 配置:
    ```nginx
    server {
@@ -46,13 +48,12 @@ MyCuckoo
        }
    }
    ```
-3. 安装MySQL(由于默认驱动是8, 请自行网上查找MYSQL8的安装教程), 创建数据库账号: cuckoo/123456, 新建数据库: cuckoo
-4. 第一先导入`cuckoo-schema.sql`SQL脚本
-5. 第二再导入`cuckoo-repair.sql`脚本, 注意跟上面步骤顺序
-6. 启动mycuckoo, 执行主类是`Mycuckoo` `main`方法, 默认端口: 8080
-7. 打开mycuckoo-ui前端项目, 修改`static/mycuckoo.api.js`文件`host`指向后台接口地址,  
-   默认指向: http://localhost:8080
+4. 安装MySQL(由于默认驱动是8, 请自行网上查找MYSQL8的安装教程), 创建数据库账号: cuckoo/123456, 新建数据库: cuckoo
+5. 第一先导入`cuckoo-schema.sql`SQL脚本
+6. 第二再导入`cuckoo-repair.sql`脚本, 注意跟上面步骤顺序
+7. 启动mycuckoo, 执行主类是`Mycuckoo`的`main`方法, 默认端口: 8080
 8. 浏览器输入: http://localhost:8080/login.html, 账号密码: admin/123456
+9. 接口文档地址：http://localhost:8080/doc.html
 
 
 # 示例: 

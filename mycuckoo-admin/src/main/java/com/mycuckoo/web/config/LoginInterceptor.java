@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 
+@Deprecated
 public class LoginInterceptor implements HandlerInterceptor {
     private static Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
     private static PathMatcher matcher = new AntPathMatcher();
