@@ -36,7 +36,7 @@
   <scm>
     <connection>scm:git:https://github.com/rutine/mycuckoo.git</connection>
     <developerConnection>scm:git:https://github.com/rutine/mycuckoo.git</developerConnection>
-    <url>https://github.com/rutine/captcha</url>
+    <url>https://github.com/rutine</url>
   </scm>
 
   <properties>
@@ -46,7 +46,7 @@
     <mycuckoo.version>4.1.0-SNAPSHOT</mycuckoo.version>
 
     <spring.cloud.version>2021.0.8</spring.cloud.version>
-    <alibaba.cloud>2.2.1.RELEASE</alibaba.cloud>
+    <alibaba.cloud>2021.0.1.0</alibaba.cloud>
     
     <mybatis-starter.version>1.3.2</mybatis-starter.version>
     <guava.version>32.0.0-jre</guava.version>
@@ -172,6 +172,31 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>assemble</id>
+              <goals>
+                <goal>single</goal>
+              </goals>
+              <phase>package</phase>
+            </execution>
+          </executions>
+          <configuration>
+            <descriptors>
+              <descriptor>./assembly.xml</descriptor>
+            </descriptors>
+            <appendAssemblyId>false</appendAssemblyId>
+            <attach>false</attach>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

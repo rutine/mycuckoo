@@ -1,4 +1,4 @@
-package com.mycuckoo.gateway.config;
+package com.mycuckoo.autoconfig;
 
 import feign.Feign;
 import feign.RequestInterceptor;
@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Configuration
 @EnableConfigurationProperties(FeignLoggerProperties.class)
-@ConditionalOnClass(Feign.class)
-public class FeignConfiguration implements RequestInterceptor {
+@ConditionalOnClass({ Feign.class, FeignLoggerFactory.class })
+public class FeignAutoConfiguration implements RequestInterceptor {
 
     private static final String REQUEST_ID = "X-Request-Id";
     private static final String AUTHORIZATION = "Authorization";

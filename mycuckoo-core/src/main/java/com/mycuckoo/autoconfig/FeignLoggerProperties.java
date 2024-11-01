@@ -1,4 +1,4 @@
-package com.mycuckoo.gateway.config;
+package com.mycuckoo.autoconfig;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

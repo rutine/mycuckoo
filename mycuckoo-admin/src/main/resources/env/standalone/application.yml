@@ -37,7 +37,7 @@ spring:
         web-allow-others: true
 
 logging:
-  config: ../config/logback.xml
+  config: ./config/logback.xml
 
 mycuckoo:
   url: http://localhost:8080

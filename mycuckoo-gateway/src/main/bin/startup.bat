@@ -11,7 +11,6 @@ if "%OS%" == "Windows_NT" set ENV_PATH=%~dp0%
 cd ..
 set CONF_DIR=%cd%
 set CONF_DIR=%CONF_DIR%\config
-cd %ENV_PATH%
 
 for /r "%CONF_DIR%" %%c in (*.yml) do call set CLASSPATH=%%CLASSPATH%%;%%c
 for /r "%CONF_DIR%" %%c in (*.xml) do call set CLASSPATH=%%CLASSPATH%%;%%c
