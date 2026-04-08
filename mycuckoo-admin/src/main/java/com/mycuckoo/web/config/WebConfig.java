@@ -19,8 +19,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.WebAppRootListener;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import static com.mycuckoo.constant.BaseConst.WEB_APP_ROOT_KEY;
 
@@ -101,3 +101,4 @@ public class WebConfig implements WebMvcConfigurer, ServletContextInitializer {
         }
     }
 }
+

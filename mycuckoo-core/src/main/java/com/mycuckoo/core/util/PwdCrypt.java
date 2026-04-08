@@ -2,10 +2,9 @@ package com.mycuckoo.core.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 /**
@@ -37,9 +36,7 @@ public class PwdCrypt {
      * @time Oct 3, 2012 4:23:03 PM
      */
     public String encrypt(String data) {
-        BASE64Encoder encoder = new BASE64Encoder();
-
-        return encoder.encode(simpleEncrypt(data).getBytes());
+        return Base64.getEncoder().encodeToString(simpleEncrypt(data).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -51,15 +48,14 @@ public class PwdCrypt {
      * @time Oct 3, 2012 4:23:14 PM
      */
     public String decrypt(String data) {
-        BASE64Decoder decoder = new BASE64Decoder();
         byte[] result = null;
         try {
-            result = decoder.decodeBuffer(data);
-        } catch (IOException e) {
+            result = Base64.getDecoder().decode(data);
+        } catch (IllegalArgumentException e) {
             logger.error("解密失败, data={}", data, e);
         }
 
-        return simpleEncrypt(new String(result));
+        return result == null ? null : simpleEncrypt(new String(result, StandardCharsets.UTF_8));
     }
 
     /**
@@ -89,14 +85,7 @@ public class PwdCrypt {
         System.out.println("estr is : " + estr);
         String dstr = pwdCrypt.decrypt(estr);
         System.out.println("dstr is : " + dstr);
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] result = null;
-
-        try {
-            result = decoder.decodeBuffer("UhIUBhEXF1Y=");
-            System.out.println("dstr is : " + pwdCrypt.simpleEncrypt(new String(result)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        byte[] result = Base64.getDecoder().decode("UhIUBhEXF1Y=");
+        System.out.println("dstr is : " + pwdCrypt.simpleEncrypt(new String(result, StandardCharsets.UTF_8)));
     }
 }

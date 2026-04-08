@@ -1,6 +1,5 @@
 package com.mycuckoo.gateway.filter;
 
-import com.mycuckoo.autoconfig.FeignAutoConfiguration;
 import com.mycuckoo.core.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -28,10 +27,7 @@ public class TracerFilter implements GlobalFilter, Ordered {
         ServerHttpRequest newRequest = exchange.getRequest().mutate().header(REQUEST_ID, requestId).build();
         ServerWebExchange newExchange = exchange.mutate().request(newRequest).build();
 
-        FeignAutoConfiguration.setHttpHeaders(exchange.getRequest().getHeaders());
-
         return chain.filter(newExchange).doFinally((signalType) -> {
-            FeignAutoConfiguration.clearHttpHeaders();
             MDC.remove("traceId");
         });
     }

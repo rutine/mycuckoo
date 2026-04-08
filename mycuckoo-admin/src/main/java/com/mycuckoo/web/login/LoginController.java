@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -266,3 +266,4 @@ public class LoginController {
         return "default";
     }
 }
+

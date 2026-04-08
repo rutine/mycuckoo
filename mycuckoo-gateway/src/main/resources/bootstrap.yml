@@ -7,20 +7,20 @@ spring:
     max-in-memory-size: 512KB
   cloud:
     nacos:
-      discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos
-        namespace: dev
+      server-addr: localhost:8848
+      username: nacos
+      password: nacos
       config:
         enabled: false
+      discovery:
+        namespace: dev
     gateway:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: http://localhost:8080
+            allowedOrigins: http://localhost
             allowedMethods: "*"
-            allowedHeaders: "Authorization"
+            allowedHeaders: "*"
             allowCredentials: true
       httpclient:
         pool:
@@ -79,11 +79,3 @@ mycuckoo:
       enabled: true
       include-headers: true
       include-payload: true
-
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: FULL
-        connect-timeout: 60000
-        read-timeout: 180000

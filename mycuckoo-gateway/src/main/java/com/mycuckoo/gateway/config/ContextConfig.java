@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.HttpMessageConverter;
 
 import java.util.function.Predicate;
@@ -31,7 +32,7 @@ public class ContextConfig {
     public GlobalFilter loggingFilter() {return new LoggingFilter(); }
 
     @Bean
-    public GlobalFilter gatewayPrivilegeFilter(PrivilegeProperties properties, UserClient client) {
+    public GlobalFilter gatewayPrivilegeFilter(PrivilegeProperties properties, @Lazy UserClient client) {
         return new GatewayPrivilegeFilter(properties, client);
     }
 

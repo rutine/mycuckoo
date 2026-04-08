@@ -7,8 +7,8 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,4 +74,5 @@ public class ColumnResolver extends EnumerablePropertySource<Map<String, Express
         return expressionSource;
     }
 }
+
 

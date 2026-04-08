@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -241,3 +241,4 @@ public final class SessionContextHolder {
     }
 
 }
+

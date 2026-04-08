@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.mycuckoo</groupId>
     <artifactId>mycuckoo</artifactId>
-    <version>${mycuckoo.version}</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.mycuckoo</groupId>
       <artifactId>mycuckoo-core</artifactId>
-      <version>${mycuckoo.version}</version>
+      <version>5.0.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -44,10 +44,6 @@
     </dependency>-->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-loadbalancer</artifactId>
     </dependency>
     <dependency>
@@ -62,27 +58,33 @@
     <dependency>
       <groupId>com.github.ulisesbocchio</groupId>
       <artifactId>jasypt-spring-boot-starter</artifactId>
-      <version>3.0.3</version>
+      <version>3.0.5</version>
     </dependency>
     <dependency>
       <groupId>com.playtika.reactivefeign</groupId>
       <artifactId>feign-reactor-spring-cloud-starter</artifactId>
-      <version>2.0.25</version>
+      <version>4.2.1</version>
       <type>pom</type>
     </dependency>
 
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-impl</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-jackson</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
 
     <dependency>

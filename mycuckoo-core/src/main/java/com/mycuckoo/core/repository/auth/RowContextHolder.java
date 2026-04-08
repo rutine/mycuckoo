@@ -2,7 +2,7 @@ package com.mycuckoo.core.repository.auth;
 
 import org.springframework.core.NamedThreadLocal;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * 功能说明: 权限上下文工具
@@ -38,3 +38,4 @@ public abstract class RowContextHolder {
         }
     }
 }
+

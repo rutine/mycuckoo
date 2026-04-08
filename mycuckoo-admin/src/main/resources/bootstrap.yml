@@ -1,0 +1,15 @@
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: admin
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      username: nacos
+      password: nacos
+      config:
+        namespace: dev
+        file-extension: yaml
+      discovery:
+        namespace: dev

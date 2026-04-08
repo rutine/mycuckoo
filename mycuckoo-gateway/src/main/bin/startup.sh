@@ -13,6 +13,8 @@ esac
 
 BASE_PATH=${BIN_PATH}/..
 CONF_PATH=$BASE_PATH/config
+APP_JAR=$BASE_PATH/$APP_NAME
+LOADER_PATH=$CONF_PATH,$BASE_PATH/lib
 
 export LANG=en_US.UTF-8
 export BASE=$BASE_PATH
@@ -27,7 +29,7 @@ if [ -z "$JAVA" ] ; then
 fi
 
 if [ -z "$JAVA" ] ; then
-  echo "Cannot find a Java JDK. Please set either set JAVA or put java (>=1.8) in your PATH." 2>&2
+  echo "Cannot find a Java JDK. Please set either set JAVA or put java (>=17) in your PATH." 2>&2
   exit 1
 fi
 
@@ -37,21 +39,12 @@ start() {
     exit 1
   fi
 
-  str=`file -L $JAVA | grep 64-bit`
-  if [ -n "$str" ]; then
-    JAVA_OPTS="-server -Xms256m -Xmx512m -Xmn256m -XX:SurvivorRatio=2 -XX:MetaspaceSize=96m -XX:MaxMetaspaceSize=256m -Xss256k -XX:-UseAdaptiveSizePolicy -XX:MaxTenuringThreshold=15 -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSCompactAtFullCollection -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
-  else
-    JAVA_OPTS="-server -Xms256m -Xmx512m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:MaxMetaspaceSize=128m "
-  fi
-
-  JAVA_OPTS=" $JAVA_OPTS -Dfile.encoding=UTF-8"
+  JAVA_OPTS="-Xms256m -Xmx512m -XX:MetaspaceSize=96m -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
   MYCUCKOO_OPTS="-Dmycuckoo.config.location=$CONF_PATH -Dspring.config.location=$CONF_PATH\bootstrap.yml"
 
   if [ -e $CONF_PATH ] ; then
-    CLASSPATH="$CONF_PATH:$CLASSPATH";
-
-    echo CLASSPATH : $CLASSPATH
-    $JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $MYCUCKOO_OPTS -classpath .:$CLASSPATH -jar $BASE_PATH/$APP_NAME 1>>$BASE_PATH/logs/std.out 2>&1 &
+    echo LOADER_PATH : $LOADER_PATH
+    $JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $MYCUCKOO_OPTS -Dloader.path="$LOADER_PATH" -cp "$APP_JAR" org.springframework.boot.loader.launch.PropertiesLauncher 1>>$BASE_PATH/logs/std.out 2>&1 &
     echo $! > $BIN_PATH/cuckoo.pid
   else
     echo "mycuckoo config "$CONF_PATH" is not exist, please create then first!"
@@ -74,7 +67,7 @@ stop() {
 
 case "$#" in
   0 )
-    echo "Usage: server.sh {[start]|[stop]|[restart]|[debug]}"
+    echo "Usage: startup.sh {[start]|[stop]|[restart]|[debug]}"
     ;;
   1 )
     var=$*
@@ -91,14 +84,25 @@ case "$#" in
     elif [ "$1" == "debug" ] ; then
       DEBUG_PORT=$2
       DEBUG_SUSPEND="n"
-      JAVA_DEBUG_OPT="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=$DEBUG_PORT,server=y,suspend=$DEBUG_SUSPEND"
+      JAVA_DEBUG_OPT="-agentlib:jdwp=transport=dt_socket,address=$DEBUG_PORT,server=y,suspend=$DEBUG_SUSPEND"
 
       start
     else
-       echo "Usage: server.sh {[start]|[stop]|[restart]}"
+       echo "Usage: startup.sh {[start]|[stop]|[restart]}"
+      exit
+    fi;;
+  2 )
+    if [ "$1" == "debug" ] ; then
+      DEBUG_PORT=$2
+      DEBUG_SUSPEND="n"
+      JAVA_DEBUG_OPT="-agentlib:jdwp=transport=dt_socket,address=$DEBUG_PORT,server=y,suspend=$DEBUG_SUSPEND"
+
+      start
+    else
+      echo "Usage: startup.sh {[start]|[stop]|[restart]|[debug port]}"
       exit
     fi;;
   * )
-    echo "Usage: server.sh {[start]|[stop]|[restart]|[debug]}"
+    echo "Usage: startup.sh {[start]|[stop]|[restart]|[debug port]}"
     exit;;
 esac

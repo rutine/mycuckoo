@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
@@ -44,7 +45,7 @@ public class WebExceptionHandler extends AbstractErrorWebExceptionHandler {
     }
 
     private Mono<ServerResponse> getResponse(ServerRequest request) {
-        Map<String, Object> errorAttributes = this.getErrorAttributes(request, false);
+        Map<String, Object> errorAttributes = this.getErrorAttributes(request, ErrorAttributeOptions.defaults());
         logger.error("error, {}", JsonUtils.toJson(errorAttributes));
 
         Throwable error = getError(request);
@@ -56,7 +57,7 @@ public class WebExceptionHandler extends AbstractErrorWebExceptionHandler {
             result = BodyInserters.fromValue(AjaxResponse.success(((ForbiddenException) error).getMsg()));
             return ServerResponse.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(result);
         } else if (error instanceof ResponseStatusException) {
-            HttpStatus status = ((ResponseStatusException) error).getStatus();
+            HttpStatus status = HttpStatus.resolve(((ResponseStatusException) error).getStatusCode().value());
             if (status == HttpStatus.NOT_FOUND) {
                 logger.warn("not found, uri={} msg={}", request.path(), request.attributes().toString());
                 return Mono.error(error);

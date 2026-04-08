@@ -1,6 +1,6 @@
 package com.mycuckoo.web.vo.req;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 功能说明:

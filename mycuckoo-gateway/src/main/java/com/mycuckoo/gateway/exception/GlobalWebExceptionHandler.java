@@ -37,7 +37,7 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
         response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         if (ex instanceof ResponseStatusException) {
-            HttpStatus httpStatus = ((ResponseStatusException) ex).getStatus();
+            HttpStatus httpStatus = HttpStatus.resolve(((ResponseStatusException) ex).getStatusCode().value());
             AjaxResponse result;
             if (httpStatus == HttpStatus.NOT_FOUND) {
                 logger.warn("not found, uri={} msg={}", exchange.getRequest().getPath().value(), exchange.getAttributes().toString());

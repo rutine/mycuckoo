@@ -49,3 +49,4 @@ public class ContextConfig {
                 .serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 }
+

@@ -16,14 +16,15 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -50,12 +51,13 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
         this.properties = properties;
         this.client = client;
 
-        resourceHandle = new ResourceHandle(() -> client.allResources());
+        resourceHandle = new ResourceHandle();
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
+        String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         MDC.put("traceId", exchange.getRequest().getId());
         logger.info("request uri={}", path);
 
@@ -76,15 +78,18 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
                         return nonLogin(exchange);
                     }
 
-                    if (!checkPrivilege(path, exchange.getRequest().getMethod().name())) {
-                        return nonPrivileged(exchange, HttpStatus.FORBIDDEN);
-                    }
+                    return checkPrivilege(path, exchange.getRequest().getMethod().name(), authorization)
+                            .flatMap(hasPrivilege -> {
+                                if (!hasPrivilege) {
+                                    return nonPrivileged(exchange, HttpStatus.FORBIDDEN);
+                                }
 
-                    ServerWebExchange newExchange = exchange;
-                    // 放置用户数据到exchange中
-                    newExchange.getAttributes().put(SESSION_USER_INFO, user);
+                                ServerWebExchange newExchange = exchange;
+                                // 放置用户数据到exchange中
+                                newExchange.getAttributes().put(SESSION_USER_INFO, user);
 
-                    return chain.filter(newExchange);
+                                return chain.filter(newExchange);
+                            });
                 });
     }
 
@@ -98,8 +103,11 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
     private UserInfo readJwt(ServerWebExchange exchange) {
         String authorization = exchange.getRequest().getHeaders().getFirst("Authorization");
         String token = null;
-        if (authorization != null && authorization.startsWith("Bearer")) {
-            token = authorization.substring("Bearer".length() + 1);
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            token = authorization.substring("Bearer ".length());
+            if (!StringUtils.hasText(token)) {
+                return null;
+            }
             Jwt jwt = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(BaseConst.SECRET)))
                     .build()
@@ -125,20 +133,26 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
 
         return null;
     }
-    private boolean checkPrivilege(String path, String method) {
+    private Mono<Boolean> checkPrivilege(String path, String method, String authorization) {
         if (properties.getSessionUrls().contains(path)) {
-            return true;
-        }
-        List<String> resources = client.userResources();
-        if (resources == null || resources.isEmpty()) {
-            return false;
+            return Mono.just(true);
         }
 
-        //尝试加载
-        resourceHandle.load();
+        if (!StringUtils.hasText(authorization)) {
+            return Mono.just(false);
+        }
 
-        String tripServerNamePath = path.substring(path.indexOf('/', 1));
-        return resourceMather.match(new com.mycuckoo.core.web.filter.PrivilegeFilter.ResourceInfo(tripServerNamePath, method), resources);
+        return client.userResources(authorization)
+                .defaultIfEmpty(List.of())
+                .flatMap(resources -> {
+                    if (resources.isEmpty()) {
+                        return Mono.just(false);
+                    }
+
+                    String tripServerNamePath = path.substring(path.indexOf('/', 1));
+                    return resourceHandle.load(authorization)
+                            .thenReturn(resourceMather.match(new com.mycuckoo.core.web.filter.PrivilegeFilter.ResourceInfo(tripServerNamePath, method), resources));
+                });
     }
     private Mono<Void> nonLogin(ServerWebExchange exchange) {
         String path = exchange.getRequest().getURI().getPath();
@@ -179,21 +193,18 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
         private static final long HOUR = 2 * 60 * 60 * 1000L;
 
         private volatile long expireAt;
-        private com.mycuckoo.core.web.filter.PrivilegeFilter.ResourceLoader loader;
 
-        public ResourceHandle(com.mycuckoo.core.web.filter.PrivilegeFilter.ResourceLoader loader) {
-            this.loader = loader;
-        }
-
-        public void load() {
-            if (loader == null) {
-                return;
-            }
-
+        public Mono<Void> load(String authorization) {
             if (expireAt <= System.currentTimeMillis()) {
-                resourceMather = new PrivilegeFilter.ResourceMather(loader.load(), pathMatcher);
-                expireAt = System.currentTimeMillis() + HOUR;
+                return client.allResources(authorization)
+                        .doOnNext(resources -> {
+                            resourceMather = new PrivilegeFilter.ResourceMather(resources, pathMatcher);
+                            expireAt = System.currentTimeMillis() + HOUR;
+                        })
+                        .then();
             }
+
+            return Mono.empty();
         }
     }
 }

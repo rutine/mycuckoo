@@ -4,7 +4,7 @@ import com.mycuckoo.core.util.StrUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
@@ -169,3 +169,4 @@ public abstract class InetUtils {
         return Long.valueOf(arr[0]) << 24 | Long.valueOf(arr[1]) << 16 | Long.valueOf(arr[2]) << 8 | Long.valueOf(arr[3]);
     }
 }
+

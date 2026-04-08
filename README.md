@@ -1,7 +1,7 @@
 MyCuckoo
 ========
 
-用户权限管理平台, 开发环境java8 mysql8 spring-boot mybatis
+用户权限管理平台, 最低 Java 17, 推荐 Java 17+ / MySQL 8 / Spring Boot / MyBatis
 
 # 前述 
 权限控制是每个管理系统必须且基础的功能。如何更好的设计，达到便利操作和管理，也是较为困难的一件事。  
@@ -54,6 +54,19 @@ MyCuckoo
 7. 启动mycuckoo, 执行主类是`Mycuckoo`的`main`方法, 默认端口: 8080
 8. 浏览器输入: http://localhost:8080/login.html, 账号密码: admin/123456
 9. 接口文档地址：http://localhost:8080/doc.html
+
+## 启动脚本
+当前推荐使用以下脚本作为发布运行入口：
+
+- Windows: `startup.cmd`
+- Linux/macOS: `startup.sh`
+
+说明：
+
+- `startup.cmd` / `startup.sh` 已统一为 `-cp + PropertiesLauncher` 方式启动
+- 外部配置目录使用 `config`
+- 额外依赖包目录使用 `lib`
+- 历史 `startup.bat` 不再作为推荐入口
 
 
 # 示例: 

@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -282,3 +282,4 @@ public class UserController {
         return AjaxResponse.success("设置角色成功");
     }
 }
+

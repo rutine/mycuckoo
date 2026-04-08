@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.mycuckoo</groupId>
     <artifactId>mycuckoo</artifactId>
-    <version>${mycuckoo.version}</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>mycuckoo-core</artifactId>
@@ -70,11 +70,15 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-impl</artifactId>
