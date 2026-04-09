@@ -1,0 +1,49 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: flow
+  main:
+    allow-circular-references: true
+  datasource:
+    name: flow
+    default-catalog: flowable
+    type: org.apache.commons.dbcp2.BasicDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/flowable?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
+    max-active: 20
+    initial-size: 1
+    max-wait: 60000
+    min-idle: 1
+    time-between-eviction-euns-millis: 60000
+    min-evictable-idle-time-millis: 300000
+    validation-query: select 'x'
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
+
+flowable:
+  database-schema-update: true
+  idm:
+    enabled: false
+  form:
+    enabled: false
+  app:
+    enabled: false
+  cmmn:
+    enabled: false
+  dmn:
+    enabled: false
+  common:
+    app:
+      idm-url: localhost:8080:/flowable-ui
+      idm-admin:
+        user: admin
+        password: test
+      security:
+        type: cust
+

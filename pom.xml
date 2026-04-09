@@ -20,6 +20,7 @@
   <modules>
     <module>mycuckoo-core</module>
     <module>mycuckoo-admin</module>
+    <module>mycuckoo-flow</module>
     <module>mycuckoo-gateway</module>
   </modules>
 
@@ -55,6 +56,7 @@
     <jsqlparser.version>4.9</jsqlparser.version>
     <dom4j.version>2.1.4</dom4j.version>
     <jjwt.version>0.13.0</jjwt.version>
+    <flowable.version>7.0.1</flowable.version>
     <knife4j.version>4.5.0</knife4j.version>
     <springdoc.version>2.5.0</springdoc.version>
   </properties>
@@ -127,6 +129,27 @@
         <artifactId>jjwt-jackson</artifactId>
         <version>${jjwt.version}</version>
         <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.flowable</groupId>
+        <artifactId>flowable-spring-boot-starter</artifactId>
+        <version>${flowable.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flowable</groupId>
+        <artifactId>flowable-spring-boot-starter-process</artifactId>
+        <version>${flowable.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flowable</groupId>
+        <artifactId>flowable-spring-boot-starter-ui-modeler</artifactId>
+        <version>${flowable.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flowable</groupId>
+        <artifactId>flowable-spring-boot-starter-ui-idm</artifactId>
+        <version>${flowable.version}</version>
       </dependency>
 
       <!-- 接口文档 -->

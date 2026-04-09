@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>mycuckoo</artifactId>
+    <groupId>com.mycuckoo</groupId>
+    <version>5.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>mycuckoo-flow</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.mycuckoo</groupId>
+      <artifactId>mycuckoo-core</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.flowable</groupId>
+      <artifactId>flowable-spring-boot-starter-process</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.flowable</groupId>
+          <artifactId>flowable-idm-engine</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.flowable</groupId>
+          <artifactId>flowable-cmmn-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.flowable</groupId>
+          <artifactId>flowable-dmn-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.flowable</groupId>
+          <artifactId>flowable-form-model</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- <dependency>
+      <groupId>org.flowable</groupId>
+      <artifactId>flowable-spring-boot-starter-ui-modeler</artifactId>
+    </dependency>-->
+    <!--<dependency>-->
+    <!--<groupId>org.flowable</groupId>-->
+    <!--<artifactId>flowable-spring-boot-starter-ui-idm</artifactId>-->
+    <!--</dependency>-->
+  </dependencies>
+
+</project>
