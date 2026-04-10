@@ -89,5 +89,11 @@
       <artifactId>jjwt-jackson</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.tencentcloudapi</groupId>
+      <artifactId>tencentcloud-sdk-java</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

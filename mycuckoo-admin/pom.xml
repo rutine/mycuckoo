@@ -25,7 +25,6 @@
     <dependency>
       <groupId>com.mycuckoo</groupId>
       <artifactId>mycuckoo-core</artifactId>
-      <version>5.0.0-SNAPSHOT</version>
     </dependency>
 
 <!--

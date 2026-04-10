@@ -14,7 +14,7 @@
   <groupId>com.mycuckoo</groupId>
   <artifactId>mycuckoo</artifactId>
   <packaging>pom</packaging>
-  <version>5.0.0-SNAPSHOT</version>
+  <version>${mycuckoo.version}</version>
   <name>mycuckoo:parent</name>
 
   <modules>
@@ -76,6 +76,12 @@
         <version>${spring.cloud.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.mycuckoo</groupId>
+        <artifactId>mycuckoo-core</artifactId>
+        <version>${mycuckoo.version}</version>
       </dependency>
 
       <dependency>
@@ -179,6 +185,12 @@
         <groupId>com.ramostear</groupId>
         <artifactId>Happy-Captcha</artifactId>
         <version>1.0.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.tencentcloudapi</groupId>
+        <artifactId>tencentcloud-sdk-java</artifactId>
+        <version>3.1.304</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
