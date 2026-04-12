@@ -45,7 +45,7 @@ public class SystemConfigService {
         if (systemName != null) { // 系统名称
             oldConfig.setSystemName(systemName);
             optContent.append("设置系统名称: " + systemName + COMMA);
-        } else if (adminUsers != null) {
+        } else if (adminUsers != null && userAddDelFlag != null) {
             applyAdminUsersChange(oldConfig, adminUsers, userAddDelFlag, optContent);
         } else if (logLevel != null) {
             oldConfig.setLogLevel(logLevel);
