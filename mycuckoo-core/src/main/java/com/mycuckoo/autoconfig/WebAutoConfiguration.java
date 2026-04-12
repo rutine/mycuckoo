@@ -1,5 +1,6 @@
 package com.mycuckoo.autoconfig;
 
+import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.web.filter.RequestLoggingFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,6 +33,7 @@ public class WebAutoConfiguration {
         @Override
         public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
             LogOperator.setEventMulticaster(publisher);
+            AttachmentOperator.setEventMulticaster(publisher);
         }
     }
 }

@@ -12,14 +12,14 @@ import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.util.TreeHelper;
+import com.mycuckoo.core.util.XmlOptUtils;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.platform.*;
 import com.mycuckoo.repository.platform.ModOptRefMapper;
 import com.mycuckoo.repository.platform.ModResRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
-import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.core.util.XmlOptUtils;
-import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.web.vo.res.platform.HierarchyModuleVo;
 import com.mycuckoo.web.vo.res.platform.ModuleMenuVos;
 import com.mycuckoo.web.vo.res.platform.ResourceVo;
@@ -440,7 +440,7 @@ public class ModuleService {
 
     @Transactional
     public void updateLabel(String xmlFile, List<String[]> moduleLabelList) throws SystemException {
-        Document document = XmlOptUtils.readXML(getResourcePath() + xmlFile);
+        Document document = XmlOptUtils.readXML(getResourcePath(xmlFile));
         Element moduleEl = (Element) document.selectSingleNode("/module");
         Element fieldNamesEl = (Element) document.selectSingleNode("/module/fieldNames");
         moduleEl.remove(fieldNamesEl); // 删除fieldNames结点并重新添加
@@ -450,7 +450,7 @@ public class ModuleService {
             funNameEl.addAttribute("name", moduleLabelArr[0]);
             funNameEl.addText(moduleLabelArr[1]);
         }
-        XmlOptUtils.writeXML(document, getResourcePath() + xmlFile);
+        XmlOptUtils.writeXML(document, getResourcePath(xmlFile));
     }
 
     @Transactional

@@ -3,6 +3,9 @@ package com.mycuckoo.core.operator.event;
 import com.mycuckoo.core.operator.AttachmentType;
 import org.springframework.context.ApplicationEvent;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * 功能说明: 附件关联事件
  *
@@ -18,12 +21,12 @@ public class AttachmentEvent extends ApplicationEvent {
     public static class Payload {
         private final AttachmentType type;
         private final String busiId;
-        private final String fileId;
+        private final Collection<?> attachments;
 
-        public Payload(AttachmentType type, String busiId, String fileId) {
+        public Payload(AttachmentType type, String busiId, Collection<?> attachments) {
             this.type = type;
             this.busiId = busiId;
-            this.fileId = fileId;
+            this.attachments = attachments == null ? Collections.emptyList() : attachments;
         }
 
         public AttachmentType getType() {
@@ -34,8 +37,8 @@ public class AttachmentEvent extends ApplicationEvent {
             return busiId;
         }
 
-        public String getFileId() {
-            return fileId;
+        public Collection<?> getAttachments() {
+            return attachments;
         }
     }
 }

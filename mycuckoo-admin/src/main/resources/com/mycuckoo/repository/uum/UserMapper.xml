@@ -22,7 +22,6 @@
         <result property="email" column="email" />
         <result property="gender" column="gender" />
         <result property="position" column="position" />
-        <result property="photoUrl" column="photo_url" />
         <result property="address" column="address" />
         <result property="avidate" column="avidate" />
         <result property="memo" column="memo" />
@@ -39,7 +38,7 @@
     <sql id="columns">
         user_id, org_id, account_id, role_id, dept_id,
         name, pinyin, phone, email,
-        gender, position, photo_url,
+        gender, position,
         address, avidate, memo, status,
         updator, update_time, creator, create_time
     </sql>
@@ -64,7 +63,6 @@
             <if test="email != null and email != ''">email, </if>
             <if test="gender != null and gender != ''">gender, </if>
             <if test="position != null and position != ''">position, </if>
-            <if test="photoUrl != null and photoUrl != ''">photo_url, </if>
             <if test="address != null and address != ''">address, </if>
             <if test="avidate != null">avidate, </if>
             <if test="memo != null and memo != ''">memo, </if>
@@ -86,7 +84,6 @@
             <if test="email != null and email != ''">#{email}, </if>
             <if test="gender != null and gender != ''">#{gender}, </if>
             <if test="position != null and position != ''">#{position}, </if>
-            <if test="photoUrl != null and photoUrl != ''">#{photoUrl}, </if>
             <if test="address != null and address != ''">#{address}, </if>
             <if test="avidate != null">#{avidate}, </if>
             <if test="memo != null and memo != ''">#{memo}, </if>
@@ -112,7 +109,6 @@
             <if test="email != null">email = #{email}, </if>
             <if test="gender != null">gender = #{gender}, </if>
             <if test="position != null">position = #{position}, </if>
-            <if test="photoUrl != null">photo_url = #{photoUrl}, </if>
             <if test="address != null">address = #{address}, </if>
             <if test="avidate != null">avidate = #{avidate}, </if>
             <if test="memo != null">memo = #{memo}, </if>
@@ -233,7 +229,6 @@
             t1.pinyin,
             t1.gender,
             t1.position,
-            t1.photo_url,
             t1.avidate,
             t1.status,
             t2.simple_name org_name,

@@ -1,13 +1,12 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.constant.enums.LogLevel;
-import com.mycuckoo.constant.enums.ModuleName;
-import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.constant.enums.OwnerType;
+import com.mycuckoo.constant.enums.*;
+import com.mycuckoo.core.FileMeta;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
+import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.StrUtils;
@@ -17,6 +16,7 @@ import com.mycuckoo.domain.uum.Role;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
 import com.mycuckoo.repository.uum.UserMapper;
+import com.mycuckoo.service.platform.AttachmentService;
 import com.mycuckoo.web.vo.res.uum.UserVo;
 import com.mycuckoo.web.vo.res.uum.UserVos;
 import org.slf4j.Logger;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.mycuckoo.constant.AdminConst.DISABLE;
@@ -53,6 +54,8 @@ public class UserService {
     private RoleService roleService;
     @Autowired
     private PrivilegeService privilegeService;
+    @Autowired
+    private AttachmentService attachmentService;
 
 
     /**
@@ -132,6 +135,7 @@ public class UserService {
             Department department = departmentService.get(user.getDeptId());
             vo.setDeptName(department == null ? null : department.getName());
         }
+        vo.setPhotoUrl(attachmentService.getUrlBy(AttachmentType.PHOTO, String.valueOf(userId)));
 
         return vo;
     }
@@ -143,15 +147,18 @@ public class UserService {
     }
 
     @Transactional
-    public void update(User user) {
+    public void update(UserVo user) {
         user.setOrgId(null);
         user.setAccountId(null);
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setUpdator(SessionContextHolder.getUserId().toString());
         user.setUpdateTime(LocalDateTime.now());
         user.setStatus(null);
-
         userMapper.update(user); // 保存用户
+
+        if (StrUtils.isNotBlank(user.getPhotoFileId())) {
+            this.updateUserPhotoUrl(user.getPhotoFileId(), user.getUserId());
+        }
 
         writeLog(user, LogLevel.SECOND, OptName.MODIFY);
     }
@@ -164,13 +171,16 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserPhotoUrl(String photoUrl, long userId) {
-        User user = new User();
-        user.setUserId(userId);
-        user.setPhotoUrl(photoUrl);
-        user.setUpdator(SessionContextHolder.getUserId().toString());
-        user.setUpdateTime(LocalDateTime.now());
-        userMapper.update(user);
+    public void updateUserPhotoUrl(String fileId, long userId) {
+        AttachmentOperator.begin()
+                .busiType(AttachmentType.PHOTO)
+                .busiId(userId + "")
+                .attachments(fileId == null ? null : Arrays.asList(new FileMeta(fileId)))
+                .emit();
+    }
+
+    public String getUserPhotoUrl(long userId) {
+        return attachmentService.getUrlBy(AttachmentType.PHOTO, String.valueOf(userId));
     }
 
     @Transactional
@@ -184,7 +194,7 @@ public class UserService {
     }
 
     @Transactional
-    public void save(User user) {
+    public void save(UserVo user) {
         user.setOrgId(SessionContextHolder.getOrganId());
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);
@@ -193,6 +203,10 @@ public class UserService {
         user.setCreator(SessionContextHolder.getUserId().toString());
         user.setCreateTime(LocalDateTime.now());
         userMapper.save(user);
+
+        if (StrUtils.isNotBlank(user.getPhotoFileId())) {
+            this.updateUserPhotoUrl(user.getPhotoFileId(), user.getUserId());
+        }
 
         writeLog(user, LogLevel.FIRST, OptName.SAVE);
     }

@@ -1,6 +1,7 @@
 package com.mycuckoo.web.platform;
 
 import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.FileMeta;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.domain.platform.Affiche;
@@ -87,5 +88,13 @@ public class AfficheController {
         afficheService.deleteByIds(afficheIdList);
 
         return AjaxResponse.success("删除公告成功");
+    }
+
+    @DeleteMapping("/deleteAttachment")
+    public AjaxResponse<String> deleteAttachment(@RequestBody Affiche affiche) {
+
+        afficheService.deleteAttachment(affiche.getId(), affiche.getTitle());
+
+        return AjaxResponse.success("删除附件成功");
     }
 }

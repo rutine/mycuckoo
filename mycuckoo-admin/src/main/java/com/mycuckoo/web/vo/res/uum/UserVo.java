@@ -12,6 +12,8 @@ import com.mycuckoo.domain.uum.User;
 public class UserVo extends User {
     private String deptName;
     private String roleName;
+    private String photoFileId;
+    private String photoUrl;
 
     public String getDeptName() {
         return deptName;
@@ -27,5 +29,21 @@ public class UserVo extends User {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getPhotoFileId() {
+        return photoFileId;
+    }
+
+    public void setPhotoFileId(String photoFileId) {
+        this.photoFileId = photoFileId;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

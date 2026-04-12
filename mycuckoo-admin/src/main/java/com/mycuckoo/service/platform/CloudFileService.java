@@ -10,6 +10,7 @@ import com.mycuckoo.web.config.WebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +34,7 @@ public class CloudFileService {
 
 
     @Transactional
-    public void deleteByIds(String basePath, List<String> ids) {
+    public void deleteByIds(List<String> ids) {
         if (ids == null || ids.isEmpty()) {
             return;
         }
@@ -44,7 +45,8 @@ public class CloudFileService {
             if (entity == null) {
                 continue;
             }
-            FileUtils.delete(basePath, entity.getPath());
+            String filePath = StringUtils.cleanPath(properties.getUploadPath()) + entity.getPath();
+            FileUtils.delete(filePath, entity.getName());
         }
     }
 
@@ -58,7 +60,11 @@ public class CloudFileService {
             return null;
         }
 
-        return properties.getHost() + "/download" + entity.getPath();
+        return getUrlByPath(entity.getPath());
+    }
+
+    public String getUrlByPath(String path) {
+        return path == null ? null : properties.getHost() + "/download" + path;
     }
 
     public Page<CloudFile> findByPage(Querier querier) {

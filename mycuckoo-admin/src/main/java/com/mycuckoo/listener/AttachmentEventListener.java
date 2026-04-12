@@ -1,5 +1,6 @@
 package com.mycuckoo.listener;
 
+import com.mycuckoo.core.FileMeta;
 import com.mycuckoo.core.operator.event.AttachmentEvent;
 import com.mycuckoo.domain.platform.Attachment;
 import com.mycuckoo.service.platform.AttachmentService;
@@ -24,11 +25,31 @@ public class AttachmentEventListener implements ApplicationListener<AttachmentEv
 
         attachmentService.deleteByBusiTypeAndBusiId(payload.getType(), payload.getBusiId());
 
-        Attachment entity = new Attachment();
-        entity.setBusiType(payload.getType().getBusiType());
-        entity.setBusiSubType(payload.getType().getBusiSubType());
-        entity.setBusiId(payload.getBusiId());
-        entity.setFileId(payload.getFileId());
-        attachmentService.save(entity);
+        if (payload.getAttachments().isEmpty()) {
+            return;
+        }
+
+        payload.getAttachments().forEach(file -> {
+            String fileId = resolveFileId(file);
+            if (fileId == null || fileId.isEmpty()) {
+                return;
+            }
+            Attachment entity = new Attachment();
+            entity.setBusiType(payload.getType().getBusiType());
+            entity.setBusiSubType(payload.getType().getBusiSubType());
+            entity.setBusiId(payload.getBusiId());
+            entity.setFileId(fileId);
+            attachmentService.save(entity);
+        });
+    }
+
+    private String resolveFileId(Object file) {
+        if (file instanceof Attachment) {
+            return ((Attachment) file).getFileId();
+        }
+        if (file instanceof FileMeta) {
+            return ((FileMeta) file).getId();
+        }
+        return null;
     }
 }

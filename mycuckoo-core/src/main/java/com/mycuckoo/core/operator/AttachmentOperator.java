@@ -3,6 +3,8 @@ package com.mycuckoo.core.operator;
 import com.mycuckoo.core.operator.event.AttachmentEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Collection;
+
 /**
  * 功能说明: 附件关联构建器
  *
@@ -15,7 +17,7 @@ public final class AttachmentOperator {
 
     private AttachmentType type;
     private String busiId;
-    private String fileId;
+    private Collection<?> attachments;
 
     private AttachmentOperator() {
     }
@@ -40,13 +42,13 @@ public final class AttachmentOperator {
         return this;
     }
 
-    public AttachmentOperator fileId(String fileId) {
-        this.fileId = fileId;
+    public AttachmentOperator attachments(Collection<?> attachments) {
+        this.attachments = attachments;
         return this;
     }
 
     public AttachmentEvent.Payload build() {
-        return new AttachmentEvent.Payload(this.type, this.busiId, this.fileId);
+        return new AttachmentEvent.Payload(this.type, this.busiId, this.attachments);
     }
 
     public AttachmentEvent.Payload emit() {

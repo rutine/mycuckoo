@@ -15,6 +15,10 @@
         <result property="busiSubType" column="busi_sub_type" />
         <result property="busiId" column="busi_id" />
         <result property="fileId" column="file_id" />
+        <result property="filePath" column="file_path" />
+        <result property="fileName" column="file_name" />
+        <result property="fileSize" column="file_size" />
+        <result property="fileType" column="file_type" />
         <result property="orgId" column="org_id" />
         <result property="updator" column="updator" />
         <result property="updateTime" column="update_time" />
@@ -23,7 +27,8 @@
     </resultMap>
 
     <sql id="columns">
-        id, busi_type, busi_sub_type, busi_id, file_id, org_id, updator, update_time, creator, create_time
+        id, busi_type, busi_sub_type, busi_id, file_id, file_path, file_name, file_size, file_type,
+        org_id, updator, update_time, creator, create_time
     </sql>
 
     <sql id="table">
@@ -38,6 +43,10 @@
             <if test="busiSubType != null">busi_sub_type, </if>
             <if test="busiId != null and busiId != ''">busi_id, </if>
             <if test="fileId != null and fileId != ''">file_id, </if>
+            <if test="filePath != null and filePath != ''">file_path, </if>
+            <if test="fileName != null and fileName != ''">file_name, </if>
+            <if test="fileSize != null">file_size, </if>
+            <if test="fileType != null and fileType != ''">file_type, </if>
             <if test="orgId != null and orgId != ''">org_id, </if>
             <if test="updator != null and updator != ''">updator, </if>
             <if test="updateTime != null">update_time, </if>
@@ -49,6 +58,10 @@
             <if test="busiSubType != null">#{busiSubType}, </if>
             <if test="busiId != null and busiId != ''">#{busiId}, </if>
             <if test="fileId != null and fileId != ''">#{fileId}, </if>
+            <if test="filePath != null and filePath != ''">#{filePath}, </if>
+            <if test="fileName != null and fileName != ''">#{fileName}, </if>
+            <if test="fileSize != null">#{fileSize}, </if>
+            <if test="fileType != null and fileType != ''">#{fileType}, </if>
             <if test="orgId != null and orgId != ''">#{orgId}, </if>
             <if test="updator != null and updator != ''">#{updator}, </if>
             <if test="updateTime != null">#{updateTime}, </if>
@@ -64,6 +77,10 @@
             <if test="busiSubType != null">busi_sub_type = #{busiSubType}, </if>
             <if test="busiId != null">busi_id = #{busiId}, </if>
             <if test="fileId != null">file_id = #{fileId}, </if>
+            <if test="filePath != null">file_path = #{filePath}, </if>
+            <if test="fileName != null">file_name = #{fileName}, </if>
+            <if test="fileSize != null">file_size = #{fileSize}, </if>
+            <if test="fileType != null">file_type = #{fileType}, </if>
             <if test="orgId != null">org_id = #{orgId}, </if>
             <if test="updator != null">updator = #{updator}, </if>
             <if test="updateTime != null">update_time = #{updateTime}, </if>

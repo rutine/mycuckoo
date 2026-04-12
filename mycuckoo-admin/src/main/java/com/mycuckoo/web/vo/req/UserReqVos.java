@@ -34,7 +34,7 @@ public class UserReqVos {
      * @author rutine
      * @date 2017/9/30 16:34
      */
-    public class UPassword {
+    public static class UPassword {
         private String password;
         private String newPassword;
         private String confirmPassword;
@@ -68,15 +68,15 @@ public class UserReqVos {
      * @author rutine
      * @date 2017/9/30 16:36
      */
-    public class UPhoto {
-        private String photo;
+    public static class UPhoto {
+        private String fileId;
 
-        public String getPhoto() {
-            return photo;
+        public String getFileId() {
+            return fileId;
         }
 
-        public void setPhoto(String photo) {
-            this.photo = photo;
+        public void setFileId(String fileId) {
+            this.fileId = fileId;
         }
     }
 

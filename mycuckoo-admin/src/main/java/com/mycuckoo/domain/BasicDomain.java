@@ -1,5 +1,7 @@
 package com.mycuckoo.domain;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
  */
 public class BasicDomain<T> implements Serializable {
     protected T id; //ID
-    protected T orgId; //组织id(租户id使用)
+    protected Long orgId; //组织id(租户id使用)
     protected String updator; //更新人
     protected LocalDateTime updateTime; //更新时间
     protected String creator; //创建人
@@ -26,11 +28,11 @@ public class BasicDomain<T> implements Serializable {
         this.id = id;
     }
 
-    public T getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(T orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

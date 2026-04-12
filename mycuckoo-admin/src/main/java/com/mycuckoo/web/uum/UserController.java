@@ -7,16 +7,18 @@ import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.service.uum.PrivilegeService;
 import com.mycuckoo.service.uum.UserService;
-import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.web.vo.req.UserReqVos;
 import com.mycuckoo.web.vo.res.uum.AssignVo;
 import com.mycuckoo.web.vo.res.uum.RowPrivilegeVo;
+import com.mycuckoo.web.vo.res.uum.UserVo;
 import com.mycuckoo.web.vo.res.uum.UserVos;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class UserController {
      * @time Oct 6, 2013 8:26:57 PM
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody User user) {
+    public AjaxResponse<String> create(@RequestBody UserVo user) {
         Assert.state(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
         Assert.notNull(user.getAvidate(), "用户有效期不能为空");
 
@@ -107,7 +108,8 @@ public class UserController {
     }
 
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody User user) {
+    public AjaxResponse<String> update(@RequestBody UserVo user) {
+        Assert.notNull(user.getUserId(), "用户id不能为空!");
         userService.update(user);
 
         return AjaxResponse.success("修改用户成功");
@@ -261,10 +263,10 @@ public class UserController {
      */
     @PutMapping("/update/photo")
     public AjaxResponse<String> updatePhoto(@RequestBody UserReqVos.UPhoto vo, HttpServletRequest request) {
-        Assert.state(StringUtils.startsWith(vo.getPhoto(), "http://"), "无效头像地址");
+        Assert.hasLength(vo.getFileId(), "头像不存在");
 
-        userService.updateUserPhotoUrl(vo.getPhoto(), SessionContextHolder.getUserId());
-        SessionContextHolder.getUserInfo().setPhotoUrl(vo.getPhoto());
+        userService.updateUserPhotoUrl(vo.getFileId(), SessionContextHolder.getUserId());
+        SessionContextHolder.getUserInfo().setPhotoUrl(userService.getUserPhotoUrl(SessionContextHolder.getUserId()));
 
         return AjaxResponse.success("上传头像成功");
     }

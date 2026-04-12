@@ -74,6 +74,7 @@ public class ResourceService {
     public List<ResourceVos.Tree> findAll() {
         List<ModuleMenu> menus = moduleService.findAll();
         List<Operate> operates = operateService.findAll();
+        Map<Long, String> menuMap = menus.stream().collect(Collectors.toMap(ModuleMenu::getModuleId, ModuleMenu::getCode));
         Map<Long, String> operateMap = operates.stream().collect(Collectors.toMap(Operate::getOperateId, Operate::getCode));
 
         List<ResourceVos.Tree> all = Lists.newArrayList();
@@ -98,6 +99,7 @@ public class ResourceService {
             tree.setIsParent(false);
             tree.setText(o.getName());
             tree.setCode(operateMap.get(o.getOperateId()));
+            tree.setCode(String.format("res:%s:%s", menuMap.get(o.getModuleId()), operateMap.getOrDefault(o.getOperateId(), o.getIdentifier())));
             tree.setMethod(o.getMethod());
             tree.setPath(o.getPath());
             tree.setOrder(o.getOrder());

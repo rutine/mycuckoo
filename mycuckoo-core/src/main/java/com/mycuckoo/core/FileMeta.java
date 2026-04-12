@@ -12,13 +12,28 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 // ignore "bytes" when return json format
 @JsonIgnoreProperties({"bytes"})
 public class FileMeta {
+    private String id;
     private String url;
     private String name;
     private Long size;
     private String type;
     private byte[] bytes;
 
+    public FileMeta() {}
+
+    public FileMeta(String id) {
+        this.id = id;
+    }
+
     // setters & getters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getUrl() {
         return url;

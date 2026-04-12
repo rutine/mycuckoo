@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.mycuckoo.listener.AttachmentEventListener;
 import com.mycuckoo.listener.LogEventListener;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -25,6 +26,11 @@ public class ContextConfig {
     @Bean
     public LogEventListener logEventListener() {
         return new LogEventListener();
+    }
+
+    @Bean
+    public AttachmentEventListener attachmentEventListener() {
+        return new AttachmentEventListener();
     }
 
     @Bean

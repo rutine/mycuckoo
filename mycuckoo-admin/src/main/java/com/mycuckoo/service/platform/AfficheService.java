@@ -1,22 +1,21 @@
 package com.mycuckoo.service.platform;
 
+import com.mycuckoo.constant.enums.AttachmentType;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.domain.platform.Accessory;
-import com.mycuckoo.domain.platform.Affiche;
+import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.repository.platform.AfficheMapper;
 import com.mycuckoo.core.util.web.SessionContextHolder;
+import com.mycuckoo.domain.platform.Affiche;
+import com.mycuckoo.repository.platform.AfficheMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,20 +36,14 @@ public class AfficheService {
     @Autowired
     private AfficheMapper afficheMapper;
     @Autowired
-    private AccessoryService accessoryService;
+    private AttachmentService attachmentService;
 
 
     @Transactional
     public void deleteByIds(List<Long> ids) {
         if (ids != null && ids.size() > 0) {
             for (Long afficheId : ids) {
-                // 根据公告ID查询附件列表
-                List<Accessory> entityList = accessoryService.findByAfficheId(afficheId);
-                List<Long> idList = new ArrayList<Long>();
-                for (Accessory entity : entityList) {
-                    idList.add(entity.getAccessoryId()); // 附件ID
-                }
-                accessoryService.deleteByIds(idList); // 删除附件数据库记录
+                attachmentService.deleteByBusiTypeAndBusiId(AttachmentType.AFFICHE, String.valueOf(afficheId));
                 afficheMapper.delete(afficheId);
             }
 
@@ -66,13 +59,14 @@ public class AfficheService {
         }
     }
 
+    @Transactional
+    public void deleteAttachment(Long afficheId, String fileId) {
+        attachmentService.deleteBy(AttachmentType.AFFICHE, afficheId == null ? null : afficheId.toString(), fileId);
+    }
+
     public Affiche get(Long id) {
-        List<Accessory> accessoryList = accessoryService.findByAfficheId(id);
-        accessoryList.forEach(accessory -> {
-            accessory.setAccessoryName(StringUtils.getFilename(accessory.getAccessoryName()));
-        });
         Affiche entity = afficheMapper.get(id);
-        entity.setAccessories(accessoryList);
+        entity.setAttachments(attachmentService.findByBusiTypeAndBusiId(AttachmentType.AFFICHE, String.valueOf(id)));
 
         return entity;
     }
@@ -88,18 +82,7 @@ public class AfficheService {
     @Transactional
     public void update(Affiche entity) {
         afficheMapper.update(entity);
-
-        for (Accessory acc : entity.getAccessories()) {
-            if (acc.getAccessoryId() != null) {
-                continue;
-            }
-
-            String newFilename = acc.getAccessoryName();
-            Accessory accessory = new Accessory();
-            accessory.setInfoId(entity.getAfficheId());
-            accessory.setAccessoryName(newFilename);
-            accessoryService.save(accessory);
-        }
+        saveAttachments(entity);
 
         LogOperator.begin()
                 .module(ModuleName.SYS_AFFICHE)
@@ -122,16 +105,7 @@ public class AfficheService {
         entity.setCreateTime(LocalDateTime.now());
         afficheMapper.save(entity);
 
-        // 2. 保存附件信息
-        if (entity.getAccessories() != null) {
-            for (Accessory acc : entity.getAccessories()) {
-                String newFilename = acc.getAccessoryName();
-                Accessory accessory = new Accessory();
-                accessory.setInfoId(entity.getAfficheId());
-                accessory.setAccessoryName(newFilename);
-                accessoryService.save(accessory);
-            }
-        }
+        saveAttachments(entity);
 
         // 3. 保存操作日志
         LogOperator.begin()
@@ -141,6 +115,18 @@ public class AfficheService {
                 .title(null)
                 .content("标题：%s, 有效期限：%s", entity.getTitle(), entity.getInvalidate())
                 .level(LogLevel.FIRST)
+                .emit();
+    }
+
+    private void saveAttachments(Affiche entity) {
+        if (entity.getAttachments() == null) {
+            return;
+        }
+
+        AttachmentOperator.begin()
+                .busiType(AttachmentType.AFFICHE)
+                .busiId(String.valueOf(entity.getAfficheId()))
+                .attachments(entity.getAttachments())
                 .emit();
     }
 }

@@ -1,5 +1,6 @@
 package com.mycuckoo.domain.platform;
 
+import com.mycuckoo.core.FileMeta;
 import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -21,7 +22,7 @@ public class Affiche extends BasicDomain<Long> {
     private String content; //公告内容
     private Date invalidate; //公告有效期
     private Boolean publish; //是否发布
-    private List<Accessory> accessories; //公告附件添加
+    private List<FileMeta> attachments; //公告附件
 
     /**
      * default constructor
@@ -77,12 +78,12 @@ public class Affiche extends BasicDomain<Long> {
         this.publish = publish;
     }
 
-    public List<Accessory> getAccessories() {
-        return accessories;
+    public List<FileMeta> getAttachments() {
+        return attachments;
     }
 
-    public void setAccessories(List<Accessory> accessories) {
-        this.accessories = accessories;
+    public void setAttachments(List<FileMeta> attachments) {
+        this.attachments = attachments;
     }
 
     @Override

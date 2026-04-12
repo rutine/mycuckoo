@@ -8,6 +8,10 @@ spring:
     active: standalone
   main:
     allow-circular-references: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     name: cuckoo
     default-catalog: cuckoo
@@ -40,9 +44,9 @@ logging:
   config: ./config/logback.xml
 
 mycuckoo:
-  url: http://localhost:8080
-  basePath: /mycuckoo/upload
-  sec:
+  web:
+    host: http://localhost
+    upload-path: /mycuckoo/upload
     allow-paths:
       - /register
       - /login

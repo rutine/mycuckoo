@@ -24,7 +24,6 @@ public class User extends BasicDomain<Long> {
     private String email; //用户邮件
     private String gender; //用户性别
     private String position; //用户职位
-    private String photoUrl; //用户照片
     private Date avidate; //用户有效期
     private String address; //家庭住址
     private String memo; //备注
@@ -122,14 +121,6 @@ public class User extends BasicDomain<Long> {
 
     public void setPosition(String position) {
         this.position = position == null ? position : position.trim();
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl == null ? photoUrl : photoUrl.trim();
     }
 
     public Date getAvidate() {

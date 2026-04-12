@@ -15,10 +15,28 @@ import static com.mycuckoo.web.config.WebProperties.PREFIX;
  */
 @ConfigurationProperties(PREFIX)
 public class WebProperties {
-    protected static final String PREFIX = "mycuckoo.sec";
+    protected static final String PREFIX = "mycuckoo.web";
 
+    private String host;
+    private String uploadPath;
     private List<String> allowPaths;
     private List<String> sessionPaths;
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getUploadPath() {
+        return uploadPath;
+    }
+
+    public void setUploadPath(String uploadPath) {
+        this.uploadPath = uploadPath;
+    }
 
     public List<String> getAllowPaths() {
         return allowPaths;
