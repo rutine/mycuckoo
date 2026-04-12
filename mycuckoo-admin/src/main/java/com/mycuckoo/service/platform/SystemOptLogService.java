@@ -4,11 +4,11 @@ import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.SystemConfigLoader;
 import com.mycuckoo.core.util.web.SessionContextHolder;
+import com.mycuckoo.core.xml.SystemConfigXml;
 import com.mycuckoo.domain.platform.SysOptLog;
 import com.mycuckoo.repository.platform.SysOptLogMapper;
 import org.slf4j.Logger;
@@ -56,9 +56,9 @@ public class SystemOptLogService {
 
     @Transactional
     public void save(ModuleName module, OptName operate, String busiId, String title, String content, LogLevel level) {
-        SystemConfigXmlParse.getInstance();
-        SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean();
-        String sysConfigLevel = systemConfigBean.getLoggerLevel();
+        SystemConfigLoader.getInstance();
+        SystemConfigXml systemConfig = SystemConfigLoader.getInstance().getConfig();
+        String sysConfigLevel = systemConfig.getLogLevel();
         String[] levelArray = { level.code + "", sysConfigLevel };
         for (String myLevel : levelArray) {//检查日志级别是否合法
             if (isEmpty(myLevel) || "0123".indexOf(myLevel) < 0 || myLevel.length() > 1) {

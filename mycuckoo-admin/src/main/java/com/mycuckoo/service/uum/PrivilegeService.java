@@ -6,11 +6,11 @@ import com.mycuckoo.constant.AdminConst;
 import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.StrUtils;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.SystemConfigLoader;
 import com.mycuckoo.core.util.web.SessionContextHolder;
+import com.mycuckoo.core.xml.SystemConfigXml;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.uum.DepartmentExtend;
 import com.mycuckoo.domain.uum.Privilege;
@@ -385,11 +385,11 @@ public class PrivilegeService {
             }
         }
         else {
-            SystemConfigBean systemConfigBean = SystemConfigXmlParse.getInstance().getSystemConfigBean(); // 系统配置权限
-            String rowPrivilegeLevel = systemConfigBean.getRowPrivilegeLevel();
-            if (PrivilegeScope.ROLE.scope.equals(rowPrivilegeLevel)) {
+            SystemConfigXml systemConfig = SystemConfigLoader.getInstance().getConfig(); // 系统配置权限
+            String defaultRowPrivilegeLevel = systemConfig.getDefaultRowPrivilegeLevel();
+            if (PrivilegeScope.ROLE.scope.equals(defaultRowPrivilegeLevel)) {
                 sql.append(ROLE_ID + " = " + roleId + " "); // 自我真实角色
-            } else if (PrivilegeScope.USER.scope.equals(rowPrivilegeLevel)) {
+            } else if (PrivilegeScope.USER.scope.equals(defaultRowPrivilegeLevel)) {
                 sql.append(USER_ID + " = " + userId + " ");
             } else {
                 String organChildren = getPrivilegeDeptChildren(organId);

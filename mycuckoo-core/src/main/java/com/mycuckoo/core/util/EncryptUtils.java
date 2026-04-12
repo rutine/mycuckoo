@@ -14,16 +14,12 @@ import java.util.Base64;
  * @version 2.0.0
  * @time Sep 22, 2014 9:27:57 PM
  */
-public class PwdCrypt {
-    private Logger logger = LoggerFactory.getLogger(PwdCrypt.class);
+public abstract class EncryptUtils {
+    private static Logger logger = LoggerFactory.getLogger(EncryptUtils.class);
 
-    private final String love = "liangs2yixiu!@#$%^&";
+    private static final String LOVE = "liangs2yixiu!@#$%^&";
 
-    public static PwdCrypt getInstance() {
-        return new PwdCrypt();
-    }
-
-    private PwdCrypt() {
+    private EncryptUtils() {
 
     }
 
@@ -35,7 +31,7 @@ public class PwdCrypt {
      * @author rutine
      * @time Oct 3, 2012 4:23:03 PM
      */
-    public String encrypt(String data) {
+    public static String encrypt(String data) {
         return Base64.getEncoder().encodeToString(simpleEncrypt(data).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -47,7 +43,7 @@ public class PwdCrypt {
      * @author rutine
      * @time Oct 3, 2012 4:23:14 PM
      */
-    public String decrypt(String data) {
+    public static String decrypt(String data) {
         byte[] result = null;
         try {
             result = Base64.getDecoder().decode(data);
@@ -66,11 +62,11 @@ public class PwdCrypt {
      * @author rutine
      * @time Oct 3, 2012 4:23:35 PM
      */
-    public String simpleEncrypt(String data) {
+    private static String simpleEncrypt(String data) {
         char[] a = data.toCharArray();
         for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < love.length(); j++) {
-                char c = love.charAt(j);
+            for (int j = 0; j < LOVE.length(); j++) {
+                char c = LOVE.charAt(j);
                 a[i] = (char) (a[i] ^ c);
             }
         }
@@ -80,12 +76,11 @@ public class PwdCrypt {
     }
 
     public static void main(String[] args) {
-        PwdCrypt pwdCrypt = new PwdCrypt();
-        String estr = pwdCrypt.encrypt("admin");
+        String estr = EncryptUtils.encrypt("admin");
         System.out.println("estr is : " + estr);
-        String dstr = pwdCrypt.decrypt(estr);
+        String dstr = EncryptUtils.decrypt(estr);
         System.out.println("dstr is : " + dstr);
         byte[] result = Base64.getDecoder().decode("UhIUBhEXF1Y=");
-        System.out.println("dstr is : " + pwdCrypt.simpleEncrypt(new String(result, StandardCharsets.UTF_8)));
+        System.out.println("dstr is : " + EncryptUtils.simpleEncrypt(new String(result, StandardCharsets.UTF_8)));
     }
 }

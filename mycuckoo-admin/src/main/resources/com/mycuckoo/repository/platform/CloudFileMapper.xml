@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    说明: CloudFileMapper映射文件
+
+    @author rutine
+    @version 5.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.CloudFileMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.CloudFile">
+        <id property="id" column="id" />
+        <result property="path" column="path" />
+        <result property="name" column="name" />
+        <result property="size" column="size" />
+        <result property="type" column="type" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, path, name, size, type, creator, create_time
+    </sql>
+
+    <sql id="table">
+        sys_cloud_file
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.CloudFile">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id, </if>
+            <if test="path != null and path != ''">path, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="size != null">size, </if>
+            <if test="type != null and type != ''">type, </if>
+            <if test="creator != null and creator != ''">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id}, </if>
+            <if test="path != null and path != ''">#{path}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="size != null">#{size}, </if>
+            <if test="type != null and type != ''">#{type}, </if>
+            <if test="creator != null and creator != ''">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.platform.CloudFile">
+        update <include refid="table" />
+        <set>
+            <if test="path != null">path = #{path}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="size != null">size = #{size}, </if>
+            <if test="type != null">type = #{type}, </if>
+            <if test="creator != null">creator = #{creator}, </if>
+            <if test="createTime != null">create_time = #{createTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="string" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        order by create_time desc, id desc
+    </select>
+</mapper>

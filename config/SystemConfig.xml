@@ -1,0 +1,28 @@
+<systemConfig>
+  <systemName>系统平台统一用户2</systemName>
+  <cluster>false</cluster>
+  <userAddDelFlag></userAddDelFlag>
+  <logLevel>1</logLevel>
+  <logRetentionDays>30</logRetentionDays>
+  <defaultRowPrivilegeLevel>org</defaultRowPrivilegeLevel>
+  <adminUsers>
+    <adminUsers>admin</adminUsers>
+  </adminUsers>
+  <jmx>
+    <tomcat active="true">
+      <jmxUrl>service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi</jmxUrl>
+      <mbeanName>Catalina:type=Manager,context=/mycuckoo,host=localhost</mbeanName>
+    </tomcat>
+    <weblogic active="false">
+      <jmxUrl></jmxUrl>
+      <mbeanName></mbeanName>
+    </weblogic>
+    <websphere active="false">
+      <jmxUrl></jmxUrl>
+      <mbeanName></mbeanName>
+    </websphere>
+  </jmx>
+  <defaultJmxServer>tomcat</defaultJmxServer>
+  <tomcatMbeanName>Catalina:type=Manager,context=/mycuckoo,host=localhost</tomcatMbeanName>
+  <tomcatJmxUrl>service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi</tomcatJmxUrl>
+</systemConfig>

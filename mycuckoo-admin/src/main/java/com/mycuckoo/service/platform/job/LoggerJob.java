@@ -1,7 +1,7 @@
 package com.mycuckoo.service.platform.job;
 
 import com.mycuckoo.core.util.web.SpringContextUtils;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.SystemConfigLoader;
 import com.mycuckoo.service.platform.SystemOptLogService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -26,7 +26,7 @@ public class LoggerJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String name = context.getJobDetail().getKey().getName();
-        String days = SystemConfigXmlParse.getInstance().getSystemConfigBean().getLogRecordKeepDays();
+        String days = SystemConfigLoader.getInstance().getConfig().getLogRetentionDays();
         String number = "-0123456789";
         for (int i = 0; i < days.length(); i++) {
             char c = days.charAt(i);

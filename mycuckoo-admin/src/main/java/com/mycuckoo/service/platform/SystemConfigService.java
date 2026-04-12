@@ -3,20 +3,15 @@ package com.mycuckoo.service.platform;
 import com.mycuckoo.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleName;
 import com.mycuckoo.constant.enums.OptName;
-import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
-import com.mycuckoo.core.util.XmlOptUtils;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.Node;
+import com.mycuckoo.core.util.SystemConfigLoader;
+import com.mycuckoo.core.xml.SystemConfigXml;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static com.mycuckoo.core.operator.LogOperator.COMMA;
-import static com.mycuckoo.core.util.FileUtils.getClusterResourcePath;
 
 /**
  * 功能说明: 系统配置文件维护业务类
@@ -28,60 +23,41 @@ import static com.mycuckoo.core.util.FileUtils.getClusterResourcePath;
 @Service
 public class SystemConfigService {
 
-    public SystemConfigBean getSystemConfigInfo() {
-        return SystemConfigXmlParse.getInstance().getSystemConfigBean();
+    public SystemConfigXml getSystemConfigInfo() {
+        return SystemConfigLoader.getInstance().getConfig();
     }
 
-    public void setSystemConfigInfo(SystemConfigBean systemConfigBean, String userAddDelFlag) throws SystemException {
+    public void setSystemConfigInfo(SystemConfigXml systemConfig, String userAddDelFlag) throws SystemException {
+        saveSystemConfig(systemConfig, userAddDelFlag);
+        SystemConfigLoader.getInstance().load();
+    }
 
-        String fileName = getClusterResourcePath(SystemConfigXmlParse.getInstance().getSysConfigFileXml());
-        String loggerLevel = systemConfigBean.getLoggerLevel();
-        String logRecordKeepDays = systemConfigBean.getLogRecordKeepDays();
-        List<String> systemMgr = systemConfigBean.getSystemMgr();
-        String systemName = systemConfigBean.getSystemName();
-        String rowPrivilegeLevel = systemConfigBean.getRowPrivilegeLevel();
+    void saveSystemConfig(SystemConfigXml newConfig,
+                          String userAddDelFlag) throws SystemException {
+        String systemName = newConfig.getSystemName();
+        String logLevel = newConfig.getLogLevel();
+        String logRetentionDays = newConfig.getLogRetentionDays();
+        String defaultRowPrivilegeLevel = newConfig.getDefaultRowPrivilegeLevel();
+        List<String> adminUsers = newConfig.getAdminUsers();
 
-        Document doc = XmlOptUtils.readXML(fileName);
+        SystemConfigXml oldConfig = SystemConfigLoader.getInstance().getConfig();
         StringBuilder optContent = new StringBuilder();
         if (systemName != null) { // 系统名称
-            Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemName");
-            el.setText(systemName);
+            oldConfig.setSystemName(systemName);
             optContent.append("设置系统名称: " + systemName + COMMA);
-        } else if (systemMgr != null) {
-            if ("add".equals(userAddDelFlag)) { // 增加
-                Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemMgr");
-                for (String userCode : systemMgr) {
-                    Element userCodeEl = el.addElement("userCode");
-                    userCodeEl.setText(userCode);
-                    optContent.append("增加管理员:" + userCode + COMMA);
-                }
-            } else if ("delete".equals(userAddDelFlag)) { // 删除
-                Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/systemMgr");
-                List<Node> elList = doc.selectNodes("//systemConfig/systemMgr/userCode");
-                for (String userCode : systemMgr) {
-                    for (Node userCodeEl : elList) {
-                        if (userCodeEl.getText().equals(userCode)) {
-                            el.remove(userCodeEl);
-                        }
-                    }
-                    optContent.append("删除管理员:" + userCode + COMMA);
-                }
-            }
-        } else if (loggerLevel != null) {
-            Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/loggerLevel");
-            el.setText(loggerLevel);
-            optContent.append("设置日志级别:" + loggerLevel + COMMA);
-        } else if (rowPrivilegeLevel != null) {
-            Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/rowPrivilegeLevel");
-            el.setText(rowPrivilegeLevel);
-            optContent.append("设置权限级别:" + rowPrivilegeLevel + COMMA);
-        } else if (logRecordKeepDays != null) {
-            Element el = XmlOptUtils.selectSingleNode(doc, "/systemConfig/logRecordKeepDays");
-            el.setText(logRecordKeepDays);
-            optContent.append("设置日志保留天数:" + logRecordKeepDays + COMMA);
+        } else if (adminUsers != null) {
+            applyAdminUsersChange(oldConfig, adminUsers, userAddDelFlag, optContent);
+        } else if (logLevel != null) {
+            oldConfig.setLogLevel(logLevel);
+            optContent.append("设置日志级别:" + logLevel + COMMA);
+        } else if (defaultRowPrivilegeLevel != null) {
+            oldConfig.setDefaultRowPrivilegeLevel(defaultRowPrivilegeLevel);
+            optContent.append("设置权限级别:" + defaultRowPrivilegeLevel + COMMA);
+        } else if (logRetentionDays != null) {
+            oldConfig.setLogRetentionDays(logRetentionDays);
+            optContent.append("设置日志保留天数:" + logRetentionDays + COMMA);
         }
-        XmlOptUtils.writeXML(doc, fileName);
-        SystemConfigXmlParse.getInstance().loadSystemConfigDoc();
+        SystemConfigLoader.getInstance().write(oldConfig);
 
         LogOperator.begin()
                 .module(ModuleName.SYS_CONFIG_MGR)
@@ -93,4 +69,23 @@ public class SystemConfigService {
                 .emit();
     }
 
+    void applyAdminUsersChange(SystemConfigXml persistedConfig,
+                               List<String> adminUsers,
+                               String userAddDelFlag,
+                               StringBuilder optContent) {
+        if ("add".equals(userAddDelFlag)) {
+            persistedConfig.addAdminUsers(adminUsers);
+            for (String userCode : adminUsers) {
+                optContent.append("增加管理员:" + userCode + COMMA);
+            }
+            return;
+        }
+
+        if ("delete".equals(userAddDelFlag)) {
+            persistedConfig.removeAdminUsers(adminUsers);
+            for (String userCode : adminUsers) {
+                optContent.append("删除管理员:" + userCode + COMMA);
+            }
+        }
+    }
 }

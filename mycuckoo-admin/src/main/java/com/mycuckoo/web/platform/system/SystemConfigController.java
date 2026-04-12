@@ -2,9 +2,9 @@ package com.mycuckoo.web.platform.system;
 
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.SystemConfigBean;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.core.xml.SystemConfigXml;
 import com.mycuckoo.service.platform.SystemConfigService;
 import com.mycuckoo.service.uum.AccountService;
 import com.mycuckoo.web.vo.res.AccountInfo;
@@ -25,7 +25,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/platform/system/config/mgr")
 public class SystemConfigController {
-    private static Logger logger = LoggerFactory.getLogger(SystemConfigController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SystemConfigController.class);
 
     @Autowired
     private SystemConfigService systemConfigService;
@@ -34,9 +34,9 @@ public class SystemConfigController {
 
 
     /**
-     * 功能说明 : 查询用户信息为管理员分配
+     * 功能说明 : 查询可配置的管理员用户
      *
-     * @param querier
+     * @param querier 查询参数
      * @return
      * @author rutine
      * @time Nov 23, 2013 11:03:33 PM
@@ -55,15 +55,15 @@ public class SystemConfigController {
     }
 
     /**
-     * 功能说明 : 设置系统配置信息
+     * 功能说明 : 更新系统配置
      *
-     * @param systemConfig 设置系统配置信息
+     * @param systemConfig 系统配置参数
      * @return
      * @author rutine
      * @time Nov 23, 2013 9:36:00 PM
      */
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody SystemConfigBean systemConfig) {
+    public AjaxResponse<String> update(@RequestBody SystemConfigXml systemConfig) {
 
         try {
             systemConfigService.setSystemConfigInfo(systemConfig, systemConfig.getUserAddDelFlag());
@@ -75,14 +75,14 @@ public class SystemConfigController {
     }
 
     @GetMapping
-    public AjaxResponse<SystemConfigBean> get() {
-        SystemConfigBean systemConfigBean = systemConfigService.getSystemConfigInfo();
+    public AjaxResponse<SystemConfigXml> get() {
+        SystemConfigXml systemConfig = systemConfigService.getSystemConfigInfo();
 
-        return AjaxResponse.create(systemConfigBean);
+        return AjaxResponse.create(systemConfig);
     }
 
     /**
-     * 功能说明 : 启动tomcat监控
+     * 功能说明 : 启动 Tomcat 监控
      *
      * @author rutine
      * @time Nov 24, 2013 1:20:00 PM

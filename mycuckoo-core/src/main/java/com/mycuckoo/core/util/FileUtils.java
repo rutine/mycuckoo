@@ -6,7 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * 功能说明:
@@ -16,42 +19,13 @@ import java.net.URL;
  * @time 2024/7/7 9:33
  */
 public abstract class FileUtils {
-    private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-    public final static String MYCUCKOO_CONFIG_LOCATION = "config";
-
-
-    public static void main(String[] args) {
-        String fileSeparator = System.getProperties().getProperty("file.separator");
-        FileUtils.class.getResourceAsStream(fileSeparator);
-        System.out.println(getResourcePath());
-        System.out.println(System.getProperty("mycuckoo.root"));
-        File[] drive = File.listRoots();
-        for (int i = 0; i < drive.length; i++) {
-            System.out.println("\t" + drive[i]);
-        }
-    }
+    public static final String MYCUCKOO_CONFIG_LOCATION = "config";
+    private static final int BUFFER_SIZE = 10240;
 
     private FileUtils() {}
 
-    /**
-     * 获得web根路径
-     *
-     * @return
-     * @author rutine
-     * @time Oct 6, 2012 10:29:18 AM
-     */
-    public static String getResourcePath() {
-        String confPath = System.getProperty("mycuckoo.config.location");
-        if (confPath == null) {
-            String separate = File.separator;
-            confPath = System.getProperty("user.dir") + separate + MYCUCKOO_CONFIG_LOCATION ;
-        }
-
-        logger.info("mycuckoo config path ----> {}", confPath);
-
-        return confPath == null ? "" : confPath;
-    }
 
     /**
      * 系统集群时获得存放文件路径 为系统配置附件所用
@@ -61,18 +35,23 @@ public abstract class FileUtils {
      * @author rutine
      * @time Oct 6, 2012 10:30:53 AM
      */
-    public static String getClusterResourcePath(String filename) {
+    public static String getResourcePath(String filename) {
+        String path = System.getProperty("mycuckoo.config.location");
+        if (path == null) {
+            path = Paths.get(System.getProperty("user.dir"), MYCUCKOO_CONFIG_LOCATION).toString();
+        }
+        logger.info("mycuckoo config path ----> {}", path);
+
         String separate = File.separator;
-        String path = getResourcePath();
-        String rootDir = separate;// 默认为分隔符 linux unix
-        if ("\\".equals(separate)) {// windows系统
+        String rootDir = separate;
+        if ("\\".equals(separate)) {
             rootDir = path.substring(0, 2);
         }
-        String filePath = rootDir + separate + filename;
+        String filePath = Paths.get(rootDir + separate, filename).toString();
         File file = new File(filePath);
-        String resourcePath = (file.exists() ? filePath : (path + separate + filename));
+        String resourcePath = file.exists() ? filePath : Paths.get(path, filename).toString();
 
-        logger.info("mycuckoo cluster resource path --> {}", resourcePath);
+        logger.info("mycuckoo resource path --> {}", resourcePath);
 
         return resourcePath;
     }
@@ -82,38 +61,32 @@ public abstract class FileUtils {
      *
      * @param dirPath  文件路径
      * @param filename 文件名
-     * @param is       文件输入流
+     * @param in       文件输入流
      * @author rutine
      * @time Oct 6, 2012 11:05:02 AM
      */
-    public static String saveFile(String dirPath, String filename, InputStream is) throws SystemException {
-        if (is == null) {
+    public static String save(String dirPath, String filename, InputStream in) throws SystemException {
+        if (in == null) {
             return null;
         }
 
-        // 文件上传路径
-        String absolutePath = getClusterResourcePath("") + dirPath;
-        // 如果路径不存在则自动创建
-        File dirFile = new File(absolutePath);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();
+        Path directory = Paths.get(dirPath);
+        Path targetFile = directory.resolve(filename);
+        String filePath = targetFile.toString();
+        logger.info("save file: {}", filePath);
+        try {
+            Files.createDirectories(directory);
+            if (!Files.isDirectory(directory)) {
+                throw new SystemException("文件目录无效: " + dirPath);
+            }
+        } catch (IOException e) {
+            throw new SystemException("创建目录失败: " + dirPath, e);
         }
 
-        // 文件上传
-        String filePath = absolutePath + File.separator + filename;
-        logger.info("save file path --> {}", filePath);
-        try {
-            FileOutputStream fos = new FileOutputStream(filePath);
-            byte[] buffer = new byte[10240];
-            int len = 0;
-            while ((len = is.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-                fos.flush();
-            }
-            is.close();
-            fos.close();
+        try (InputStream input = in; OutputStream out = Files.newOutputStream(targetFile)) {
+            copy(input, out);
         } catch (IOException e) {
-            logger.error("write file error", e);
+            logger.error("save file error", e);
 
             throw new SystemException("", e);
         }
@@ -124,7 +97,7 @@ public abstract class FileUtils {
     /**
      * 下载文件
      *
-     * @param dirPath  文件路径
+     * @param filePath  文件路径
      * @param filename 文件名
      * @param isOnline 是否在线打开
      * @param response
@@ -133,54 +106,31 @@ public abstract class FileUtils {
      * @author rutine
      * @time Oct 6, 2012 2:22:06 PM
      */
-    public static void downloadFile(String dirPath, String filename,
-                                    boolean isOnline, HttpServletResponse response) throws SystemException {
+    public static void download(String filePath, String filename, boolean isOnline,
+                                HttpServletResponse response) throws SystemException {
 
-        // 文件下载
-        // String filePath = request.getRealPath(File.separator) + dirPath + File.separator + filename;
-        String filePath = getClusterResourcePath("") + dirPath + File.separator + filename;
-        BufferedInputStream bufInStream = null;
-        BufferedOutputStream bufOutStream = null;
-        try {
-            File file = new File(filePath);
-            if (!file.exists()) {
-                throw new SystemException("对不起，找不到" + filename + "文件!");
-            }
+        Path file = Paths.get(filePath);
+        if (!Files.exists(file)) {
+            throw new SystemException("对不起，找不到[" + filePath + "]文件!");
+        }
 
-            String displayFilename = filename.substring(filename.indexOf("_") + 1);
-            // 下载文件名需要转换为ISO8859-1编码才能正常显示
-            displayFilename = new String(displayFilename.getBytes("utf8"), "ISO8859-1") + "\"";
+        try (BufferedInputStream bufIn = new BufferedInputStream(Files.newInputStream(file));
+             BufferedOutputStream bufOut = new BufferedOutputStream(response.getOutputStream())) {
+            String displayFilename = encodeDownloadFilename(resolveDisplayFilename(filename));
 
             if (isOnline) { // 在线打开方式
-                URL url = new URL("file:///" + getClusterResourcePath("") + dirPath + File.separator + filename);
-                response.setContentType(url.openConnection().getContentType());
+                String contentType = Files.probeContentType(file);
+                response.setContentType(contentType == null ? "application/octet-stream" : contentType);
                 response.setHeader("Content-Disposition", "inline; filename=" + displayFilename);
             } else {// 纯下载方式
                 response.setContentType("application/x-msdownload");
                 response.setHeader("Content-Disposition", "attachment; filename=" + displayFilename);
             }
 
-            bufInStream = new BufferedInputStream(new FileInputStream(file));
-            bufOutStream = new BufferedOutputStream(response.getOutputStream());
-            byte[] buffer = new byte[10240];
-            int len = 0;
-            while ((len = bufInStream.read(buffer)) > 0) {
-                bufOutStream.write(buffer, 0, len);
-                bufOutStream.flush();
-            }
+            copy(bufIn, bufOut);
+            bufOut.flush();
         } catch (IOException e) {
             throw new SystemException("", e);
-        } finally {
-            try {
-                if (bufInStream != null) {
-                    bufInStream.close();
-                }
-                if (bufOutStream != null) {
-                    bufOutStream.close();
-                }
-            } catch (IOException e) {
-                logger.error("close file error", e);
-            }
         }
     }
 
@@ -190,31 +140,27 @@ public abstract class FileUtils {
      * @param dirPath     文件路径
      * @param newFilename 新文件名
      * @param oldFilename 旧文件名
-     * @param is          新文件流
+     * @param in          新文件流
      * @return
      * @author rutine
      * @time Oct 6, 2012 2:32:27 PM
      */
-    public static void replaceFile(String dirPath, String newFilename, String oldFilename, InputStream is) throws SystemException {
-        // 文件上传目录
-        // String absolutePath = request.getRealPath(File.separator) + dirPath;
-        String absolutePath = getClusterResourcePath("") + dirPath;
-        // 如果目录不存在则自动创建
-        File dirFile = new File(absolutePath);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();
+    public static void replace(String dirPath, String newFilename, String oldFilename, InputStream in) throws SystemException {
+        if (in == null) {
+            return;
         }
 
-        if ((oldFilename != null || !"".equals(oldFilename)) && is != null) {
-            File[] files = dirFile.listFiles();
-            for (File file : files) {
-                if (file.getName().equals(oldFilename)) {
-                    file.delete();
-                    break;
-                }
+        Path directory = Paths.get(dirPath);
+        try {
+            Files.createDirectories(directory);
+            if (oldFilename != null && !oldFilename.isEmpty()) {
+                Files.deleteIfExists(directory.resolve(oldFilename));
             }
-            saveFile(dirPath, newFilename, is);
+        } catch (IOException e) {
+            throw new SystemException("处理文件目录失败: " + dirPath, e);
         }
+
+        save(dirPath, newFilename, in);
     }
 
     /**
@@ -224,30 +170,37 @@ public abstract class FileUtils {
      * @param newFilename 新文件名
      * @param oldFilename 旧文件名
      */
-    public static void renameFile(String dirPath, String newFilename, String oldFilename) {
-        File newFile = new File(getClusterResourcePath("") + dirPath + File.separator + newFilename);
-        File oldFile = new File(getClusterResourcePath("") + dirPath + File.separator + oldFilename);
-
-        oldFile.renameTo(newFile);
+    public static void rename(String dirPath, String newFilename, String oldFilename) {
+        Path directory = Paths.get(dirPath);
+        Path oldFile = directory.resolve(oldFilename);
+        Path newFile = directory.resolve(newFilename);
+        try {
+            Files.move(oldFile, newFile);
+        } catch (IOException e) {
+            logger.error("rename file error: {} -> {}", oldFile, newFile, e);
+        }
     }
 
     /**
      * 删除目录下的文件
      *
-     * @param dirPath  目录路径
+     * @param filePath  目录路径
      * @param filename 文件名称
      * @author rutine
      * @time Oct 6, 2012 2:34:45 PM
      */
-    public static void deleteFile(String dirPath, String filename) {
-        // 文件存放目录
-        // String absolutePath = request.getRealPath(File.separator) + dirPath;
-        String absolutePath = getClusterResourcePath("") + dirPath;
+    public static void delete(String filePath, String filename) {
+        if (filename == null || filename.isEmpty()) {
+            return;
+        }
 
-        File file = new File(absolutePath + File.separator + filename);
-        boolean success = file.delete();
-
-        logger.info("delete file --> {} {}", file.getAbsolutePath(), success);
+        Path file = Paths.get(filePath);
+        try {
+            boolean success = Files.deleteIfExists(file);
+            logger.info("delete file --> {} {}", file.toAbsolutePath(), success);
+        } catch (IOException e) {
+            logger.error("delete file error: {}", file.toAbsolutePath(), e);
+        }
     }
 
     /**
@@ -258,13 +211,30 @@ public abstract class FileUtils {
      * @time Oct 6, 2012 2:35:48 PM
      */
     public static void deleteDir(String dirPath) {
-        // 文件上传目录
-        // String absolutePath = request.getRealPath(File.separator) + dirPath;
-        String absolutePath = getClusterResourcePath("") + dirPath;
-        File dirFile = new File(absolutePath);
-        if (dirFile.exists()) {
-            dirFile.delete();
+        Path dir = Paths.get(dirPath);
+        try {
+            if (Files.isDirectory(dir)) {
+                Files.deleteIfExists(dir);
+            }
+        } catch (IOException e) {
+            logger.error("delete directory error: {}", dir.toAbsolutePath(), e);
         }
     }
-}
 
+    private static void copy(InputStream input, OutputStream out) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int len;
+        while ((len = input.read(buffer)) > 0) {
+            out.write(buffer, 0, len);
+        }
+    }
+
+    private static String resolveDisplayFilename(String filename) {
+        int index = filename.indexOf("_");
+        return index >= 0 && index < filename.length() - 1 ? filename.substring(index + 1) : filename;
+    }
+
+    private static String encodeDownloadFilename(String filename) {
+        return new String(filename.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+    }
+}

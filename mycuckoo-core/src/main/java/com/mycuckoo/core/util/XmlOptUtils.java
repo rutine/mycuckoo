@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +25,10 @@ import java.util.List;
  * @time Sep 22, 2014 9:43:01 PM
  */
 public class XmlOptUtils {
+    private static final Logger logger = LoggerFactory.getLogger(XmlOptUtils.class);
 
-    protected static Logger logger = LoggerFactory.getLogger(XmlOptUtils.class);
+    private XmlOptUtils() {
+    }
 
 
     /**
@@ -38,15 +40,12 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 10:19:50 AM
      */
     public static Document readString(String str) {
-        Document doc = null;
         try {
-            doc = DocumentHelper.parseText(str);
+            return DocumentHelper.parseText(str);
         } catch (Exception e) {
             logger.error("readString occur error : ", e);
             throw new MyCuckooException("readString occur error : ", e);
         }
-
-        return doc;
     }
 
     /**
@@ -58,21 +57,22 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 10:06:47 AM
      */
     public static String writeString(Document document) {
-        String str = "";
-        try {
-            // 使用输出流来进行转化
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // 使用UTF-8编码
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             OutputFormat format = new OutputFormat("  ", true, "UTF-8");
-            XMLWriter writer = new XMLWriter(out, format);
-            writer.write(document);
-            str = out.toString("UTF-8");
+            XMLWriter writer = null;
+            try {
+                writer = new XMLWriter(out, format);
+                writer.write(document);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+            return out.toString(StandardCharsets.UTF_8.name());
         } catch (Exception e) {
             logger.error("writeString occur error : ", e);
             throw new MyCuckooException("writeString occur error : ", e);
         }
-
-        return str;
     }
 
 
@@ -86,21 +86,15 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 11:14:43 AM
      */
     public static Document readXML(String fileName) throws SystemException {
-        Document document = null;
         SAXReader saxReader = new SAXReader();
-        File file = new File(fileName);
-        if (!file.exists()) {
-            throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
-        }
+        File file = requireExists(fileName);
 
         try {
-            document = saxReader.read(file);
+            return saxReader.read(file);
         } catch (DocumentException e) {
             logger.error("load xml occur error : ", e);
             throw new SystemException("load xml occur error : ", e);
         }
-
-        return document;
     }
 
     /**
@@ -114,27 +108,27 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 11:32:33 AM
      */
     public static boolean writeXML(Document document, String fileName) throws SystemException {
-        boolean flag = true;
-        /* 将document中的内容写入文件中 */
         OutputFormat format = OutputFormat.createPrettyPrint();
         format.setEncoding("UTF-8");
-        File file = new File(fileName);
-        if (!file.exists()) {
-            throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
-        }
+        File file = requireExists(fileName);
 
+        XMLWriter writer = null;
         try {
-            XMLWriter writer = new XMLWriter(new FileOutputStream(file), format);
+            writer = new XMLWriter(new FileOutputStream(file), format);
             writer.write(document);
-            writer.close();
-        } catch (UnsupportedEncodingException e) {
-            logger.error("write " + fileName + " UTF-8 error : ", e);
-            throw new SystemException("write " + fileName + " UTF error : ", e);
         } catch (IOException e) {
             logger.error("write " + fileName + " IO occur error : ", e);
             throw new SystemException("write " + fileName + " IO occur error : ", e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    logger.error("close " + fileName + " IO occur error : ", e);
+                }
+            }
         }
-        return flag;
+        return true;
     }
 
     /**
@@ -160,7 +154,7 @@ public class XmlOptUtils {
      * @time Oct 3, 2012 1:31:22 PM
      */
     public static String selectSingleText(Document doc, String xmlPath) {
-        Element el = (Element) doc.selectSingleNode(xmlPath);
+        Element el = selectSingleNode(doc, xmlPath);
         return el.getText();
     }
 
@@ -190,8 +184,7 @@ public class XmlOptUtils {
      */
     @SuppressWarnings("unchecked")
     public static List<Node> selectNodes(Document doc, String xmlPath) {
-        List<Node> elList = (List<Node>) doc.selectNodes(xmlPath);
-        return elList;
+        return (List<Node>) doc.selectNodes(xmlPath);
     }
 
     /**
@@ -205,9 +198,9 @@ public class XmlOptUtils {
      */
     @SuppressWarnings("unchecked")
     public static List<String> selectNodesText(Document doc, String xmlPath) {
-        List<String> textList = new ArrayList<String>();
+        List<String> textList = new ArrayList<>();
         List<Node> elements = (List<Node>) doc.selectNodes(xmlPath);
-        if (elements != null && elements.size() > 0) {
+        if (elements != null && !elements.isEmpty()) {
             for (Node element : elements) {
                 textList.add(element.getText());
             }
@@ -216,21 +209,11 @@ public class XmlOptUtils {
         return textList;
     }
 
-
-    @SuppressWarnings("unchecked")
-    public static void main(String args[]) {
-        String filePath = "WebContent/SystemConfig.xml";
-        Document doc = null;
-        try {
-            doc = readXML(filePath);
-        } catch (SystemException e) {
-            e.printStackTrace();
+    private static File requireExists(String fileName) {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            throw new MyCuckooException("对不起，文件" + fileName + "找不到.");
         }
-
-        List<Node> elList = doc.selectNodes("//JMX/tomcat");
-        for (Node e : elList) {
-            String val = ((Element) e).attributeValue("default");
-            System.out.println("-------->  " + val);
-        }
+        return file;
     }
 }

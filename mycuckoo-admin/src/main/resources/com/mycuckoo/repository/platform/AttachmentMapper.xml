@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    说明: AttachmentMapper映射文件
+
+    @author rutine
+    @version 5.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.AttachmentMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Attachment">
+        <id property="id" column="id" />
+        <result property="busiType" column="busi_type" />
+        <result property="busiSubType" column="busi_sub_type" />
+        <result property="busiId" column="busi_id" />
+        <result property="fileId" column="file_id" />
+        <result property="orgId" column="org_id" />
+        <result property="updator" column="updator" />
+        <result property="updateTime" column="update_time" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, busi_type, busi_sub_type, busi_id, file_id, org_id, updator, update_time, creator, create_time
+    </sql>
+
+    <sql id="table">
+        sys_attachment
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.Attachment"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="busiType != null">busi_type, </if>
+            <if test="busiSubType != null">busi_sub_type, </if>
+            <if test="busiId != null and busiId != ''">busi_id, </if>
+            <if test="fileId != null and fileId != ''">file_id, </if>
+            <if test="orgId != null and orgId != ''">org_id, </if>
+            <if test="updator != null and updator != ''">updator, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null and creator != ''">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="busiType != null">#{busiType}, </if>
+            <if test="busiSubType != null">#{busiSubType}, </if>
+            <if test="busiId != null and busiId != ''">#{busiId}, </if>
+            <if test="fileId != null and fileId != ''">#{fileId}, </if>
+            <if test="orgId != null and orgId != ''">#{orgId}, </if>
+            <if test="updator != null and updator != ''">#{updator}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null and creator != ''">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.domain.platform.Attachment">
+        update <include refid="table" />
+        <set>
+            <if test="busiType != null">busi_type = #{busiType}, </if>
+            <if test="busiSubType != null">busi_sub_type = #{busiSubType}, </if>
+            <if test="busiId != null">busi_id = #{busiId}, </if>
+            <if test="fileId != null">file_id = #{fileId}, </if>
+            <if test="orgId != null">org_id = #{orgId}, </if>
+            <if test="updator != null">updator = #{updator}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+            <if test="creator != null">creator = #{creator}, </if>
+            <if test="createTime != null">create_time = #{createTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        order by create_time desc, id desc
+    </select>
+
+    <select id="findByBusiTypeAndBusiId" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where busi_type = #{busiType}
+          and busi_id = #{busiId}
+        <if test="busiSubType != null">
+          and busi_sub_type = #{busiSubType}
+        </if>
+        order by create_time desc, id desc
+    </select>
+
+    <delete id="deleteByBusiTypeAndBusiId">
+        delete from <include refid="table" />
+        where busi_type = #{busiType}
+          and busi_id = #{busiId}
+        <if test="busiSubType != null">
+          and busi_sub_type = #{busiSubType}
+        </if>
+    </delete>
+
+</mapper>

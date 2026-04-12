@@ -10,32 +10,10 @@ import org.slf4j.LoggerFactory;
  * @version 2.0.0
  * @time Sep 22, 2014 9:36:10 PM
  */
-public class StrUtils {
+public abstract class StrUtils {
     private static Logger logger = LoggerFactory.getLogger(StrUtils.class);
 
-    /**
-     * 加密操作
-     *
-     * @param data
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:08:18 PM
-     */
-    public static String encrypt(String data) {
-        return PwdCrypt.getInstance().encrypt(data);
-    }
-
-    /**
-     * 解密操作
-     *
-     * @param data
-     * @return
-     * @author rutine
-     * @time Oct 4, 2012 1:08:36 PM
-     */
-    public static String decrypt(String data) {
-        return PwdCrypt.getInstance().decrypt(data);
-    }
+    private StrUtils() {}
 
     /**
      * 获得一句话的首字母

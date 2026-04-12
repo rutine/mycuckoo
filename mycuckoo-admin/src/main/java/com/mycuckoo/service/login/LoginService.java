@@ -1,8 +1,8 @@
 package com.mycuckoo.service.login;
 
 import com.mycuckoo.core.UserInfo;
-import com.mycuckoo.core.util.PwdCrypt;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.EncryptUtils;
+import com.mycuckoo.core.util.SystemConfigLoader;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.core.web.filter.PrivilegeFilter;
 import com.mycuckoo.domain.uum.Account;
@@ -63,8 +63,8 @@ public class LoginService {
 
     public boolean isAdmin(String account) {
         // 通过配置XML获得管理员用户，管理员则不需要权限过滤
-        List<String> adminCodes = SystemConfigXmlParse
-                .getInstance().getSystemConfigBean().getSystemMgr();
+        List<String> adminCodes = SystemConfigLoader
+                .getInstance().getConfig().getAdminUsers();
         // 管理员
         if (adminCodes.contains(account)) return true;
 
@@ -72,7 +72,7 @@ public class LoginService {
     }
 
     public Account getAccountBy(String account, String password) {
-        password = PwdCrypt.getInstance().encrypt(password);//明文加密成密文
+        password = EncryptUtils.encrypt(password);//明文加密成密文
 
         return accountService.getBy(account, password, SessionContextHolder.getIP());
     }
@@ -88,6 +88,7 @@ public class LoginService {
         info.setId(user.getUserId());
         info.setOrgId(user.getOrgId());
         info.setUserName(user.getName());
+        info.setPhotoUrl(userService.getUserPhotoUrl(userId));
 
         return info;
     }

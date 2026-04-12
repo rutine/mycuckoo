@@ -6,8 +6,8 @@ import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.util.StrUtils;
-import com.mycuckoo.core.util.PwdCrypt;
-import com.mycuckoo.core.util.SystemConfigXmlParse;
+import com.mycuckoo.core.util.EncryptUtils;
+import com.mycuckoo.core.util.SystemConfigLoader;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.domain.uum.Account;
 import com.mycuckoo.repository.uum.AccountMapper;
@@ -77,7 +77,7 @@ public class AccountService {
     public Page<AccountInfo> findForSetAdmin(Querier querier) {
         Page<Account> page2 = accountMapper.findByPage(querier.getQ(), querier);
         List<AccountInfo> result = Lists.newArrayList();
-        List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
+        List<String> systemAdminCode = SystemConfigLoader.getInstance().getConfig().getAdminUsers();
         int count = 0;
         for (Account entity : page2.getContent()) {
             String code = entity.getAccount();
@@ -104,7 +104,7 @@ public class AccountService {
     }
 
     public Page<AccountInfo> findAdmins() {
-        List<String> systemAdminCode = SystemConfigXmlParse.getInstance().getSystemConfigBean().getSystemMgr();
+        List<String> systemAdminCode = SystemConfigLoader.getInstance().getConfig().getAdminUsers();
         List<AccountInfo> result = new ArrayList<>();
         for (String code : systemAdminCode) {
             if (StrUtils.isEmpty(code)) continue;
@@ -134,7 +134,7 @@ public class AccountService {
 
         Account update = new Account();
         update.setAccountId(SessionContextHolder.getAccountId());
-        update.setPassword(StrUtils.encrypt(newPassword));
+        update.setPassword(EncryptUtils.encrypt(newPassword));
         update.setUpdateTime(LocalDateTime.now());
         accountMapper.update(update);
     }
@@ -149,7 +149,7 @@ public class AccountService {
         entity.setAccount(account);
         entity.setPhone(phone);
         entity.setEmail(email);
-        entity.setPassword(PwdCrypt.getInstance().encrypt(password));
+        entity.setPassword(EncryptUtils.encrypt(password));
         entity.setIp(SessionContextHolder.getIP());
         entity.setUpdateTime(LocalDateTime.now());
         entity.setCreateTime(LocalDateTime.now());
