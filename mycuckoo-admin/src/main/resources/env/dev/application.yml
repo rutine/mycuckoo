@@ -37,7 +37,7 @@ spring:
 mycuckoo:
   web:
     host: http://localhost
-    upload-path: /mycuckoo/upload
+    upload-path: D:/mycuckoo/upload
     allow-paths:
       - /register
       - /login
