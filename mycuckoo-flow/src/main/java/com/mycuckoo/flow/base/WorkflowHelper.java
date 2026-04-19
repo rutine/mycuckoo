@@ -1,18 +1,7 @@
 package com.mycuckoo.flow.base;
 
-import org.flowable.bpmn.model.Activity;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.EndEvent;
-import org.flowable.bpmn.model.ExclusiveGateway;
-import org.flowable.bpmn.model.FlowNode;
-import org.flowable.bpmn.model.FlowableListener;
-import org.flowable.bpmn.model.Gateway;
-import org.flowable.bpmn.model.GraphicInfo;
-import org.flowable.bpmn.model.MultiInstanceLoopCharacteristics;
+import org.flowable.bpmn.model.*;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.SequenceFlow;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
 import org.flowable.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
@@ -20,9 +9,7 @@ import org.flowable.engine.impl.bpmn.behavior.TaskActivityBehavior;
 import org.flowable.engine.impl.delegate.ActivityBehavior;
 import org.flowable.task.service.delegate.BaseTaskListener;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class WorkflowHelper {
     /**
@@ -169,6 +156,49 @@ public class WorkflowHelper {
         applySimpleLayout(model, stages == null ? 0 : stages.size());
 
         return model;
+    }
+
+    public static Map<String, Object> resolveBpmnModelVariables(BpmnModel model) {
+//        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
+        Map<String, Object> variables = new LinkedHashMap<>();
+        if (model == null || model.getProcesses() == null) {
+            return variables;
+        }
+
+        for (Process process : model.getProcesses()) {
+            for (FlowElement element : process.getFlowElements()) {
+                if (!(element instanceof UserTask userTask)) {
+                    continue;
+                }
+                MultiInstanceLoopCharacteristics mi = userTask.getLoopCharacteristics();
+                if (mi == null) {
+                    continue;
+                }
+                String assigneeMode = WorkflowHelper.getParameter(userTask, "assigneeMode");
+                if (!"user".equalsIgnoreCase(assigneeMode)) {
+                    continue;
+                }
+                String ids = WorkflowHelper.getParameter(userTask, "ids");
+                if (ids == null || ids.isBlank()) {
+                    throw new IllegalStateException("Multi-instance user task [" + userTask.getId() + "] has empty ids");
+                }
+
+                List<String> userIds = Arrays.stream(ids.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .distinct()
+                        .toList();
+
+                if (userIds.isEmpty()) {
+                    throw new IllegalStateException("Multi-instance user task [" + userTask.getId() + "] resolved empty user list");
+                }
+
+                String collectionVar = resolveCollectionVariable(userTask);
+                variables.put(collectionVar, userIds);
+            }
+        }
+
+        return variables;
     }
 
     private static void validateConfig(String processDefId, String processName, WorkflowConfig config) {
@@ -398,6 +428,59 @@ public class WorkflowHelper {
 
     private static String getSequenceId(String source, String target) {
         return source + "_to_" + target;
+    }
+
+    private static String resolveCollectionVariable(UserTask userTask) {
+        MultiInstanceLoopCharacteristics mi = userTask.getLoopCharacteristics();
+
+        // 如果能直接读到 collection，优先用 BPMN 里的配置
+        if (mi != null && mi.getInputDataItem() != null && !mi.getInputDataItem().isBlank()) {
+            return mi.getInputDataItem();
+        }
+
+        // 回退到你当前项目的 task_n -> assigneeList_n 约定
+        String taskId = userTask.getId();
+        if (taskId != null && taskId.startsWith("task_")) {
+            String suffix = taskId.substring("task_".length());
+            if (suffix.matches("\\d+")) {
+                return "assigneeList_" + suffix;
+            }
+        }
+
+        return "assigneeList_0";
+    }
+
+    private static String getParameter(UserTask userTask, String targetName) {
+        if (userTask == null || targetName == null || targetName.isBlank()) {
+            return null;
+        }
+
+        Map<String, List<ExtensionElement>> extensionElements = userTask.getExtensionElements();
+        if (extensionElements == null || extensionElements.isEmpty()) {
+            return null;
+        }
+
+        List<ExtensionElement> wrappers =
+                extensionElements.getOrDefault("parameters", Collections.emptyList());
+
+        for (ExtensionElement wrapper : wrappers) {
+            Map<String, List<ExtensionElement>> children = wrapper.getChildElements();
+            if (children == null || children.isEmpty()) {
+                continue;
+            }
+
+            List<ExtensionElement> parameters =
+                    children.getOrDefault("parameter", Collections.emptyList());
+
+            for (ExtensionElement parameter : parameters) {
+                String name = parameter.getAttributeValue(null, "name");
+                if (targetName.equals(name)) {
+                    return parameter.getAttributeValue(null, "value");
+                }
+            }
+        }
+
+        return null;
     }
 
 }
