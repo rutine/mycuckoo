@@ -9,17 +9,17 @@ package com.mycuckoo.flow.web.vo.req;
 public abstract class WorkflowVos {
 
     public static class CreateDefinitionVo {
-        private String processDefinitionKey;
+        private String key;
         private String name;
         private String description;
         private String xml;
 
-        public String getProcessDefinitionKey() {
-            return processDefinitionKey;
+        public String getKey() {
+            return key;
         }
 
-        public void setProcessDefinitionKey(String processDefinitionKey) {
-            this.processDefinitionKey = processDefinitionKey;
+        public void setKey(String key) {
+            this.key = key;
         }
 
         public String getName() {

@@ -6,12 +6,7 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.flow.base.WorkflowService;
 import com.mycuckoo.flow.web.vo.req.WorkflowVos;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -30,22 +25,27 @@ public class WorkflowController {
     private WorkflowService workflowService;
 
     @GetMapping("/definitions")
-    public AjaxResponse<Page<Map<String, Object>>> list(Querier querier) {
+    public AjaxResponse<Page<Map<String, Object>>> listModels(Querier querier) {
         return AjaxResponse.create(workflowService.findDefinitionPage(querier));
     }
 
+    @PostMapping("/definitions")
+    public AjaxResponse<Map<String, Object>> deployModel(@RequestBody WorkflowVos.CreateDefinitionVo vo) {
+        return AjaxResponse.create(workflowService.deployModel(vo.getXml()));
+    }
+
+    @GetMapping("/definitions/{key}")
+    public AjaxResponse<String> getModel(@PathVariable String key) {
+        return AjaxResponse.create(workflowService.getLatestModel(key));
+    }
+
     @GetMapping("/instances")
-    public AjaxResponse<Page<Map<String, Object>>> list2(Querier querier) {
+    public AjaxResponse<Page<Map<String, Object>>> listInstances(Querier querier) {
         return AjaxResponse.create(workflowService.findInstancePage(querier));
     }
 
-    @PostMapping("/definitions")
-    public AjaxResponse<Map<String, Object>> deployDefinition(@RequestBody WorkflowVos.CreateDefinitionVo vo) {
-        return AjaxResponse.create(workflowService.deployBpmnXml(vo.getXml()));
-    }
-
-    @GetMapping("/definitions/bpmn-model")
-    public AjaxResponse<String> getBpmnModel(@RequestParam String processDefinitionKey) {
-        return AjaxResponse.create(workflowService.getLatestBpmnXml(processDefinitionKey));
+    @GetMapping("/tasks/todo")
+    public AjaxResponse<Page<Map<String, Object>>> listMyTodoTasks(Querier querier) {
+        return AjaxResponse.create(workflowService.findMyTodoTaskPage(querier));
     }
 }

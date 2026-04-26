@@ -341,13 +341,6 @@ public class ModuleService {
 
         List<? extends SimpleTree> trees = TreeHelper.buildTree(all, "0");
         this.removeIfAbsenceLeaf(trees);
-        Iterator<? extends SimpleTree> it = trees.iterator();
-        while(it.hasNext()) {
-            SimpleTree one = it.next();
-            if (one.getChildren() == null || one.getChildren().isEmpty()) {
-                it.remove();
-            }
-        }
 
         return new AssignVo(trees, resIds);
     }
@@ -357,19 +350,21 @@ public class ModuleService {
             return false;
         }
 
-        for (SimpleTree tree : trees) {
-            boolean result =  this.removeIfAbsenceLeaf(tree.getChildren());
-            if (result) {
-                return true;
+        boolean result = false;
+        Iterator<? extends SimpleTree> it = trees.iterator();
+        while(it.hasNext()) {
+            SimpleTree tree = it.next();
+            boolean hasLeaf = tree.getId().startsWith(ID_LEAF)
+                    || this.removeIfAbsenceLeaf(tree.getChildren());
+            if (hasLeaf) {
+                result = true;
+                continue;
             }
-            tree.setChildren(null);
 
-            if (tree.getId().startsWith(ID_LEAF)) {
-                return true;
-            }
+            it.remove();
         }
 
-        return false;
+        return result;
     }
 
     public List<ModuleMenuVos.Tree> findByPage(Querier querier) {

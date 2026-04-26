@@ -44,31 +44,13 @@ public abstract class FlowUtils {
             }
 
             WorkflowVos.CreateDefinitionVo vo = new WorkflowVos.CreateDefinitionVo();
-            vo.setProcessDefinitionKey(processId);
+            vo.setKey(processId);
             vo.setName(processName);
             return vo;
         } catch (MyCuckooException e) {
             throw e;
         } catch (Exception e) {
             throw new MyCuckooException("流程XML解析失败", e);
-        }
-    }
-
-    private static class ParsedWorkflowDefinition {
-        private final String processId;
-        private final String processName;
-
-        private ParsedWorkflowDefinition(String processId, String processName) {
-            this.processId = processId;
-            this.processName = processName;
-        }
-
-        public String getProcessName() {
-            return processName;
-        }
-
-        public String getResourceName() {
-            return processId + ".bpmn20.xml";
         }
     }
 

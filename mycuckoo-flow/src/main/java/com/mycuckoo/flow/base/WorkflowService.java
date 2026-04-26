@@ -4,6 +4,7 @@ import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
+import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.flow.util.FlowUtils;
 import com.mycuckoo.flow.web.vo.req.WorkflowVos;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -20,6 +21,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.TaskQuery;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,7 +126,67 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         return new PageImpl<>(datas, querier, count);
     }
 
-    public String getLatestBpmnXml(String processDefinitionKey) {
+    public Page<Map<String, Object>> findMyTodoTaskPage(Querier querier) {
+        Long tenantId = SessionContextHolder.getOrganId();
+        Long userId = SessionContextHolder.getUserId();
+        if (userId == null) {
+            throw new MyCuckooException("用户未登录");
+        }
+
+        return this.findTodoTaskPage(querier, String.valueOf(tenantId), String.valueOf(userId));
+    }
+
+    public Page<Map<String, Object>> findTodoTaskPage(Querier querier, String tenantId, String userId) {
+        if (!StringUtils.hasText(userId)) {
+            throw new MyCuckooException("用户id不能为空");
+        }
+
+        TaskQuery query = taskService.createTaskQuery()
+                .taskTenantId(tenantId)
+                .taskCandidateOrAssigned(userId)
+                .orderByTaskCreateTime().desc();
+
+        long count = query.count();
+        List<Task> list = query.listPage((querier.getPageNo() - 1) * querier.getPageSize(), querier.getPageSize());
+        Map<String, ProcessDefinition> definitionCache = new HashMap<>();
+        List<Map<String, Object>> datas = list.stream()
+                .map(task -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("taskId", task.getId());
+                    map.put("taskName", task.getName());
+                    map.put("taskDefinitionKey", task.getTaskDefinitionKey());
+                    map.put("assignee", task.getAssignee());
+                    map.put("owner", task.getOwner());
+                    map.put("createTime", task.getCreateTime());
+                    map.put("claimTime", task.getClaimTime());
+                    map.put("dueDate", task.getDueDate());
+                    map.put("priority", task.getPriority());
+                    map.put("processInstanceId", task.getProcessInstanceId());
+                    map.put("processDefinitionId", task.getProcessDefinitionId());
+                    map.put("executionId", task.getExecutionId());
+
+                    ProcessDefinition definition = definitionCache.computeIfAbsent(task.getProcessDefinitionId(), id ->
+                            repositoryService.createProcessDefinitionQuery()
+                                    .processDefinitionId(id)
+                                    .singleResult());
+                    if (definition != null) {
+                        map.put("processDefinitionName", definition.getName());
+                        map.put("processDefinitionKey", definition.getKey());
+                        map.put("processDefinitionVersion", definition.getVersion());
+                    }
+
+                    Map<String, Object> variables = taskService.getVariables(task.getId());
+                    map.put("variables", variables);
+                    map.put(WorkflowHelper.getInitiatorKey(), variables.get(WorkflowHelper.getInitiatorKey()));
+                    map.put(WorkflowHelper.getFormIdKey(), variables.get(WorkflowHelper.getFormIdKey()));
+                    map.put(WorkflowHelper.getFormTypeKey(), variables.get(WorkflowHelper.getFormTypeKey()));
+                    return map;
+                }).collect(Collectors.toList());
+
+        return new PageImpl<>(datas, querier, count);
+    }
+
+    public String getLatestModel(String processDefinitionKey) {
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionKey(processDefinitionKey)
                 .latestVersion()
@@ -138,32 +200,32 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
     }
 
     @Transactional
-    public Map<String, Object> deployBpmnXml(String bpmnXml) {
+    public Map<String, Object> deployModel(String bpmnXml) {
         if (!StringUtils.hasText(bpmnXml)) {
             throw new MyCuckooException("流程XML不能为空");
         }
 
         WorkflowVos.CreateDefinitionVo parseVo = FlowUtils.parseBpmnXml(bpmnXml);
         Deployment deployment = repositoryService.createDeployment()
-                .tenantId(WorkflowHelper.TENANT_ID)
-                .key(parseVo.getProcessDefinitionKey())
+                .tenantId(String.valueOf(SessionContextHolder.getOrganId()))
+                .key(parseVo.getKey())
                 .name(parseVo.getName())
-                .addString(parseVo.getProcessDefinitionKey() + ".bpmn20.xml", bpmnXml)
+                .addString(parseVo.getKey() + ".bpmn20.xml", bpmnXml)
                 .deploy();
 
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        ProcessDefinition definition = repositoryService.createProcessDefinitionQuery()
                 .deploymentId(deployment.getId())
                 .singleResult();
-        if (processDefinition == null) {
+        if (definition == null) {
             throw new MyCuckooException("流程定义创建失败");
         }
 
         Map<String, Object> result = new HashMap<>();
         result.put("deploymentId", deployment.getId());
-        result.put("processDefinitionId", processDefinition.getId());
-        result.put("processDefinitionKey", processDefinition.getKey());
-        result.put("processDefinitionName", processDefinition.getName());
-        result.put("version", processDefinition.getVersion());
+        result.put("definitionId", definition.getId());
+        result.put("definitionKey", definition.getKey());
+        result.put("definitionName", definition.getName());
+        result.put("version", definition.getVersion());
         return result;
     }
 
@@ -181,7 +243,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
         repositoryService.createDeployment()
                 .name(processName)
-                .tenantId(WorkflowHelper.TENANT_ID)
+                .tenantId(String.valueOf(SessionContextHolder.getOrganId()))
                 .addBpmnModel(processDefId + ".bpmn20.xml", model)
                 .deploy();
     }
@@ -213,7 +275,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         variables.put(WorkflowHelper.getInitiatorKey(), initiator);
         variables.put(WorkflowHelper.getFormIdKey(), formId);
         variables.put(WorkflowHelper.getFormTypeKey(), formType);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId(config.getProcessDefId(), formType, variables, WorkflowHelper.TENANT_ID);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId(config.getProcessDefId(), formType, variables, String.valueOf(SessionContextHolder.getOrganId()));
 
         String processInstanceId = processInstance.getId();
 
@@ -250,7 +312,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
     private WorkflowState doCompleteTask(String workflowId, String userId, boolean pass) {
         Task task = taskService.createTaskQuery()
-                .taskTenantId(WorkflowHelper.TENANT_ID)
+                .taskTenantId(String.valueOf(SessionContextHolder.getOrganId()))
                 .processInstanceId(workflowId)
                 .taskCandidateOrAssigned(userId)
                 .singleResult();
@@ -299,7 +361,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
     @Transactional
     public void closeWorkflow(String workflowId) {
         long count = runtimeService.createProcessInstanceQuery()
-                .processInstanceTenantId(WorkflowHelper.TENANT_ID)
+                .processInstanceTenantId(String.valueOf(SessionContextHolder.getOrganId()))
                 .processInstanceId(workflowId)
                 .count();
         if (count > 0) {

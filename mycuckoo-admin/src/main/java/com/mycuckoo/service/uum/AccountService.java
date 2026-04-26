@@ -130,7 +130,7 @@ public class AccountService {
     @Transactional
     public void updatePassword(String password, String newPassword) {
         Account old = accountMapper.get(SessionContextHolder.getAccountId());
-        Assert.state(password.equals(old.getPassword()), "密码错误");
+        Assert.state(EncryptUtils.encrypt(password).equals(old.getPassword()), "密码错误");
 
         Account update = new Account();
         update.setAccountId(SessionContextHolder.getAccountId());
