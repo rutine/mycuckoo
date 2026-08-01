@@ -30,11 +30,15 @@ public class WorkflowHelper {
     private static final String RESUBMIT_NODE_ID = "resubmit";
     private static final String STAGE_REJECTED = "_stageRejected";
     private static final String INITIATOR = "initiator"; //发起人变量
+    private static final String INITIATOR_NAME = "initiatorName"; //发起人名称变量
     private static final String FORM_ID = "formId";
     private static final String FORM_TYPE = "formType";
 
 
     // ============== 变量名相关 ============
+    public static String getUserMapKey() {
+        return "users";
+    }
     /**
      * 审批人变量key
      */
@@ -47,6 +51,13 @@ public class WorkflowHelper {
      */
     public static String getInitiatorKey() {
         return INITIATOR;
+    }
+
+    /**
+     * 发起人名称变量key
+     */
+    public static String getInitiatorNameKey() {
+        return INITIATOR_NAME;
     }
 
     /**
@@ -165,6 +176,7 @@ public class WorkflowHelper {
             return variables;
         }
 
+        Map<String, String> userMap = new HashMap<>();
         for (Process process : model.getProcesses()) {
             for (FlowElement element : process.getFlowElements()) {
                 if (!(element instanceof UserTask userTask)) {
@@ -179,8 +191,9 @@ public class WorkflowHelper {
                     continue;
                 }
                 String ids = WorkflowHelper.getParameter(userTask, "ids");
-                if (ids == null || ids.isBlank()) {
-                    throw new IllegalStateException("Multi-instance user task [" + userTask.getId() + "] has empty ids");
+                String names = WorkflowHelper.getParameter(userTask, "names");
+                if (ids == null || ids.isBlank() || names == null || names.isBlank()) {
+                    throw new IllegalStateException("Multi-instance user task [" + userTask.getId() + "] has empty ids or names");
                 }
 
                 List<String> userIds = Arrays.stream(ids.split(","))
@@ -189,12 +202,22 @@ public class WorkflowHelper {
                         .distinct()
                         .toList();
 
-                if (userIds.isEmpty()) {
+                List<String> userNames = Arrays.stream(names.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .distinct()
+                        .toList();
+
+                if (userIds.isEmpty() || userIds.size() != userNames.size()) {
                     throw new IllegalStateException("Multi-instance user task [" + userTask.getId() + "] resolved empty user list");
+                }
+                for (int i = 0, len = userIds.size(); i < len; i++) {
+                    userMap.put(userIds.get(i), userNames.get(i));
                 }
 
                 String collectionVar = resolveCollectionVariable(userTask);
                 variables.put(collectionVar, userIds);
+                variables.put(getUserMapKey(), userMap);
             }
         }
 

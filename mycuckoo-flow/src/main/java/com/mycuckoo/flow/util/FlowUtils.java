@@ -54,4 +54,30 @@ public abstract class FlowUtils {
         }
     }
 
+
+    /**
+     * 流程完成时间处理
+     */
+    public static String formatDate(Long time) {
+        if (time == null || time == 0L) {
+            return "";
+        }
+
+        long day = time / (24 * 60 * 60 * 1000);
+        long hour = (time / (60 * 60 * 1000) - day * 24);
+        long minute = ((time / (60 * 1000)) - day * 24 * 60 - hour * 60);
+        long second = (time / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60);
+
+        if (day > 0) {
+            return day + "天" + hour + "小时" + minute + "分钟";
+        } else if (hour > 0) {
+            return hour + "小时" + minute + "分钟";
+        } else if (minute > 0) {
+            return minute + "分钟";
+        } else if (second > 0) {
+            return second + "秒";
+        } else {
+            return 0 + "秒";
+        }
+    }
 }

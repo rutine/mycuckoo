@@ -1,5 +1,12 @@
 package com.mycuckoo.flow.web.vo.req;
 
+import com.mycuckoo.flow.constant.enums.CommentType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 流程XML部署请求
  *
@@ -12,6 +19,7 @@ public abstract class WorkflowVos {
         private String key;
         private String name;
         private String description;
+        @NotBlank(message = "流程XML不能为空")
         private String xml;
 
         public String getKey() {
@@ -44,6 +52,79 @@ public abstract class WorkflowVos {
 
         public void setXml(String xml) {
             this.xml = xml;
+        }
+    }
+
+    public static class CreateInstanceVo {
+        @NotBlank(message = "流程定义ID不能为空")
+        private String processDefinitionId;
+        private String formId;
+        private String formType;
+        private Map<String, Object> formVariables = new HashMap<>();
+
+        public String getProcessDefinitionId() {
+            return processDefinitionId;
+        }
+
+        public void setProcessDefinitionId(String processDefinitionId) {
+            this.processDefinitionId = processDefinitionId;
+        }
+
+        public String getFormId() {
+            return formId;
+        }
+
+        public void setFormId(String formId) {
+            this.formId = formId;
+        }
+
+        public String getFormType() {
+            return formType;
+        }
+
+        public void setFormType(String formType) {
+            this.formType = formType;
+        }
+
+        public Map<String, Object> getFormVariables() {
+            return formVariables;
+        }
+
+        public void setFormVariables(Map<String, Object> formVariables) {
+            this.formVariables = formVariables;
+        }
+    }
+
+    public static class CompleteTaskVo {
+        @NotBlank(message = "流程实例id不能为空")
+        private String instanceId;
+        private CommentType type;
+        @NotBlank(message = "审批意见不能为空")
+        @Size(message = "审批意见长度不能超过100个字符")
+        private String comment;
+
+        public String getInstanceId() {
+            return instanceId;
+        }
+
+        public void setInstanceId(String instanceId) {
+            this.instanceId = instanceId;
+        }
+
+        public CommentType getType() {
+            return type;
+        }
+
+        public void setType(CommentType type) {
+            this.type = type;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
         }
     }
 }

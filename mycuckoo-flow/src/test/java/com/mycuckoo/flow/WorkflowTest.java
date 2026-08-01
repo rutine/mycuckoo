@@ -2,6 +2,7 @@ package com.mycuckoo.flow;
 
 import com.mycuckoo.flow.base.SimpleWorkflowConfig;
 import com.mycuckoo.flow.base.WorkflowService;
+import com.mycuckoo.flow.constant.enums.CommentType;
 import org.assertj.core.util.Lists;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.test.FlowableRule;
@@ -46,9 +47,9 @@ public class WorkflowTest extends AbstractTransactionalJUnit4SpringContextTests 
 
         String processInstanceId = workflowService.startProcess(config, "1", "test", "1");
 
-        workflowService.completeTask(processInstanceId, "1", true);
+        workflowService.completeTask(processInstanceId, "1", CommentType.NORMAL, "同意");
 
-        workflowService.completeTask(processInstanceId, "2", false);
+        workflowService.completeTask(processInstanceId, "2", CommentType.REJECT, "不同意");
 
         System.out.println(list);
     }
