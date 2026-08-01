@@ -22,7 +22,7 @@ import org.springframework.web.util.WebAppRootListener;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
-import static com.mycuckoo.constant.BaseConst.WEB_APP_ROOT_KEY;
+import static com.mycuckoo.core.constant.BaseConst.WEB_APP_ROOT_KEY;
 
 @Configuration
 @EnableConfigurationProperties(WebProperties.class)

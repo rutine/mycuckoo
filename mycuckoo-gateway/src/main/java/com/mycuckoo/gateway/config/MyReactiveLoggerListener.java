@@ -1,6 +1,6 @@
 package com.mycuckoo.gateway.config;
 
-import com.mycuckoo.autoconfig.FeignLoggerProperties;
+import com.mycuckoo.core.autoconfig.FeignLoggerProperties;
 import feign.MethodMetadata;
 import feign.Target;
 import org.slf4j.Logger;

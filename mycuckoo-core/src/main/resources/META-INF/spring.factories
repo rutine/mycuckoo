@@ -1,6 +1,0 @@
-# Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.mycuckoo.autoconfig.FeignAutoConfiguration,\
-  com.mycuckoo.autoconfig.FeignLoggerProperties,\
-  com.mycuckoo.autoconfig.MybatisAutoConfiguration,\
-  com.mycuckoo.autoconfig.WebAutoConfiguration

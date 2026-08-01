@@ -1,6 +1,6 @@
 package com.mycuckoo.core.web.filter;
 
-import com.mycuckoo.constant.BaseConst;
+import com.mycuckoo.core.constant.BaseConst;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.repository.auth.RowContextHolder;
 import com.mycuckoo.core.repository.auth.RowInfo;

@@ -1,5 +1,7 @@
 package com.mycuckoo.constant;
 
+import com.mycuckoo.core.constant.BaseConst;
+
 /**
  * 功能说明: service层常量
  *

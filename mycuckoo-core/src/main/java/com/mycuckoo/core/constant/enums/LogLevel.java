@@ -1,4 +1,4 @@
-package com.mycuckoo.constant.enums;
+package com.mycuckoo.core.constant.enums;
 
 /**
  * 功能说明: 日志级别(日志功能设置)

@@ -1,6 +1,6 @@
 package com.mycuckoo.gateway.config;
 
-import com.mycuckoo.autoconfig.FeignLoggerProperties;
+import com.mycuckoo.core.autoconfig.FeignLoggerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

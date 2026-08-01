@@ -1,4 +1,4 @@
-package com.mycuckoo.autoconfig;
+package com.mycuckoo.core.autoconfig;
 
 import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;

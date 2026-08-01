@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.mycuckoo.constant.BaseConst.SESSION_USER_INFO;
+import static com.mycuckoo.core.constant.BaseConst.SESSION_USER_INFO;
 
 
 public class LoggingOldFilter implements GlobalFilter, Ordered {

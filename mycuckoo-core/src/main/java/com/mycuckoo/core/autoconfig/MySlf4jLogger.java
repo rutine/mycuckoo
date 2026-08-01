@@ -1,4 +1,4 @@
-package com.mycuckoo.autoconfig;
+package com.mycuckoo.core.autoconfig;
 
 import feign.Logger;
 import feign.Request;

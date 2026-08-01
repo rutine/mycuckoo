@@ -1,0 +1,3 @@
+com.mycuckoo.core.autoconfig.FeignAutoConfiguration
+com.mycuckoo.core.autoconfig.MybatisAutoConfiguration
+com.mycuckoo.core.autoconfig.WebAutoConfiguration

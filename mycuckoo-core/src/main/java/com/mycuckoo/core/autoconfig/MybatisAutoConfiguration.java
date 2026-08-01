@@ -1,8 +1,9 @@
-package com.mycuckoo.autoconfig;
+package com.mycuckoo.core.autoconfig;
 
 import com.mycuckoo.core.repository.plugin.PageInterceptor;
 import com.mycuckoo.core.repository.plugin.UpdateInterceptor;
 import org.apache.ibatis.plugin.Interceptor;
+import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * @time 2024/5/25 8:57
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Interceptor.class)
+@ConditionalOnClass({ Interceptor.class, MapperFactoryBean.class })
 public class MybatisAutoConfiguration {
 
     @Bean
@@ -28,3 +29,4 @@ public class MybatisAutoConfiguration {
         return new UpdateInterceptor();
     }
 }
+

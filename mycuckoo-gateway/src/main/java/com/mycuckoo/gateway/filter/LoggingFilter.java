@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mycuckoo.constant.BaseConst.SESSION_USER_INFO;
+import static com.mycuckoo.core.constant.BaseConst.SESSION_USER_INFO;
 
 public class LoggingFilter implements GlobalFilter, Ordered {
     private static Logger logger = LoggerFactory.getLogger(LoggingFilter.class);

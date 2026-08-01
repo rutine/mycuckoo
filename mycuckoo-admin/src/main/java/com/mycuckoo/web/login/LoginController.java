@@ -1,8 +1,8 @@
 package com.mycuckoo.web.login;
 
-import com.mycuckoo.constant.enums.LogLevel;
-import com.mycuckoo.constant.enums.ModuleName;
-import com.mycuckoo.constant.enums.OptName;
+import com.mycuckoo.core.constant.enums.LogLevel;
+import com.mycuckoo.core.constant.enums.ModuleName;
+import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mycuckoo.constant.BaseConst.*;
+import static com.mycuckoo.core.constant.BaseConst.*;
 
 /**
  * 功能说明: 登陆系统Controller

@@ -1,6 +1,6 @@
 package com.mycuckoo.gateway.filter;
 
-import com.mycuckoo.constant.BaseConst;
+import com.mycuckoo.core.constant.BaseConst;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.util.JsonUtils;
 import com.mycuckoo.core.web.filter.PrivilegeFilter;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mycuckoo.constant.BaseConst.SESSION_USER_INFO;
+import static com.mycuckoo.core.constant.BaseConst.SESSION_USER_INFO;
 
 /**
  * 权限过滤器

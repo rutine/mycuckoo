@@ -14,7 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import static com.mycuckoo.constant.BaseConst.*;
+import static com.mycuckoo.core.constant.BaseConst.*;
 
 /**
  * 功能说明: 取会话信息工具类，主要是统一获取会话中的信息

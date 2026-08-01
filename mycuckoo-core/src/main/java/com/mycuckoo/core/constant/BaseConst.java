@@ -1,4 +1,4 @@
-package com.mycuckoo.constant;
+package com.mycuckoo.core.constant;
 
 /**
  * 功能说明: 公共常量
