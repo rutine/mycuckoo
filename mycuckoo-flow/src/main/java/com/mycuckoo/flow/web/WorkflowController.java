@@ -70,8 +70,8 @@ public class WorkflowController {
     @PutMapping("/task/complete")
     public AjaxResponse<WorkflowState> completeTask(@RequestBody @Valid WorkflowVos.CompleteTaskVo vo) {
         Long userId = SessionContextHolder.getUserId();
-        return AjaxResponse.create(workflowService.completeTask(vo.getInstanceId(),
-                String.valueOf(userId),
+        return AjaxResponse.create(workflowService.completeTask(vo.getTaskId(),
+                String.valueOf("21"),
                 vo.getType(), vo.getComment()));
     }
 }

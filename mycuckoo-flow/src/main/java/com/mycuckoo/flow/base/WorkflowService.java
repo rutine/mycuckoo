@@ -8,10 +8,15 @@ import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.flow.constant.enums.CommentType;
 import com.mycuckoo.flow.util.FlowUtils;
+import com.mycuckoo.flow.util.FlowableUtils;
 import com.mycuckoo.flow.web.vo.req.WorkflowVos;
 import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.Gateway;
+import org.flowable.bpmn.model.SequenceFlow;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableOptimisticLockingException;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.IdentityService;
@@ -29,6 +34,7 @@ import org.flowable.engine.task.Comment;
 import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
+import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,7 +154,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
         TaskQuery query = taskService.createTaskQuery()
                 .taskTenantId(String.valueOf(tenantId))
-//                .taskCandidateOrAssigned(String.valueOf(userId)))
+//                .taskCandidateOrAssigned(String.valueOf(userId))
                 .orderByTaskCreateTime().desc();
 
         long count = query.count();
@@ -317,31 +323,36 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         }
     }
 
-    public WorkflowState completeTask(String instanceId, String userId, CommentType type, String comment) {
+    @Transactional
+    public WorkflowState completeTask(String taskId, String userId, CommentType type, String comment) {
         FlowableOptimisticLockingException lastException = null;
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                return transactionTemplate.execute(status -> doCompleteTask(instanceId, userId, type, comment));
+                return transactionTemplate.execute(status -> doCompleteTask(taskId, userId, type, comment));
             } catch (FlowableOptimisticLockingException e) {
                 lastException = e;
-                logger.warn("完成任务发生乐观锁冲突，第{}次重试, instanceId={}, userId={}", attempt, instanceId, userId);
+                logger.warn("完成任务发生乐观锁冲突，第{}次重试, taskId={}, userId={}", attempt, taskId, userId);
             }
         }
 
         throw lastException;
     }
 
-    private WorkflowState doCompleteTask(String workflowId, String userId, CommentType type, String comment) {
+    private WorkflowState doCompleteTask(String taskId, String userId, CommentType type, String comment) {
+        if (type != CommentType.NORMAL) {
+            return this.doRejectTask(taskId, userId, comment);
+        }
+
         Task task = taskService.createTaskQuery()
                 .taskTenantId(String.valueOf(SessionContextHolder.getOrganId()))
-                .processInstanceId(workflowId)
+                .taskId(taskId)
                 .taskCandidateOrAssigned(userId)
                 .singleResult();
         if (task == null) {
             throw new MyCuckooException("任务不存在或已被处理");
         }
 
-        taskService.addComment(task.getId(), workflowId, type.code, comment);
+        taskService.addComment(task.getId(), task.getProcessInstanceId(), type.code, comment);
 
         String refuseId = WorkflowHelper.getResubmitId();
         if (task.getTaskDefinitionKey().equals(refuseId)) {
@@ -358,7 +369,7 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         }
 
         //查询任务当前状态
-        List<Task> allTask = taskService.createTaskQuery().processInstanceId(workflowId).list();
+        List<Task> allTask = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
         if (allTask == null || allTask.isEmpty()) {
             //工作流已经完成
             return WorkflowState.FINISH;
@@ -368,6 +379,97 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
             return WorkflowState.AUDITING;
         }
     }
+
+    private WorkflowState doRejectTask(String taskId, String userId, String comment) {
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .taskTenantId(String.valueOf(SessionContextHolder.getOrganId()))
+                .taskCandidateOrAssigned(userId)
+                .singleResult();
+        if (task == null) {
+            throw new MyCuckooException("任务不存在或已被处理");
+        }
+
+        Collection<FlowElement> allElements = FlowableUtils.getAllElements(
+                repositoryService.getBpmnModel(task.getProcessDefinitionId()).getMainProcess().getFlowElements(), null);
+        FlowElement source = allElements.stream()
+                .filter(o -> task.getTaskDefinitionKey().equals(o.getId()))
+                .findFirst()
+                .orElse(null);
+        List<UserTask> parentTasks = source == null ? Collections.emptyList()
+                : FlowableUtils.findParentUserTasks(source, null, null);
+        if (parentTasks.isEmpty()) {
+            taskService.addComment(task.getId(), task.getProcessInstanceId(), CommentType.REJECT.code, comment);
+            runtimeService.createChangeActivityStateBuilder()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .moveExecutionToActivityId(task.getExecutionId(), WorkflowHelper.getResubmitId())
+                    .changeState();
+            return WorkflowState.REJECT;
+        }
+
+        List<HistoricTaskInstance> historicTasks = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .orderByHistoricTaskInstanceStartTime().asc()
+                .list();
+        List<String> taskKeys = FlowableUtils.cleanHistoricTaskInstanceKeys(allElements, historicTasks);
+        Set<String> parentTaskKeys = parentTasks.stream()
+                .map(UserTask::getId)
+                .filter(key -> !WorkflowHelper.getResubmitId().equals(key))
+                .collect(Collectors.toSet());
+        List<String> targetTaskKeys = new ArrayList<>();
+        String previousTaskKey = null;
+        int currentTaskCount = 0;
+        for (String historicTaskKey : taskKeys) {
+            if (historicTaskKey.equals(previousTaskKey)) {
+                continue;
+            }
+            previousTaskKey = historicTaskKey;
+            if (historicTaskKey.equals(task.getTaskDefinitionKey()) && ++currentTaskCount == 2) {
+                //清洗的审批记录出现节点循环
+                break;
+            }
+            if (parentTaskKeys.contains(historicTaskKey)) {
+                targetTaskKeys.add(historicTaskKey);
+            }
+        }
+        if (targetTaskKeys.isEmpty()) {
+            // 无历史审批节点可驳回，退回“重新申请”节点
+            taskService.addComment(task.getId(), task.getProcessInstanceId(), CommentType.REJECT.code, comment);
+            runtimeService.createChangeActivityStateBuilder()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .moveExecutionToActivityId(task.getExecutionId(), WorkflowHelper.getResubmitId())
+                    .changeState();
+            return WorkflowState.REJECT;
+        }
+
+        List<Task> runningTasks = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
+        List<String> runningTaskKeys = runningTasks.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
+        List<String> currentTaskKeys = FlowableUtils.findChildUserTasks(parentTasks.get(0), runningTaskKeys, null, null)
+                .stream().map(UserTask::getId).collect(Collectors.toList());
+        if (targetTaskKeys.size() > 1 && currentTaskKeys.size() > 1) {
+            throw new MyCuckooException("任务出现多对多情况，无法撤回");
+        }
+
+        runningTasks.stream()
+                .filter(o -> currentTaskKeys.contains(o.getTaskDefinitionKey()))
+                .forEach(o -> taskService.addComment(o.getId(), o.getProcessInstanceId(), CommentType.REJECT.code, comment));
+        if (targetTaskKeys.size() > 1) {
+            runtimeService.createChangeActivityStateBuilder()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .moveSingleActivityIdToActivityIds(currentTaskKeys.get(0), targetTaskKeys)
+                    .changeState();
+        } else {
+            runtimeService.createChangeActivityStateBuilder()
+                    .processInstanceId(task.getProcessInstanceId())
+//                    .moveActivityIdsToSingleActivityId(currentTaskKeys, targetTaskKeys.get(0))
+                    .moveExecutionsToSingleActivityId(
+                            runningTasks.stream().map(Task::getExecutionId).collect(Collectors.toList()),
+                            targetTaskKeys.get(0))
+                    .changeState();
+        }
+        return WorkflowState.REJECT;
+    }
+
 
     public void transferTask(String workflowId, String fromAssignee, String toAssignee) {
         Task task = taskService.createTaskQuery()

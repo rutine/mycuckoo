@@ -96,19 +96,19 @@ public abstract class WorkflowVos {
     }
 
     public static class CompleteTaskVo {
-        @NotBlank(message = "流程实例id不能为空")
-        private String instanceId;
+        @NotBlank(message = "待办任务id不能为空")
+        private String taskId;
         private CommentType type;
         @NotBlank(message = "审批意见不能为空")
         @Size(message = "审批意见长度不能超过100个字符")
         private String comment;
 
-        public String getInstanceId() {
-            return instanceId;
+        public String getTaskId() {
+            return taskId;
         }
 
-        public void setInstanceId(String instanceId) {
-            this.instanceId = instanceId;
+        public void setTaskId(String taskId) {
+            this.taskId = taskId;
         }
 
         public CommentType getType() {
