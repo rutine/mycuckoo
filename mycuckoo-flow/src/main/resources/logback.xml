@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="info">
   <property name="logger.encoding" value="UTF-8"/>
-  <property name="logger.name" value="order"/>
+  <property name="logger.name" value="flow"/>
   <property name="logger.path" value="./logs"/>
   <property name="logger.level" value="info"/>
 

@@ -1,6 +1,8 @@
 package com.mycuckoo.flow;
 
+import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.UserInfo;
+import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.flow.base.SimpleWorkflowConfig;
 import com.mycuckoo.flow.base.WorkflowService;
@@ -17,6 +19,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -121,5 +124,24 @@ class WorkflowTest {
         long backCount = taskService.createTaskQuery().processInstanceId(processInstanceId).taskDefinitionKey("task_0").count();
         System.out.println("[parallel-afterReject] task_0 count=" + backCount);
         assertEquals(1, backCount, "并行会签驳回后 task_0 应只有 1 个任务");
+    }
+
+    @Test
+    void testMyDoneTaskPage() {
+        String processInstanceId = deployAndStart();
+
+        // 第1级审批人1 同意
+        Task task0 = taskService.createTaskQuery().processInstanceId(processInstanceId).taskDefinitionKey("task_0").singleResult();
+        workflowService.completeTask(task0.getId(), "1", CommentType.NORMAL, "同意");
+
+        // 查询办理人1的“我已办理”
+        Page<Map<String, Object>> page = workflowService.findMyDoneTaskPage(new Querier(1, 10));
+        assertTrue(page.getTotalElements() >= 1, "办理人1的已办理中应能看到已完成的任务");
+
+        boolean found = page.getContent().stream()
+                .anyMatch(data -> task0.getId().equals(data.get("taskId")));
+        assertTrue(found, "已办理列表中应包含task_0的任务记录");
+        assertTrue(page.getContent().stream().allMatch(data -> "1".equals(data.get("assignee"))),
+                "已办理列表中的任务办理人应为当前登录用户");
     }
 }

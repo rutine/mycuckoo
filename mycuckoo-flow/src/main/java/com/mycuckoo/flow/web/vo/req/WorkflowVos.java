@@ -57,17 +57,17 @@ public abstract class WorkflowVos {
 
     public static class CreateInstanceVo {
         @NotBlank(message = "流程定义ID不能为空")
-        private String processDefinitionId;
+        private String definitionId;
         private String formId;
         private String formType;
         private Map<String, Object> formVariables = new HashMap<>();
 
-        public String getProcessDefinitionId() {
-            return processDefinitionId;
+        public String getDefinitionId() {
+            return definitionId;
         }
 
-        public void setProcessDefinitionId(String processDefinitionId) {
-            this.processDefinitionId = processDefinitionId;
+        public void setDefinitionId(String definitionId) {
+            this.definitionId = definitionId;
         }
 
         public String getFormId() {

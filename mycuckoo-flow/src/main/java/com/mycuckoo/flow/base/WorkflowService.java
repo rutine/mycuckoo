@@ -1,7 +1,6 @@
 package com.mycuckoo.flow.base;
 
 import com.mycuckoo.core.Querier;
-import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
@@ -14,8 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.Gateway;
-import org.flowable.bpmn.model.SequenceFlow;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableOptimisticLockingException;
 import org.flowable.engine.HistoryService;
@@ -31,10 +28,10 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.task.Comment;
-import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -111,9 +109,10 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
                 .map(o -> {
                     String processInstanceId = o.getId();
                     Map<String, Object> map = new HashMap<>();
-                    map.put("id", o.getProcessDefinitionId());
+                    map.put("id", processInstanceId);
+                    map.put("definitionId", o.getProcessDefinitionId());
+                    map.put("deployId", o.getDeploymentId());
                     map.put("name", o.getProcessDefinitionName());
-                    map.put("processInstanceId", processInstanceId);
                     map.put("key", o.getProcessDefinitionKey());
                     map.put("businessKey", o.getBusinessKey());
                     map.put("startUser", o.getStartUserId());
@@ -203,6 +202,87 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         return new PageImpl<>(datas, querier, count);
     }
 
+    /**
+     * 查询我已办理的任务(分页)
+     */
+    public Page<Map<String, Object>> findMyDoneTaskPage(Querier querier) {
+        Long tenantId = SessionContextHolder.getOrganId();
+        Long userId = SessionContextHolder.getUserId();
+
+        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
+                .taskTenantId(String.valueOf(tenantId))
+                .taskAssignee(String.valueOf(21))
+                .finished()
+                .orderByHistoricTaskInstanceEndTime().desc();
+
+        long count = query.count();
+        List<HistoricTaskInstance> list = query.listPage((querier.getPageNo() - 1) * querier.getPageSize(), querier.getPageSize());
+        Map<String, ProcessDefinition> definitionCache = new HashMap<>();
+        Map<String, Map<String, Object>> variableCache = new HashMap<>();
+        Map<String, List<Comment>> commentCache = new HashMap<>();
+        List<Map<String, Object>> datas = list.stream()
+                .map(task -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("taskId", task.getId());
+                    map.put("taskName", task.getName());
+                    map.put("taskKey", task.getTaskDefinitionKey());
+                    map.put("assignee", task.getAssignee());
+                    map.put("owner", task.getOwner());
+                    map.put("createTime", task.getCreateTime());
+                    map.put("claimTime", task.getClaimTime());
+                    map.put("dueDate", task.getDueDate());
+                    map.put("priority", task.getPriority());
+                    map.put("executionId", task.getExecutionId());
+                    map.put("instanceId", task.getProcessInstanceId());
+                    map.put("definitionId", task.getProcessDefinitionId());
+                    map.put("endTime", task.getEndTime());
+                    map.put("duration", FlowUtils.formatDate(task.getDurationInMillis()));
+                    map.put("deleteReason", task.getDeleteReason());
+
+                    ProcessDefinition definition = definitionCache.computeIfAbsent(task.getProcessDefinitionId(), id ->
+                            repositoryService.createProcessDefinitionQuery()
+                                    .processDefinitionId(id)
+                                    .singleResult());
+                    if (definition != null) {
+                        map.put("deployId", definition.getDeploymentId());
+                        map.put("definitionKey", definition.getKey());
+                        map.put("definitionName", definition.getName());
+                        map.put("definitionVersion", definition.getVersion());
+                    }
+
+                    Map<String, Object> variables = variableCache.computeIfAbsent(task.getProcessInstanceId(), instanceId ->
+                            historyService.createHistoricVariableInstanceQuery()
+                                    .processInstanceId(instanceId)
+                                    .list()
+                                    .stream()
+                                    .filter(variable -> variable.getVariableName() != null)
+                                    .collect(Collectors.toMap(HistoricVariableInstance::getVariableName,
+                                            HistoricVariableInstance::getValue, (a, b) -> b)));
+                    map.put("variables", variables);
+                    map.put(WorkflowHelper.getInitiatorKey(), variables.get(WorkflowHelper.getInitiatorKey()));
+                    map.put(WorkflowHelper.getInitiatorNameKey(), variables.get(WorkflowHelper.getInitiatorNameKey()));
+                    map.put(WorkflowHelper.getFormIdKey(), variables.get(WorkflowHelper.getFormIdKey()));
+                    map.put(WorkflowHelper.getFormTypeKey(), variables.get(WorkflowHelper.getFormTypeKey()));
+                    Object userMap = variables.get(WorkflowHelper.getUserMapKey());
+                    if (userMap instanceof Map) {
+                        map.put("assignee", task.getAssignee() + ":" + ((Map<?, ?>) userMap).get(task.getAssignee()));
+                    }
+
+                    // 审批意见
+                    List<Comment> comments = commentCache.computeIfAbsent(task.getProcessInstanceId(),
+                            instanceId -> taskService.getProcessInstanceComments(instanceId));
+                    comments.forEach(comment -> {
+                        if (task.getId().equals(comment.getTaskId())) {
+                            map.put("comment", new FlowComment(comment.getType(), comment.getFullMessage()));
+                        }
+                    });
+
+                    return map;
+                }).collect(Collectors.toList());
+
+        return new PageImpl<>(datas, querier, count);
+    }
+
     public String getLatestModel(String processDefinitionKey) {
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionKey(processDefinitionKey)
@@ -214,6 +294,22 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
         BpmnModel model = repositoryService.getBpmnModel(processDefinition.getId());
         return new String(new BpmnXMLConverter().convertToXML(model), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 根据流程定义id获取流程变量
+     * 说明: 解析流程定义模型中配置的默认流程变量(如审批人), 与发起流程时初始化的流程变量保持一致
+     */
+    public Map<String, Object> getModelVariables(String processDefinitionId) {
+        ProcessDefinition definition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionId(processDefinitionId)
+                .singleResult();
+        if (definition == null) {
+            throw new MyCuckooException("流程定义不存在");
+        }
+
+        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
+        return WorkflowHelper.resolveBpmnModelVariables(model);
     }
 
     @Transactional
@@ -299,10 +395,24 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
     @Transactional
     public String startProcess(String processDefinitionId, String formId, String formType, Map<String, Object> formVariables) {
+        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
+        Map<String, Object> localVariables = WorkflowHelper.resolveBpmnModelVariables(model);
+        if (!localVariables.isEmpty()) {
+            if (formVariables == null || formVariables.isEmpty()) {
+                throw new MyCuckooException("表单变量参数不能为空");
+            }
+            AtomicInteger index = new AtomicInteger();
+            localVariables.forEach((key, value) -> {
+                Object obj = formVariables.get(key);
+                if (obj == null || (obj instanceof Collection<?> && ((Collection) obj).isEmpty())) {
+                    throw new MyCuckooException(index.incrementAndGet() + "级审批人信息不能为空!");
+                }
+            });
+        }
+
         Long userId = SessionContextHolder.getUserId();
         Map<String, Object> variables = new HashMap<>();
-        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
-        variables.putAll(WorkflowHelper.resolveBpmnModelVariables(model));
+        variables.putAll(localVariables);
         if (formVariables != null) {
             variables.putAll(formVariables);
         }
