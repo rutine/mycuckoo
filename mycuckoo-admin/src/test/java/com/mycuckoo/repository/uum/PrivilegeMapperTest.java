@@ -54,9 +54,6 @@ public class PrivilegeMapperTest extends AbstractTransactionalJUnit4SpringContex
                 PrivilegeScope.DEPT.scope);
     }
 
-    @Test
-    public void testDeleteByModOptId() {
-    }
 
     @Test
     public void testSave() {

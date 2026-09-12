@@ -168,7 +168,6 @@ public class ResourceService {
      * 公用写日志
      *
      * @param entity  对象
-     * @param logLevel 日志级别
      * @param action      操作名称
      * @throws MyCuckooException
      * @author rutine
@@ -179,7 +178,7 @@ public class ResourceService {
                 .module(ModuleName.SYS_RESOURCE_MRG)
                 .id(entity.getOperateId())
                 .title(SessionContextHolder.getUserName() + action + "资源")
-                .content("名称：%s, method：%s, path: %s",
+                .content("名称：%s, 方法：%s, 路径: %s",
                         entity.getName(), entity.getMethod(), entity.getPath())
                 .emit();
     }

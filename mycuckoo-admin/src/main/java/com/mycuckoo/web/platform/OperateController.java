@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 功能说明: 操作按钮Controller
  *
@@ -96,5 +100,15 @@ public class OperateController {
         optService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.success("操作成功");
+    }
+
+    /**
+     * 功能说明 : 操作选择列表
+     */
+    @GetMapping(value = "/selector")
+    public AjaxResponse<List<Operate>> listAll() {
+        return AjaxResponse.create(optService.findAll().stream()
+                .sorted(Comparator.comparing(Operate::getOrder))
+                .collect(Collectors.toList()));
     }
 }

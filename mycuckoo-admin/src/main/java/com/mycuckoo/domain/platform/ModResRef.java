@@ -96,9 +96,9 @@ public class ModResRef implements Serializable {
         if (this == obj) return true;
         if (obj == null) return false;
         if (obj.getClass() != this.getClass()) return false;
-        ModResRef modOptRef = (ModResRef) obj;
-        if (modOptRef.getModResId() != null && modResId != null &&
-                modOptRef.getModResId().longValue() ==
+        ModResRef modResRef = (ModResRef) obj;
+        if (modResRef.getModResId() != null && modResId != null &&
+                modResRef.getModResId().longValue() ==
                         this.getModResId().longValue()) {
             return true;
         } else {

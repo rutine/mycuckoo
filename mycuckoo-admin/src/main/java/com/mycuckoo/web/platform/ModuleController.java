@@ -65,22 +65,6 @@ public class ModuleController {
     }
 
     /**
-     * 功能说明 : 获得模块已经分配和未分配的操作列表
-     *
-     * @param id
-     * @return
-     * @author rutine
-     * @time May 9, 2013 8:52:56 PM
-     */
-    @GetMapping(value = "/{id}/operation")
-    public AjaxResponse<AssignVo<CheckboxTree, Long>> listOperation(@PathVariable long id) {
-
-        AssignVo<CheckboxTree, Long> vo = moduleService.findOperationTreeByModId(id);
-
-        return AjaxResponse.create(vo);
-    }
-
-    /**
      * 功能说明 : 获得模块已经分配和未分配的资源
      *
      * @param id
@@ -134,25 +118,6 @@ public class ModuleController {
         vo.setParentName(parent.getName());
 
         return AjaxResponse.create(vo);
-    }
-
-    /**
-     * 功能说明 : 保存模块操作关系
-     *
-     * @param id      模块ID
-     * @param actionIds  模块操作列表
-     * @return
-     * @author rutine
-     * @time May 12, 2013 5:44:16 PM
-     */
-    @PostMapping(value = "/{id}/module-opt-ref")
-    public AjaxResponse<String> createModuleOptRefs(
-            @PathVariable long id,
-            @RequestBody List<Long> optIds) {
-
-        moduleService.saveModuleOptRefs(id, optIds);
-
-        return AjaxResponse.success("分配模块权限成功");
     }
 
     /**

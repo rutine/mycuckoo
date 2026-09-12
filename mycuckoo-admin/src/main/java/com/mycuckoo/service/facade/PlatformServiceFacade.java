@@ -42,9 +42,6 @@ public class PlatformServiceFacade {
         return moduleService.filterModule(list);
     }
 
-    public List<ResourceVo> findAllModOptRefs() {
-        return moduleService.findAllModOptRefs();
-    }
 
     public List<ResourceVo> findAllModResRefs() {
         return moduleService.findAllModResRefs();
@@ -56,10 +53,6 @@ public class PlatformServiceFacade {
 
     public ModuleMenu getModule(Long moduleId) {
         return moduleService.get(moduleId);
-    }
-
-    public District getDistrict(Long districtId) {
-        return districtService.get(districtId);
     }
 
     public String findSystemParaByKey(String key) {

@@ -58,7 +58,6 @@ public class RoleController {
     @GetMapping(value = "/{id}/role-privilege")
     public AjaxResponse<RolePrivilegeVo> listRolePrivilege(@PathVariable long id) {
         //todo
-//        AssignVo<CheckboxTree, String> baseVo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
         AssignVo<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
         RolePrivilegeVo vo = new RolePrivilegeVo(
@@ -125,27 +124,6 @@ public class RoleController {
         roleService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.success("停用启用成功");
-    }
-
-    /**
-     * 功能说明 : 为角色分配操作权限
-     *
-     * @param id             角色id
-     * @param privilegeScope 权限范围
-     * @param operationIds   操作id集合
-     * @return json 数据
-     * @author rutine
-     * @time Sep 15, 2013 9:47:05 AM
-     */
-    @PostMapping("/{id}/opt-privilege/{privilegeScope}")
-    public AjaxResponse<String> saveOptPrivilege(
-            @PathVariable long id,
-            @PathVariable String privilegeScope,
-            @RequestBody Set<String> operationIds) {
-
-        privilegeService.save(Lists.newArrayList(operationIds), OwnerType.ROLE, id, PrivilegeType.OPT, privilegeScope);
-
-        return AjaxResponse.success("分配角色操作权限成功");
     }
 
     /**

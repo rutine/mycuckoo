@@ -69,7 +69,6 @@ public class UserController {
     @GetMapping("/{id}/res-privilege")
     public AjaxResponse<AssignVo<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
         //todo
-//        AssignVo<CheckboxTree, String> vo = privilegeService.findModOptByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
         AssignVo<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
@@ -152,27 +151,6 @@ public class UserController {
         List<UserVos.Profile> vos = userService.findByName(userName);
 
         return AjaxResponse.create(vos);
-    }
-
-    /**
-     * 功能说明 : 保存为用户分配的模块操作权限
-     *
-     * @param id             用户id
-     * @param privilegeScope 权限范围
-     * @param operationIds   模块id集合
-     * @return json消息
-     * @author rutine
-     * @time Oct 13, 2013 2:13:42 PM
-     */
-    @PostMapping("/{id}/opt-privilege/{privilegeScope}")
-    public AjaxResponse<String> saveOptPrivilege(@PathVariable long id,
-                                                 @PathVariable String privilegeScope,
-                                                 @RequestBody Set<String> operationIds) {
-
-        List<String> list = Lists.newArrayList(operationIds);
-        privilegeService.save(list, OwnerType.USR, id, PrivilegeType.OPT, privilegeScope);
-
-        return AjaxResponse.success("为用户分配操作权限成功");
     }
 
     /**

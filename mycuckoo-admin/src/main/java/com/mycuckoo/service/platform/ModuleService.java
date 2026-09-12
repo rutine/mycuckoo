@@ -2,10 +2,10 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.mycuckoo.constant.enums.ModuleLevel;
-import com.mycuckoo.core.constant.enums.ModuleName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.constant.enums.ModuleName;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -13,8 +13,10 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.core.util.XmlOptUtils;
 import com.mycuckoo.core.util.web.SessionContextHolder;
-import com.mycuckoo.domain.platform.*;
-import com.mycuckoo.repository.platform.ModOptRefMapper;
+import com.mycuckoo.domain.platform.ModResRef;
+import com.mycuckoo.domain.platform.ModuleMenu;
+import com.mycuckoo.domain.platform.Operate;
+import com.mycuckoo.domain.platform.Resource;
 import com.mycuckoo.repository.platform.ModResRefMapper;
 import com.mycuckoo.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.service.facade.UumServiceFacade;
@@ -58,8 +60,6 @@ public class ModuleService {
     @Autowired
     private ModuleMenuMapper moduleMenuMapper;
     @Autowired
-    private ModOptRefMapper modOptRefMapper;
-    @Autowired
     private ModResRefMapper modResRefMapper;
 
     @Autowired
@@ -99,41 +99,8 @@ public class ModuleService {
     }
 
     @Transactional
-    public void deleteModOptRefByOperateId(long operateId) {
-        // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefs = modOptRefMapper.findByOperateId(operateId);
-        List<String> modOptRefIds = modOptRefs.stream()
-                .map(ModOptRef::getModOptId)
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-
-        // 删除模块时自动删除权限下的模块
-        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
-        modOptRefMapper.deleteByOperateId(operateId);
-
-        LogOperator.begin()
-                .module(ModuleName.SYS_OPT_MGR)
-                .id(operateId)
-                .title(SessionContextHolder.getUserName() + "删除" + "模块操作")
-                .content("根据操作ID删除模块操作关系,级联删除权限")
-                .emit();
-    }
-
-    @Transactional
     public void delete(Long moduleId) {
         ModuleMenu moduleMenu = get(moduleId);
-        // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
-        List<String> modOptRefIds = modOptRefs.stream()
-                .map(ModOptRef::getModOptId)
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-
-        // 删除模块时自动删除权限下的权限
-        uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
-        // 删除模块时自动删除模块下的操作
-        modOptRefMapper.deleteByModuleId(moduleId);
-
         // 查询当前模块的所有资源
         List<ModResRef> modResRefs = modResRefMapper.findByModuleId(moduleId);
         List<String> modResRefIds = modResRefs.stream()
@@ -160,18 +127,6 @@ public class ModuleService {
             if (count > 0) { // 有下级菜单
                 throw new MyCuckooException("存在下级菜单");
             }
-
-            // 查询当前模块的所有操作
-            List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId);
-            List<String> modOptRefIds = modOptRefs.stream()
-                    .map(ModOptRef::getModOptId)
-                    .map(String::valueOf)
-                    .collect(Collectors.toList());
-
-            // 删除模块时自动删除权限下的模块
-            uumServiceFacade.deletePrivilegeByModOptId(modOptRefIds.toArray(new String[modOptRefIds.size()]));
-            // 停用第三级模块时将自动删除模块下的操作
-            modOptRefMapper.deleteByModuleId(moduleId);
 
             updateEntity.setStatus(DISABLE);
         } else {
@@ -235,53 +190,6 @@ public class ModuleService {
         list.forEach(menu -> menu.setId(menu.getModuleId().toString()));
 
         return list;
-    }
-
-    public List<ResourceVo> findAllModOptRefs() {
-        List<ModOptRef> refs = modOptRefMapper.findByPage(null, Querier.EMPTY).getContent();
-        List<ResourceVo> result = refs.stream().map(ref -> {
-            Operate operate = ref.getOperate();
-            ResourceVo vo = new ResourceVo();
-            vo.setId(ref.getModOptId());
-            vo.setParentId(ref.getModuleId()); // 将第三级菜单设置为父
-            vo.setCode(operate.getCode());
-            vo.setName(operate.getName());
-            vo.setIconCls(operate.getIconCls());
-            vo.setOrder(operate.getOrder()); //顺序
-            vo.setLevel(ModuleLevel.FOUR.code);
-            vo.setIsLeaf(true);
-
-            return vo;
-        }).collect(Collectors.toList());
-
-        return result;
-    }
-
-    public AssignVo<CheckboxTree, Long> findOperationTreeByModId(long moduleId) {
-        List<Operate> allOperates = operateService.findAll(); //所有操作
-        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(moduleId); //已经分配的操作
-        List<Long> optIds = modOptRefs.parallelStream()
-                .map(ModOptRef::getOperate)
-                .map(Operate::getOperateId)
-                .collect(Collectors.toList());
-
-        List<CheckboxTree> trees = Lists.newArrayList();
-        allOperates.forEach(consumer -> {
-            boolean checked = optIds.contains(consumer.getOperateId());
-
-            CheckboxTree tree = new CheckboxTree();
-            tree.setId(consumer.getOperateId().toString());
-            tree.setParentId(ID_ROOT_VALUE);
-            tree.setText(consumer.getName());
-            tree.setIconSkin(consumer.getIconCls());
-            tree.setIsLeaf(true);
-            tree.setChildren(null);
-            tree.setChecked(checked);
-            tree.setCheckbox(new CheckboxTree.Checkbox(checked ? 1 : 0));
-            trees.add(tree);
-        });
-
-        return new AssignVo<>(trees, optIds);
     }
 
     public List<ResourceVo> findAllModResRefs() {
@@ -462,38 +370,6 @@ public class ModuleService {
 
 
     @Transactional
-    public void saveModuleOptRefs(long modId, List<Long> optIds) {
-        Assert.state(moduleMenuMapper.exists(modId), "模块不存在!");
-
-        // 查询当前模块的所有操作
-        List<ModOptRef> modOptRefs = modOptRefMapper.findByModuleId(modId);
-        if (modOptRefs.isEmpty()) {
-            doSaveModuleOptRefs(modId, optIds);
-        }
-        else {
-            //模块操作关系：首先过滤出已被删除的数据,
-            List<ModOptRef> deleteModOptRefs = modOptRefs.stream()
-                    .filter(modOptRef -> !optIds.contains(modOptRef.getOperate().getOperateId()))
-                    .collect(Collectors.toList());
-            deleteModOptRefs.forEach(modOptRef -> {
-                modOptRefMapper.delete(modOptRef.getModOptId()); //进行模块操作关系删除
-            });
-
-            //级联删除权限操作
-            List<String> deleteModOptRefIds = deleteModOptRefs.stream()
-                    .map(ModOptRef::getModOptId)
-                    .map(String::valueOf)
-                    .collect(Collectors.toList());
-            uumServiceFacade.deletePrivilegeByModOptId(deleteModOptRefIds.toArray(new String[deleteModOptRefIds.size()]));
-
-            //去掉已存在的操作id
-            optIds.removeAll(modOptRefs.stream().map(o -> o.getOperate().getOperateId()).collect(Collectors.toList()));
-            // 保存新分配的模块操作关系
-            this.doSaveModuleOptRefs(modId, optIds);
-        }
-    }
-
-    @Transactional
     public void saveModuleResRefs(long modId, List<ModResRef> modResRefs) {
         Assert.state(moduleMenuMapper.exists(modId), "模块不存在!");
 
@@ -506,10 +382,10 @@ public class ModuleService {
             //模块资源关系：首先过滤出已被删除的数据
             List<Long> resources = modResRefs.stream().map(o -> o.getResourceId()).collect(Collectors.toList());
             List<ModResRef> deleteModResRefs = oldModResRefs.stream()
-                    .filter(modOptRef -> !resources.contains(modOptRef.getResource().getResourceId()))
+                    .filter(modResRef -> !resources.contains(modResRef.getResource().getResourceId()))
                     .collect(Collectors.toList());
-            deleteModResRefs.forEach(modOptRef -> {
-                modResRefMapper.delete(modOptRef.getModResId());
+            deleteModResRefs.forEach(modResRef -> {
+                modResRefMapper.delete(modResRef.getModResId());
             });
 
             //级联删除权限操作
@@ -580,34 +456,6 @@ public class ModuleService {
                 .id(entity.getModuleId())
                 .title(SessionContextHolder.getUserName() + action + "模块")
                 .content("模块名称：%s, 编码: %s", entity.getName(), entity.getCode())
-                .emit();
-    }
-
-    /**
-     * 只单独保存模块操作关系
-     *
-     * @param moduleId
-     * @param operateIdList
-     * @author rutine
-     * @time Oct 14, 2012 9:14:00 AM
-     */
-    private void doSaveModuleOptRefs(long moduleId, List<Long> operateIdList) {
-        if (operateIdList == null || operateIdList.isEmpty()) {
-            return;
-        }
-
-        for (Long operateId : operateIdList) {
-            Operate operate = new Operate(operateId, null);
-            ModOptRef modOptRef = new ModOptRef(null, moduleId, operate);
-            modOptRefMapper.save(modOptRef);
-        }
-
-        LogOperator.begin()
-                .module(ModuleName.SYS_MOD_MGR)
-                .id(moduleId)
-                .title(SessionContextHolder.getUserName() + "分配" + "模块操作")
-                .content("模块分配操作: %s",
-                        operateIdList.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
                 .emit();
     }
     /**

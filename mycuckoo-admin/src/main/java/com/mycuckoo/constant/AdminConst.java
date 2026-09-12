@@ -17,14 +17,8 @@ public abstract class AdminConst extends BaseConst {
     public final static String DICT_DISTRICT = "district";
 
 
-    //地区city
-    public final static String CITY = "city";
-
     public final static String ENABLE = "enable";
     public final static String DISABLE = "disable";
-
-    //模块名称
-    public final static String ROLE_CSS = "rolemgr";
 
     //根节点
     public final static String ID_ROOT_VALUE = "0";

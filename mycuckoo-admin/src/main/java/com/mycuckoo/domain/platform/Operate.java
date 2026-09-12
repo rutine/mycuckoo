@@ -21,7 +21,6 @@ public class Operate extends BasicDomain<Long> {
     private Integer group; //模块操作组
     private String memo; //备注
     private String status; //模块操作状态
-//	private List<ModOptRef> modOptRefs = Lists.newArrayList();
 
     /**
      * default constructor

@@ -62,16 +62,10 @@ public class PrivilegeService {
         privilegeMapper.deleteByOwnerIdAndPrivilegeType(ownerId, ownerType.code, privilegeType.code);
     }
 
-    public void deletePrivilegeByModOptId(String[] modOptRefIds) {
-        if (modOptRefIds == null || modOptRefIds.length == 0) return;
-
-        privilegeMapper.deleteByModOptId(modOptRefIds, PrivilegeType.OPT.code);
-    }
-
     public void deletePrivilegeByModResId(String[] modResRefIds) {
         if (modResRefIds == null || modResRefIds.length == 0) return;
 
-        privilegeMapper.deleteByModOptId(modResRefIds, PrivilegeType.RES.code);
+        privilegeMapper.deleteByResourceIds(modResRefIds, PrivilegeType.RES.code);
     }
 
     public void deleteByOwnerIdAndOwnerType(long ownerId, String ownerType) {
@@ -94,43 +88,6 @@ public class PrivilegeService {
         String resourceId = privilege.getResourceId();
 
         return resourceId;
-    }
-
-    public AssignVo<CheckboxTree, String> findModOptByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
-        // 查找已经分配的权限
-        Long[] roleIds = { ownerId };
-        String[] ownerTypes = { ownerType.code };
-        String[] privilegeTypes = { PrivilegeType.OPT.code };
-        List<Privilege> privilegeList = privilegeMapper.findByOwnIdAndPrivilegeType(roleIds, ownerTypes, privilegeTypes);
-
-        // 操作id集
-        List<Long> resourceIdList = new ArrayList<>();
-        String privilegeScope = "";
-        for (Privilege privilege : privilegeList) {
-            String resourceId = privilege.getResourceId();
-            try {
-                resourceIdList.add(Long.parseLong(resourceId));
-            } catch (NumberFormatException e) {
-                logger.warn("{} 不能转换成模块id, 忽略此id.", resourceId);
-            }
-            if (StrUtils.isEmpty(privilegeScope)) {
-                privilegeScope = privilege.getPrivilegeScope();
-            }
-        }
-
-        // 查找所有模块操作关系
-        List<ResourceVo> resources = platformServiceFacade.findAllModOptRefs();
-        List<String> checkedOperations = resourceIdList.parallelStream()
-                .map(id -> {return AdminConst.ID_LEAF + id; })
-                .collect(Collectors.toList());
-
-        //将操作转化成列表数据
-        List<ModuleMenu> allModMenuList = this.filterModOpt(resources, true).getMenu();
-
-        List<? extends SimpleTree> trees = platformServiceFacade.buildTree(allModMenuList, checkedOperations, true);
-
-        //将已分配和未分配的模块操作放入
-        return new AssignVo(trees, checkedOperations, privilegeScope);
     }
 
     public AssignVo<CheckboxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
@@ -231,20 +188,6 @@ public class PrivilegeService {
         return count > 0;
     }
 
-    public HierarchyModuleVo findPrivilegesForAdminLogin() {
-        List<ResourceVo> resourceVos = platformServiceFacade.findAllModOptRefs(); // 四级模块操作
-        // 四级模块操作
-        Map<Long, List<ResourceVo>> resMap = resourceVos.stream()
-                .collect(Collectors.groupingBy(ResourceVo::getParentId,
-                        Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ResourceVo::getOrder)).collect(Collectors.toList()))));
-        List<ModuleMenu> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
-        HierarchyModuleVo hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
-        hierarchyModuleVo.setFourth(resMap);
-
-        return hierarchyModuleVo;
-    }
-
     public HierarchyModuleVo findPrivilegesForAdminLoginNew() {
         List<ResourceVo> resourceVos = platformServiceFacade.findAllModResRefs(); // 所有资源
         // 四级模块操作
@@ -311,13 +254,11 @@ public class PrivilegeService {
 
         List<ResourceVo> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-//            List<ResourceVo> allResources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
             List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> !resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
-//            resources = platformServiceFacade.findAllModOptRefs(); // 所有操作按钮
             resources = platformServiceFacade.findAllModResRefs(); // 所有资源
         } else {
             List<ResourceVo> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
@@ -404,10 +345,10 @@ public class PrivilegeService {
     }
 
     @Transactional
-    public void save(List<String> modOptIds, OwnerType ownerType, long ownerId,
+    public void save(List<String> resourceIds, OwnerType ownerType, long ownerId,
                      PrivilegeType privilegeType, String privilegeScope) {
 
-        modOptIds = modOptIds.parallelStream()
+        resourceIds = resourceIds.parallelStream()
                 .map(mapper -> {
                     int index = mapper.indexOf(AdminConst.ID_LEAF);
                     return index >= 0 ? mapper.substring(AdminConst.ID_LEAF.length()) : mapper;
@@ -430,12 +371,12 @@ public class PrivilegeService {
             privilege.setCreateTime(LocalDateTime.now());
             privilegeMapper.save(privilege);
         } else {
-            if (modOptIds != null) {
-                for (String modOptId : modOptIds) {
-                    if (StrUtils.isEmpty(modOptId)) continue;
+            if (resourceIds != null) {
+                for (String resourceId : resourceIds) {
+                    if (StrUtils.isEmpty(resourceId)) continue;
                     Privilege privilege = new Privilege();
                     privilege.setOrgId(SessionContextHolder.getOrganId());
-                    privilege.setResourceId(modOptId);
+                    privilege.setResourceId(resourceId);
                     privilege.setOwnerId(ownerId);
                     privilege.setOwnerType(ownerType.code);
                     privilege.setPrivilegeType(privilegeType.code);
@@ -449,8 +390,8 @@ public class PrivilegeService {
                         .module(ModuleName.SYS_PRIVILEGE)
                         .id(ownerId + ":" + privilegeType.code)
                         .title(SessionContextHolder.getUserName() + "新增" + "权限")
-                        .content("模块操作关系IDs: %s",
-                                modOptIds.stream().collect(Collectors.joining(DUNHAO)))
+                        .content("资源IDs: %s",
+                                resourceIds.stream().collect(Collectors.joining(DUNHAO)))
                         .emit();
             }
         }

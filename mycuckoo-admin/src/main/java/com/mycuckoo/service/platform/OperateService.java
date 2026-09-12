@@ -35,8 +35,6 @@ public class OperateService {
 
     @Autowired
     private OperateMapper operateMapper;
-    @Autowired
-    private ModuleService moduleService;
 
 
     @Transactional
@@ -46,7 +44,6 @@ public class OperateService {
         if (!enable) {
             operate.setStatus(DISABLE);
             operateMapper.update(operate); //修改模块操作
-            moduleService.deleteModOptRefByOperateId(id); //根据操作ID删除模块操作关系,级联删除权限
         } else {
             operate.setStatus(ENABLE);
             operateMapper.update(operate); //修改模块操作
@@ -132,7 +129,6 @@ public class OperateService {
      * 公用模块写日志
      *
      * @param entity  模块对象
-     * @param logLevel 日志级别
      * @param action      操作名称
      * @throws MyCuckooException
      * @author rutine

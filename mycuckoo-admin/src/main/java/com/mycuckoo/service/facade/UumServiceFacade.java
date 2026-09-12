@@ -32,12 +32,9 @@ public class UumServiceFacade {
     private DepartmentService deptService;
 
 
-    public void deletePrivilegeByModOptId(String[] modOptRefIds) {
-        this.privilegeService.deletePrivilegeByModOptId(modOptRefIds);
-    }
 
-    public void deletePrivilegeByModResId(String[] modOptRefIds) {
-        this.privilegeService.deletePrivilegeByModResId(modOptRefIds);
+    public void deletePrivilegeByModResId(String[] modResRefIds) {
+        this.privilegeService.deletePrivilegeByModResId(modResRefIds);
     }
 
     public HierarchyModuleVo findPrivilegesForAdminLogin() {

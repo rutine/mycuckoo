@@ -72,13 +72,13 @@ public interface PrivilegeMapper extends Repository<Privilege, Long> {
             @Param("privilegeScope") String privilegeScope);
 
     /**
-     * <p>删除模块操作关系时同时, 也删除模块操作权限</p>
+     * <p>根据资源ID删除权限记录</p>
      *
-     * @param modOptRefIds
-     * @param privilegeType {@link com.mycuckoo.constant.enums.PrivilegeType#OPT}
+     * @param resourceIds 资源ID集合
+     * @param privilegeType 权限类型
      */
-    int deleteByModOptId(
-            @Param("modOptRefIds") String[] modOptRefIds,
+    int deleteByResourceIds(
+            @Param("resourceIds") String[] resourceIds,
             @Param("privilegeType") String privilegeType);
 
 }

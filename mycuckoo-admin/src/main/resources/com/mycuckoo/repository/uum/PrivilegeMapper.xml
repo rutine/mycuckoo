@@ -147,12 +147,12 @@
         and privilege_scope = #{privilegeScope}
     </delete>
     
-    <!-- 删除模块操作关系时同时也删除模块操作权限 -->
-    <delete id="deleteByModOptId" parameterType="map">
+    <!-- 根据资源ID删除权限 -->
+    <delete id="deleteByResourceIds" parameterType="map">
         delete from <include refid="table" />
         where resource_id in
-        <foreach collection="modOptRefIds" item="modOptRefId" open="(" separator="," close=")">
-            #{modOptRefId}
+        <foreach collection="resourceIds" item="resourceId" open="(" separator="," close=")">
+            #{resourceId}
         </foreach>
         and privilege_type = #{privilegeType}
     </delete>
