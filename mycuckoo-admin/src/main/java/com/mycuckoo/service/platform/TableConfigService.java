@@ -5,7 +5,7 @@ import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.repository.param.FilterType;
 import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.web.SessionContextHolder;
-import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.DictionaryItem;
 import com.mycuckoo.domain.platform.ModuleMenu;
 import com.mycuckoo.domain.platform.TableConfig;
 import com.mycuckoo.repository.platform.TableConfigMapper;
@@ -103,7 +103,7 @@ public class TableConfigService {
                 .filter(o -> o.getType().equals("dict") && StrUtils.isNotBlank(o.getExtra()))
                 .map(TableConfig::getExtra)
                 .collect(Collectors.toList());
-        Map<String, List<DictSmallType>> dictMap = dictionaryService.findSmallTypeMapByBigTypeCodes(dictCodes);
+        Map<String, List<DictionaryItem>> dictMap = dictionaryService.findItemMapByDictCodes(dictCodes);
 
         return list.stream().sorted(Comparator.comparing(TableConfig::getOrder)).map(s -> {
             TableConfigVos.Config t = new TableConfigVos.Config();

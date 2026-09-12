@@ -10,7 +10,7 @@ import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
-import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.DictionaryItem;
 import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.repository.platform.DistrictMapper;
 import com.mycuckoo.core.util.TreeHelper;
@@ -66,9 +66,9 @@ public class DistrictService {
 
         querier.putQ("array", codeList.isEmpty() ? null : codeList.toArray(new Long[codeList.size()]));
         Page<District> pageResult = districtMapper.findByPage(querier.getQ(), querier);
-        List<DictSmallType> dicts = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
+        List<DictionaryItem> dicts = dictionaryService.findItemsByDictCode(DICT_DISTRICT);
         Map<String, String> dictMap = dicts.stream()
-                .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictSmallType::getName));
+                .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictionaryItem::getName));
 
         List<DistrictVo> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {

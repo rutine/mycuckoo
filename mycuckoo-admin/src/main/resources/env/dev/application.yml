@@ -59,4 +59,4 @@ mycuckoo:
       - /login/usr-resources
       - /login/all-resources
       - /platform/config/list-table-config
-      - /platform/system/dictionary/mgr/small-type
+      - /platform/system/dictionary/mgr/items

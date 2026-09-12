@@ -3,15 +3,14 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-    说明: DicBigTypeMapper映射文件
+    说明: DictionaryMapper映射文件
     
     @author rutine
-    @time Sep 23, 2014 9:36:48 AM
-    @version 3.0.0
+    @version 5.0.0
  -->
-<mapper namespace="com.mycuckoo.repository.platform.DictBigTypeMapper">
-    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictBigType">
-        <id property="bigTypeId" column="big_type_id" />
+<mapper namespace="com.mycuckoo.repository.platform.DictionaryMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.Dictionary">
+        <id property="dictId" column="dict_id" />
         <result property="code" column="code" />
         <result property="name" column="name" />
         <result property="memo" column="memo" />
@@ -23,20 +22,20 @@
     </resultMap>
     
     <sql id="columns">
-        big_type_id, code, name, memo, status,
+        dict_id, code, name, memo, status,
         updator, update_time, creator, create_time
     </sql>
     
     <sql id="table">
-        sys_dict_big_type
+        sys_dictionary
     </sql>
 
-    <!-- 插入字典大类： 1.由数据库生成id并赋值到DicBigType对象 -->
-    <insert id="save" parameterType="com.mycuckoo.domain.platform.DictBigType"
-            useGeneratedKeys="true" keyProperty="bigTypeId" keyColumn="big_type_id">
+    <!-- 插入字典：由数据库生成id并赋值到Dictionary对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.Dictionary"
+            useGeneratedKeys="true" keyProperty="dictId" keyColumn="dict_id">
         insert into <include refid="table" />
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="bigTypeId != null">big_type_id, </if>
+            <if test="dictId != null">dict_id, </if>
             <if test="code != null and code != ''">code, </if>
             <if test="name != null and name != ''">name, </if>
             <if test="memo != null and memo != ''">memo, </if>
@@ -47,7 +46,7 @@
             <if test="createTime != null">create_time, </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="bigTypeId != null">#{bigTypeId}, </if>
+            <if test="dictId != null">#{dictId}, </if>
             <if test="code != null and code != ''">#{code}, </if>
             <if test="name != null and name != ''">#{name}, </if>
             <if test="memo != null and memo != ''">#{memo}, </if>
@@ -59,8 +58,8 @@
         </trim>
     </insert>
     
-    <!-- 更新字典大类： 1.输入对象参数  -->
-    <update id="update" parameterType="com.mycuckoo.domain.platform.DictBigType">
+    <!-- 更新字典 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.Dictionary">
         update <include refid="table" />
         <set>
             <if test="code != null">code = #{code}, </if>
@@ -70,24 +69,22 @@
             <if test="updator != null">updator = #{updator}, </if>
             <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
-        where big_type_id = #{bigTypeId}
+        where dict_id = #{dictId}
     </update>
     
-    <!-- 删除字典大类 -->
+    <!-- 删除字典 -->
     <delete id="delete" parameterType="long">
-        delete from <include refid="table" /> where big_type_id = #{id}
+        delete from <include refid="table" /> where dict_id = #{id}
     </delete>
     
-        <!--
-        获取字典大类: 输出直接映射到对象
-    -->
+    <!-- 获取字典 -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where big_type_id = #{id}
+        where dict_id = #{id}
     </select>
     
-    <!-- 根据字典大类名称及代码分页查询字典大类 -->
+    <!-- 根据字典名称及编码分页查询字典 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
@@ -99,21 +96,21 @@
                 and name like concat('%', #{q.name}, '%')
             </if>
         </where>
-        order by big_type_id desc
+        order by dict_id desc
     </select>
 
-        <!-- 根据编码统计字典大类数量 -->
+    <!-- 根据编码统计字典数量 -->
     <select id="countByCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
         where code = #{code}
     </select>
     
-    <!-- 根据字典大类ID修改字典大类状态 -->
+    <!-- 根据字典ID修改字典状态 -->
     <update id="updateStatus">
         update <include refid="table" />
         set status = #{status}
-        where big_type_id = #{bigTypeId}
+        where dict_id = #{dictId}
     </update>
     
 </mapper> 

@@ -4,8 +4,8 @@ package com.mycuckoo.web.platform.system;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.domain.platform.DictBigType;
-import com.mycuckoo.domain.platform.DictSmallType;
+import com.mycuckoo.domain.platform.Dictionary;
+import com.mycuckoo.domain.platform.DictionaryItem;
 import com.mycuckoo.service.platform.DictionaryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,8 @@ import java.util.Map;
  * 功能说明: 字典Controller
  *
  * @author rutine
- * @version 3.0.0
- * @time Oct 18, 2014 7:50:17 AM
+ * @version 5.0.0
+ * @time 2026/9/12 10:00
  */
 @RestController
 @RequestMapping(value = "/platform/system/dictionary/mgr")
@@ -32,90 +32,76 @@ public class DictionaryController {
 
 
     @GetMapping
-    public AjaxResponse<Page<DictBigType>> list(Querier querier) {
-        Page<DictBigType> page = dictionaryService.findBigTypesByPage(querier);
-
-        return AjaxResponse.create(page);
+    public AjaxResponse<Page<Dictionary>> list(Querier querier) {
+        return AjaxResponse.create(dictionaryService.findByPage(querier));
     }
 
     /**
-     * 功能说明 : 创建新字典大类
+     * 功能说明 : 创建新字典
      *
-     * @param dictBigType
+     * @param dictionary 字典对象
      * @return
-     * @author rutine
-     * @time Jun 11, 2013 4:29:28 PM
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody DictBigType dictBigType) {
-
-        dictionaryService.saveBigType(dictBigType);
+    public AjaxResponse<String> create(@RequestBody Dictionary dictionary) {
+        dictionaryService.save(dictionary);
 
         return AjaxResponse.success("保存成功");
     }
 
     /**
-     * 功能说明 : 修改字典, 直接删除字典大类关联的字典小类，保存字典小类
+     * 功能说明 : 修改字典, 直接删除字典关联的字典项，保存字典项
      *
-     * @param dictBigType 字典大类对象
+     * @param dictionary 字典对象
      * @return
-     * @author rutine
-     * @time Jun 11, 2013 5:43:50 PM
      */
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody DictBigType dictBigType) {
-
-        dictionaryService.updateBigType(dictBigType);
+    public AjaxResponse<String> update(@RequestBody Dictionary dictionary) {
+        dictionaryService.update(dictionary);
 
         return AjaxResponse.success("修改字典成功");
     }
 
     @GetMapping("/{id}")
-    public AjaxResponse<DictBigType> get(@PathVariable long id) {
-        DictBigType dictBigType = dictionaryService.getBigTypeByBigTypeId(id);
-        List<DictSmallType> smallTypes = dictionaryService
-                .findSmallTypesByBigTypeCode(dictBigType.getCode());
-        dictBigType.setSmallTypes(smallTypes);
+    public AjaxResponse<Dictionary> get(@PathVariable long id) {
+        Dictionary dictionary = dictionaryService.get(id);
+        List<DictionaryItem> items = dictionaryService.findItemsByDictCode(dictionary.getCode());
+        dictionary.setItems(items);
 
-        return AjaxResponse.create(dictBigType);
+        return AjaxResponse.create(dictionary);
     }
 
     /**
      * 功能说明 : 停用启用
      *
-     * @param id
-     * @param disEnableFlag true为停用启用成功，false不能停用
+     * @param id             字典ID
+     * @param disEnableFlag  停用/启用标志
      * @return
-     * @author rutine
-     * @time Jun 11, 2013 6:08:04 PM
      */
     @PutMapping("/{id}/disEnable/{disEnableFlag}")
     public AjaxResponse<String> disEnable(
             @PathVariable long id,
             @PathVariable String disEnableFlag) {
 
-        dictionaryService.disEnableBigType(id, disEnableFlag);
+        dictionaryService.disEnable(id, disEnableFlag);
 
         return AjaxResponse.success("操作成功");
     }
 
     /**
-     * 功能说明 : 根据大类代码查询所有小类
+     * 功能说明 : 根据字典编码查询所有字典项
      *
      * @return
-     * @author rutine
-     * @time Dec 15, 2012 4:21:10 PM
      */
-    @GetMapping("/{bigTypeCode}/small-type")
-    public AjaxResponse<List<DictSmallType>> getSmallType(@PathVariable String bigTypeCode) {
+    @GetMapping("/{dictCode}/items")
+    public AjaxResponse<List<DictionaryItem>> getItems(@PathVariable String dictCode) {
+        List<DictionaryItem> items = dictionaryService.findItemsByDictCode(dictCode);
 
-        List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(bigTypeCode);
-
-        return AjaxResponse.create(dictSmallTypeList);
+        return AjaxResponse.create(items);
     }
 
-    @GetMapping("/small-type")
-    public AjaxResponse<Map<String, List<DictSmallType>>> getSmallTypeMap(@RequestParam List<String> typeCodes) {
-        return AjaxResponse.create(dictionaryService.findSmallTypeMapByBigTypeCodes(typeCodes));
+    @GetMapping("/items")
+    public AjaxResponse<Map<String, List<DictionaryItem>>> getItemMap(@RequestParam("typeCodes") List<String> dictCodes) {
+        return AjaxResponse.create(dictionaryService.findItemMapByDictCodes(dictCodes));
     }
 }

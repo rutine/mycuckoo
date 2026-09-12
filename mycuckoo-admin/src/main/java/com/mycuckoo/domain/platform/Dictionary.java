@@ -8,41 +8,41 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.List;
 
 /**
- * 功能说明: 域对象
+ * 功能说明: 字典域对象
  *
  * @author rutine
- * @version 3.0.0
- * @time Sep 22, 2014 9:03:22 PM
+ * @version 5.0.0
+ * @time 2026/9/12 10:00
  */
-public class DictBigType extends BasicDomain<Long> {
+public class Dictionary extends BasicDomain<Long> {
 
-    private Long bigTypeId;
+    private Long dictId;
     private String code;
     private String name;
     private String memo;
     private String status;
-    private List<DictSmallType> smallTypes = Lists.newArrayList();
+    private List<DictionaryItem> items = Lists.newArrayList();
 
     /**
      * default constructor
      */
-    public DictBigType() {
+    public Dictionary() {
     }
 
     /**
      * minimal constructor
      */
-    public DictBigType(Long bigTypeId, String status) {
-        this.bigTypeId = bigTypeId;
+    public Dictionary(Long dictId, String status) {
+        this.dictId = dictId;
         this.status = status;
     }
 
-    public Long getBigTypeId() {
-        return this.bigTypeId;
+    public Long getDictId() {
+        return this.dictId;
     }
 
-    public void setBigTypeId(Long bigTypeId) {
-        this.bigTypeId = bigTypeId;
+    public void setDictId(Long dictId) {
+        this.dictId = dictId;
     }
 
     public String getCode() {
@@ -77,12 +77,12 @@ public class DictBigType extends BasicDomain<Long> {
         this.status = status == null ? status : status.trim();
     }
 
-    public List<DictSmallType> getSmallTypes() {
-        return smallTypes;
+    public List<DictionaryItem> getItems() {
+        return items;
     }
 
-    public void setSmallTypes(List<DictSmallType> smallTypes) {
-        this.smallTypes = smallTypes;
+    public void setItems(List<DictionaryItem> items) {
+        this.items = items;
     }
 
     @Override

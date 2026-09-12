@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: DictionaryItemMapper映射文件
+    
+    @author rutine
+    @version 5.0.0
+ -->
+<mapper namespace="com.mycuckoo.repository.platform.DictionaryItemMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.DictionaryItemExtend">
+        <id property="itemId" column="item_id" />
+        <result property="dictId" column="dict_id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+
+        <result property="dictCode" column="dict_code" />
+    </resultMap>
+    
+    <sql id="columns">
+        item_id, dict_id, code, name, creator, create_time
+    </sql>
+    
+    <sql id="table">
+       sys_dictionary_item
+    </sql>
+
+    <!-- 插入字典项：由数据库生成id并赋值到DictionaryItem对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.DictionaryItem"
+            useGeneratedKeys="true" keyProperty="itemId" keyColumn="item_id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">item_id, </if>
+            <if test="dictId != null">dict_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">#{itemId}, </if>
+            <if test="dictId != null">#{dictId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+    
+    <!-- 更新字典项 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.DictionaryItem">
+        update <include refid="table" />
+        <set>
+            <if test="dictId != null">dict_id = #{dictId}, </if>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+        </set>
+        where item_id = #{itemId}
+    </update>
+    
+    <!-- 删除字典项 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where item_id = #{id}
+    </delete>
+    
+    <!-- 获取字典项 -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where item_id = #{id}
+    </select>
+
+    <!-- 返回所有字典项 -->
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+    </select>
+    
+    <!-- 根据字典ID删除字典项 -->
+    <delete id="deleteByDictId">
+        delete 
+        from <include refid="table" />
+        where dict_id = #{dictId}
+    </delete>
+    
+    <!-- 根据字典ID查询字典项 -->
+    <select id="findByDictId" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where dict_id = #{dictId}
+    </select>
+    
+    <!-- 根据字典编码查询字典项 -->
+    <select id="findByDictCode" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where dict_id in
+        (
+            select dict_id
+            from sys_dictionary
+            where code = #{dictCode}
+        )
+    </select>
+
+    <select id="findByDictCodes" resultMap="baseMap">
+        select
+            t1.item_id,
+            t1.code,
+            t1.name,
+            t2.code dict_code
+        from <include refid="table" /> t1
+        inner join sys_dictionary t2 on t2.dict_id = t1.dict_id
+          and t2.code in
+          <foreach collection="list" item="code" open="(" close=")" separator=",">
+            #{code}
+          </foreach>
+    </select>
+    
+</mapper> 
