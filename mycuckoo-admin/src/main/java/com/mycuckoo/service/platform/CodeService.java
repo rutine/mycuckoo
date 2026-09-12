@@ -1,8 +1,6 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -55,16 +53,14 @@ public class CodeService {
         Code entity = get(id);
         LogOperator.begin()
                 .module(ModuleName.SYS_CODE)
-                .operate(enable ? OptName.ENABLE : OptName.DISABLE)
                 .id(entity.getCodeId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + (enable ? "启用" : "禁用") + "编码")
                 .content("%s编码, 编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
                         enable ? "启用" : "停用",
                         entity.getCode(),
                         entity.getName(),
                         entity.getModuleName(),
                         entity.getEffect())
-                .level(LogLevel.SECOND)
                 .emit();
 
         return true;
@@ -114,15 +110,13 @@ public class CodeService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_CODE)
-                .operate(OptName.MODIFY)
                 .id(entity.getCodeId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "修改" + "编码")
                 .content("编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
                         entity.getCode(),
                         entity.getName(),
                         entity.getModuleName(),
                         entity.getEffect())
-                .level(LogLevel.SECOND)
                 .emit();
     }
 
@@ -192,15 +186,13 @@ public class CodeService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_CODE)
-                .operate(OptName.SAVE)
                 .id(entity.getCodeId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "新增" + "编码")
                 .content("编号：%s, 名称：%s, 所属模块名称：%s, 编码效果: %s",
                         entity.getCode(),
                         entity.getName(),
                         entity.getModuleName(),
                         entity.getEffect())
-                .level(LogLevel.FIRST)
                 .emit();
     }
 

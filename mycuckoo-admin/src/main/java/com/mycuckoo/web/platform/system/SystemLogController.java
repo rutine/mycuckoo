@@ -4,8 +4,8 @@ package com.mycuckoo.web.platform.system;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.repository.Page;
-import com.mycuckoo.domain.platform.SysOptLog;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.domain.platform.SysLog;
+import com.mycuckoo.service.platform.SystemLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 功能说明: 系统操作日志Controller
+ * 功能说明: 系统日志Controller
  *
  * @author rutine
- * @version 3.0.0
- * @time Oct 18, 2014 11:56:55 AM
+ * @version 5.0.0
+ * @time 2026/9/12 11:00
  */
 @RestController
 @RequestMapping("/platform/system/log/mgr")
-public class SystemOptLogController {
-    private static Logger logger = LoggerFactory.getLogger(SystemOptLogController.class);
+public class SystemLogController {
+    private static Logger logger = LoggerFactory.getLogger(SystemLogController.class);
 
     @Autowired
-    private SystemOptLogService systemOptLogService;
+    private SystemLogService systemLogService;
 
 
     @GetMapping
-    public AjaxResponse<Page<SysOptLog>> list(Querier querier) {
-        Page<SysOptLog> page = systemOptLogService.findByPage(querier);
+    public AjaxResponse<Page<SysLog>> list(Querier querier) {
+        Page<SysLog> page = systemLogService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -40,14 +40,12 @@ public class SystemOptLogController {
     /**
      * 功能说明 : 查看日志内容视图
      *
-     * @param id
+     * @param id 日志ID
      * @return
-     * @author rutine
-     * @time Jun 22, 2013 2:27:06 PM
      */
     @GetMapping("/{id}")
     public AjaxResponse<String> get(@PathVariable long id) {
-        String logContent = systemOptLogService.getOptContentById(id);
+        String logContent = systemLogService.getContentById(id);
 
         return AjaxResponse.create(logContent);
     }

@@ -140,7 +140,7 @@ public class ModuleController {
      * 功能说明 : 保存模块操作关系
      *
      * @param id      模块ID
-     * @param optIds  模块操作列表
+     * @param actionIds  模块操作列表
      * @return
      * @author rutine
      * @time May 12, 2013 5:44:16 PM

@@ -2,7 +2,7 @@ package com.mycuckoo.service.platform.job;
 
 import com.mycuckoo.core.util.web.SpringContextUtils;
 import com.mycuckoo.core.util.SystemConfigLoader;
-import com.mycuckoo.service.platform.SystemOptLogService;
+import com.mycuckoo.service.platform.SystemLogService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -36,8 +36,8 @@ public class LoggerJob implements Job {
         logger.info("job name is: {} {}, keep days: {}",
                 name, dateFormat.format(new Date()), days);
 
-        SystemOptLogService sysOptLogService = SpringContextUtils.getBean(SystemOptLogService.class);
-        sysOptLogService.deleteLog(Integer.parseInt(days));
+        SystemLogService systemLogService = SpringContextUtils.getBean(SystemLogService.class);
+        systemLogService.deleteLog(Integer.parseInt(days));
     }
 
 }

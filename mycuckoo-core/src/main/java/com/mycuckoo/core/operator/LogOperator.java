@@ -1,8 +1,6 @@
 package com.mycuckoo.core.operator;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.operator.event.LogEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -10,8 +8,8 @@ import org.springframework.context.ApplicationEventPublisher;
  * 功能说明: 日志操作器
  *
  * @author rutine
- * @version 4.0.0
- * @time May 1, 2024 8:55:40 AM
+ * @version 5.0.0
+ * @time 2026/9/12 11:30
  */
 public final class LogOperator {
     public final static String COMMA = ",";
@@ -21,11 +19,9 @@ public final class LogOperator {
     private static Object[] EMPTY = new Object[0];
 
     private ModuleName module;
-    private OptName operate;
     private Object id;
     private String title;
     private LogOperator.ContentWrapper contentWrapper;
-    private LogLevel level;
 
     private LogOperator() {
     }
@@ -51,11 +47,6 @@ public final class LogOperator {
         return this;
     }
 
-    public LogOperator operate(OptName operate) {
-        this.operate = operate;
-        return this;
-    }
-
     public LogOperator id(Object id) {
         this.id = id;
         return this;
@@ -71,11 +62,6 @@ public final class LogOperator {
             this.contentWrapper = new LogOperator.ContentWrapper(pattern, arguments);
         }
 
-        return this;
-    }
-
-    public LogOperator level(LogLevel level) {
-        this.level = level;
         return this;
     }
 
@@ -106,10 +92,10 @@ public final class LogOperator {
         if (this.id instanceof String) {
             idStr = (String) this.id;
         } else if (this.id != null) {
-            idStr = id.toString();
+            idStr = this.id.toString();
         }
 
-        LogEvent event = new LogEvent(new LogEvent.Payload(this.module, this.operate, idStr, this.title, content, this.level));
+        LogEvent event = new LogEvent(new LogEvent.Payload(this.module, idStr, this.title, content));
         publisher.publishEvent(event);
     }
 

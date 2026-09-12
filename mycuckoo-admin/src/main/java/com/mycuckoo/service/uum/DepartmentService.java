@@ -1,9 +1,7 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
@@ -69,7 +67,7 @@ public class DepartmentService {
         }
 
         Department entity = get(deptId);
-        writeLog(entity, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(entity, enable ? "启用" : "禁用");
     }
 
     public List<Long> findChildIds(long deptId, int flag) {
@@ -179,7 +177,7 @@ public class DepartmentService {
         entity.setUpdateTime(LocalDateTime.now());
         departmentMapper.update(entity);
 
-        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, "修改");
     }
 
     @Transactional
@@ -200,7 +198,7 @@ public class DepartmentService {
         updateEntity.setTreeId(String.format("%s.%s", parent.getTreeId(), entity.getDeptId()));
         departmentMapper.update(updateEntity);
 
-        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, "新增");
     }
 
     @Transactional
@@ -217,11 +215,9 @@ public class DepartmentService {
 
         LogOperator.begin()
                 .module(ModuleName.DEPT_MGR)
-                .operate(OptName.ASSIGN)
                 .id(deptId)
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "分配" + "部门")
                 .content("名称：%s, 角色：%s", old.getName(), roleId)
-                .level(LogLevel.SECOND)
                 .emit();
     }
 
@@ -231,15 +227,13 @@ public class DepartmentService {
     /**
      * 公用模块写日志
      */
-    private void writeLog(Department entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Department entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.DEPT_MGR)
-                .operate(opt)
                 .id(entity.getDeptId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "部门")
                 .content("名称：%s, 代码：%s, 上级: %s",
                         entity.getName(), entity.getCode(), entity.getParentId())
-                .level(logLevel)
                 .emit();
     }
 

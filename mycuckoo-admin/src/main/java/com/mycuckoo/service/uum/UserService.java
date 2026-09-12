@@ -5,9 +5,7 @@ import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.core.FileMeta;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.UserInfo;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;
@@ -86,7 +84,7 @@ public class UserService {
         }
 
         User user = userMapper.get(userId);
-        writeLog(user, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(user, enable ? "启用" : "禁用");
         return true;
     }
 
@@ -163,7 +161,7 @@ public class UserService {
             this.updateUserPhotoUrl(user.getPhotoFileId(), user.getUserId());
         }
 
-        writeLog(user, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(user, "修改");
     }
 
     public void updateBelongOrgIdForAssignRole(long organId, long userId) {
@@ -211,7 +209,7 @@ public class UserService {
             this.updateUserPhotoUrl(user.getPhotoFileId(), user.getUserId());
         }
 
-        writeLog(user, LogLevel.FIRST, OptName.SAVE);
+        writeLog(user, "新增");
     }
 
     @Transactional
@@ -239,11 +237,9 @@ public class UserService {
 
         LogOperator.begin()
                 .module(ModuleName.USER_MGR)
-                .operate(OptName.SAVE)
                 .id(entity.getUserId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "新增" + "用户")
                 .content("%s注册了新账号", entity.getName())
-                .level(LogLevel.FIRST)
                 .emit();
 
         return entity.getUserId();
@@ -256,20 +252,17 @@ public class UserService {
      * 公用模块写日志
      *
      * @param entity
-     * @param logLevel
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 20, 2012 4:17:57 PM
      */
-    private void writeLog(User entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(User entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.USER_MGR)
-                .operate(opt)
                 .id(entity.getUserId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "用户")
                 .content("用户名称: %s, 所属机构: %s", entity.getName(), entity.getOrgId())
-                .level(logLevel)
                 .emit();
     }
 

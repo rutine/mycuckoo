@@ -1,8 +1,6 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -47,7 +45,7 @@ public class SystemParameterService {
             sysParameterMapper.update(old);
         }
 
-        writeLog(old, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(old, enable ? "启用" : "禁用");
 
         return true;
     }
@@ -78,7 +76,7 @@ public class SystemParameterService {
         entity.setUpdator(SessionContextHolder.getUserId().toString());
         sysParameterMapper.update(entity);
 
-        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, "修改");
     }
 
     @Transactional
@@ -91,7 +89,7 @@ public class SystemParameterService {
         entity.setCreator(SessionContextHolder.getUserId().toString());
         sysParameterMapper.save(entity);
 
-        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, "新增");
     }
 
 
@@ -101,21 +99,18 @@ public class SystemParameterService {
      * 公用模块写日志
      *
      * @param entity 系统参数对象
-     * @param logLevel
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 15, 2012 8:20:17 PM
      */
-    private void writeLog(SysParameter entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(SysParameter entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.SYS_PARAMETER)
-                .operate(opt)
                 .id(entity.getParaId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "参数")
                 .content("参数名称：%s, 参数键值：%s, 参数值: %s, 参数类型: %s",
                         entity.getName(), entity.getKey(), entity.getValue(), entity.getType())
-                .level(logLevel)
                 .emit();
     }
 

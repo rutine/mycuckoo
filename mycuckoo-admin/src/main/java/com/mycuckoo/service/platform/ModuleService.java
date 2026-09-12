@@ -1,10 +1,8 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
@@ -115,11 +113,9 @@ public class ModuleService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_OPT_MGR)
-                .operate(OptName.DELETE)
                 .id(operateId)
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "删除" + "模块操作")
                 .content("根据操作ID删除模块操作关系,级联删除权限")
-                .level(LogLevel.THIRD)
                 .emit();
     }
 
@@ -152,7 +148,7 @@ public class ModuleService {
 
         moduleMenuMapper.delete(moduleId);
 
-        this.writeLog(moduleMenu, LogLevel.THIRD, OptName.DELETE);
+        this.writeLog(moduleMenu, "删除");
     }
 
     @Transactional
@@ -183,7 +179,7 @@ public class ModuleService {
         }
         moduleMenuMapper.update(updateEntity);
 
-        writeLog(get(moduleId), LogLevel.SECOND, enable ?  OptName.ENABLE : OptName.DISABLE);
+        writeLog(get(moduleId), enable ?  "启用" : "禁用");
 
         return true;
     }
@@ -430,7 +426,7 @@ public class ModuleService {
         entity.setUpdateTime(LocalDateTime.now());
         moduleMenuMapper.update(entity);
 
-        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, "修改");
     }
 
     @Transactional
@@ -461,7 +457,7 @@ public class ModuleService {
         entity.setCreateTime(LocalDateTime.now());
         moduleMenuMapper.save(entity);
 
-        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, "新增");
     }
 
 
@@ -573,20 +569,17 @@ public class ModuleService {
      * 公用模块写日志
      *
      * @param entity 模块对象
-     * @param level
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 10, 2012 11:04:50 PM
      */
-    private void writeLog(ModuleMenu entity, LogLevel level, OptName opt) {
+    private void writeLog(ModuleMenu entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.SYS_MOD_MGR)
-                .operate(opt)
                 .id(entity.getModuleId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "模块")
                 .content("模块名称：%s, 编码: %s", entity.getName(), entity.getCode())
-                .level(level)
                 .emit();
     }
 
@@ -611,12 +604,10 @@ public class ModuleService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_MOD_MGR)
-                .operate(OptName.ASSIGN)
                 .id(moduleId)
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "分配" + "模块操作")
                 .content("模块分配操作: %s",
                         operateIdList.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
-                .level(LogLevel.FIRST)
                 .emit();
     }
     /**
@@ -648,12 +639,10 @@ public class ModuleService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_MOD_MGR)
-                .operate(OptName.ASSIGN)
                 .id(moduleId)
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "分配" + "模块资源")
                 .content("模块分配资源: %s",
                         modResRefs.stream().map(o -> String.valueOf(o.getResourceId())).collect(Collectors.joining(DUNHAO)))
-                .level(LogLevel.FIRST)
                 .emit();
     }
 

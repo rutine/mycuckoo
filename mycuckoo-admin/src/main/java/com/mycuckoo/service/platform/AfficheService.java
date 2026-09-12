@@ -1,9 +1,7 @@
 package com.mycuckoo.service.platform;
 
 import com.mycuckoo.constant.enums.AttachmentType;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.operator.AttachmentOperator;
 import com.mycuckoo.core.operator.LogOperator;
@@ -49,12 +47,10 @@ public class AfficheService {
 
             LogOperator.begin()
                     .module(ModuleName.SYS_AFFICHE)
-                    .operate(OptName.DELETE)
                     .id("")
-                    .title(null)
+                    .title(SessionContextHolder.getUserName() + "删除" + "公告")
                     .content("删除的公告ID: %s",
                             ids.stream().map(String::valueOf).collect(Collectors.joining(DUNHAO)))
-                    .level(LogLevel.THIRD)
                     .emit();
         }
     }
@@ -86,15 +82,13 @@ public class AfficheService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_AFFICHE)
-                .operate(OptName.MODIFY)
                 .id(entity.getAfficheId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "修改" + "公告")
                 .content("ID：%s, 标题：%s, 有效期限：%s, 是否发布：%s",
                         entity.getAfficheId(),
                         entity.getTitle(),
                         entity.getInvalidate(),
                         entity.getPublish())
-                .level(LogLevel.SECOND)
                 .emit();
     }
 
@@ -110,11 +104,9 @@ public class AfficheService {
         // 3. 保存操作日志
         LogOperator.begin()
                 .module(ModuleName.SYS_AFFICHE)
-                .operate(OptName.SAVE)
                 .id(entity.getAfficheId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "新增" + "公告")
                 .content("标题：%s, 有效期限：%s", entity.getTitle(), entity.getInvalidate())
-                .level(LogLevel.FIRST)
                 .emit();
     }
 

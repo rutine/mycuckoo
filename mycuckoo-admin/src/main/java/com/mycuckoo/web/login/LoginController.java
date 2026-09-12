@@ -1,8 +1,6 @@
 package com.mycuckoo.web.login;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.core.UserInfo;
 import com.mycuckoo.core.exception.MyCuckooException;
@@ -221,12 +219,10 @@ public class LoginController {
             // 记录登录日志
             LogOperator.begin()
                     .module(ModuleName.USER_LOGIN)
-                    .operate(OptName.USER_LOGIN)
                     .id(userId)
-                    .title(null)
+                    .title(SessionContextHolder.getUserName() + "用户登录")
                     .content("组织：%s, 角色：%s, 用户: %s",
                             SessionContextHolder.getOrganName(), SessionContextHolder.getRoleName(), SessionContextHolder.getUserName())
-                    .level(LogLevel.THIRD)
                     .emit();
         }
 

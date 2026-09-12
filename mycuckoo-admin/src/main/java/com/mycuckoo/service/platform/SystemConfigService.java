@@ -1,8 +1,8 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
+import com.mycuckoo.core.util.web.SessionContextHolder;
+
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.SystemConfigLoader;
@@ -61,11 +61,9 @@ public class SystemConfigService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_CONFIG_MGR)
-                .operate(OptName.SAVE)
                 .id("")
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "新增" + "系统配置")
                 .content(optContent.toString())
-                .level(LogLevel.THIRD)
                 .emit();
     }
 

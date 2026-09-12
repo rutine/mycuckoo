@@ -1,10 +1,8 @@
 package com.mycuckoo.service.uum;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
@@ -73,7 +71,7 @@ public class OrganService {
         }
 
         Organ organ = get(organId);
-        writeLog(organ, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(organ, enable ? "启用" : "禁用");
     }
 
     public boolean existByOrganName(String organName) {
@@ -162,7 +160,7 @@ public class OrganService {
         organ.setUpdateTime(LocalDateTime.now());
         organMapper.update(organ);
 
-        writeLog(organ, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(organ, "修改");
     }
 
     @Transactional
@@ -185,7 +183,7 @@ public class OrganService {
         updateEntity.setTreeId(String.format("%s.%s", parent.getTreeId(), organ.getOrgId()));
         organMapper.update(updateEntity);
 
-        writeLog(organ, LogLevel.FIRST, OptName.SAVE);
+        writeLog(organ, "新增");
     }
 
     @Transactional
@@ -222,21 +220,18 @@ public class OrganService {
      * 公用模块写日志
      *
      * @param entity    机构对象
-     * @param logLevel
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Organ entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Organ entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.ORGAN_MGR)
-                .operate(opt)
                 .id(entity.getOrgId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "机构")
                 .content("机构名称：%s, 机构代码：%s, 上级机构: %s",
                         entity.getSimpleName(), entity.getCode(), entity.getParentId())
-                .level(logLevel)
                 .emit();
     }
 

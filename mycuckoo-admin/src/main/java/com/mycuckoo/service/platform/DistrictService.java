@@ -1,9 +1,7 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.exception.MyCuckooException;
@@ -130,7 +128,7 @@ public class DistrictService {
         district.setUpdator(SessionContextHolder.getUserId().toString());
         districtMapper.update(district);
 
-        writeLog(district, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(district, "修改");
     }
 
     @Transactional
@@ -142,7 +140,7 @@ public class DistrictService {
         district.setCreator(SessionContextHolder.getUserId().toString());
         districtMapper.save(district);
 
-        writeLog(district, LogLevel.FIRST, OptName.SAVE);
+        writeLog(district, "新增");
     }
 
 
@@ -152,20 +150,17 @@ public class DistrictService {
      * 公用地区写日志
      *
      * @param entity 地区对象
-     * @param logLevel
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 16, 2012 7:38:53 PM
      */
-    private void writeLog(District entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(District entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.SYS_DISTRICT)
-                .operate(opt)
                 .id(entity.getId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "地区")
                 .content("地区名称：%s, 地区级别：%s", entity.getName(), entity.getType())
-                .level(logLevel)
                 .emit();
     }
 

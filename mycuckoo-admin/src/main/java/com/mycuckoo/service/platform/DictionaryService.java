@@ -1,9 +1,7 @@
 package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Maps;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.repository.Page;
@@ -49,7 +47,7 @@ public class DictionaryService {
         dictionaryMapper.updateStatus(dictId, enable ? ENABLE : DISABLE);
 
         Dictionary entity = get(dictId);
-        writeLog(entity, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(entity, enable ? "启用" : "禁用");
 
         return true;
     }
@@ -100,7 +98,7 @@ public class DictionaryService {
         }
         this.saveItems(entity.getItems());
 
-        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, "修改");
     }
 
     @Transactional
@@ -119,7 +117,7 @@ public class DictionaryService {
         }
         this.saveItems(entity.getItems());
 
-        writeLog(entity, LogLevel.SECOND, OptName.SAVE);
+        writeLog(entity, "新增");
     }
 
     @Transactional
@@ -138,17 +136,15 @@ public class DictionaryService {
      *
      * @param entity   字典
      * @param logLevel 日志级别
-     * @param opt      操作名称
+     * @param action      操作名称
      */
-    private void writeLog(Dictionary entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Dictionary entity, String action) {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_TYPEDIC)
-                .operate(opt)
                 .id(entity.getDictId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "字典")
                 .content("字典名称：%s", entity.getName())
-                .level(logLevel)
                 .emit();
     }
 }

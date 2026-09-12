@@ -7,17 +7,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Date;
 
 /**
- * 功能说明: 域对象
+ * 功能说明: 系统日志域对象
  *
  * @author rutine
- * @version 3.0.0
- * @time Sep 22, 2014 9:06:08 PM
+ * @version 5.0.0
+ * @time 2026/9/12 11:00
  */
-public class SysOptLog extends BasicDomain<Long> {
+public class SysLog extends BasicDomain<Long> {
 
-    private Long optId;
-    private String modName;
-    private String optName;
+    private Long logId;
+    private String title;
     private String content;
     private Integer busiType;
     private String busiId;
@@ -31,39 +30,30 @@ public class SysOptLog extends BasicDomain<Long> {
     /**
      * default constructor
      */
-    public SysOptLog() {
+    public SysLog() {
     }
 
     /**
      * minimal constructor
      */
-    public SysOptLog(Long optId) {
-        this.optId = optId;
+    public SysLog(Long logId) {
+        this.logId = logId;
     }
 
-
-    public Long getOptId() {
-        return this.optId;
+    public Long getLogId() {
+        return this.logId;
     }
 
-    public void setOptId(Long optId) {
-        this.optId = optId;
+    public void setLogId(Long logId) {
+        this.logId = logId;
     }
 
-    public String getModName() {
-        return modName;
+    public String getTitle() {
+        return title;
     }
 
-    public void setModName(String modName) {
-        this.modName = modName;
-    }
-
-    public String getOptName() {
-        return optName;
-    }
-
-    public void setOptName(String optName) {
-        this.optName = optName;
+    public void setTitle(String title) {
+        this.title = title == null ? title : title.trim();
     }
 
     public String getContent() {

@@ -1,8 +1,6 @@
 package com.mycuckoo.service.uum;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.constant.enums.OwnerType;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
@@ -53,7 +51,7 @@ public class RoleService {
         }
 
         Role role = get(roleId);
-        writeLog(role, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
+        writeLog(role, enable ? "启用" : "禁用");
     }
 
     public boolean existByRoleName(String roleName) {
@@ -87,7 +85,7 @@ public class RoleService {
         role.setUpdator(SessionContextHolder.getUserId().toString());
         roleMapper.update(role);
 
-        writeLog(role, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(role, "修改");
     }
 
     @Transactional
@@ -102,7 +100,7 @@ public class RoleService {
         role.setStatus(ENABLE);
         roleMapper.save(role);
 
-        writeLog(role, LogLevel.FIRST, OptName.SAVE);
+        writeLog(role, "新增");
     }
 
 
@@ -112,20 +110,17 @@ public class RoleService {
      * 公用模块写日志
      *
      * @param entity     角色对象
-     * @param logLevel
-     * @param opt
+     * @param action
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 17, 2012 7:39:34 PM
      */
-    private void writeLog(Role entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Role entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.ROLE_MGR)
-                .operate(opt)
                 .id(entity.getRoleId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "角色")
                 .content("角色名称：%s", entity.getName())
-                .level(logLevel)
                 .emit();
     }
 

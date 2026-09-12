@@ -6,9 +6,7 @@ import com.mycuckoo.constant.AdminConst;
 import com.mycuckoo.constant.enums.*;
 import com.mycuckoo.core.CheckboxTree;
 import com.mycuckoo.core.SimpleTree;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.operator.LogOperator;
 import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.SystemConfigLoader;
@@ -449,12 +447,10 @@ public class PrivilegeService {
 
                 LogOperator.begin()
                         .module(ModuleName.SYS_PRIVILEGE)
-                        .operate(OptName.SAVE)
                         .id(ownerId + ":" + privilegeType.code)
-                        .title(null)
+                        .title(SessionContextHolder.getUserName() + "新增" + "权限")
                         .content("模块操作关系IDs: %s",
                                 modOptIds.stream().collect(Collectors.joining(DUNHAO)))
-                        .level(LogLevel.FIRST)
                         .emit();
             }
         }

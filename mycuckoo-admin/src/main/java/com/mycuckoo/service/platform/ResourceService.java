@@ -2,10 +2,8 @@ package com.mycuckoo.service.platform;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.constant.enums.ModuleLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -66,7 +64,7 @@ public class ResourceService {
         }
         resourceMapper.update(entity);
 
-        writeLog(entity, LogLevel.SECOND, enable ?  OptName.ENABLE : OptName.DISABLE);
+        writeLog(entity, enable ?  "启用" : "禁用");
 
         return true;
     }
@@ -142,7 +140,7 @@ public class ResourceService {
         entity.setUpdator(SessionContextHolder.getUserId().toString());
         resourceMapper.update(entity);
 
-        writeLog(entity, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(entity, "修改");
     }
 
     @Transactional
@@ -160,7 +158,7 @@ public class ResourceService {
         entity.setCreator(SessionContextHolder.getUserId().toString());
         resourceMapper.save(entity);
 
-        writeLog(entity, LogLevel.FIRST, OptName.SAVE);
+        writeLog(entity, "新增");
     }
 
 
@@ -171,20 +169,18 @@ public class ResourceService {
      *
      * @param entity  对象
      * @param logLevel 日志级别
-     * @param opt      操作名称
+     * @param action      操作名称
      * @throws MyCuckooException
      * @author rutine
      * @time May 5, 2024 12:07:21 AM
      */
-    private void writeLog(Resource entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Resource entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.SYS_RESOURCE_MRG)
-                .operate(opt)
                 .id(entity.getOperateId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "资源")
                 .content("名称：%s, method：%s, path: %s",
                         entity.getName(), entity.getMethod(), entity.getPath())
-                .level(logLevel)
                 .emit();
     }
 

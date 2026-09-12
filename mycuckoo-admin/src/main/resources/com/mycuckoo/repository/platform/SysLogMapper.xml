@@ -3,18 +3,16 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 
-    说明: SysOptLogMapper映射文件
+    说明: SysLogMapper映射文件
     
     @author rutine
-    @time Sep 23, 2014 9:56:13 AM
-    @version 3.0.0
+    @version 5.0.0
  -->
-<mapper namespace="com.mycuckoo.repository.platform.SysOptLogMapper">
-    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysOptLog">
-        <id property="optId" column="opt_id" />
+<mapper namespace="com.mycuckoo.repository.platform.SysLogMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.domain.platform.SysLog">
+        <id property="logId" column="log_id" />
         <result property="orgId" column="org_id" />
-        <result property="modName" column="mod_name" />
-        <result property="optName" column="opt_name" />
+        <result property="title" column="title" />
         <result property="content" column="content" />
         <result property="busiType" column="busi_type" />
         <result property="busiId" column="busi_id" />
@@ -26,24 +24,23 @@
     </resultMap>
     
     <sql id="columns">
-        opt_id, org_id, mod_name, opt_name, content, busi_type, busi_id,
+        log_id, org_id, title, content, busi_type, busi_id,
         ip, user_name, user_role,
         creator, create_time
     </sql>
     
     <sql id="table">
-        sys_opt_log
+        sys_log
     </sql>
 
-    <!-- 插入系统操作日志： 1.由数据库生成id并赋值到SysOptLog对象 -->
-    <insert id="save" parameterType="com.mycuckoo.domain.platform.SysOptLog"
-            useGeneratedKeys="true" keyProperty="optId" keyColumn="opt_id">
+    <!-- 插入系统日志：由数据库生成id并赋值到SysLog对象 -->
+    <insert id="save" parameterType="com.mycuckoo.domain.platform.SysLog"
+            useGeneratedKeys="true" keyProperty="logId" keyColumn="log_id">
         insert into <include refid="table" />
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="optId != null">opt_id, </if>
+            <if test="logId != null">log_id, </if>
             <if test="orgId != null">org_id, </if>
-            <if test="modName != null and modName != ''">mod_name, </if>
-            <if test="optName != null and optName != ''">opt_name, </if>
+            <if test="title != null and title != ''">title, </if>
             <if test="content != null and content != ''">content, </if>
             <if test="busiType != null">busi_type, </if>
             <if test="busiId != null and busiId != ''">busi_id, </if>
@@ -54,10 +51,9 @@
             <if test="createTime != null">create_time, </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="optId != null">#{optId}, </if>
+            <if test="logId != null">#{logId}, </if>
             <if test="orgId != null">#{orgId}, </if>
-            <if test="modName != null and modName != ''">#{modName}, </if>
-            <if test="optName != null and optName != ''">#{optName}, </if>
+            <if test="title != null and title != ''">#{title}, </if>
             <if test="content != null and content != ''">#{content}, </if>
             <if test="busiType != null">#{busiType}, </if>
             <if test="busiId != null and busiId != ''">#{busiId}, </if>
@@ -69,12 +65,11 @@
         </trim>
     </insert>
     
-    <!-- 更新系统操作日志： 1.输入对象参数 -->
-    <update id="update" parameterType="com.mycuckoo.domain.platform.SysOptLog">
+    <!-- 更新系统日志 -->
+    <update id="update" parameterType="com.mycuckoo.domain.platform.SysLog">
         update <include refid="table" />
         <set>
-            <if test="modName != null">mod_name = #{modName}, </if>
-            <if test="optName != null">opt_name = #{optName}, </if>
+            <if test="title != null">title = #{title}, </if>
             <if test="content != null">content = #{content}, </if>
             <if test="busiType != null">busi_type = #{busiType}, </if>
             <if test="busiId != null">busi_id = #{busiId}, </if>
@@ -82,52 +77,47 @@
             <if test="userName != null">user_name = #{userName}, </if>
             <if test="userRole != null">user_role = #{userRole}, </if>
         </set>
-        where opt_id = #{optId}
+        where log_id = #{logId}
     </update>
     
-    <!-- 删除系统操作日志 -->
+    <!-- 删除系统日志 -->
     <delete id="delete" parameterType="long">
-        delete from <include refid="table" /> where opt_id = #{id}
+        delete from <include refid="table" /> where log_id = #{id}
     </delete>
     
-    <!--
-        获取系统操作日志: 输出直接映射到对象
-    -->
+    <!-- 获取系统日志 -->
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where opt_id = #{id}
+        where log_id = #{id}
     </select>
 
-    <!-- 分页查找系统操作日志, 映射到 baseMap -->
+    <!-- 分页查找系统日志 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.modName != null">
-                mod_name like concat('%', #{q.modName}, '%')
-            </if>
-            <if test="q.optName != null">
-                and opt_name like concat('%', #{q.optName}, '%')
+            <if test="q.title != null">
+                title like concat('%', #{q.title}, '%')
             </if>
             <if test="q.userName != null">
                 and user_name like concat('%', #{q.userName}, '%')
             </if>
         </where>
-        order by opt_id desc
+        order by log_id desc
     </select>
     
-    <!-- 删除日志 -->
-    <delete id="deleteLogger" parameterType="date">
+    <!-- 删除指定时间之前的日志 -->
+    <delete id="deleteLogger">
         delete from <include refid="table" />
-        where create_date &lt;= #{createDate}
+        where create_time &lt;= #{optTime}
     </delete>
     
-    <!-- 根据日志ID获取系统操作日志内容 -->
-    <select id="getOptContentById" parameterType="long" resultType="string">
+    <!-- 根据日志ID获取日志内容 -->
+    <select id="getContentById" resultType="string">
         select content
         from <include refid="table" />
-        where opt_id = #{id}
+        where log_id = #{logId}
     </select>
     
 </mapper> 

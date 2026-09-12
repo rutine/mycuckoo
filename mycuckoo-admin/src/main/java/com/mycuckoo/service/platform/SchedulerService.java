@@ -1,8 +1,6 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.SystemException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -48,12 +46,10 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.DELETE)
                 .id(old.getJobId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "删除" + "调度任务")
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
                         old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCron())
-                .level(LogLevel.THIRD)
                 .emit();
     }
 
@@ -85,12 +81,10 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.MODIFY)
                 .id(old.getJobId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "修改" + "调度任务")
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
                         old.getJobName(), old.getJobClass(), old.getTriggerType(), old.getCron())
-                .level(LogLevel.SECOND)
                 .emit();
     }
 
@@ -110,12 +104,10 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.SAVE)
                 .id(entity.getJobId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "新增" + "调度任务")
                 .content("任务名称：%s, 任务类描述：%s, 触发器类型: %s, 时间表达式: %s",
                         entity.getJobName(), entity.getJobClass(), entity.getTriggerType(), entity.getCron())
-                .level(LogLevel.FIRST)
                 .emit();
     }
 
@@ -135,11 +127,9 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.START_SCHEDULER)
                 .id("")
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "启动调度器")
                 .content("启动调度器并初始化任务")
-                .level(LogLevel.THIRD)
                 .emit();
     }
 
@@ -157,11 +147,9 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.STOP_SCHEDULER)
                 .id("")
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "停止调度器")
                 .content("停止调度器")
-                .level(LogLevel.THIRD)
                 .emit();
     }
 
@@ -174,12 +162,10 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.START_JOB)
                 .id(entity.getJobId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "启动job")
                 .content("启动job：%s, job类描述：%s, 触发器类型: %s",
                         entity.getJobName(), entity.getJobClass(), entity.getTriggerType())
-                .level(LogLevel.THIRD)
                 .emit();
     }
 
@@ -191,11 +177,9 @@ public class SchedulerService {
 
         LogOperator.begin()
                 .module(ModuleName.SYS_SCHEDULER)
-                .operate(OptName.STOP_JOB)
                 .id(entity.getJobId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + "停止job")
                 .content("停止job：%s", entity.getJobName())
-                .level(LogLevel.THIRD)
                 .emit();
     }
 

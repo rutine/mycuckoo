@@ -1,8 +1,6 @@
 package com.mycuckoo.service.platform;
 
-import com.mycuckoo.core.constant.enums.LogLevel;
 import com.mycuckoo.core.constant.enums.ModuleName;
-import com.mycuckoo.core.constant.enums.OptName;
 import com.mycuckoo.core.Querier;
 import com.mycuckoo.core.exception.MyCuckooException;
 import com.mycuckoo.core.operator.LogOperator;
@@ -54,7 +52,7 @@ public class OperateService {
             operateMapper.update(operate); //修改模块操作
         }
 
-        writeLog(operate, LogLevel.SECOND, enable ?  OptName.ENABLE : OptName.DISABLE);
+        writeLog(operate, enable ?  "启用" : "禁用");
 
         return true;
     }
@@ -109,7 +107,7 @@ public class OperateService {
         operate.setUpdateTime(LocalDateTime.now());
         operateMapper.update(operate);
 
-        writeLog(operate, LogLevel.SECOND, OptName.MODIFY);
+        writeLog(operate, "修改");
     }
 
     @Transactional
@@ -124,7 +122,7 @@ public class OperateService {
         operate.setCreateTime(LocalDateTime.now());
         operateMapper.save(operate);
 
-        writeLog(operate, LogLevel.FIRST, OptName.SAVE);
+        writeLog(operate, "新增");
     }
 
 
@@ -135,20 +133,18 @@ public class OperateService {
      *
      * @param entity  模块对象
      * @param logLevel 日志级别
-     * @param opt      操作名称
+     * @param action      操作名称
      * @throws MyCuckooException
      * @author rutine
      * @time Oct 14, 2012 1:17:12 PM
      */
-    private void writeLog(Operate entity, LogLevel logLevel, OptName opt) {
+    private void writeLog(Operate entity, String action) {
         LogOperator.begin()
                 .module(ModuleName.SYS_OPT_MGR)
-                .operate(opt)
                 .id(entity.getOperateId())
-                .title(null)
+                .title(SessionContextHolder.getUserName() + action + "模块操作")
                 .content("操作名称：%s, 图标：%s, url: %s",
                         entity.getName(), entity.getIconCls(), entity.getCode())
-                .level(logLevel)
                 .emit();
     }
 
