@@ -14,10 +14,8 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.core.util.web.SessionContextHolder;
-import com.mycuckoo.domain.platform.District;
 import com.mycuckoo.domain.uum.Organ;
 import com.mycuckoo.repository.uum.OrganMapper;
-import com.mycuckoo.service.facade.PlatformServiceFacade;
 import com.mycuckoo.web.vo.res.uum.OrganVos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +50,6 @@ public class OrganService {
     private OrganMapper organMapper;
     @Autowired
     private PrivilegeService privilegeService;
-    @Autowired
-    private PlatformServiceFacade platformServiceFacade;
 
 
     @Transactional
@@ -137,11 +133,6 @@ public class OrganService {
         OrganVos.Detail vo = new OrganVos.Detail();
         BeanUtils.copyProperties(organ, vo);
         vo.setParentName(parentOrgan == null ? null: parentOrgan.getSimpleName());
-
-        District district = platformServiceFacade.getDistrict(organ.getBelongDist());
-        if (district != null) {
-            vo.setBelongDistName(district.getName());
-        }
 
         return vo;
     }

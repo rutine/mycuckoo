@@ -21,7 +21,7 @@ import static com.mycuckoo.constant.AdminConst.ID_ROOT_VALUE;
  * 功能说明: 地区Controller
  *
  * @author rutine
- * @version 3.0.0
+ * @version 5.0.0
  * @time Oct 18, 2014 10:42:49 AM
  */
 @RestController
@@ -43,7 +43,7 @@ public class DistrictController {
      * @time Jul 2, 2013 11:12:40 AM
      */
     @GetMapping
-    public AjaxResponse<Page<DistrictVo>> list(@RequestParam(value = "treeId", defaultValue = "-1") long treeId, Querier querier) {
+    public AjaxResponse<Page<DistrictVo>> list(@RequestParam(value = "treeId", required = false) String treeId, Querier querier) {
         Page<DistrictVo> page = districtService.findByPage(treeId, querier);
 
         return AjaxResponse.create(page);
@@ -83,50 +83,31 @@ public class DistrictController {
     @GetMapping("/{id}")
     public AjaxResponse<DistrictVo> get(@PathVariable long id) {
         DistrictVo district = districtService.get(id);
-        DistrictVo parentDistrict = districtService.get(district.getParentId());
-        district.setParentId(parentDistrict.getDistrictId());
-        district.setParentName(parentDistrict.getName());
+        if (district.getParentCode() != null) {
+            DistrictVo parentDistrict = districtService.getByCode(district.getParentCode());
+            district.setParentName(parentDistrict.getName());
+        }
 
         return AjaxResponse.create(district);
-    }
-
-
-    /**
-     * 功能说明 : 停用/启用模块
-     *
-     * @param id
-     * @param disEnableFlag 停用/启用标志
-     * @return
-     * @author rutine
-     * @time Jul 2, 2013 11:33:24 AM
-     */
-    @PutMapping("/{id}/disEnable/{disEnableFlag}")
-    public AjaxResponse<String> disEnable(
-            @PathVariable long id,
-            @PathVariable String disEnableFlag) {
-
-        districtService.disEnable(id, disEnableFlag);
-
-        return AjaxResponse.success("操作成功");
     }
 
     /**
      * 功能说明 : 查找节点的下级节点
      *
-     * @param id          地区id
+     * @param id          地区code
      * @return
      * @author rutine
      * @time Jul 2, 2013 11:27:54 AM
      */
     @GetMapping("/{id}/child/nodes")
-    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable long id) {
+    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable String id) {
         List<? extends SimpleTree> trees = Lists.newArrayList();
-        if (id == -1L) {
+        if ("-1".equals(id)) {
             List<SimpleTree> tmpTrees = Lists.newArrayList();
             SimpleTree root = new SimpleTree();
             root.setId(ID_ROOT_VALUE);
             root.setText("中国");
-            root.setChildren(districtService.findChildNodes(0));
+            root.setChildren(districtService.findChildNodes(ID_ROOT_VALUE));
             tmpTrees.add(root);
 
             trees = tmpTrees;

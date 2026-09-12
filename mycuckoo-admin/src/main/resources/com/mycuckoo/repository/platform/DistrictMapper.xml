@@ -2,158 +2,108 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- 
-    说明: DistrictMapper映射文件
-    
-    @author rutine
-    @time Sep 23, 2014 9:38:25 AM
-    @version 3.0.0
- -->
 <mapper namespace="com.mycuckoo.repository.platform.DistrictMapper">
     <resultMap id="baseMap" type="com.mycuckoo.domain.platform.District">
-        <id property="districtId" column="district_id" />
-        <result property="parentId" column="parent_id" />
+        <id property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="parentCode" column="parent_code" />
         <result property="code" column="code" />
         <result property="name" column="name" />
-        <result property="postal" column="postal" />
-        <result property="telcode" column="telcode" />
-        <result property="level" column="level" />
-        <result property="memo" column="memo" />
-        <result property="status" column="status" />
-        <result property="updator" column="updator" />
-        <result property="updateTime" column="update_time" />
-        <result property="creator" column="creator" />
         <result property="createTime" column="create_time" />
     </resultMap>
     
     <sql id="columns">
-        district_id, parent_id, code, name, postal,
-        telcode, level, memo, status,
-        updator, update_time, creator, create_time
+        id, type, parent_code, code, name, create_time
     </sql>
     
-    <sql id="table">
-        sys_district
-    </sql>
+    <sql id="table">sys_district</sql>
 
-    <!-- 
-        插入地区： 
-        1.由数据库生成id并赋值到DistrictType对象
-    -->
     <insert id="save" parameterType="com.mycuckoo.domain.platform.District"
             useGeneratedKeys="true" keyProperty="districtId" keyColumn="district_id">
         insert into <include refid="table" />
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="districtId != null">district_id, </if>
-            <if test="parentId != null">parent_id, </if>
+            <if test="id != null">id, </if>
+            <if test="type != null">`type`, </if>
+            <if test="parentCode != null">parent_code, </if>
             <if test="code != null and code != ''">code, </if>
             <if test="name != null and name != ''">name, </if>
-            <if test="postal != null and postal != ''">postal, </if>
-            <if test="telcode != null and telcode != ''">telcode, </if>
-            <if test="level != null">`level`, </if>
-            <if test="memo != null and memo != ''">memo, </if>
-            <if test="status != null">status, </if>
-            <if test="updator != null">updator, </if>
-            <if test="updateTime != null">update_time, </if>
-            <if test="creator != null">creator, </if>
             <if test="createTime != null">create_time, </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="districtId != null">#{districtId}, </if>
-            <if test="parentId != null">#{parentId}, </if>
+            <if test="id != null">#{id}, </if>
+            <if test="type != null">#{type}, </if>
+            <if test="parentCode != null">#{parentCode}, </if>
             <if test="code != null and code != ''">#{code}, </if>
             <if test="name != null and name != ''">#{name}, </if>
-            <if test="postal != null and postal != ''">#{postal}, </if>
-            <if test="telcode != null and telcode != ''">#{telcode}, </if>
-            <if test="level != null">#{level}, </if>
-            <if test="memo != null and memo != ''">#{memo}, </if>
-            <if test="status != null">#{status}, </if>
-            <if test="updator != null">#{updator}, </if>
-            <if test="updateTime != null">#{updateTime}, </if>
-            <if test="creator != null">#{creator}, </if>
             <if test="createTime != null">#{createTime}, </if>
         </trim>
     </insert>
-    
-    <!-- 更新地区： 1.输入对象参数 -->
+
     <update id="update" parameterType="com.mycuckoo.domain.platform.District">
         update <include refid="table" />
         <set>
-            <if test="parentId != null">parent_id = #{parentId}, </if>
+            <if test="type != null">type = #{type}, </if>
+            <if test="parentCode != null">parent_code = #{parentCode}, </if>
             <if test="code != null">code = #{code}, </if>
             <if test="name != null">name = #{name}, </if>
-            <if test="postal != null">postal = #{postal}, </if>
-            <if test="telcode != null">telcode = #{telcode}, </if>
-            <if test="level != null">level = #{level}, </if>
-            <if test="memo != null">memo = #{memo}, </if>
-            <if test="status != null">status = #{status}, </if>
-            <if test="updator != null">updator = #{updator}, </if>
-            <if test="updateTime != null">update_time = #{updateTime}, </if>
         </set>
-        where district_id = #{districtId}
+        where id = #{id}
     </update>
-    
-    <!-- 删除地区 -->
+
     <delete id="delete" parameterType="long">
-        delete from <include refid="table" /> where district_id = #{id}
+        delete from <include refid="table" /> where id = #{id}
     </delete>
-    
-    <!--
-        获取地区: 输出直接映射到对象
-    -->
+
     <select id="get" parameterType="long" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where district_id = #{id}
+        where id = #{id}
     </select>
 
-    <!-- 根据条件分页查询地区 -->
     <select id="findByPage" parameterType="map" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where district_id > 0
-        <if test="q.array != null">
-            and district_id in
-            <foreach item="id" collection="q.array" open="(" separator="," close=")">
-                #{id}
-            </foreach>
-        </if>
-        <if test="keyword != null">
-            and name like concat('%', #{keyword}, '%')
-        </if>
-        order by district_id
+        <where>
+            <if test="q.array != null and !q.array.isEmpty">
+                and code in
+                <foreach item="code" collection="q.array" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </if>
+            <if test="q.type != null and q.type != ''">and type = #{q.type}</if>
+            <if test="keyword != null">
+                and name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+        order by code
     </select>
 
-    <!-- 根据父地区ID统计下级地区数 -->
-    <select id="countByParentId" parameterType="long" resultType="int">
+    <select id="countByParentCode" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
-        where parent_id = #{parentId}
+        where parent_code = #{parentCode}
     </select>
-    
-    <!-- 判断地区名称是否存在 -->
+
     <select id="countByName" parameterType="string" resultType="int">
         select count(1)
         from <include refid="table" />
         where name = #{name}
     </select>
-    
-    <!-- 根据父地区查询下级地区, 映射到 baseMap -->
-    <select id="findByParentId" parameterType="long" resultMap="baseMap">
+
+    <select id="getByCode" parameterType="string" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where parent_id = #{parentId}
+        where code = #{code}
     </select>
-    
-    <!-- 根据父地区和过滤条件查询下级地区 -->
-    <select id="findByParentIdAndIgnoreIds" parameterType="map" resultMap="baseMap">
+
+    <select id="findByParentCodeAndIgnoreIds" parameterType="map" resultMap="baseMap">
         select <include refid="columns" />
         from <include refid="table" />
-        where parent_id = #{parentId}
-        and district_id not in
+        where parent_code = #{parentCode}
+        and id not in
         <foreach item="id" collection="ignoreIds" open="(" separator="," close=")">
             #{id}
         </foreach>
-        order by district_id
+        order by code
     </select>
 </mapper> 

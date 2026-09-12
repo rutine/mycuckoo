@@ -35,7 +35,12 @@ public class Organ extends BasicDomain<Long> {
     private String legal;        // 法人代表
     private String taxNo;        // 税务号
     private String regNo;        // 注册登记号
-    private Long belongDist;    // 所属地区
+    private String provinceCode;    // 省编码
+    private String provinceName;    // 省名称
+    private String cityCode;        // 市编码
+    private String cityName;        // 市名称
+    private String countyCode;      // 区(县)编码
+    private String countyName;      // 区(县)名称
     private String status;            // 机构状态
     private String memo;            // 备注
 
@@ -205,12 +210,52 @@ public class Organ extends BasicDomain<Long> {
         this.regNo = regNo == null ? regNo : regNo.trim();
     }
 
-    public Long getBelongDist() {
-        return belongDist;
+    public String getProvinceCode() {
+        return provinceCode;
     }
 
-    public void setBelongDist(Long belongDist) {
-        this.belongDist = belongDist;
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode == null ? provinceCode : provinceCode.trim();
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName == null ? provinceName : provinceName.trim();
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode == null ? cityCode : cityCode.trim();
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName == null ? cityName : cityName.trim();
+    }
+
+    public String getCountyCode() {
+        return countyCode;
+    }
+
+    public void setCountyCode(String countyCode) {
+        this.countyCode = countyCode == null ? countyCode : countyCode.trim();
+    }
+
+    public String getCountyName() {
+        return countyName;
+    }
+
+    public void setCountyName(String countyName) {
+        this.countyName = countyName == null ? countyName : countyName.trim();
     }
 
     public String getStatus() {

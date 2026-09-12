@@ -30,7 +30,12 @@
         <result property="legal" column="legal" />
         <result property="taxNo" column="tax_no" />
         <result property="regNo" column="reg_no" />
-        <result property="belongDist" column="belong_dist" />
+        <result property="provinceCode" column="province_code" />
+        <result property="provinceName" column="province_name" />
+        <result property="cityCode" column="city_code" />
+        <result property="cityName" column="city_name" />
+        <result property="countyCode" column="county_code" />
+        <result property="countyName" column="county_name" />
         <result property="status" column="status" />
         <result property="memo" column="memo" />
         <result property="updator" column="updator" />
@@ -43,7 +48,7 @@
         org_id, parent_id, tree_id, role_id, level, code, simple_name, full_name,
         address1, address2, tel1, tel2, begin_date, 
         type, fax, postal, legal, tax_no, 
-        reg_no, belong_dist, status, memo,
+        reg_no, province_code, province_name, city_code, city_name, county_code, county_name, status, memo,
         updator, update_time, creator, create_time
     </sql>
     
@@ -78,7 +83,12 @@
             <if test="legal != null and legal != ''">legal, </if>
             <if test="taxNo != null and taxNo != ''">tax_no, </if>
             <if test="regNo != null and regNo != ''">reg_no, </if>
-            <if test="belongDist != null">belong_dist </if>
+            <if test="provinceCode != null and provinceCode != ''">province_code, </if>
+            <if test="provinceName != null and provinceName != ''">province_name, </if>
+            <if test="cityCode != null and cityCode != ''">city_code, </if>
+            <if test="cityName != null and cityName != ''">city_name, </if>
+            <if test="countyCode != null and countyCode != ''">county_code, </if>
+            <if test="countyName != null and countyName != ''">county_name, </if>
             <if test="memo != null and memo != ''">memo, </if>
             <if test="status != null">status, </if>
             <if test="updator != null">updator, </if>
@@ -106,7 +116,12 @@
             <if test="legal != null and legal != ''">#{legal}, </if>
             <if test="taxNo != null and taxNo != ''">#{taxNo}, </if>
             <if test="regNo != null and regNo != ''">#{regNo}, </if>
-            <if test="belongDist != null">#{belongDist} </if>
+            <if test="provinceCode != null and provinceCode != ''">#{provinceCode}, </if>
+            <if test="provinceName != null and provinceName != ''">#{provinceName}, </if>
+            <if test="cityCode != null and cityCode != ''">#{cityCode}, </if>
+            <if test="cityName != null and cityName != ''">#{cityName}, </if>
+            <if test="countyCode != null and countyCode != ''">#{countyCode}, </if>
+            <if test="countyName != null and countyName != ''">#{countyName}, </if>
             <if test="memo != null and memo != ''">#{memo}, </if>
             <if test="status != null">#{status}, </if>
             <if test="updator != null">#{updator}, </if>
@@ -138,7 +153,12 @@
             <if test="legal != null">legal = #{legal}, </if>
             <if test="taxNo != null">tax_no = #{taxNo}, </if>
             <if test="regNo != null">reg_no = #{regNo}, </if>
-            <if test="belongDist != null">belong_dist = #{belongDist}, </if>
+            <if test="provinceCode != null">province_code = #{provinceCode}, </if>
+            <if test="provinceName != null">province_name = #{provinceName}, </if>
+            <if test="cityCode != null">city_code = #{cityCode}, </if>
+            <if test="cityName != null">city_name = #{cityName}, </if>
+            <if test="countyCode != null">county_code = #{countyCode}, </if>
+            <if test="countyName != null">county_name = #{countyName}, </if>
             <if test="memo != null">memo = #{memo}, </if>
             <if test="status != null">status = #{status}, </if>
             <if test="updator != null">updator = #{updator}, </if>

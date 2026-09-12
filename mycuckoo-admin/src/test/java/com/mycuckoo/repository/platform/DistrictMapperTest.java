@@ -25,10 +25,10 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
 
 
     @Test
-    public void testCountByParentId() {
-        long count = mapper.countByParentId(8l);
+    public void testCountByParentCode() {
+        long count = mapper.countByParentCode("110000");
 
-        logger.info("------> countByParentId: {}", count);
+        logger.info("------> countByParentCode: {}", count);
     }
 
     @Test
@@ -39,22 +39,21 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test
-    public void testFindByParentId() {
-        List<District> list = mapper.findByParentId(0L);
+    public void testGetByCode() {
+        District entity = mapper.getByCode("110000");
 
-        Assert.assertTrue(list.size() > 0);
+        Assert.assertTrue(entity != null);
 
-        for (District entity : list) {
-            logger.info("------> findByParentId: {}", entity);
-        }
+        logger.info("------> getByCode: {}", entity);
+
     }
 
     @Test
     public void testFindByParentIdAndIgnoreIds() {
-        List<District> list = mapper.findByParentIdAndIgnoreIds(7l, new long[]{0L, 9L});
+        List<District> list = mapper.findByParentCodeAndIgnoreIds("110000", new long[]{0L, 9L});
 
         for (District entity : list) {
-            logger.info("------> findByParentIdAndIgnoreIds: {}", entity);
+            logger.info("------> findByParentCodeAndIgnoreIds: {}", entity);
         }
     }
 
@@ -65,17 +64,13 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
         district.setCreator("1");
         district.setUpdateTime(LocalDateTime.now());
         district.setUpdator("1");
+        district.setType("province");
         district.setCode("020");
-        district.setLevel("1");
         district.setName("广州");
-        district.setPostal("7333");
-        district.setTelcode("020");
-        district.setMemo("测试");
-        district.setStatus("enable");
 
         mapper.save(district);
 
-        Assert.assertEquals(new Long(1), district.getDistrictId(), 20L);
+        Assert.assertEquals(1L, district.getId(), 20L);
     }
 
     @Test
@@ -86,13 +81,8 @@ public class DistrictMapperTest extends AbstractTransactionalJUnit4SpringContext
         district.setUpdateTime(LocalDateTime.now());
         district.setUpdator("1");
         district.setCode("020");
-        district.setLevel("1");
+        district.setType("province");
         district.setName("广州");
-        district.setPostal("7333");
-        district.setTelcode("020");
-        district.setMemo("测试");
-        district.setStatus("enable");
-        district.setDistrictId(2001L);
 
         int row = mapper.update(district);
 

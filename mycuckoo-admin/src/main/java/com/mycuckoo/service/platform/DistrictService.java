@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mycuckoo.constant.AdminConst.*;
@@ -36,7 +37,7 @@ import static com.mycuckoo.constant.AdminConst.*;
  * 功能说明: 地区业务类
  *
  * @author rutine
- * @version 3.0.0
+ * @version 5.0.0
  * @time Sep 25, 2014 10:31:29 AM
  */
 @Service
@@ -50,59 +51,34 @@ public class DistrictService {
     private DictionaryService dictionaryService;
 
 
-    @Transactional
-    public boolean disEnable(long districtId, String disEnableFlag) {
-        boolean enable = ENABLE.equals(disEnableFlag);
-        if (!enable) {
-            int count = districtMapper.countByParentId(districtId);
-            if (count > 0) { //有下级地区
-                throw new MyCuckooException("存在下级地区, 停用失败!");
-            }
-
-            districtMapper.update(new District(districtId, DISABLE));
-        } else {
-            districtMapper.update(new District(districtId, ENABLE));
-
-        }
-
-        District district = get(districtId);
-        writeLog(district, LogLevel.SECOND, enable ? OptName.ENABLE : OptName.DISABLE);
-
-        return true;
-    }
-
-    public boolean existByName(String districtName) {
-        int count = districtMapper.countByName(districtName);
+    public boolean existByName(String name) {
+        int count = districtMapper.countByName(name);
         if (count > 0) return true;
 
         return false;
     }
 
-    public Page<DistrictVo> findByPage(long treeId, Querier querier) {
-        List<Long> idList = new ArrayList<Long>();
-        if (treeId >= 0) {
-            idList = findChildIds(treeId, 0); // 过滤出所有下级
-            if (idList.isEmpty()) {
-                idList.add(-1l);
-            }
+    public Page<DistrictVo> findByPage(String treeId, Querier querier) {
+        List<String> codeList = new ArrayList<>();
+        if (Objects.nonNull(treeId)) {
+            codeList = findChildCodes(treeId, 0); // 过滤出所有下级
         }
 
-        querier.putQ("array", idList.isEmpty() ? null : idList.toArray(new Long[idList.size()]));
+        querier.putQ("array", codeList.isEmpty() ? null : codeList.toArray(new Long[codeList.size()]));
         Page<District> pageResult = districtMapper.findByPage(querier.getQ(), querier);
-        List<DictSmallType> dictSmallTypeList = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
-        Map<String, String> dicSmallTypeMap = dictSmallTypeList.stream()
+        List<DictSmallType> dicts = dictionaryService.findSmallTypesByBigTypeCode(DICT_DISTRICT);
+        Map<String, String> dictMap = dicts.stream()
                 .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictSmallType::getName));
 
         List<DistrictVo> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {
-            String distLevel = entity.getLevel().toLowerCase();
-            if (dicSmallTypeMap.containsKey(distLevel)) {
-                entity.setLevel(dicSmallTypeMap.get(distLevel));
+            String type = entity.getType().toLowerCase();
+            if (dictMap.containsKey(type)) {
+                entity.setType(dictMap.get(type));
             }
 
             DistrictVo vo = new DistrictVo();
             BeanUtils.copyProperties(entity, vo);
-            vo.setParentName(get(entity.getParentId()).getName());//上级地区名称
             vos.add(vo);
         }
 
@@ -115,26 +91,40 @@ public class DistrictService {
         }
 
         District district = districtMapper.get(districtId);
+        if (district == null) {
+            return null;
+        }
+
         DistrictVo vo = new DistrictVo();
         BeanUtils.copyProperties(district, vo);
 
         return vo;
     }
 
-    public List<? extends SimpleTree> findChildNodes(long districtId) {
+    public DistrictVo getByCode(String code) {
+        Assert.hasLength(code, "编码不能为空");
+
+        District district = districtMapper.getByCode(code.trim());
+        DistrictVo vo = new DistrictVo();
+        BeanUtils.copyProperties(district, vo);
+
+        return vo;
+    }
+
+    public List<? extends SimpleTree> findChildNodes(String code) {
         List<District> all = districtMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
 
-        return TreeHelper.buildTree(vos, String.valueOf(districtId));
+        return TreeHelper.buildTree(vos, code);
     }
 
     @Transactional
     public void update(District district) {
-        District old = get(district.getDistrictId());
+        District old = get(district.getId());
         Assert.notNull(old, "地区不存在!");
         Assert.state(old.getName().equals(district.getName())
-                || !existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
+                || !existByName(district.getName()), "名称[" + district.getName() + "]已存在!");
 
         district.setUpdateTime(LocalDateTime.now());
         district.setUpdator(SessionContextHolder.getUserId().toString());
@@ -145,9 +135,7 @@ public class DistrictService {
 
     @Transactional
     public void save(District district) {
-        Assert.state(!existByName(district.getName()), "地区名称[" + district.getName() + "]已存在!");
-        district.setParentId(district.getParentId());
-        district.setStatus(ENABLE);
+        Assert.state(!existByName(district.getName()), "名称[" + district.getName() + "]已存在!");
         district.setUpdateTime(LocalDateTime.now());
         district.setUpdator(SessionContextHolder.getUserId().toString());
         district.setCreateTime(LocalDateTime.now());
@@ -174,9 +162,9 @@ public class DistrictService {
         LogOperator.begin()
                 .module(ModuleName.SYS_DISTRICT)
                 .operate(opt)
-                .id(entity.getDistrictId())
+                .id(entity.getId())
                 .title(null)
-                .content("地区名称：%s, 地区级别：%s", entity.getName(), entity.getLevel())
+                .content("地区名称：%s, 地区级别：%s", entity.getName(), entity.getType())
                 .level(logLevel)
                 .emit();
     }
@@ -184,28 +172,28 @@ public class DistrictService {
     /**
      * 根据地区id查询所有地区节点
      *
-     * @param districtId 上级地区id
-     * @param flag       0为下级，1 为上级
+     * @param code  上级地区code
+     * @param flag  0为下级，1 为上级
      * @return
      * @author rutine
      * @time Oct 16, 2012 8:31:35 PM
      */
-    private List<Long> findChildIds(long districtId, int flag) {
+    private List<String> findChildCodes(String code, int flag) {
         List<District> all = districtMapper.findByPage(null, Querier.EMPTY).getContent();
 
         List<? extends SimpleTree> vos = toTree(all);
-        List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, String.valueOf(districtId));
+        List<? extends SimpleTree> trees = TreeHelper.buildTree(vos, code);
 
         List<String> nodeIds = Lists.newArrayList();
         TreeHelper.collectNodeIds(nodeIds, trees);
 
-        //过滤出所有下级节点ID
-        List<Long> ids = nodeIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        //过滤出所有下级节点code
+        List<String> ids = nodeIds;
 
         if (flag == 1) {
-            List<Long> allIds = all.stream().map(District::getDistrictId).collect(Collectors.toList());
-            allIds.remove(0L);  //删除根元素
-            allIds.remove(districtId);
+            List<String> allIds = all.stream().map(District::getCode).collect(Collectors.toList());
+            allIds.remove("0");  //删除根元素
+            allIds.remove(code);
             allIds.removeAll(ids);
 
             ids = allIds;
@@ -225,10 +213,10 @@ public class DistrictService {
     private List<? extends SimpleTree> toTree(List<District> list) {
         return list.stream().map(mapper -> {
             SimpleTree tree = new SimpleTree();
-            tree.setId(mapper.getDistrictId().toString());
-            tree.setParentId(mapper.getParentId().toString());
+            tree.setId(mapper.getCode());
+            tree.setParentId(mapper.getParentCode() == null ? ID_ROOT_VALUE : mapper.getParentCode());
             tree.setText(mapper.getName());
-            if (CITY.equalsIgnoreCase(mapper.getLevel())) {
+            if ("county".equalsIgnoreCase(mapper.getType())) {
                 tree.setIsLeaf(true); // 城市节点
             }
 

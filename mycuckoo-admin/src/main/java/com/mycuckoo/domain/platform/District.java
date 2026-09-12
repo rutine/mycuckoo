@@ -4,6 +4,8 @@ import com.mycuckoo.domain.BasicDomain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.time.LocalDateTime;
+
 /**
  * 功能说明: 域对象
  *
@@ -14,44 +16,26 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class District extends BasicDomain<Long> {
     private static final long serialVersionUID = 1000000L;
 
-    private Long districtId;
-    private Long parentId;
+    private String type;
+    private String parentCode;
     private String code;
     private String name;
-    private String postal;
-    private String telcode;
-    private String level;
-    private String memo;
-    private String status;
+    private LocalDateTime createTime;
 
-    /**
-     * default constructor
-     */
-    public District() {
+    public String getType() {
+        return type;
     }
 
-    /**
-     * minimal constructor
-     */
-    public District(Long districtId, String status) {
-        this.districtId = districtId;
-        this.status = status;
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
     }
 
-    public Long getDistrictId() {
-        return this.districtId;
+    public String getParentCode() {
+        return parentCode;
     }
 
-    public void setDistrictId(Long districtId) {
-        this.districtId = districtId;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setParentCode(String parentCode) {
+        this.parentCode = parentCode == null ? null : parentCode.trim();
     }
 
     public String getCode() {
@@ -59,7 +43,7 @@ public class District extends BasicDomain<Long> {
     }
 
     public void setCode(String code) {
-        this.code = code == null ? code : code.trim();
+        this.code = code == null ? null : code.trim();
     }
 
     public String getName() {
@@ -67,70 +51,28 @@ public class District extends BasicDomain<Long> {
     }
 
     public void setName(String name) {
-        this.name = name == null ? name : name.trim();
+        this.name = name == null ? null : name.trim();
     }
 
-    public String getPostal() {
-        return postal;
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    public void setPostal(String postal) {
-        this.postal = postal == null ? postal : postal.trim();
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
 
-    public String getTelcode() {
-        return telcode;
-    }
-
-    public void setTelcode(String telcode) {
-        this.telcode = telcode == null ? telcode : telcode.trim();
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level == null ? level : level.trim();
-    }
-
-    public String getMemo() {
-        return this.memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo == null ? memo : memo.trim();
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status == null ? status : status.trim();
-    }
-
-
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null) return false;
-        if (this.getClass() != obj.getClass()) return false;
-        District district = (District) obj;
-        if (district.getDistrictId() != null && getDistrictId() != null &&
-                district.getDistrictId().longValue() ==
-                        this.getDistrictId().longValue()) {
-            return true;
-        } else {
-            return false;
-        }
+        if (!(obj instanceof District)) return false;
+        District that = (District) obj;
+        return getId() != null && that.getId() != null && getId().equals(that.getId());
     }
 
+    @Override
     public int hashCode() {
-        int result = 17;
-
-        result = 37 * result + (getDistrictId() == null ? 0 : getDistrictId().hashCode());
-
-        return result;
+        return getId() == null ? 0 : getId().hashCode();
     }
 
     @Override
