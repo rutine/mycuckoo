@@ -124,11 +124,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         where module_id != 0
-        <if test="q.name != null">
-            and name like concat('%', #{q.name}, '%')
-        </if>
-        <if test="q.code != null">
-            and code like concat('%', #{q.code}, '%')
+        <if test="keyword != null and keyword != ''">
+            and name like concat('%', #{keyword}, '%')
         </if>
         order by module_id desc
     </select>

@@ -1,7 +1,7 @@
 package com.mycuckoo.core.repository.auth;
 
-import com.mycuckoo.core.repository.annotation.PreAuth;
-import com.mycuckoo.core.repository.param.PreAuthInfo;
+import com.mycuckoo.core.annotation.RowPermission;
+import com.mycuckoo.core.repository.param.RowPermissionInfo;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
@@ -27,34 +27,34 @@ import java.util.function.BiConsumer;
  * @version 4.1.0
  * @time 2024/5/25 10:30
  */
-public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInfo>> {
+public class RowResolver extends EnumerablePropertySource<Map<String, RowPermissionInfo>> {
     private static String rowSql = "SELECT u_1.user_id FROM uum_user u_1 WHERE u_1.org_id = ?";
 
     private static Select select = parse(rowSql);
 
     private String[] propertyNames;
-    private PreAuthInfo defaultAuth;
+    private RowPermissionInfo defaultPermission;
 
 
-    public static RowResolver from(@NonNull PreAuthInfo authInfo) {
+    public static RowResolver from(@NonNull RowPermissionInfo authInfo) {
         return from(authInfo, null);
     }
 
-    public static RowResolver from(@NonNull PreAuthInfo authInfo, PreAuthInfo authInfo2) {
-        Map<String, PreAuthInfo> source = new HashMap<>();
+    public static RowResolver from(@NonNull RowPermissionInfo authInfo, RowPermissionInfo authInfo2) {
+        Map<String, RowPermissionInfo> source = new HashMap<>();
         source.put(authInfo.getTable(), authInfo);
         if (authInfo2 != null) {
-            source.put(authInfo2.getTable(), new PreAuthInfo(authInfo2.getTable(), authInfo2.getAlias(), authInfo2.getTenant(), authInfo2.getUser()));
+            source.put(authInfo2.getTable(), new RowPermissionInfo(authInfo2.getTable(), authInfo2.getAlias(), authInfo2.getTenant(), authInfo2.getUser()));
         }
 
         return new RowResolver(source, StringUtils.toStringArray(source.keySet()), authInfo2);
     }
 
 
-    private RowResolver(Map<String, PreAuthInfo> source, String[] propertyNames, PreAuthInfo defaultAuth) {
+    private RowResolver(Map<String, RowPermissionInfo> source, String[] propertyNames, RowPermissionInfo defaultPermission) {
         super("rowSource", source);
         this.propertyNames = propertyNames;
-        this.defaultAuth = defaultAuth;
+        this.defaultPermission = defaultPermission;
     }
 
     @Override
@@ -64,21 +64,21 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
 
     @Nullable
     @Override
-    public PreAuthInfo getProperty(String name) {
+    public RowPermissionInfo getProperty(String name) {
         return this.source.get(name);
     }
 
     public boolean isPreFiltered() {
-        return this.defaultAuth != null;
+        return this.defaultPermission != null;
     }
 
-    public PreAuthInfo getDefaultAuth() {
-        return this.defaultAuth;
+    public RowPermissionInfo getDefaultPermission() {
+        return this.defaultPermission;
     }
 
     public PlainSelect getSelect() {
-        PreAuthInfo authData = this.getDefaultAuth();
-        Table table = new Table(authData.getTable());
+        RowPermissionInfo rowPermission = this.getDefaultPermission();
+        Table table = new Table(rowPermission.getTable());
         Column column = new Column("id");
         PlainSelect select = new PlainSelect()
                 .withSelectItems(Arrays.asList(new SelectItem<>(column)))
@@ -90,12 +90,12 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
     //where 行权限
     public Expression rowExpression(Table table, boolean onlyTenant, BiConsumer<String, Object> addParameters) {
         // column in (select * from table)
-        PreAuthInfo preAuthInfo = this.getProperty(table.getName());
+        RowPermissionInfo rowPermissionInfo = this.getProperty(table.getName());
         EqualsTo left = null;
-        if ((preAuthInfo.getRow() & PreAuth.Row.TENANT.getValue()) == PreAuth.Row.TENANT.getValue()) {
+        if ((rowPermissionInfo.getRow() & RowPermission.Row.TENANT.getValue()) == RowPermission.Row.TENANT.getValue()) {
             RowInfo authInfo = RowContextHolder.get();
             left = new EqualsTo()
-                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, preAuthInfo.getTenant()))
+                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, rowPermissionInfo.getTenant()))
                     .withRightExpression(new LongValue(authInfo.getOrgId()));
         }
         if (onlyTenant) {
@@ -103,9 +103,9 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
         }
 
         InExpression right = null;
-        if ((preAuthInfo.getRow() & PreAuth.Row.USER.getValue()) == 2) {
+        if ((rowPermissionInfo.getRow() & RowPermission.Row.USER.getValue()) == 2) {
             right = new InExpression()
-                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, preAuthInfo.getUser()))
+                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, rowPermissionInfo.getUser()))
                     .withRightExpression(new ParenthesedSelect().withSelect(parse(newSql())));
         }
 
@@ -118,8 +118,8 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
 
     //inner join 行权限
     public Collection<Join> rowJoins(Table table, BiConsumer<String, Object> addParameters) {
-        PreAuthInfo preAuthInfo = this.getProperty(table.getName());
-        if ((preAuthInfo.getRow() & PreAuth.Row.USER.getValue()) != 2) {
+        RowPermissionInfo rowPermissionInfo = this.getProperty(table.getName());
+        if ((rowPermissionInfo.getRow() & RowPermission.Row.USER.getValue()) != 2) {
            return Collections.emptyList();
         }
 
@@ -128,11 +128,11 @@ public class RowResolver extends EnumerablePropertySource<Map<String, PreAuthInf
 
         Expression on = new EqualsTo()
                 .withLeftExpression(authSelect.getSelectItem(0).getExpression())
-                .withRightExpression(new Column(table.getAlias() == null ? null : table, preAuthInfo.getUser()));
-        if ((preAuthInfo.getRow() & PreAuth.Row.TENANT.getValue()) == PreAuth.Row.TENANT.getValue()) {
+                .withRightExpression(new Column(table.getAlias() == null ? null : table, rowPermissionInfo.getUser()));
+        if ((rowPermissionInfo.getRow() & RowPermission.Row.TENANT.getValue()) == RowPermission.Row.TENANT.getValue()) {
             RowInfo authInfo = RowContextHolder.get();
             on = new AndExpression(on, new EqualsTo()
-                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, preAuthInfo.getTenant()))
+                    .withLeftExpression(new Column(table.getAlias() == null ? null : table, rowPermissionInfo.getTenant()))
                     .withRightExpression(new LongValue(authInfo.getOrgId())));
         }
         if (authSelect.getWhere() != null) {

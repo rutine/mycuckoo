@@ -1,6 +1,6 @@
 package com.mycuckoo.core.repository.auth;
 
-import com.mycuckoo.core.repository.param.PreAuthInfo;
+import com.mycuckoo.core.repository.param.RowPermissionInfo;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -41,9 +41,9 @@ public class SelectRowSqlBuilder extends SqlBuilder {
             this.wheres.add(0, this.newEq(new net.sf.jsqlparser.schema.Column("id"), this.newJdbcParameter()));
 
             //组织行权限
-            if (resolver.getDefaultAuth().getRow() == 1) {
+            if (resolver.getDefaultPermission().getRow() == 1) {
                 consumer.accept("orgId", info.getOrgId());
-                this.wheres.add(this.newEq(new net.sf.jsqlparser.schema.Column(resolver.getDefaultAuth().getTenant()), this.newJdbcParameter()));
+                this.wheres.add(this.newEq(new net.sf.jsqlparser.schema.Column(resolver.getDefaultPermission().getTenant()), this.newJdbcParameter()));
                 return;
             }
         }
@@ -91,8 +91,8 @@ public class SelectRowSqlBuilder extends SqlBuilder {
         if (table == null && plainSelect.getFromItem().getAlias() != null
                 && (found = this.processFromItem(plainSelect.getFromItem(), consumer, lookup))) {
             Alias alias = plainSelect.getFromItem().getAlias();
-            PreAuthInfo authData = resolver.getProperty(alias.getName());
-            if (authData != null && authData.getAlias() == null) {
+            RowPermissionInfo rowPermission = resolver.getProperty(alias.getName());
+            if (rowPermission != null && rowPermission.getAlias() == null) {
                 table = new Table(alias.getName());
             } else {
                 return true;
@@ -161,11 +161,11 @@ public class SelectRowSqlBuilder extends SqlBuilder {
         return false;
     }
     private Table getTable(Table table) {
-        PreAuthInfo authData = resolver.getProperty(table.getName());
-        if (authData == null) {
+        RowPermissionInfo rowPermission = resolver.getProperty(table.getName());
+        if (rowPermission == null) {
             return null;
         }
-        if (authData.getAlias() == null || (table.getAlias() != null && table.getAlias().getName().equals(authData.getAlias()))) {
+        if (rowPermission.getAlias() == null || (table.getAlias() != null && table.getAlias().getName().equals(rowPermission.getAlias()))) {
             return table;
         }
 

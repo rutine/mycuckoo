@@ -1,9 +1,9 @@
 package com.mycuckoo.core.repository.plugin;
 
-import com.mycuckoo.core.repository.auth.PreAuthBeanPostProcessor;
+import com.mycuckoo.core.repository.auth.RowPermissionBeanPostProcessor;
 import com.mycuckoo.core.repository.auth.RowResolver;
 import com.mycuckoo.core.repository.auth.SqlEnhancer;
-import com.mycuckoo.core.repository.param.PreAuthInfo;
+import com.mycuckoo.core.repository.param.RowPermissionInfo;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.plugin.*;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Intercepts({
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
 })
-public class UpdateInterceptor extends PreAuthBeanPostProcessor implements Interceptor {
+public class UpdateInterceptor extends RowPermissionBeanPostProcessor implements Interceptor {
     private static Logger logger = LoggerFactory.getLogger(UpdateInterceptor.class);
 
     public Object intercept(Invocation invocation) throws Throwable {
@@ -35,8 +35,8 @@ public class UpdateInterceptor extends PreAuthBeanPostProcessor implements Inter
             return invocation.proceed();
         }
 
-        PreAuthInfo auth = authMap.get(ms.getId());
-        RowResolver rowResolver = auth == null || auth.getRow() == 0 ? null : RowResolver.from(auth, this.find(parameter, PreAuthInfo.class));
+        RowPermissionInfo rowPermission = authMap.get(ms.getId());
+        RowResolver rowResolver = rowPermission == null || rowPermission.getRow() == 0 ? null : RowResolver.from(rowPermission, this.find(parameter, RowPermissionInfo.class));
         if (rowResolver != null) {
             SqlEnhancer enhancer = new SqlEnhancer(ms.getConfiguration(), parameter, boundSql, null, rowResolver);
             boundSql = enhancer.enhance();

@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
 import com.mycuckoo.core.repository.Repository;
-import com.mycuckoo.core.repository.annotation.PreAuth;
+import com.mycuckoo.core.annotation.RowPermission;
 import com.mycuckoo.domain.platform.SysLog;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,7 +14,7 @@ import java.util.Date;
  * @version 5.0.0
  * @time 2026/9/12 11:00
  */
-@PreAuth(table = "sys_log")
+@RowPermission(table = "sys_log")
 public interface SysLogMapper extends Repository<SysLog, Long> {
 
     /**

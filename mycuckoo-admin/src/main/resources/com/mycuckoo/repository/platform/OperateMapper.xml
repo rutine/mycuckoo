@@ -104,7 +104,7 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="keyword != null">
+            <if test="keyword != null and keyword != ''">
                 name like concat('%', #{keyword}, '%')
             </if>
         </where>

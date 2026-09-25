@@ -20,7 +20,7 @@ MyCuckoo
 # 特性 
 1. 核心模块`core`提供基础工具依赖, `admin`用户权限服务，`gateway`网关服务(试验性，依赖nacos服务注册与发现)
 2. 分页插件 `PageIntercepter`, 通过识别接口`Page`类型分页参数, 完成自动分页查询功能
-3. SQL增强器 `SqlEnhance`, 实现根据请求参数动态添加参数的SQL过滤条件，解析`@PreAuth`注解添加行数据权限的SQL过滤条件, 最终构建新的查询SQL，达到`SQL`增强目的
+3. SQL增强器 `SqlEnhance`, 实现根据请求参数动态添加参数的SQL过滤条件，解析`@RowPermission`注解添加行数据权限的SQL过滤条件, 最终构建新的查询SQL，达到`SQL`增强目的
 4. 日志操作器工具 `LogOperator`, 链式操作，在需要的每个方法增加操作日志记录, 持久入库, 实现每个动作都有迹可循
 5. url资源权限过滤器 `PrivilegeFilterr`, 每一个接口都是资源，都有自己的标识, 实现精确控制; 前端页面基于标识实现按钮显示
 6. 全局异常处理 `MycuckooExceptionHandler`, 统一异常处理

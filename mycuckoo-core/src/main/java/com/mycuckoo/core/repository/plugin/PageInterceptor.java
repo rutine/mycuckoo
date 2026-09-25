@@ -3,10 +3,10 @@ package com.mycuckoo.core.repository.plugin;
 import com.mycuckoo.core.repository.PageImpl;
 import com.mycuckoo.core.repository.PageQuery;
 import com.mycuckoo.core.repository.Pageable;
-import com.mycuckoo.core.repository.auth.PreAuthBeanPostProcessor;
+import com.mycuckoo.core.repository.auth.RowPermissionBeanPostProcessor;
 import com.mycuckoo.core.repository.auth.RowResolver;
 import com.mycuckoo.core.repository.auth.SqlEnhancer;
-import com.mycuckoo.core.repository.param.PreAuthInfo;
+import com.mycuckoo.core.repository.param.RowPermissionInfo;
 import com.mycuckoo.core.repository.param.QueryContext;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class})
 })
-public class PageInterceptor extends PreAuthBeanPostProcessor implements Interceptor {
+public class PageInterceptor extends RowPermissionBeanPostProcessor implements Interceptor {
     private static Logger logger = LoggerFactory.getLogger(PageInterceptor.class);
 
     private String countSuffix = "_count";
@@ -78,8 +78,8 @@ public class PageInterceptor extends PreAuthBeanPostProcessor implements Interce
             boundSql = (BoundSql)args[5];
         }
 
-        PreAuthInfo auth = authMap.get(ms.getId());
-        RowResolver rowResolver = auth == null || auth.getRow() == 0 ? null : RowResolver.from(auth, this.find(parameter, PreAuthInfo.class));
+        RowPermissionInfo rowPermission = authMap.get(ms.getId());
+        RowResolver rowResolver = rowPermission == null || rowPermission.getRow() == 0 ? null : RowResolver.from(rowPermission, this.find(parameter, RowPermissionInfo.class));
         if (context != null || rowResolver != null) {
             SqlEnhancer enhancer = new SqlEnhancer(ms.getConfiguration(), parameter, boundSql, context, rowResolver);
             boundSql = enhancer.enhance();

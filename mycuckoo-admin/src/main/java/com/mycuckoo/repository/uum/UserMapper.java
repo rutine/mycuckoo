@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.uum;
 
 import com.mycuckoo.core.repository.Repository;
-import com.mycuckoo.core.repository.annotation.PreAuth;
+import com.mycuckoo.core.annotation.RowPermission;
 import com.mycuckoo.domain.uum.User;
 import com.mycuckoo.domain.uum.UserExtend;
 import org.apache.ibatis.annotations.Param;
@@ -15,7 +15,7 @@ import java.util.List;
  * @version 3.0.0
  * @time Sep 24, 2014 10:51:46 AM
  */
-@PreAuth(table = "uum_user")
+@RowPermission(table = "uum_user")
 public interface UserMapper extends Repository<User, Long> {
 
     /**
@@ -58,7 +58,7 @@ public interface UserMapper extends Repository<User, Long> {
      * @param accountId
      * @return
      */
-    @PreAuth(table = "uum_user", row = PreAuth.Row.NONE)
+    @RowPermission(table = "uum_user", row = RowPermission.Row.NONE)
     List<UserExtend> findByAccountId(Long accountId);
 
     /**

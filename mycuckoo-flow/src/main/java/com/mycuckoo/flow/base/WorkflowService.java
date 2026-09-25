@@ -15,11 +15,7 @@ import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableOptimisticLockingException;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.IdentityService;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
+import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -75,6 +71,9 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
         ProcessDefinitionQuery query = repositoryService.createProcessDefinitionQuery()
                 .orderByProcessDefinitionKey().desc()
                 .latestVersion();
+        if (StringUtils.hasText(querier.getKeyword())) {
+            query.processDefinitionNameLike(querier.getKeyword() + "%");
+        }
         long count = query.count();
         List<ProcessDefinition> list = query.listPage((querier.getPageNo() - 1) * querier.getPageSize(), querier.getPageSize());
 
@@ -156,6 +155,10 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 //                .taskCandidateOrAssigned(String.valueOf(userId))
                 .orderByTaskCreateTime().desc();
 
+        if (StringUtils.hasText(querier.getKeyword())) {
+            query.taskNameLike(querier.getKeyword() + "%");
+        }
+
         long count = query.count();
         List<Task> list = query.listPage((querier.getPageNo() - 1) * querier.getPageSize(), querier.getPageSize());
         Map<String, ProcessDefinition> definitionCache = new HashMap<>();
@@ -211,9 +214,13 @@ public class WorkflowService extends WorkflowInterceptorAdapter {
 
         HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
                 .taskTenantId(String.valueOf(tenantId))
-                .taskAssignee(String.valueOf(21))
+                .taskAssignee(String.valueOf(userId))
                 .finished()
                 .orderByHistoricTaskInstanceEndTime().desc();
+
+        if (StringUtils.hasText(querier.getKeyword())) {
+            query.taskNameLike(querier.getKeyword() + "%");
+        }
 
         long count = query.count();
         List<HistoricTaskInstance> list = query.listPage((querier.getPageNo() - 1) * querier.getPageSize(), querier.getPageSize());

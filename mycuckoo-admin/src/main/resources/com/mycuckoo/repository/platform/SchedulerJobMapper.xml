@@ -117,8 +117,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.jobName != null">
-                and job_name like concat('%', #{q.jobName}, '%')
+            <if test="keyword != null and keyword != ''">
+                and job_name like concat('%', #{keyword}, '%')
             </if>
             <if test="q.triggerType != null">
                 and trigger_type like concat('%', #{q.triggerType}, '%')

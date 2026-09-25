@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.platform;
 
 import com.mycuckoo.core.repository.Repository;
-import com.mycuckoo.core.repository.annotation.PreAuth;
+import com.mycuckoo.core.annotation.RowPermission;
 import com.mycuckoo.domain.platform.Attachment;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * @version 5.0.0
  * @time Apr 11, 2026 10:55:00 AM
  */
-@PreAuth(table = "sys_attachment")
+@RowPermission(table = "sys_attachment")
 public interface AttachmentMapper extends Repository<Attachment, Long> {
 
     /**

@@ -97,8 +97,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         where role_id != 0
-        <if test="q.name !=null">
-            and name like concat('%', #{q.name}, '%')
+        <if test="keyword !=null and keyword != ''">
+            and name like concat('%', #{keyword}, '%')
         </if>
         order by role_id desc
     </select>

@@ -13,6 +13,11 @@ import java.util.Map;
  * @time 2024/5/25 10:14
  */
 public interface PageQuery extends Pageable {
+    @Deprecated
+    default int getPageNumber() {
+        return getPageNo();
+    }
+
     //页码
     int getPageNo();
 

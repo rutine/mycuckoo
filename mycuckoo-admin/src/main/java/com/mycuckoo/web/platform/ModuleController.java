@@ -52,13 +52,8 @@ public class ModuleController {
         List<? extends SimpleTree> all = moduleService.findByPage(Querier.EMPTY);
 
         List<? extends SimpleTree> list = TreeHelper.buildTree(all, ID_ROOT_VALUE);
-        String code = (String) querier.getRequired("code");
-        String name = (String) querier.getRequired("name");
-        if (StrUtils.isNotBlank(code)) {
-            list = TreeHelper.treeFilter(list, code, (node, keyword) -> ((ModuleMenuVos.Tree) node).getCode().contains(keyword));
-        }
-        if (StrUtils.isNotBlank(name)) {
-            list = TreeHelper.treeFilter(list, name, (node, keyword) -> ((ModuleMenuVos.Tree) node).getName().contains(keyword));
+        if (StrUtils.isNotBlank(querier.getKeyword())) {
+            list = TreeHelper.treeFilter(list, querier.getKeyword(), (node, keyword) -> ((ModuleMenuVos.Tree) node).getName().contains(keyword));
         }
 
         return AjaxResponse.create(list);

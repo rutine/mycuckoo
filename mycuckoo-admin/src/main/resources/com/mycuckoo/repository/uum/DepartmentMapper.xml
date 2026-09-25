@@ -143,8 +143,8 @@
 
     <sql id="whereStatement">
         <where>
-            <if test="q.name != null and q.name != ''">
-                and q.name like concat('%', #{q.name}, '%')
+            <if test="keyword != null and keyword != ''">
+                and t1.name like concat('%', #{keyword}, '%')
             </if>
             <if test="q.treeId != null">
                 and tree_id like concat(#{q.treeId}, '.%')

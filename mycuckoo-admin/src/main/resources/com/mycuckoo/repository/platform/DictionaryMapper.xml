@@ -89,11 +89,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.code != null">
-                code like concat('%', #{q.code}, '%')
-            </if>
-            <if test="q.name != null">
-                and name like concat('%', #{q.name}, '%')
+            <if test="keyword != null and keyword != ''">
+                name like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by dict_id desc

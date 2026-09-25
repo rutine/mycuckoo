@@ -113,10 +113,10 @@
             #{item.width},
             #{item.extra},
             #{item.order},
-            #{updator},
-            #{updateTime},
-            #{creator},
-            #{createTime}
+            #{item.updator},
+            #{item.updateTime},
+            #{item.creator},
+            #{item.createTime}
         )
         </foreach>
     </insert>

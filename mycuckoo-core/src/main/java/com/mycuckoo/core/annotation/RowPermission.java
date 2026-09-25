@@ -1,20 +1,23 @@
-package com.mycuckoo.core.repository.annotation;
+package com.mycuckoo.core.annotation;
 
 import java.lang.annotation.*;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface PreAuth {
-    //表名
+/**
+ * 行级数据权限配置。
+ */
+public @interface RowPermission {
+    // 表名
     String table();
-    //别名
+    // 别名
     String alias() default "";
-    //租户字段(组织)
+    // 租户字段(组织)
     String tenant() default "org_id";
-    //用户字段
+    // 用户字段
     String user() default "user_id";
-    //行权限
+    // 行权限类型
     Row row() default Row.TENANT;
 
 

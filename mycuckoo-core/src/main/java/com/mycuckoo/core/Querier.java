@@ -40,12 +40,6 @@ public class Querier implements PageQuery, Pageable {
         this.pageSize = size;
     }
 
-    @Deprecated
-    @Override
-    public int getPageNumber() {
-        return this.getPageNo();
-    }
-
     public int getPageNo() {
         if (pageNo == null) {
             return 1;
@@ -173,6 +167,11 @@ public class Querier implements PageQuery, Pageable {
         return new CloneQuerier(this, aggr);
     }
 
+    public Querier copy(List<? extends Column> columns) {
+        return new CloneQuerier(this, columns);
+    }
+
+
     private class CloneQuerier extends Querier implements PageQuery {
         private Querier querier;
         private List<? extends Column> columns;
@@ -194,12 +193,6 @@ public class Querier implements PageQuery, Pageable {
         CloneQuerier(Querier querier, List<? extends Column> columns) {
             this.querier = querier;
             this.columns = columns;
-        }
-
-        @Deprecated
-        @Override
-        public int getPageNumber() {
-            return querier.getPageNo();
         }
 
         @Override

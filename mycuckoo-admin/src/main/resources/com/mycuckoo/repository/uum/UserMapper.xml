@@ -153,8 +153,8 @@
         left join uum_organ t2 on t2.org_id = t1.org_id
         left join uum_role t5 on t5.role_id = t1.role_id
         <where>
-            <if test="q.name != null and q.name != ''">
-                and t1.name like concat('%', #{q.name}, '%')
+            <if test="keyword != null and keyword != ''">
+                and t1.name like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by t1.user_id desc

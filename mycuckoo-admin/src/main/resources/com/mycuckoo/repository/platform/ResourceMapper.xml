@@ -120,8 +120,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.name != null">
-                name like #{q.name}
+            <if test="keyword != null and keyword != ''">
+                name like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by operate_id desc

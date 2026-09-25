@@ -97,11 +97,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.title != null">
-                title like concat('%', #{q.title}, '%')
-            </if>
-            <if test="q.userName != null">
-                and user_name like concat('%', #{q.userName}, '%')
+            <if test="keyword != null and keyword != ''">
+                title like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by log_id desc

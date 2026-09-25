@@ -102,11 +102,8 @@
         select <include refid="columns" />
         from <include refid="table" />
         <where>
-            <if test="q.name != null">
-                name like concat('%', #{q.name}, '%')
-            </if>
-            <if test="q.key != null">
-                and `key` like concat('%', #{q.key}, '%')
+            <if test="keyword != null and keyword != ''">
+                name like concat('%', #{keyword}, '%')
             </if>
         </where>
         order by para_id desc

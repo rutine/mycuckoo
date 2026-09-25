@@ -37,9 +37,8 @@ public class DepartmentController {
     @GetMapping
     public AjaxResponse<List<? extends SimpleTree>> list(Querier querier) {
         List<? extends SimpleTree> all = deptService.findAll(Querier.EMPTY);
-        String name = (String) querier.getRequired("name");
-        if (StrUtils.isNotBlank(name)) {
-            all = TreeHelper.treeFilter(all, name, (node, keyword) -> node.getText().contains(keyword));
+        if (StrUtils.isNotBlank(querier.getKeyword())) {
+            all = TreeHelper.treeFilter(all, querier.getKeyword(), (node, keyword) -> node.getText().contains(keyword));
         }
 
         return AjaxResponse.create(all);

@@ -1,6 +1,6 @@
 package com.mycuckoo.core.repository.auth;
 
-import com.mycuckoo.core.repository.param.PreAuthInfo;
+import com.mycuckoo.core.repository.param.RowPermissionInfo;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -144,8 +144,8 @@ public class UpdateRowSqlBuilder  {
         }
         if (table == null && delete.getTable().getAlias() != null) {
             Alias alias = delete.getTable().getAlias();
-            PreAuthInfo authData = resolver.getProperty(alias.getName());
-            if (authData != null && (authData.getAlias() == null || authData.getAlias().equals(""))) {
+            RowPermissionInfo rowPermission = resolver.getProperty(alias.getName());
+            if (rowPermission != null && (rowPermission.getAlias() == null || rowPermission.getAlias().equals(""))) {
                 table = new Table(alias.getName());
             }
         }
@@ -198,11 +198,11 @@ public class UpdateRowSqlBuilder  {
         return false;
     }
     private Table getTable(Table table) {
-        PreAuthInfo authData = resolver.getProperty(table.getName());
-        if (authData == null) {
+        RowPermissionInfo rowPermission = resolver.getProperty(table.getName());
+        if (rowPermission == null) {
             return null;
         }
-        if (authData.getAlias() == null || (table.getAlias() != null && table.getAlias().getName().equals(authData.getAlias()))) {
+        if (rowPermission.getAlias() == null || (table.getAlias() != null && table.getAlias().getName().equals(rowPermission.getAlias()))) {
             return table;
         }
 

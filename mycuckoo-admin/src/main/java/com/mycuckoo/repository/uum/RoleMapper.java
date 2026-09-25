@@ -1,7 +1,7 @@
 package com.mycuckoo.repository.uum;
 
 import com.mycuckoo.core.repository.Repository;
-import com.mycuckoo.core.repository.annotation.PreAuth;
+import com.mycuckoo.core.annotation.RowPermission;
 import com.mycuckoo.domain.uum.Role;
 
 /**
@@ -11,7 +11,7 @@ import com.mycuckoo.domain.uum.Role;
  * @version 3.0.0
  * @time Sep 24, 2014 10:46:52 AM
  */
-@PreAuth(table = "uum_role")
+@RowPermission(table = "uum_role")
 public interface RoleMapper extends Repository<Role, Long> {
 
     /**
@@ -22,6 +22,6 @@ public interface RoleMapper extends Repository<Role, Long> {
      */
     int countByRoleName(String roleName);
 
-    @PreAuth(table = "uum_role", row = PreAuth.Row.NONE)
+    @RowPermission(table = "uum_role", row = RowPermission.Row.NONE)
     Role getByRegDefault(String regDefault);
 }

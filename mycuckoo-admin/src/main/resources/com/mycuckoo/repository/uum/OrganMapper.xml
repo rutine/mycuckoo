@@ -242,11 +242,8 @@
             <if test="q.treeId != null">
                 and t1.tree_id like concat(#{q.treeId}, '.%')
             </if>
-            <if test="q.code != null and q.code != ''">
-                and t1.code like concat('%', #{q.code}, '%')
-            </if>
-            <if test="q.name != null and q.name != ''">
-                and t1.simple_name like concat('%', #{q.name}, '%')
+            <if test="keyword != null and keyword != ''">
+                and t1.simple_name like concat('%', #{keyword}, '%')
             </if>
         </where>
     </sql>
