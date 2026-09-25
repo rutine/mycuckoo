@@ -27,14 +27,11 @@ public interface PageQuery extends Pageable {
     //查询关键词
     String getKeyword();
 
-    //公共查询参数
-    Map<String, Object> getQ() ;
-
     //查找去重字段
     String getDistinct();
 
-    //列属性列表
-    List<? extends Column> getColumns();
+    //公共查询参数
+    Map<String, Object> getQ() ;
 
     //查询参数
     Map<String, Object> getWhere();
@@ -44,4 +41,7 @@ public interface PageQuery extends Pageable {
 
     //聚合参数
     Map<String, String> getAggr();
+
+    //列属性列表
+    List<? extends Column> getColumns();
 }

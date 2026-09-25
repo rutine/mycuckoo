@@ -308,6 +308,9 @@ public class SqlBuilder {
     Expression getColumn(String field) {
         Expression column = columnResolver.getProperty(field);
         if (column == null) {
+            column = columnResolver.getProperty(camelToSnake(field));
+        }
+        if (column == null) {
             column = columnResolver.getProperty("`" + field + "`");
         }
         if (columnResolver.isAmbiguous() || column == null) {
@@ -375,6 +378,22 @@ public class SqlBuilder {
         greaterThanEquals.setRightExpression(right);
 
         return greaterThanEquals;
+    }
+    /**
+     * 驼峰转下划线
+     * userName    -> user_name
+     * UserName    -> user_name
+     * userID      -> user_id
+     * userIDCard  -> user_id_card
+     * HTMLParser  -> html_parser
+     */
+     String camelToSnake(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.replaceAll("([A-Z])", "_$1")
+                .toLowerCase()
+                .replaceAll("^_", "");
     }
 }
 

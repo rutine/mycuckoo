@@ -19,11 +19,10 @@ import java.util.stream.Collectors;
 public class Querier implements PageQuery, Pageable {
     public static final Querier EMPTY = new Querier(0, 0);
 
+    private String tableCode;
+
     private Integer pageNo;
     private Integer pageSize;
-
-    private String tableCode;
-    private List<? extends Column> columns;
 
     private String keyword;
     private Map<String, Object> q = new HashMap<>();
@@ -38,6 +37,14 @@ public class Querier implements PageQuery, Pageable {
     public Querier(int page, int size) {
         this.pageNo = page;
         this.pageSize = size;
+    }
+
+    public String getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode == null ? null : tableCode.trim();
     }
 
     public int getPageNo() {
@@ -73,18 +80,7 @@ public class Querier implements PageQuery, Pageable {
         return (this.getPageNo() - 1) * this.getPageSize();
     }
 
-    public String getTableCode() {
-        return tableCode;
-    }
-
-    public void setTableCode(String tableCode) {
-        this.tableCode = tableCode == null ? null : tableCode.trim();
-    }
-
-    public List<? extends Column> getColumns() {
-        return columns;
-    }
-
+    @Override
     public String getKeyword() {
         return StringUtils.trimToNull(keyword);
     }
@@ -101,6 +97,7 @@ public class Querier implements PageQuery, Pageable {
         }
     }
 
+    @Override
     public String getDistinct() {
         return distinct;
     }
@@ -109,6 +106,7 @@ public class Querier implements PageQuery, Pageable {
         this.distinct = distinct == null ? null : distinct.trim();
     }
 
+    @Override
     public Map<String, Object> getWhere() {
         if (where == null) {
             where = new HashMap<>();
@@ -120,6 +118,7 @@ public class Querier implements PageQuery, Pageable {
         this.where = where;
     }
 
+    @Override
     public Map<String, String> getSort() {
         if (sort == null) {
             sort = new HashMap<>();
@@ -131,6 +130,7 @@ public class Querier implements PageQuery, Pageable {
         this.sort = sort;
     }
 
+    @Override
     public Map<String, Object> getQ() {
         if (q != null) {
             this.q = q.entrySet().stream()
@@ -159,9 +159,17 @@ public class Querier implements PageQuery, Pageable {
         }
     }
 
+    @Override
     public Map<String, String> getAggr() {
         return aggr == null ? Collections.EMPTY_MAP : aggr;
     }
+
+    @Override
+    public List<? extends Column> getColumns() {
+        return null;
+    }
+
+
 
     public Querier copy(Map<String, String> aggr) {
         return new CloneQuerier(this, aggr);
@@ -226,11 +234,6 @@ public class Querier implements PageQuery, Pageable {
         }
 
         @Override
-        public List<? extends Column> getColumns() {
-            return querier.getColumns();
-        }
-
-        @Override
         public Map<String, Object> getWhere() {
             return querier.getWhere();
         }
@@ -244,5 +247,11 @@ public class Querier implements PageQuery, Pageable {
         public Map<String, String> getAggr() {
             return aggr == null ? Collections.EMPTY_MAP : aggr;
         }
+
+        @Override
+        public List<? extends Column> getColumns() {
+            return this.columns;
+        }
+
     }
 }

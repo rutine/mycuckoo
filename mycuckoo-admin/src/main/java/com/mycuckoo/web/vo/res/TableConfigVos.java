@@ -1,6 +1,7 @@
 package com.mycuckoo.web.vo.res;
 
 import com.mycuckoo.core.Dictionary;
+import com.mycuckoo.core.repository.param.Column;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public abstract class TableConfigVos {
 
-    public static class Detail {
+    public static class Detail implements Column {
         private Long tableId;
         private String tableCode;
         private String type;
@@ -112,6 +113,21 @@ public abstract class TableConfigVos {
 
         public void setExtra(String extra) {
             this.extra = extra;
+        }
+
+        @Override
+        public Boolean isFilter() {
+            return filter;
+        }
+
+        @Override
+        public Boolean isBlank() {
+            return blank;
+        }
+
+        @Override
+        public Boolean isSort() {
+            return sort;
         }
     }
 
