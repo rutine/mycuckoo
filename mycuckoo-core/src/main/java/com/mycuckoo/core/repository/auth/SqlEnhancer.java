@@ -1,6 +1,7 @@
 package com.mycuckoo.core.repository.auth;
 
 import com.mycuckoo.core.repository.param.*;
+import com.mycuckoo.core.repository.param.*;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;

@@ -1,0 +1,43 @@
+package com.mycuckoo.admin.service.platform.job;
+
+import com.mycuckoo.core.util.web.SpringContextUtils;
+import com.mycuckoo.core.util.SystemConfigLoader;
+import com.mycuckoo.admin.service.platform.SystemLogService;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * 功能说明: 定时删除系统日志任务类
+ *
+ * @author rutine
+ * @version 3.0.0
+ * @time Sep 25, 2014 10:58:00 AM
+ */
+public class LoggerJob implements Job {
+    private static Logger logger = LoggerFactory.getLogger(LoggerJob.class);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        String name = context.getJobDetail().getKey().getName();
+        String days = SystemConfigLoader.getInstance().getConfig().getLogRetentionDays();
+        String number = "-0123456789";
+        for (int i = 0; i < days.length(); i++) {
+            char c = days.charAt(i);
+            if (number.indexOf(c) < 0) return;
+        }
+
+        logger.info("job name is: {} {}, keep days: {}",
+                name, dateFormat.format(new Date()), days);
+
+        SystemLogService systemLogService = SpringContextUtils.getBean(SystemLogService.class);
+        systemLogService.deleteLog(Integer.parseInt(days));
+    }
+
+}

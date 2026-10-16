@@ -151,7 +151,7 @@ public class GatewayPrivilegeFilter implements GlobalFilter, Ordered {
 
                     String tripServerNamePath = path.substring(path.indexOf('/', 1));
                     return resourceHandle.load(authorization)
-                            .thenReturn(resourceMather.match(new com.mycuckoo.core.web.filter.PrivilegeFilter.ResourceInfo(tripServerNamePath, method), resources));
+                            .thenReturn(resourceMather.match(new PrivilegeFilter.ResourceInfo(tripServerNamePath, method), resources));
                 });
     }
     private Mono<Void> nonLogin(ServerWebExchange exchange) {

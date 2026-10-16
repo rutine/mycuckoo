@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    说明: AttachmentMapper映射文件
+
+    @author rutine
+    @version 5.0.0
+ -->
+<mapper namespace="com.mycuckoo.admin.repository.platform.AttachmentMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.platform.Attachment">
+        <id property="id" column="id" />
+        <result property="bizType" column="biz_type" />
+        <result property="bizSubType" column="biz_sub_type" />
+        <result property="bizId" column="biz_id" />
+        <result property="fileId" column="file_id" />
+        <result property="filePath" column="file_path" />
+        <result property="fileName" column="file_name" />
+        <result property="fileSize" column="file_size" />
+        <result property="fileType" column="file_type" />
+        <result property="tenantId" column="tenant_id" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, biz_type, biz_sub_type, biz_id, file_id, file_path, file_name, file_size, file_type,
+        tenant_id, updater, update_time, creator, create_time
+    </sql>
+
+    <sql id="table">
+        sys_attachment
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.platform.Attachment"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bizType != null">biz_type, </if>
+            <if test="bizSubType != null">biz_sub_type, </if>
+            <if test="bizId != null and bizId != ''">biz_id, </if>
+            <if test="fileId != null and fileId != ''">file_id, </if>
+            <if test="filePath != null and filePath != ''">file_path, </if>
+            <if test="fileName != null and fileName != ''">file_name, </if>
+            <if test="fileSize != null">file_size, </if>
+            <if test="fileType != null and fileType != ''">file_type, </if>
+            <if test="tenantId != null and tenantId != ''">tenant_id, </if>
+            <if test="updater != null and updater != ''">updater, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null and creator != ''">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bizType != null">#{bizType}, </if>
+            <if test="bizSubType != null">#{bizSubType}, </if>
+            <if test="bizId != null and bizId != ''">#{bizId}, </if>
+            <if test="fileId != null and fileId != ''">#{fileId}, </if>
+            <if test="filePath != null and filePath != ''">#{filePath}, </if>
+            <if test="fileName != null and fileName != ''">#{fileName}, </if>
+            <if test="fileSize != null">#{fileSize}, </if>
+            <if test="fileType != null and fileType != ''">#{fileType}, </if>
+            <if test="tenantId != null and tenantId != ''">#{tenantId}, </if>
+            <if test="updater != null and updater != ''">#{updater}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null and creator != ''">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.admin.entity.platform.Attachment">
+        update <include refid="table" />
+        <set>
+            <if test="bizType != null">biz_type = #{bizType}, </if>
+            <if test="bizSubType != null">biz_sub_type = #{bizSubType}, </if>
+            <if test="bizId != null">biz_id = #{bizId}, </if>
+            <if test="fileId != null">file_id = #{fileId}, </if>
+            <if test="filePath != null">file_path = #{filePath}, </if>
+            <if test="fileName != null">file_name = #{fileName}, </if>
+            <if test="fileSize != null">file_size = #{fileSize}, </if>
+            <if test="fileType != null">file_type = #{fileType}, </if>
+            <if test="tenantId != null">tenant_id = #{tenantId}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+            <if test="creator != null">creator = #{creator}, </if>
+            <if test="createTime != null">create_time = #{createTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        order by create_time desc, id desc
+    </select>
+
+    <select id="findByBizTypeAndBizId" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where biz_type = #{bizType}
+          and biz_id = #{bizId}
+        <if test="bizSubType != null">
+          and biz_sub_type = #{bizSubType}
+        </if>
+        order by create_time desc, id desc
+    </select>
+
+    <delete id="deleteByBizTypeAndBizId">
+        delete from <include refid="table" />
+        where biz_type = #{bizType}
+          and biz_id = #{bizId}
+        <if test="bizSubType != null">
+          and biz_sub_type = #{bizSubType}
+        </if>
+    </delete>
+
+</mapper>

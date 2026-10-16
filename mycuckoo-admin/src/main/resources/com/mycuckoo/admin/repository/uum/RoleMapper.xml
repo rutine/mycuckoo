@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: RoleMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 10:14:14 AM
+    @version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.admin.repository.uum.RoleMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.uum.Role">
+        <id property="roleId" column="role_id" />
+        <result property="tenantId" column="tenant_id" />
+        <result property="name" column="name" />
+        <result property="level" column="level" />
+        <result property="status" column="status" />
+        <result property="memo" column="memo" />
+        <result property="regDefault" column="reg_default" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <sql id="columns">
+        role_id, tenant_id, name, level, status, memo, reg_default,
+        updater, update_time, creator, create_time
+    </sql>
+    
+    <sql id="table">
+        uum_role
+    </sql>
+
+    <!-- 插入数据： 1.由数据库生成id并赋值到Role对象 2.输入对象参数 -->
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.uum.Role"
+            useGeneratedKeys="true" keyProperty="roleId" keyColumn="role_id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">role_id, </if>
+            <if test="tenantId != null">tenant_id, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="level != null">level, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="regDefault != null and regDefault != ''">reg_default, </if>
+            <if test="updater != null">updater, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">#{roleId}, </if>
+            <if test="tenantId != null">#{tenantId}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="level != null">#{level}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="regDefault != null and regDefault != ''">#{regDefault}, </if>
+            <if test="updater != null">#{updater}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+    
+    <!-- 更新数据： 1.输入对象参数 -->
+    <update id="update" parameterType="com.mycuckoo.admin.entity.uum.Role">
+        update <include refid="table" />
+        <set>
+            <if test="name != null">name = #{name}, </if>
+            <if test="level != null">level = #{level}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="regDefault != null">reg_default = #{regDefault}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+        </set>
+        where role_id = #{roleId}
+    </update>
+    
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where role_id = #{id}
+    </delete>
+    
+    <!-- 获取数据: 输出直接映射到对象 -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where role_id = #{id}
+    </select>
+    
+    <!-- 根据条件查询角色, 映射到'role'-->
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where role_id != 0
+        <if test="keyword !=null and keyword != ''">
+            and name like concat('%', #{keyword}, '%')
+        </if>
+        order by role_id desc
+    </select>
+
+    <!-- 根据角色名称统计角色记录 -->
+    <select id="countByRoleName" parameterType="string" resultType="int">
+        select count(1)
+        from <include refid="table" />
+        where name = #{name}
+    </select>
+
+    <select id="getByRegDefault" parameterType="string" resultMap="baseMap">
+        select *
+        from <include refid="table" />
+        where reg_default = #{regDefault}
+        order by update_time desc
+        limit 1
+    </select>
+    
+</mapper> 

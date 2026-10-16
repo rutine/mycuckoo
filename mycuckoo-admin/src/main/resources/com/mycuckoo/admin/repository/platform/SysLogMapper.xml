@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: SysLogMapper映射文件
+    
+    @author rutine
+    @version 5.0.0
+ -->
+<mapper namespace="com.mycuckoo.admin.repository.platform.SysLogMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.platform.SysLog">
+        <id property="logId" column="log_id" />
+        <result property="tenantId" column="tenant_id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="bizType" column="biz_type" />
+        <result property="bizId" column="biz_id" />
+        <result property="ip" column="ip" />
+        <result property="userName" column="user_name" />
+        <result property="userRole" column="user_role" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <sql id="columns">
+        log_id, tenant_id, title, content, biz_type, biz_id,
+        ip, user_name, user_role,
+        creator, create_time
+    </sql>
+    
+    <sql id="table">
+        sys_log
+    </sql>
+
+    <!-- 插入系统日志：由数据库生成id并赋值到SysLog对象 -->
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.platform.SysLog"
+            useGeneratedKeys="true" keyProperty="logId" keyColumn="log_id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="logId != null">log_id, </if>
+            <if test="tenantId != null">tenant_id, </if>
+            <if test="title != null and title != ''">title, </if>
+            <if test="content != null and content != ''">content, </if>
+            <if test="bizType != null">biz_type, </if>
+            <if test="bizId != null and bizId != ''">biz_id, </if>
+            <if test="ip != null and ip != ''">ip, </if>
+            <if test="userName != null and userName != ''">user_name, </if>
+            <if test="userRole != null and userRole != ''">user_role, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="logId != null">#{logId}, </if>
+            <if test="tenantId != null">#{tenantId}, </if>
+            <if test="title != null and title != ''">#{title}, </if>
+            <if test="content != null and content != ''">#{content}, </if>
+            <if test="bizType != null">#{bizType}, </if>
+            <if test="bizId != null and bizId != ''">#{bizId}, </if>
+            <if test="ip != null and ip != ''">#{ip}, </if>
+            <if test="userName != null and userName != ''">#{userName}, </if>
+            <if test="userRole != null and userRole != ''">#{userRole}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+    
+    <!-- 更新系统日志 -->
+    <update id="update" parameterType="com.mycuckoo.admin.entity.platform.SysLog">
+        update <include refid="table" />
+        <set>
+            <if test="title != null">title = #{title}, </if>
+            <if test="content != null">content = #{content}, </if>
+            <if test="bizType != null">biz_type = #{bizType}, </if>
+            <if test="bizId != null">biz_id = #{bizId}, </if>
+            <if test="ip != null">ip = #{ip}, </if>
+            <if test="userName != null">user_name = #{userName}, </if>
+            <if test="userRole != null">user_role = #{userRole}, </if>
+        </set>
+        where log_id = #{logId}
+    </update>
+    
+    <!-- 删除系统日志 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where log_id = #{id}
+    </delete>
+    
+    <!-- 获取系统日志 -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where log_id = #{id}
+    </select>
+
+    <!-- 分页查找系统日志 -->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        <where>
+            <if test="keyword != null and keyword != ''">
+                title like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+        order by log_id desc
+    </select>
+    
+    <!-- 删除指定时间之前的日志 -->
+    <delete id="deleteLogger">
+        delete from <include refid="table" />
+        where create_time &lt;= #{optTime}
+    </delete>
+    
+    <!-- 根据日志ID获取日志内容 -->
+    <select id="getContentById" resultType="string">
+        select content
+        from <include refid="table" />
+        where log_id = #{logId}
+    </select>
+    
+</mapper> 

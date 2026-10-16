@@ -1,0 +1,121 @@
+package com.mycuckoo.admin.web.platform;
+
+import com.google.common.collect.Lists;
+import com.mycuckoo.core.AjaxResponse;
+import com.mycuckoo.core.Querier;
+import com.mycuckoo.core.SimpleTree;
+import com.mycuckoo.core.repository.Page;
+import com.mycuckoo.admin.entity.platform.District;
+import com.mycuckoo.admin.service.platform.DistrictService;
+import com.mycuckoo.admin.entity.dto.platform.DistrictDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.mycuckoo.admin.constant.AdminConst.ID_ROOT_VALUE;
+
+/**
+ * 功能说明: 地区Controller
+ *
+ * @author rutine
+ * @version 5.0.0
+ * @time Oct 18, 2014 10:42:49 AM
+ */
+@RestController
+@RequestMapping("/platform/district/mgr")
+public class DistrictController {
+    private static Logger logger = LoggerFactory.getLogger(DistrictController.class);
+
+    @Autowired
+    private DistrictService districtService;
+
+
+    /**
+     * 功能说明 : 列表展示页面
+     *
+     * @param treeId        查找指定节点下的地区
+     * @param querier       查询参数
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 11:12:40 AM
+     */
+    @GetMapping
+    public AjaxResponse<Page<DistrictDto>> list(@RequestParam(value = "treeId", required = false) String treeId, Querier querier) {
+        Page<DistrictDto> page = districtService.findByPage(treeId, querier);
+
+        return AjaxResponse.create(page);
+    }
+
+    /**
+     * 功能说明 : 创建新地区
+     *
+     * @param district
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 11:18:03 AM
+     */
+    @PostMapping
+    public AjaxResponse<String> create(@RequestBody District district) {
+        districtService.save(district);
+
+        return AjaxResponse.success("保存地区成功");
+    }
+
+    /**
+     * 功能说明 : 修改地区
+     *
+     * @param district 地区对象
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 11:37:39 AM
+     */
+    @PutMapping
+    public AjaxResponse<String> update(@RequestBody District district) {
+        districtService.update(district);
+
+        return AjaxResponse.success("修改地区成功");
+    }
+
+
+    @GetMapping("/{id}")
+    public AjaxResponse<DistrictDto> get(@PathVariable long id) {
+        DistrictDto district = districtService.get(id);
+        if (district.getParentCode() != null) {
+            DistrictDto parentDistrict = districtService.getByCode(district.getParentCode());
+            district.setParentName(parentDistrict.getName());
+        }
+
+        return AjaxResponse.create(district);
+    }
+
+    /**
+     * 功能说明 : 查找节点的下级节点
+     *
+     * @param id          地区code
+     * @return
+     * @author rutine
+     * @time Jul 2, 2013 11:27:54 AM
+     */
+    @GetMapping("/{id}/child/nodes")
+    public AjaxResponse<List<? extends SimpleTree>> getChildNodes(@PathVariable String id) {
+        List<? extends SimpleTree> trees = Lists.newArrayList();
+        if ("-1".equals(id)) {
+            List<SimpleTree> tmpTrees = Lists.newArrayList();
+            SimpleTree root = new SimpleTree();
+            root.setId(ID_ROOT_VALUE);
+            root.setText("中国");
+            root.setChildren(districtService.findChildNodes(ID_ROOT_VALUE));
+            tmpTrees.add(root);
+
+            trees = tmpTrees;
+        } else {
+            trees = districtService.findChildNodes(id);
+        }
+
+        return AjaxResponse.create(trees);
+    }
+
+}

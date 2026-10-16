@@ -1,7 +1,7 @@
 package com.mycuckoo.flow.util;
 
 import com.mycuckoo.core.exception.MyCuckooException;
-import com.mycuckoo.flow.web.vo.req.WorkflowVos;
+import com.mycuckoo.flow.entity.vo.WorkflowVos;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

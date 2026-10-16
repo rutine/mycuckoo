@@ -20,12 +20,12 @@ public class AttachmentEvent extends ApplicationEvent {
 
     public static class Payload {
         private final AttachmentType type;
-        private final String busiId;
+        private final String bizId;
         private final Collection<?> attachments;
 
-        public Payload(AttachmentType type, String busiId, Collection<?> attachments) {
+        public Payload(AttachmentType type, String bizId, Collection<?> attachments) {
             this.type = type;
-            this.busiId = busiId;
+            this.bizId = bizId;
             this.attachments = attachments == null ? Collections.emptyList() : attachments;
         }
 
@@ -33,8 +33,8 @@ public class AttachmentEvent extends ApplicationEvent {
             return type;
         }
 
-        public String getBusiId() {
-            return busiId;
+        public String getBizId() {
+            return bizId;
         }
 
         public Collection<?> getAttachments() {

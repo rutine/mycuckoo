@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    说明: CodeMapper映射文件
+    
+    @author rutine
+    @time Sep 23, 2014 9:32:33 AM
+    @version 3.0.0
+ -->
+<mapper namespace="com.mycuckoo.admin.repository.platform.CodeMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.platform.Code">
+        <id property="codeId" column="code_id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="moduleName" column="module_name" />
+        <result property="delimiter" column="delimiter" />
+        <result property="partNum" column="part_num" />
+        <result property="part1" column="part1" />
+        <result property="part1Con" column="part1_con" />
+        <result property="part2" column="part2" />
+        <result property="part2Con" column="part2_con" />
+        <result property="part3" column="part3" />
+        <result property="part3Con" column="part3_con" />
+        <result property="part4" column="part4" />
+        <result property="part4Con" column="part4_con" />
+        <result property="effect" column="effect" />
+        <result property="memo" column="memo" />
+        <result property="status" column="status" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <sql id="columns">
+        code_id, code, name, module_name, delimiter, part_num, part1, part1_con, part2,
+        part2_con, part3, part3_con, part4, part4_con, effect, memo, status,
+        updater, update_time, creator, create_time
+    </sql>
+    
+    <sql id="table">
+        sys_code
+    </sql>
+
+    <!-- 插入编码： 1.由数据库生成id并赋值到SysplCode对象 -->
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.platform.Code"
+            useGeneratedKeys="true" keyProperty="codeId" keyColumn="code_id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="codeId != null">code_id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="moduleName != null and moduleName != ''">module_name, </if>
+            <if test="delimiter != null and delimiter != ''">delimiter, </if>
+            <if test="partNum != null">part_num, </if>
+            <if test="part1 != null and part1 != ''">part1, </if>
+            <if test="part1Con != null and part1Con != ''">part1_con, </if>
+            <if test="part2 != null and part2 != ''">part2, </if>
+            <if test="part2Con != null and part2Con != ''">part2_con, </if>
+            <if test="part3 != null and part3 != ''">part3, </if>
+            <if test="part3Con != null and part3Con != ''">part3_con, </if>
+            <if test="part4 != null and part4 != ''">part4, </if>
+            <if test="part4Con != null and part4Con != ''">part4_con, </if>
+            <if test="effect != null and effect != ''">effect, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="status != null">status, </if>
+            <if test="updater != null">updater, </if>
+            <if test="updateTime != null">update_time, </if>
+            <if test="creator != null">creator, </if>
+            <if test="createTime != null">create_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="codeId != null">#{codeId}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="moduleName != null and moduleName != ''">#{moduleName}, </if>
+            <if test="delimiter != null and delimiter != ''">#{delimiter}, </if>
+            <if test="partNum != null">#{partNum}, </if>
+            <if test="part1 != null and part1 != ''">#{part1}, </if>
+            <if test="part1Con != null and part1Con != ''">#{part1Con}, </if>
+            <if test="part2 != null and part2 != ''">#{part2}, </if>
+            <if test="part2Con != null and part2Con != ''">#{part2Con}, </if>
+            <if test="part3 != null and part3 != ''">#{part3}, </if>
+            <if test="part3Con != null and part3Con != ''">#{part3Con}, </if>
+            <if test="part4 != null and part4 != ''">#{part4}, </if>
+            <if test="part4Con != null and part4Con != ''">#{part4Con}, </if>
+            <if test="effect != null and effect != ''">#{effect}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="updater != null">#{updater}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+            <if test="creator != null">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+        </trim>
+    </insert>
+    
+    <!-- 更新编码： 1.输入对象参数  -->
+    <update id="update" parameterType="com.mycuckoo.admin.entity.platform.Code">
+        update <include refid="table" />
+        <set>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="moduleName != null">module_name = #{moduleName}, </if>
+            <if test="delimiter != null">delimiter = #{delimiter}, </if>
+            <if test="partNum != null">part_num = #{partNum}, </if>
+            <if test="part1 != null">part1 = #{part1}, </if>
+            <if test="part1Con != null">part1_con = #{part1Con}, </if>
+            <if test="part2 != null">part2 = #{part2}, </if>
+            <if test="part2Con != null">part2_con = #{part2Con}, </if>
+            <if test="part3 != null">part3 = #{part3}, </if>
+            <if test="part3Con != null">part3_con = #{part3Con}, </if>
+            <if test="part4 != null">part4 = #{part4}, </if>
+            <if test="part4Con != null">part4_con = #{part4Con}, </if>
+            <if test="effect != null">effect = #{effect}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+        </set>
+        where code_id = #{codeId}
+    </update>
+    
+    <!-- 删除编码 -->
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where code_id = #{id}
+    </delete>
+    
+    <!--
+        获取编码: 输出直接映射到对象
+    -->
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where code_id = #{id}
+    </select>
+    
+    <!-- 根据条件查询编码 Code-->
+    <select id="findByPage" parameterType="map" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        <where>
+            <if test="keyword != null and keyword != ''">
+                name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+        order by code_id desc
+    </select>
+    
+        <!-- 判断编码是否存在 -->
+    <select id="countByCode" parameterType="string" resultType="int">
+        select count(1)
+        from <include refid="table" />
+        where code = #{code}
+    </select>
+    
+    <!-- 根据编码获取编码 -->
+    <select id="getByCode" parameterType="string" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where code = #{code}
+    </select>
+</mapper> 

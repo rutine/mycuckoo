@@ -13,8 +13,8 @@ public @interface RowPermission {
     String table();
     // 别名
     String alias() default "";
-    // 租户字段(组织)
-    String tenant() default "org_id";
+    // 租户字段
+    String tenant() default "tenant_id";
     // 用户字段
     String user() default "user_id";
     // 行权限类型

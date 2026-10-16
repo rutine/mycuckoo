@@ -42,24 +42,24 @@ INSERT INTO `sys_affiche` VALUES (6,'第二版本发布了！','2017-05-01',0,'<
 DROP TABLE IF EXISTS `sys_attachment`;
 CREATE TABLE `sys_attachment` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `busi_type` int DEFAULT NULL COMMENT '业务类型',
-  `busi_sub_type` int DEFAULT NULL COMMENT '业务子类型',
-  `busi_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
+  `biz_type` int DEFAULT NULL COMMENT '业务类型',
+  `biz_sub_type` int DEFAULT NULL COMMENT '业务子类型',
+  `biz_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
   `file_id` varchar(64) DEFAULT NULL COMMENT '文件ID',
   `file_path` varchar(500) DEFAULT NULL COMMENT '文件路径',
   `file_name` varchar(255) DEFAULT NULL COMMENT '文件名称',
   `file_size` bigint DEFAULT NULL COMMENT '文件大小',
   `file_type` varchar(100) DEFAULT NULL COMMENT '文件类型',
-  `org_id` bigint DEFAULT NULL COMMENT '所属机构',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `idx_sys_attachment_busi` (`busi_type`,`busi_sub_type`,`busi_id`),
+  KEY `idx_sys_attachment_biz` (`biz_type`,`biz_sub_type`,`biz_id`),
   KEY `idx_sys_attachment_file_id` (`file_id`),
   KEY `idx_sys_attachment_file_name` (`file_name`),
-  KEY `idx_sys_attachment_org_id` (`org_id`),
+  KEY `idx_sys_attachment_tenant_id` (`tenant_id`),
   KEY `idx_sys_attachment_create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='附件关联表';
 
@@ -105,7 +105,7 @@ CREATE TABLE `sys_code` (
   `effect` varchar(50) DEFAULT NULL COMMENT '编码效果',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -124,7 +124,7 @@ CREATE TABLE `sys_dictionary` (
   `name` varchar(20) DEFAULT NULL COMMENT '字典大类名',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -175,11 +175,11 @@ INSERT INTO `sys_district` VALUES (1,'province',NULL,'110000','北京市','2026-
 DROP TABLE IF EXISTS `sys_log`;
 CREATE TABLE `sys_log` (
   `log_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '所属机构',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `title` varchar(100) DEFAULT NULL COMMENT '日志标题',
   `content` text COMMENT '操作内容',
-  `busi_type` int DEFAULT NULL COMMENT '业务类型',
-  `busi_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
+  `biz_type` int DEFAULT NULL COMMENT '业务类型',
+  `biz_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
   `ip` varchar(25) DEFAULT NULL COMMENT '主机IP',
   `user_name` varchar(64) DEFAULT NULL COMMENT '用户名称',
   `user_role` varchar(64) DEFAULT NULL COMMENT '用户角色',
@@ -189,7 +189,7 @@ CREATE TABLE `sys_log` (
   KEY `idx_create_date` (`create_time`),
   KEY `idx_user_name` (`user_name`),
   KEY `idx_user_role` (`user_role`),
-  KEY `sys_log_idx_org_id` (`org_id`)
+  KEY `sys_log_idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COMMENT='系统操作日志表';
 
 INSERT INTO `sys_log` VALUES (1,1,'管理员用户登录','组织：总部, 角色：, 用户: 管理员',17,'0','127.0.0.1','管理员',NULL,'0','2026-09-12 03:37:26.715317'),(2,1,'管理员修改地区','地区名称：东城区, 地区级别：county',11,'2','127.0.0.1','管理员',NULL,'0','2026-09-12 03:38:03.464203'),(3,1,'管理员分配模块资源','模块分配资源: 6、10、11、12、13、15、55、54、89',1,'7','127.0.0.1','管理员',NULL,'0','2026-09-12 04:53:58.785066'),(4,1,'管理员新增资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'125','127.0.0.1','管理员',NULL,'0','2026-09-12 05:26:46.514872'),(5,1,'管理员分配模块资源','模块分配资源: 1、2、3、4、5、87、110、111、125',1,'55','127.0.0.1','管理员',NULL,'0','2026-09-12 05:27:42.091781'),(6,1,'管理员用户登录','组织：总部, 角色：, 用户: 管理员',17,'0','127.0.0.1','管理员',NULL,'0','2026-09-12 05:28:22.424522'),(7,1,'管理员修改资源','名称：列表, method：get, path: /platform/operate/mgr',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:31:25.725218'),(8,1,'管理员修改资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:33:43.090897'),(9,1,'管理员修改资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:33:56.910229'),(10,1,'管理员修改资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:35:25.786494'),(11,1,'管理员修改资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:37:30.791917'),(12,1,'管理员修改资源','名称：选择列表, method：get, path: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:40:20.532378'),(13,1,'管理员修改资源','名称：选择列表, 方法：get, 路径: /platform/operate/mgr/selector',3,'10','127.0.0.1','管理员',NULL,'0','2026-09-12 05:42:57.490681'),(14,1,'管理员修改资源','名称：分配操作(弃用), 方法：post, 路径: /platform/module/mgr/{id}/module-opt-ref',3,'22','127.0.0.1','管理员',NULL,'0','2026-09-12 05:58:21.145367'),(15,1,'管理员修改资源','名称：分配操作(弃用), 方法：post, 路径: /platform/module/mgr/{id}/module-opt-ref',3,'22','127.0.0.1','管理员',NULL,'0','2026-09-12 05:58:39.872847'),(16,1,'管理员修改资源','名称：操作选择器(弃用), 方法：get, 路径: /platform/module/mgr/{id}/operation',3,'21','127.0.0.1','管理员',NULL,'0','2026-09-12 05:59:09.510720'),(17,1,'管理员修改资源','名称：开发中1, 方法：post, 路径: /platform/module/mgr/{id}/none',3,'22','127.0.0.1','管理员',NULL,'0','2026-09-12 05:59:48.602918'),(18,1,'管理员修改资源','名称：开发中2, 方法：get, 路径: /platform/module/mgr/{id}/operation',3,'21','127.0.0.1','管理员',NULL,'0','2026-09-12 06:00:03.055110'),(19,1,'管理员修改资源','名称：开发中2, 方法：get, 路径: /platform/module/mgr/{id}/none2',3,'21','127.0.0.1','管理员',NULL,'0','2026-09-12 06:00:17.745811'),(20,1,'管理员修改资源','名称：开发中1, 方法：post, 路径: /platform/module/mgr/{id}/none',3,NULL,'127.0.0.1','管理员',NULL,'0','2026-09-12 06:00:35.839863'),(21,1,'管理员修改资源','名称：开发中2, 方法：get, 路径: /platform/module/mgr/{id}/none2',3,NULL,'127.0.0.1','管理员',NULL,'0','2026-09-12 06:00:49.076678');
@@ -227,7 +227,7 @@ CREATE TABLE `sys_module_menu` (
   `page_type` varchar(20) DEFAULT NULL COMMENT '页面类型',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -252,7 +252,7 @@ CREATE TABLE `sys_operate` (
   `group` int DEFAULT NULL COMMENT '所属分组',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -273,7 +273,7 @@ CREATE TABLE `sys_parameter` (
   `type` varchar(20) DEFAULT NULL COMMENT '参数类型',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -298,7 +298,7 @@ CREATE TABLE `sys_resource` (
   `order` int DEFAULT NULL COMMENT '顺序',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -328,14 +328,14 @@ CREATE TABLE `sys_scheduler_job` (
   `interval_time` bigint DEFAULT NULL COMMENT '间隔时间',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='定时任务表';
 
-INSERT INTO `sys_scheduler_job` VALUES (1,'日志清理','com.mycuckoo.service.platform.job.LoggerJob','Cron','* * 0 15 * ?','2011-01-18 16:00:00','2011-02-18 16:00:00',2,2,'disable','每月15日0点清除日志','0','2024-06-20 07:33:50','0','2011-01-19 15:28:44'),(2,'测试','com.mycuckoo.service.platform.job.TestJob','Simple','','2019-01-27 16:00:00','2019-01-28 16:00:00',2,2,'disable','','0','2024-05-26 13:53:23','0','2019-01-28 14:07:16');
+INSERT INTO `sys_scheduler_job` VALUES (1,'日志清理','job.platform.service.com.mycuckoo.admin.LoggerJob','Cron','* * 0 15 * ?','2011-01-18 16:00:00','2011-02-18 16:00:00',2,2,'disable','每月15日0点清除日志','0','2024-06-20 07:33:50','0','2011-01-19 15:28:44'),(2,'测试','job.platform.service.com.mycuckoo.admin.TestJob','Simple','','2019-01-27 16:00:00','2019-01-28 16:00:00',2,2,'disable','','0','2024-05-26 13:53:23','0','2019-01-28 14:07:16');
 
 --
 -- Table structure for table `sys_table_config`
@@ -355,7 +355,7 @@ CREATE TABLE `sys_table_config` (
   `width` int DEFAULT NULL COMMENT '宽度',
   `extra` varchar(100) DEFAULT '' COMMENT '额外信息',
   `order` int DEFAULT '0' COMMENT '顺序',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -411,7 +411,7 @@ INSERT INTO `uum_captcha` VALUES ('01792cfb1a514d21ad262625d9600a51','sms','7756
 DROP TABLE IF EXISTS `uum_department`;
 CREATE TABLE `uum_department` (
   `dept_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '组织id',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `parent_id` bigint DEFAULT NULL COMMENT '上一级ID',
   `tree_id` varchar(200) DEFAULT NULL COMMENT '包含父id的树形结构id',
   `role_id` bigint DEFAULT NULL COMMENT '默认角色id',
@@ -420,13 +420,13 @@ CREATE TABLE `uum_department` (
   `name` varchar(10) DEFAULT '' COMMENT '名称',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`dept_id`),
   KEY `uum_department_idx_parent_id` (`parent_id`) /*!80000 INVISIBLE */,
-  KEY `uum_department_idx_org_id` (`org_id`)
+  KEY `uum_department_idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COMMENT='部门表';
 
 INSERT INTO `uum_department` VALUES (1,1,0,'1',NULL,1,NULL,'总部','enable',NULL,NULL,NULL,NULL,'2024-05-19 15:22:53'),(2,1,1,'1.2',NULL,2,'DSH','董事会','enable','','0','2026-04-11 10:54:23',NULL,'2024-05-19 15:22:53'),(3,1,1,'1.3',NULL,2,'10010','技术部','disable','测试',NULL,NULL,NULL,'2024-05-19 15:22:53'),(4,1,1,'1.4',NULL,2,'','山西运营','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(5,1,4,'1.4.5',NULL,3,'','太原','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(6,1,3,'1.3.6',NULL,3,'','海淀','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(7,1,6,'1.3.6.7',NULL,4,'','五道口店','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(8,1,12,'1.2.12.8',7,4,'','运营部','enable','','0','2024-06-22 13:35:23',NULL,'2024-05-19 15:22:53'),(9,1,12,'1.2.12.9',5,4,'','人力资源','enable','','0','2024-05-19 12:56:20',NULL,'2024-05-19 15:22:53'),(10,1,12,'1.2.12.10',19,4,'','财务部','enable','','0','2024-06-21 14:26:14',NULL,'2024-05-19 15:22:53'),(11,1,12,'1.2.12.11',NULL,4,'','采购部','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(12,1,2,'1.2.12',NULL,3,'ZJB','总经办','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(13,1,12,'1.2.12.13',NULL,4,'','储运部','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(14,1,12,'1.2.12.14',1,4,'','开发部','enable','','0','2024-06-22 13:10:38',NULL,'2024-05-19 15:22:53'),(15,1,11,'1.2.12.11.15',NULL,5,'','北京采购','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(16,1,11,'1.2.12.11.16',NULL,5,'','上海采购','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(17,1,13,'1.2.12.13.17',NULL,5,'','北京储运','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53'),(18,1,13,'1.2.12.13.18',NULL,5,'','上海储运','enable','',NULL,NULL,NULL,'2024-05-19 15:22:53');
@@ -457,7 +457,7 @@ CREATE TABLE `uum_organ` (
   `reg_no` varchar(25) DEFAULT '' COMMENT '注册登记号',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -478,7 +478,7 @@ INSERT INTO `uum_organ` VALUES (1,0,'1',NULL,1,NULL,NULL,'总部',NULL,NULL,NULL
 DROP TABLE IF EXISTS `uum_privilege`;
 CREATE TABLE `uum_privilege` (
   `privilege_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '组织',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `resource_id` varchar(64) NOT NULL COMMENT '资源ID',
   `owner_id` bigint NOT NULL COMMENT '拥有者ID',
   `owner_type` varchar(10) DEFAULT NULL COMMENT '拥有者类型',
@@ -499,18 +499,18 @@ INSERT INTO `uum_privilege` VALUES (1,NULL,'110',1,'rol','inc','res',NULL,NULL),
 DROP TABLE IF EXISTS `uum_role`;
 CREATE TABLE `uum_role` (
   `role_id` bigint NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-  `org_id` bigint DEFAULT NULL COMMENT '机构id',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `name` varchar(10) DEFAULT '' COMMENT '角色名称',
   `level` tinyint DEFAULT NULL COMMENT '角色级别',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
   `reg_default` varchar(20) DEFAULT NULL COMMENT '注册默认角色, 只允许一个',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`role_id`),
-  KEY `uum_role_idx_org_id` (`org_id`)
+  KEY `uum_role_idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
 
 INSERT INTO `uum_role` VALUES (1,1,'管理员',1,'enable','',NULL,NULL,NULL,'0','2011-02-11 16:57:01'),(2,1,'无角色用户',NULL,'enable','',NULL,NULL,NULL,'0',NULL),(3,1,'总经理',1,'enable','',NULL,NULL,NULL,'0','2011-12-20 11:37:31'),(4,1,'副总经理',2,'enable','',NULL,NULL,NULL,'0','2011-12-23 09:37:13'),(5,1,'人事经理',3,'enable','',NULL,NULL,NULL,'0','2011-12-23 16:33:19'),(6,1,'储运经理',3,'enable','',NULL,NULL,NULL,'0','2011-12-23 17:21:56'),(7,1,'运营经理',3,'enable','',NULL,NULL,NULL,'0','2011-12-23 17:22:24'),(8,1,'财务经理',3,'enable','',NULL,NULL,NULL,'0','2011-12-26 09:54:22'),(9,1,'培训经理',3,'enable','培训经理',NULL,NULL,NULL,'0','2011-12-26 09:54:33'),(10,1,'采购经理',3,'enable','工',NULL,NULL,NULL,'0','2012-01-10 14:23:10'),(11,1,'人事主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 11:50:09'),(12,1,'储运主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 11:50:31'),(13,1,'运营主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:06:28'),(14,1,'财务主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:06:51'),(15,1,'培训主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:07:17'),(16,1,'采购主管',4,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:07:33'),(17,1,'店长',5,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:58:26'),(18,1,'收银',6,'enable','',NULL,NULL,NULL,'0','2012-03-06 14:58:44'),(19,1,'店员',7,'enable','',NULL,'0','2024-06-28 14:23:53','0','2012-03-06 14:59:00'),(20,1,'注册体验角色',1,'enable','','web','0','2024-07-06 04:05:56','0','2024-07-06 04:02:25');
@@ -521,7 +521,7 @@ INSERT INTO `uum_role` VALUES (1,1,'管理员',1,'enable','',NULL,NULL,NULL,'0',
 DROP TABLE IF EXISTS `uum_user`;
 CREATE TABLE `uum_user` (
   `user_id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `org_id` bigint DEFAULT '0' COMMENT '用户所属机构',
+  `tenant_id` bigint DEFAULT '0' COMMENT '租户id',
   `account_id` bigint DEFAULT NULL COMMENT '账号id',
   `role_id` bigint DEFAULT NULL COMMENT '角色id',
   `dept_id` bigint DEFAULT NULL COMMENT '部门id',
@@ -536,14 +536,14 @@ CREATE TABLE `uum_user` (
   `address` varchar(100) DEFAULT '' COMMENT '家庭住址',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`user_id`),
-  KEY `uum_user_idx_org_id` (`org_id`),
+  KEY `uum_user_idx_tenant_id` (`tenant_id`),
   KEY `idx_account_id` (`account_id`) /*!80000 INVISIBLE */,
-  CONSTRAINT `fk_belong_org_reference_uum_org` FOREIGN KEY (`org_id`) REFERENCES `uum_organ` (`org_id`)
+  CONSTRAINT `fk_belong_org_reference_uum_org` FOREIGN KEY (`tenant_id`) REFERENCES `uum_organ` (`org_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 INSERT INTO `uum_user` VALUES (1,1,1,NULL,1,'管理员','gly','13828000001',NULL,NULL,NULL,'http://localhost:8080/mycuckoo/upload/photo/20171014181342_5pnIdj.jpg',NULL,NULL,'enable',NULL,NULL,NULL,'0','2011-02-11 16:57:01'),(12,1,2,NULL,2,'王娟','wj','13828000002','','1','','','2012-06-21','','enable','',NULL,NULL,'0','2011-12-21 10:09:20'),(13,1,3,NULL,12,'石纪红','sjh','13828000003','','1','','','2012-07-10','','enable','',NULL,NULL,'0','2012-01-10 14:55:24'),(14,1,4,NULL,12,'杨文菊','ywj','13828000004','','1','','','2012-08-28','','enable','',NULL,NULL,'0','2012-02-28 15:23:30'),(15,1,5,NULL,8,'于志平','yzp','13828000005','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:15:09'),(16,1,6,NULL,3,'张世鹏','zsp','13828000006','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:15:39'),(17,1,7,NULL,7,'张丽','zl','13828000007','','1','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:16:22'),(18,1,8,NULL,7,'高晓峰','gxf','13828000008','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:21:33'),(19,1,9,NULL,7,'王旭','wx','13828000009','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:21:57'),(20,1,10,7,7,'王帅明','wsm','13828000010','','0','','','2012-09-06','','enable','','0','2024-06-22 13:35:36','0','2012-03-06 15:23:09'),(21,1,11,1,9,'张军','zj','13828000011','','0','','http://localhost/download/photo/202604/d623b49535c440ae8c22865fb84a8b14.jpg','2012-08-28','','enable','','0','2026-04-11 14:38:18','0','2012-03-06 15:23:40'),(25,3,12,-1,NULL,'张三','zs','13700000001',NULL,'0',NULL,NULL,NULL,NULL,'enable',NULL,NULL,'2024-07-06 04:13:49',NULL,'2024-07-06 04:13:49');

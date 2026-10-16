@@ -38,6 +38,9 @@ flowable:
     enabled: false
   dmn:
     enabled: false
+  eventregistry:
+    enabled: false
+  async-executor-activate: false
   common:
     app:
       idm-url: localhost:8080:/flowable-ui

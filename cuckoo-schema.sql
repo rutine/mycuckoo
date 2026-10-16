@@ -78,24 +78,24 @@ DROP TABLE IF EXISTS `sys_attachment`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sys_attachment` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `busi_type` int DEFAULT NULL COMMENT '业务类型',
-  `busi_sub_type` int DEFAULT NULL COMMENT '业务子类型',
-  `busi_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
+  `biz_type` int DEFAULT NULL COMMENT '业务类型',
+  `biz_sub_type` int DEFAULT NULL COMMENT '业务子类型',
+  `biz_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
   `file_id` varchar(64) DEFAULT NULL COMMENT '文件ID',
   `file_path` varchar(500) DEFAULT NULL COMMENT '文件路径',
   `file_name` varchar(255) DEFAULT NULL COMMENT '文件名称',
   `file_size` bigint DEFAULT NULL COMMENT '文件大小',
   `file_type` varchar(100) DEFAULT NULL COMMENT '文件类型',
-  `org_id` bigint DEFAULT NULL COMMENT '所属机构',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `idx_sys_attachment_busi` (`busi_type`,`busi_sub_type`,`busi_id`),
+  KEY `idx_sys_attachment_biz` (`biz_type`,`biz_sub_type`,`biz_id`),
   KEY `idx_sys_attachment_file_id` (`file_id`),
   KEY `idx_sys_attachment_file_name` (`file_name`),
-  KEY `idx_sys_attachment_org_id` (`org_id`),
+  KEY `idx_sys_attachment_tenant_id` (`tenant_id`),
   KEY `idx_sys_attachment_create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件关联表';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -165,7 +165,7 @@ CREATE TABLE `sys_code` (
   `effect` varchar(50) DEFAULT NULL COMMENT '编码效果',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -196,7 +196,7 @@ CREATE TABLE `sys_dictionary` (
   `name` varchar(20) DEFAULT NULL COMMENT '字典大类名',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -283,11 +283,11 @@ DROP TABLE IF EXISTS `sys_log`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sys_log` (
   `log_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '所属机构',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `title` varchar(100) DEFAULT NULL COMMENT '日志标题',
   `content` text COMMENT '操作内容',
-  `busi_type` int DEFAULT NULL COMMENT '业务类型',
-  `busi_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
+  `biz_type` int DEFAULT NULL COMMENT '业务类型',
+  `biz_id` varchar(64) DEFAULT NULL COMMENT '业务ID',
   `ip` varchar(25) DEFAULT NULL COMMENT '主机IP',
   `user_name` varchar(64) DEFAULT NULL COMMENT '用户名称',
   `user_role` varchar(64) DEFAULT NULL COMMENT '用户角色',
@@ -297,7 +297,7 @@ CREATE TABLE `sys_log` (
   KEY `idx_create_date` (`create_time`),
   KEY `idx_user_name` (`user_name`),
   KEY `idx_user_role` (`user_role`),
-  KEY `idx_org_id` (`org_id`)
+  KEY `idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统操作日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -361,7 +361,7 @@ CREATE TABLE `sys_module_menu` (
   `page_type` varchar(20) DEFAULT NULL COMMENT '页面类型',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -398,7 +398,7 @@ CREATE TABLE `sys_operate` (
   `group` int DEFAULT NULL COMMENT '所属分组',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -431,7 +431,7 @@ CREATE TABLE `sys_parameter` (
   `type` varchar(20) DEFAULT NULL COMMENT '参数类型',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -468,7 +468,7 @@ CREATE TABLE `sys_resource` (
   `order` int DEFAULT NULL COMMENT '顺序',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -510,7 +510,7 @@ CREATE TABLE `sys_scheduler_job` (
   `interval_time` bigint DEFAULT NULL COMMENT '间隔时间',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -524,7 +524,7 @@ CREATE TABLE `sys_scheduler_job` (
 
 LOCK TABLES `sys_scheduler_job` WRITE;
 /*!40000 ALTER TABLE `sys_scheduler_job` DISABLE KEYS */;
-INSERT INTO `sys_scheduler_job` VALUES (1,'日志清理','com.mycuckoo.service.platform.job.LoggerJob','Cron','* * 0 15 * ?','2011-01-18 16:00:00','2011-02-18 16:00:00',2,2,'disable','每月15日0点清除日志','0','2024-06-20 07:33:50','0','2011-01-19 15:28:44'),(2,'测试','com.mycuckoo.service.platform.job.TestJob','Simple','','2019-01-27 16:00:00','2019-01-28 16:00:00',2,2,'disable','','0','2024-05-26 13:53:23','0','2019-01-28 14:07:16');
+INSERT INTO `sys_scheduler_job` VALUES (1,'日志清理','job.platform.service.com.mycuckoo.admin.LoggerJob','Cron','* * 0 15 * ?','2011-01-18 16:00:00','2011-02-18 16:00:00',2,2,'disable','每月15日0点清除日志','0','2024-06-20 07:33:50','0','2011-01-19 15:28:44'),(2,'测试','job.platform.service.com.mycuckoo.admin.TestJob','Simple','','2019-01-27 16:00:00','2019-01-28 16:00:00',2,2,'disable','','0','2024-05-26 13:53:23','0','2019-01-28 14:07:16');
 /*!40000 ALTER TABLE `sys_scheduler_job` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -549,7 +549,7 @@ CREATE TABLE `sys_table_config` (
   `width` int DEFAULT NULL COMMENT '宽度',
   `extra` varchar(100) DEFAULT '' COMMENT '额外信息',
   `order` int DEFAULT '0' COMMENT '顺序',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -641,7 +641,7 @@ DROP TABLE IF EXISTS `uum_department`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `uum_department` (
   `dept_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '组织id',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `parent_id` bigint DEFAULT NULL COMMENT '上一级ID',
   `tree_id` varchar(200) DEFAULT NULL COMMENT '包含父id的树形结构id',
   `role_id` bigint DEFAULT NULL COMMENT '默认角色id',
@@ -650,13 +650,13 @@ CREATE TABLE `uum_department` (
   `name` varchar(10) DEFAULT '' COMMENT '名称',
   `status` varchar(15) NOT NULL COMMENT '状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`dept_id`),
   KEY `idx_parent_id` (`parent_id`) /*!80000 INVISIBLE */,
-  KEY `idx_org_id` (`org_id`)
+  KEY `idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='部门表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -699,7 +699,7 @@ CREATE TABLE `uum_organ` (
   `reg_no` varchar(25) DEFAULT '' COMMENT '注册登记号',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -735,7 +735,7 @@ DROP TABLE IF EXISTS `uum_privilege`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `uum_privilege` (
   `privilege_id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `org_id` bigint DEFAULT NULL COMMENT '组织',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `resource_id` varchar(64) NOT NULL COMMENT '资源ID',
   `owner_id` bigint NOT NULL COMMENT '拥有者ID',
   `owner_type` varchar(10) DEFAULT NULL COMMENT '拥有者类型',
@@ -768,18 +768,18 @@ DROP TABLE IF EXISTS `uum_role`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `uum_role` (
   `role_id` bigint NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-  `org_id` bigint DEFAULT NULL COMMENT '机构id',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户id',
   `name` varchar(10) DEFAULT '' COMMENT '角色名称',
   `level` tinyint DEFAULT NULL COMMENT '角色级别',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
   `reg_default` varchar(20) DEFAULT NULL COMMENT '注册默认角色, 只允许一个',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`role_id`),
-  KEY `idx_org_id` (`org_id`)
+  KEY `idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -802,7 +802,7 @@ DROP TABLE IF EXISTS `uum_user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `uum_user` (
   `user_id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `org_id` bigint DEFAULT '0' COMMENT '用户所属机构',
+  `tenant_id` bigint DEFAULT '0' COMMENT '租户id',
   `account_id` bigint DEFAULT NULL COMMENT '账号id',
   `role_id` bigint DEFAULT NULL COMMENT '角色id',
   `dept_id` bigint DEFAULT NULL COMMENT '部门id',
@@ -817,14 +817,14 @@ CREATE TABLE `uum_user` (
   `address` varchar(100) DEFAULT '' COMMENT '家庭住址',
   `status` varchar(15) NOT NULL COMMENT '机构状态',
   `memo` varchar(100) DEFAULT '' COMMENT '备注',
-  `updator` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`user_id`),
-  KEY `idx_org_id` (`org_id`),
+  KEY `idx_tenant_id` (`tenant_id`),
   KEY `idx_account_id` (`account_id`) /*!80000 INVISIBLE */,
-  CONSTRAINT `fk_belong_org_reference_uum_org` FOREIGN KEY (`org_id`) REFERENCES `uum_organ` (`org_id`)
+  CONSTRAINT `fk_belong_org_reference_uum_org` FOREIGN KEY (`tenant_id`) REFERENCES `uum_organ` (`org_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

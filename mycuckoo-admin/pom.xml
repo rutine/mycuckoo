@@ -149,7 +149,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>com.mycuckoo.Mycuckoo</mainClass>
+          <mainClass>com.mycuckoo.admin.Mycuckoo</mainClass>
         </configuration>
       </plugin>
 

@@ -103,7 +103,7 @@ public final class SessionContextHolder {
      * @author rutine
      * @time Nov 1, 2014 1:24:53 PM
      */
-    public static Long getOrganId() {
+    public static Long getTenantId() {
         return getUserInfo() != null ? getUserInfo().getOrgId() : null;
     }
 

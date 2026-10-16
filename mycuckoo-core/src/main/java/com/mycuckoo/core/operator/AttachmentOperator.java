@@ -16,7 +16,7 @@ public final class AttachmentOperator {
     private static ApplicationEventPublisher publisher;
 
     private AttachmentType type;
-    private String busiId;
+    private String bizId;
     private Collection<?> attachments;
 
     private AttachmentOperator() {
@@ -32,13 +32,13 @@ public final class AttachmentOperator {
         return new AttachmentOperator();
     }
 
-    public AttachmentOperator busiType(AttachmentType type) {
+    public AttachmentOperator bizType(AttachmentType type) {
         this.type = type;
         return this;
     }
 
-    public AttachmentOperator busiId(String busiId) {
-        this.busiId = busiId;
+    public AttachmentOperator bizId(String bizId) {
+        this.bizId = bizId;
         return this;
     }
 
@@ -48,7 +48,7 @@ public final class AttachmentOperator {
     }
 
     public AttachmentEvent.Payload build() {
-        return new AttachmentEvent.Payload(this.type, this.busiId, this.attachments);
+        return new AttachmentEvent.Payload(this.type, this.bizId, this.attachments);
     }
 
     public AttachmentEvent.Payload emit() {
