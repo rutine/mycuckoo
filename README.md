@@ -72,13 +72,13 @@ MyCuckoo
 # 示例: 
 
 登录页:
-![登录页](demo/login.png)
+![登录页](docs/demo/login.png)
 
 主页:
-![主页](demo/index.png)
+![主页](docs/demo/index.png)
 
 菜单管理:
-![菜单管理](demo/menuMgr.png)
+![菜单管理](docs/demo/menuMgr.png)
 
 系统配置:
-![系统配置](demo/systemConfig.png)
+![系统配置](docs/demo/systemConfig.png)
