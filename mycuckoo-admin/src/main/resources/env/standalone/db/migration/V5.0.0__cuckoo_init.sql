@@ -63,7 +63,7 @@ CREATE TABLE `sys_attachment` (
   KEY `idx_sys_attachment_create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='附件关联表';
 
-INSERT INTO `sys_attachment` VALUES (3,2,0,'13','633b933161ba4e44975d0df7caefaad5','/affiche/202604/633b933161ba4e44975d0df7caefaad5.jpg','ceshi.jpg',25084,'jpg',1,NULL,NULL,'0','2026-04-11 17:33:40'),(4,1,0,'0','ab78bebde3774453a3e76e6fa34d4974','/photo/202604/ab78bebde3774453a3e76e6fa34d4974.jpg','ceshi.jpg',25084,'jpg',1,NULL,NULL,'0','2026-04-25 09:15:31');
+INSERT INTO `sys_attachment` VALUES (3,1, 2,0,'13','633b933161ba4e44975d0df7caefaad5','/affiche/202604/633b933161ba4e44975d0df7caefaad5.jpg','ceshi.jpg',25084,'jpg',NULL,NULL,'0','2026-04-11 17:33:40'),(4,1, 1,0,'0','ab78bebde3774453a3e76e6fa34d4974','/photo/202604/ab78bebde3774453a3e76e6fa34d4974.jpg','ceshi.jpg',25084,'jpg',NULL,NULL,'0','2026-04-25 09:15:31');
 
 --
 -- Table structure for table `sys_cloud_file`
@@ -547,3 +547,64 @@ CREATE TABLE `uum_user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 INSERT INTO `uum_user` VALUES (1,1,1,NULL,1,'管理员','gly','13828000001',NULL,NULL,NULL,'http://localhost:8080/mycuckoo/upload/photo/20171014181342_5pnIdj.jpg',NULL,NULL,'enable',NULL,NULL,NULL,'0','2011-02-11 16:57:01'),(12,1,2,NULL,2,'王娟','wj','13828000002','','1','','','2012-06-21','','enable','',NULL,NULL,'0','2011-12-21 10:09:20'),(13,1,3,NULL,12,'石纪红','sjh','13828000003','','1','','','2012-07-10','','enable','',NULL,NULL,'0','2012-01-10 14:55:24'),(14,1,4,NULL,12,'杨文菊','ywj','13828000004','','1','','','2012-08-28','','enable','',NULL,NULL,'0','2012-02-28 15:23:30'),(15,1,5,NULL,8,'于志平','yzp','13828000005','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:15:09'),(16,1,6,NULL,3,'张世鹏','zsp','13828000006','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:15:39'),(17,1,7,NULL,7,'张丽','zl','13828000007','','1','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:16:22'),(18,1,8,NULL,7,'高晓峰','gxf','13828000008','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:21:33'),(19,1,9,NULL,7,'王旭','wx','13828000009','','0','','','2012-09-06','','enable','',NULL,NULL,'0','2012-03-06 15:21:57'),(20,1,10,7,7,'王帅明','wsm','13828000010','','0','','','2012-09-06','','enable','','0','2024-06-22 13:35:36','0','2012-03-06 15:23:09'),(21,1,11,1,9,'张军','zj','13828000011','','0','','http://localhost/download/photo/202604/d623b49535c440ae8c22865fb84a8b14.jpg','2012-08-28','','enable','','0','2026-04-11 14:38:18','0','2012-03-06 15:23:40'),(25,3,12,-1,NULL,'张三','zs','13700000001',NULL,'0',NULL,NULL,NULL,NULL,'enable',NULL,NULL,'2024-07-06 04:13:49',NULL,'2024-07-06 04:13:49');
+
+
+-- ============================================================
+-- 表单定义表
+-- ============================================================
+DROP TABLE IF EXISTS `cms_form`;
+CREATE TABLE `cms_form` (
+    `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `code`          VARCHAR(60)  NOT NULL COMMENT '表单编码',
+    `name`          VARCHAR(100) NOT NULL COMMENT '表单名称',
+    `biz_type`      VARCHAR(60)  DEFAULT NULL COMMENT '业务类型',
+    `config`        CLOB         DEFAULT NULL COMMENT '字段配置',
+    `version`       INT          NOT NULL DEFAULT 1 COMMENT '版本号',
+    `status`        TINYINT      NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+    `memo`          VARCHAR(255) DEFAULT NULL COMMENT '备注',
+    `creator`       VARCHAR(64)  DEFAULT NULL COMMENT '创建人',
+    `create_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`       VARCHAR(64)  DEFAULT NULL COMMENT '更新人',
+    `update_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_form_code` (`code`),
+    KEY `idx_biz_type` (`biz_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='表单定义表';
+
+
+-- ============================================================
+-- 表单数据表
+-- ============================================================
+DROP TABLE IF EXISTS `cms_form_data`;
+CREATE TABLE `cms_form_data` (
+     `id`           BIGINT      NOT NULL AUTO_INCREMENT COMMENT '主键',
+     `form_id`      BIGINT      NOT NULL COMMENT '表单ID',
+     `form_code`    VARCHAR(60) NOT NULL COMMENT '表单编码',
+     `form_version` INT         NOT NULL DEFAULT 1 COMMENT '表单版本',
+     `biz_id`       VARCHAR(64)          DEFAULT NULL COMMENT '业务ID（关联其他业务表）',
+     `data`         CLOB        NOT NULL COMMENT '表单数据',
+     `creator`       VARCHAR(64)  DEFAULT NULL COMMENT '创建人',
+     `create_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+     `updater`       VARCHAR(64)  DEFAULT NULL COMMENT '更新人',
+     `update_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+     PRIMARY KEY (`id`),
+     KEY            `idx_form_id` (`form_id`),
+     KEY            `idx_form_code` (`form_code`),
+     KEY            `idx_biz_id` (`biz_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='表单数据表';
+
+
+-- ============================================================
+-- 表单版本表
+-- ============================================================
+DROP TABLE IF EXISTS `cms_form_version`;
+CREATE TABLE `cms_form_version` (
+    `id`        BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `form_id`   BIGINT NOT NULL COMMENT '表单ID',
+    `version`   INT    NOT NULL COMMENT '版本号',
+    `config`    CLOB   NOT NULL COMMENT '字段配置快照',
+    `creator`   VARCHAR(64)  DEFAULT NULL COMMENT '创建人',
+    `create_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_form_version` (`form_id`, `version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='表单版本表';

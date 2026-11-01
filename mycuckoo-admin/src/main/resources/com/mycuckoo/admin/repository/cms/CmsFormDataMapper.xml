@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.admin.repository.cms.CmsFormDataMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.cms.CmsFormData">
+        <id property="id" column="id" />
+        <result property="formId" column="form_id" />
+        <result property="formCode" column="form_code" />
+        <result property="formVersion" column="form_version" />
+        <result property="bizId" column="biz_id" />
+        <result property="data" column="data" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, form_id, form_code, form_version, biz_id, data,
+        creator, create_time, updater, update_time
+    </sql>
+
+    <sql id="table">
+        cms_form_data
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.cms.CmsFormData"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id, </if>
+            <if test="formId != null">form_id, </if>
+            <if test="formCode != null and formCode != ''">form_code, </if>
+            <if test="formVersion != null">form_version, </if>
+            <if test="bizId != null and bizId != ''">biz_id, </if>
+            <if test="data != null">data, </if>
+            <if test="creator != null and creator != ''">creator, </if>
+            <if test="createTime != null">create_time, </if>
+            <if test="updater != null and updater != ''">updater, </if>
+            <if test="updateTime != null">update_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id}, </if>
+            <if test="formId != null">#{formId}, </if>
+            <if test="formCode != null and formCode != ''">#{formCode}, </if>
+            <if test="formVersion != null">#{formVersion}, </if>
+            <if test="bizId != null and bizId != ''">#{bizId}, </if>
+            <if test="data != null">#{data}, </if>
+            <if test="creator != null and creator != ''">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+            <if test="updater != null and updater != ''">#{updater}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.admin.entity.cms.CmsFormData">
+        update <include refid="table" />
+        <set>
+            <if test="formVersion != null">form_version = #{formVersion}, </if>
+            <if test="bizId != null">biz_id = #{bizId}, </if>
+            <if test="data != null">data = #{data}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        <where>
+            <if test="formCode != null and formCode != ''">and form_code = #{formCode}</if>
+            <if test="bizId != null and bizId != ''">and biz_id = #{bizId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="listByCursor" resultMap="baseMap">
+        select id, form_id, form_code, form_version, biz_id, data
+        from <include refid="table" />
+        where form_code = #{formCode}
+        and id &gt; #{lastId}
+        order by id
+        limit #{pageSize}
+    </select>
+
+    <update id="renameField">
+        update <include refid="table" />
+        set data = JSON_SET(
+        JSON_REMOVE(data, concat('$.', #{oldField})),
+        concat('$.', #{newField}),
+        JSON_EXTRACT(data, concat('$.', #{oldField}))
+        ),
+        update_time = now()
+        where form_code = #{formCode}
+        and JSON_EXTRACT(data, concat('$.', #{oldField})) is not null
+    </update>
+
+    <select id="getByBizId" resultMap="baseMap">
+        select <include refid="columns" />
+        from cms_form_data
+        where form_code = #{formCode}
+        and biz_id = #{bizId}
+        order by id desc
+        limit 1
+    </select>
+</mapper>

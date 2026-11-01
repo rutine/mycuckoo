@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycuckoo.admin.repository.cms.CmsFormMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.cms.CmsForm">
+        <id property="id" column="id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="bizType" column="biz_type" />
+        <result property="config" column="config" />
+        <result property="version" column="version" />
+        <result property="status" column="status" />
+        <result property="memo" column="memo" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="columns">
+        id, code, name, biz_type, config, version, status, memo,
+        creator, create_time, updater, update_time
+    </sql>
+
+    <sql id="table">
+        cms_form
+    </sql>
+
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.cms.CmsForm"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id, </if>
+            <if test="code != null and code != ''">code, </if>
+            <if test="name != null and name != ''">name, </if>
+            <if test="bizType != null and bizType != ''">biz_type, </if>
+            <if test="config != null">config, </if>
+            <if test="version != null">version, </if>
+            <if test="status != null">status, </if>
+            <if test="memo != null and memo != ''">memo, </if>
+            <if test="creator != null and creator != ''">creator, </if>
+            <if test="createTime != null">create_time, </if>
+            <if test="updater != null and updater != ''">updater, </if>
+            <if test="updateTime != null">update_time, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id}, </if>
+            <if test="code != null and code != ''">#{code}, </if>
+            <if test="name != null and name != ''">#{name}, </if>
+            <if test="bizType != null and bizType != ''">#{bizType}, </if>
+            <if test="config != null">#{config}, </if>
+            <if test="version != null">#{version}, </if>
+            <if test="status != null">#{status}, </if>
+            <if test="memo != null and memo != ''">#{memo}, </if>
+            <if test="creator != null and creator != ''">#{creator}, </if>
+            <if test="createTime != null">#{createTime}, </if>
+            <if test="updater != null and updater != ''">#{updater}, </if>
+            <if test="updateTime != null">#{updateTime}, </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.mycuckoo.admin.entity.cms.CmsForm">
+        update <include refid="table" />
+        <set>
+            <if test="code != null">code = #{code}, </if>
+            <if test="name != null">name = #{name}, </if>
+            <if test="bizType != null">biz_type = #{bizType}, </if>
+            <if test="config != null">config = #{config}, </if>
+            <if test="version != null">version = #{version}, </if>
+            <if test="status != null">status = #{status}, </if>
+            <if test="memo != null">memo = #{memo}, </if>
+            <if test="updater != null">updater = #{updater}, </if>
+            <if test="updateTime != null">update_time = #{updateTime}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where id = #{id}
+    </delete>
+
+    <select id="get" parameterType="long" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where id = #{id}
+    </select>
+
+    <select id="getByCode" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        where code = #{code}
+    </select>
+
+    <select id="findByPage" resultMap="baseMap">
+        select <include refid="columns" />
+        from <include refid="table" />
+        <where>
+            <if test="keyword != null">and title name concat('%' #{keyword}, '%')</if>
+            <if test="q.bizType != null">and biz_type = #{bizType}</if>
+        </where>
+        and status = 1
+        order by create_time desc
+    </select>
+</mapper>
