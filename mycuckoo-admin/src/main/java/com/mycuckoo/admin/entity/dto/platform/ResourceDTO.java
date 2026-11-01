@@ -1,6 +1,6 @@
 package com.mycuckoo.admin.entity.dto.platform;
 
-public class ResourceDto {
+public class ResourceDTO {
     private Long id; //ID
     private Long parentId; //模块
     private String code; //编码

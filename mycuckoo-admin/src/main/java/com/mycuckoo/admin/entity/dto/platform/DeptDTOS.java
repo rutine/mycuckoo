@@ -9,7 +9,7 @@ import com.mycuckoo.core.OrderTree;
  * @version 4.1.0
  * @time 2024/6/16 7:33
  */
-public abstract class DeptDtos {
+public abstract class DeptDTOS {
 
     public static class Tree extends OrderTree {
         private String roleName;

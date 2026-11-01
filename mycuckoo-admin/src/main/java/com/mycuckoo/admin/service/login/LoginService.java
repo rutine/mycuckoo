@@ -14,8 +14,8 @@ import com.mycuckoo.admin.service.uum.AccountService;
 import com.mycuckoo.admin.service.uum.OrganService;
 import com.mycuckoo.admin.service.uum.RoleService;
 import com.mycuckoo.admin.service.uum.UserService;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,9 +97,9 @@ public class LoginService {
         return userService.findByAccountId(accountId);
     }
 
-    public HierarchyModuleDto filterPrivilege(Long userId, Long roleId, Long organId, String account) {
+    public HierarchyModuleDTO filterPrivilege(Long userId, Long roleId, Long organId, String account) {
         // ====== 2 加载菜单 ======
-        HierarchyModuleDto moduleVo = null;
+        HierarchyModuleDTO moduleVo = null;
         if (isAdmin(account)) {// 是管理员
             // 加载全部权限
             moduleVo = uumServiceFacade.findPrivilegesForAdminLogin();
@@ -116,7 +116,7 @@ public class LoginService {
         return this.filterPrivilege(userId, roleId, organId, account)
                 .getFourth().values().stream()
                 .flatMap(o -> o.stream())
-                .map(ResourceDto::getId)
+                .map(ResourceDTO::getId)
                 .map(String::valueOf)
                 .distinct()
                 .collect(Collectors.toList());

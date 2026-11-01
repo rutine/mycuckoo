@@ -11,13 +11,13 @@ import java.util.List;
  * @version 3.0.0
  * @time 2017-09-10 15:21
  */
-public class RolePrivilegeDto {
+public class RolePrivilegeDTO {
     private String privilegeScope;
     private String rowPrivilege;
     private List<CheckboxTree> privileges;
     private List<String> assign;
 
-    public RolePrivilegeDto(String privilegeScope, String rowPrivilege,
+    public RolePrivilegeDTO(String privilegeScope, String rowPrivilege,
                             List<CheckboxTree> privileges, List<String> assign) {
         this.privilegeScope = privilegeScope;
         this.rowPrivilege = rowPrivilege;

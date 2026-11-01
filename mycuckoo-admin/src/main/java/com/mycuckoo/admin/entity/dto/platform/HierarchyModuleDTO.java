@@ -12,14 +12,14 @@ import java.util.Map;
  * @version 3.0.0
  * @time Jul 2, 2017 6:17:29 PM
  */
-public class HierarchyModuleDto {
+public class HierarchyModuleDTO {
     private List<Menu> first;
     private Map<String, List<Menu>> second;
     private Map<String, List<Menu>> third;
-    private Map<Long, List<ResourceDto>> fourth;
+    private Map<Long, List<ResourceDTO>> fourth;
     private String row;
 
-    public HierarchyModuleDto(
+    public HierarchyModuleDTO(
             List<Menu> first,
             Map<String, List<Menu>> second,
             Map<String, List<Menu>> third) {
@@ -40,11 +40,11 @@ public class HierarchyModuleDto {
         return third;
     }
 
-    public Map<Long, List<ResourceDto>> getFourth() {
+    public Map<Long, List<ResourceDTO>> getFourth() {
         return fourth;
     }
 
-    public void setFourth(Map<Long, List<ResourceDto>> fourth) {
+    public void setFourth(Map<Long, List<ResourceDTO>> fourth) {
         this.fourth = fourth;
     }
 

@@ -14,11 +14,11 @@ import com.mycuckoo.admin.entity.uum.User;
 import com.mycuckoo.admin.entity.uum.UserExtend;
 import com.mycuckoo.admin.service.login.CaptchaService;
 import com.mycuckoo.admin.service.login.LoginService;
-import com.mycuckoo.admin.entity.vo.RegisterVo;
+import com.mycuckoo.admin.entity.vo.RegisterVO;
 import com.mycuckoo.admin.entity.dto.LoginUserInfo;
 import com.mycuckoo.admin.entity.dto.OrgInfo;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTO;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -63,7 +63,7 @@ public class LoginController {
 
 
     @PostMapping("/register")
-    public AjaxResponse<String> register(@RequestBody RegisterVo vo) {
+    public AjaxResponse<String> register(@RequestBody RegisterVO vo) {
         Assert.state(vo.getPassword().equals(vo.getConfirmPassword()), "两次输入密码不一致!");
 
         captchaService.validate(vo.getCaptchaId(), vo.getCode());
@@ -200,7 +200,7 @@ public class LoginController {
         Long userId = user.getId();
         String account = SessionContextHolder.getAccountCode();
 
-        HierarchyModuleDto moduleVo = (HierarchyModuleDto) session.getAttribute(SESSION_MODULE_MENU);
+        HierarchyModuleDTO moduleVo = (HierarchyModuleDTO) session.getAttribute(SESSION_MODULE_MENU);
         if (moduleVo == null) {
             // 加载用户菜单
             moduleVo = loginService.filterPrivilege(userId, roleId, organId, account);
@@ -208,7 +208,7 @@ public class LoginController {
 
             List<String> res = moduleVo.getFourth().values().stream()
                     .flatMap(o -> o.stream())
-                    .map(ResourceDto::getId)
+                    .map(ResourceDTO::getId)
                     .map(String::valueOf)
                     .distinct()
                     .collect(Collectors.toList());

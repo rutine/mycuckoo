@@ -9,8 +9,8 @@ import com.mycuckoo.admin.entity.platform.ModResRef;
 import com.mycuckoo.admin.entity.platform.ModuleMenu;
 import com.mycuckoo.admin.service.platform.ModuleService;
 import com.mycuckoo.core.util.TreeHelper;
-import com.mycuckoo.admin.entity.dto.platform.ModuleMenuDtos;
-import com.mycuckoo.admin.entity.dto.uum.AssignDto;
+import com.mycuckoo.admin.entity.dto.platform.ModuleMenuDTO;
+import com.mycuckoo.admin.entity.dto.uum.AssignDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,7 +52,7 @@ public class ModuleController {
 
         List<? extends SimpleTree> list = TreeHelper.buildTree(all, ID_ROOT_VALUE);
         if (StrUtils.isNotBlank(querier.getKeyword())) {
-            list = TreeHelper.treeFilter(list, querier.getKeyword(), (node, keyword) -> ((ModuleMenuDtos.Tree) node).getName().contains(keyword));
+            list = TreeHelper.treeFilter(list, querier.getKeyword(), (node, keyword) -> ((ModuleMenuDTO.Tree) node).getName().contains(keyword));
         }
 
         return AjaxResponse.create(list);
@@ -67,9 +67,9 @@ public class ModuleController {
      * @time May 12, 2024 7:35:46 PM
      */
     @GetMapping(value = "/{id}/resource")
-    public AjaxResponse<AssignDto<SimpleTree, String>> listResource(@PathVariable long id) {
+    public AjaxResponse<AssignDTO<SimpleTree, String>> listResource(@PathVariable long id) {
 
-        AssignDto<SimpleTree, String> vo = moduleService.findResourceTreeByModId(id);
+        AssignDTO<SimpleTree, String> vo = moduleService.findResourceTreeByModId(id);
 
         return AjaxResponse.create(vo);
     }
@@ -103,11 +103,11 @@ public class ModuleController {
     }
 
     @GetMapping("/{id}")
-    public AjaxResponse<ModuleMenuDtos.Detail> get(@PathVariable long id) {
+    public AjaxResponse<ModuleMenuDTO.Detail> get(@PathVariable long id) {
         ModuleMenu menu = moduleService.get(id);
         ModuleMenu parent = moduleService.get(menu.getParentId());
 
-        ModuleMenuDtos.Detail vo = new ModuleMenuDtos.Detail();
+        ModuleMenuDTO.Detail vo = new ModuleMenuDTO.Detail();
         BeanUtils.copyProperties(menu, vo);
         vo.setParentName(parent.getName());
 

@@ -5,7 +5,7 @@ import com.mycuckoo.admin.entity.uum.User;
 import com.mycuckoo.admin.service.uum.DepartmentService;
 import com.mycuckoo.admin.service.uum.PrivilegeService;
 import com.mycuckoo.admin.service.uum.UserService;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +36,11 @@ public class UumServiceFacade {
         this.privilegeService.deletePrivilegeByModResId(modResRefIds);
     }
 
-    public HierarchyModuleDto findPrivilegesForAdminLogin() {
+    public HierarchyModuleDTO findPrivilegesForAdminLogin() {
         return privilegeService.findPrivilegesForAdminLoginNew();
     }
 
-    public HierarchyModuleDto findPrivilegesForUserLogin(long userId, long roleId, long organId) {
+    public HierarchyModuleDTO findPrivilegesForUserLogin(long userId, long roleId, long organId) {
         return privilegeService.findPrivilegesForUserLogin(userId, roleId, organId);
     }
 

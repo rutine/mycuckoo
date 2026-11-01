@@ -13,11 +13,11 @@ import com.mycuckoo.admin.service.facade.PlatformServiceFacade;
 import com.mycuckoo.admin.service.uum.AccountService;
 import com.mycuckoo.admin.service.uum.PrivilegeService;
 import com.mycuckoo.admin.service.uum.UserService;
-import com.mycuckoo.admin.entity.vo.UserVos;
-import com.mycuckoo.admin.entity.dto.uum.AssignDto;
-import com.mycuckoo.admin.entity.dto.uum.RowPrivilegeDto;
-import com.mycuckoo.admin.entity.dto.uum.UserDto;
-import com.mycuckoo.admin.entity.dto.uum.UserDtos;
+import com.mycuckoo.admin.entity.vo.UserVOS;
+import com.mycuckoo.admin.entity.dto.uum.AssignDTO;
+import com.mycuckoo.admin.entity.dto.uum.RowPrivilegeDTO;
+import com.mycuckoo.admin.entity.dto.uum.UserDTO;
+import com.mycuckoo.admin.entity.dto.uum.UserDTOS;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -67,9 +67,9 @@ public class UserController {
      * @time Oct 13, 2013 1:05:30 PM
      */
     @GetMapping("/{id}/res-privilege")
-    public AjaxResponse<AssignDto<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
+    public AjaxResponse<AssignDTO<CheckboxTree, String>> listUserPrivilege(@PathVariable long id) {
         //todo
-        AssignDto<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
+        AssignDTO<CheckboxTree, String> vo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.USR);
 
         return AjaxResponse.create(vo);
     }
@@ -83,8 +83,8 @@ public class UserController {
      * @time Oct 20, 2013 3:03:59 PM
      */
     @GetMapping("/{id}/row-privilege")
-    public AjaxResponse<RowPrivilegeDto> listRowPrivilege(@PathVariable long id) {
-        RowPrivilegeDto vo = privilegeService.findRowPrivilegeByUserId(id);
+    public AjaxResponse<RowPrivilegeDTO> listRowPrivilege(@PathVariable long id) {
+        RowPrivilegeDTO vo = privilegeService.findRowPrivilegeByUserId(id);
 
         return AjaxResponse.create(vo);
     }
@@ -97,7 +97,7 @@ public class UserController {
      * @time Oct 6, 2013 8:26:57 PM
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody UserDto user) {
+    public AjaxResponse<String> create(@RequestBody UserDTO user) {
         Assert.state(StringUtils.isNumeric(user.getPhone()), "必须有效电话号");
         Assert.notNull(user.getAvidate(), "用户有效期不能为空");
 
@@ -107,7 +107,7 @@ public class UserController {
     }
 
     @PutMapping
-    public AjaxResponse<String> update(@RequestBody UserDto user) {
+    public AjaxResponse<String> update(@RequestBody UserDTO user) {
         Assert.notNull(user.getUserId(), "用户id不能为空!");
         userService.update(user);
 
@@ -147,8 +147,8 @@ public class UserController {
      * @time Oct 20, 2013 3:07:34 PM
      */
     @GetMapping("/selector")
-    public AjaxResponse<List<UserDtos.Profile>> listByName(@RequestParam(defaultValue = "") String userName) {
-        List<UserDtos.Profile> vos = userService.findByName(userName);
+    public AjaxResponse<List<UserDTOS.Profile>> listByName(@RequestParam(defaultValue = "") String userName) {
+        List<UserDTOS.Profile> vos = userService.findByName(userName);
 
         return AjaxResponse.create(vos);
     }
@@ -223,7 +223,7 @@ public class UserController {
      * @time Nov 6, 2014 9:13:20 PM
      */
     @PutMapping("/update/password")
-    public AjaxResponse<String> updatePassword(@RequestBody UserVos.UPassword vo) {
+    public AjaxResponse<String> updatePassword(@RequestBody UserVOS.UPassword vo) {
         Assert.state(vo.getNewPassword().equals(vo.getConfirmPassword()), "两次输入的新密码不一致");
 
         String password = vo.getPassword();
@@ -240,7 +240,7 @@ public class UserController {
      * @time Nov 1, 2014 8:28:55 AM
      */
     @PutMapping("/update/photo")
-    public AjaxResponse<String> updatePhoto(@RequestBody UserVos.UPhoto vo, HttpServletRequest request) {
+    public AjaxResponse<String> updatePhoto(@RequestBody UserVOS.UPhoto vo, HttpServletRequest request) {
         Assert.hasLength(vo.getFileId(), "头像不存在");
 
         userService.updateUserPhotoUrl(vo.getFileId(), SessionContextHolder.getUserId());
@@ -253,7 +253,7 @@ public class UserController {
      * 功能说明 : 更新用户角色
      */
     @PutMapping("/update/role")
-    public AjaxResponse<String> updateRole(@RequestBody UserVos.URole vo) {
+    public AjaxResponse<String> updateRole(@RequestBody UserVOS.URole vo) {
         Assert.notNull(vo.getUserId(), "用户id不能为空");
         Assert.notNull(vo.getRoleId(), "角色id不能为空");
 

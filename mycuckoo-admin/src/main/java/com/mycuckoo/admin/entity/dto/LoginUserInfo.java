@@ -1,6 +1,6 @@
 package com.mycuckoo.admin.entity.dto;
 
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
 import com.mycuckoo.core.UserInfo;
 
 /**
@@ -11,14 +11,14 @@ import com.mycuckoo.core.UserInfo;
  * @time 2017-10-06 15:48
  */
 public class LoginUserInfo {
-    private HierarchyModuleDto menu;
+    private HierarchyModuleDTO menu;
     private UserInfo user;
 
-    public HierarchyModuleDto getMenu() {
+    public HierarchyModuleDTO getMenu() {
         return menu;
     }
 
-    public void setMenu(HierarchyModuleDto menu) {
+    public void setMenu(HierarchyModuleDTO menu) {
         this.menu = menu;
     }
 

@@ -9,7 +9,7 @@ import com.mycuckoo.admin.entity.uum.User;
  * @version 3.0.0
  * @time Jul 9, 2017 6:16:58 PM
  */
-public class UserDto extends User {
+public class UserDTO extends User {
     private String deptName;
     private String roleName;
     private String photoFileId;

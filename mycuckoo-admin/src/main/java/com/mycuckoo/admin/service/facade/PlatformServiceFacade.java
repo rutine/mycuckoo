@@ -6,8 +6,8 @@ import com.mycuckoo.admin.entity.platform.SysParameter;
 import com.mycuckoo.admin.service.platform.DistrictService;
 import com.mycuckoo.admin.service.platform.ModuleService;
 import com.mycuckoo.admin.service.platform.SystemParameterService;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +37,12 @@ public class PlatformServiceFacade {
         return moduleService.buildTree(menus, checkedOperations, isCheckbox);
     }
 
-    public HierarchyModuleDto filterModule(List<ModuleMenu> list) {
+    public HierarchyModuleDTO filterModule(List<ModuleMenu> list) {
         return moduleService.filterModule(list);
     }
 
 
-    public List<ResourceDto> findAllModResRefs() {
+    public List<ResourceDTO> findAllModResRefs() {
         return moduleService.findAllModResRefs();
     }
 

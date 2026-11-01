@@ -11,7 +11,7 @@ import java.util.Date;
  * @version 4.1.0
  * @time 2024/7/5 21:13
  */
-public abstract class OrganDtos {
+public abstract class OrganDTOS {
 
     public static class ListVo {
         private Long orgId;             // 主键

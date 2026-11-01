@@ -12,7 +12,7 @@ import java.util.List;
  * @version 4.1.0
  * @time 2024/6/2 7:28
  */
-public abstract class TableConfigDtos {
+public abstract class TableConfigDTOS {
 
     public static class Detail implements Column {
         private Long tableId;

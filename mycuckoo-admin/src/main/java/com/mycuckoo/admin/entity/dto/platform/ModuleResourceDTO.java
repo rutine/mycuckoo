@@ -14,11 +14,11 @@ import java.util.Map;
  * @version 4.1.0
  * @time 2024/6/16 7:36
  */
-public class ModuleResourceDto {
+public class ModuleResourceDTO {
     private List<ModuleMenu> menu  = Lists.newArrayList(); // 模块菜单list
-    private Map<Long, List<ResourceDto>> resource = Maps.newHashMap(); // 四级资源
+    private Map<Long, List<ResourceDTO>> resource = Maps.newHashMap(); // 四级资源
 
-    public ModuleResourceDto(List<ModuleMenu> menu, Map<Long, List<ResourceDto>> resource) {
+    public ModuleResourceDTO(List<ModuleMenu> menu, Map<Long, List<ResourceDTO>> resource) {
         this.menu = menu;
         this.resource = resource;
     }
@@ -27,7 +27,7 @@ public class ModuleResourceDto {
         return menu;
     }
 
-    public Map<Long, List<ResourceDto>> getResource() {
+    public Map<Long, List<ResourceDTO>> getResource() {
         return resource;
     }
 }

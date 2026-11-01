@@ -9,7 +9,7 @@ import com.mycuckoo.admin.entity.platform.District;
  * @version 3.0.0
  * @time Jul 9, 2017 5:49:05 PM
  */
-public class DistrictDto extends District {
+public class DistrictDTO extends District {
     private String parentName;
 
     public String getParentName() {

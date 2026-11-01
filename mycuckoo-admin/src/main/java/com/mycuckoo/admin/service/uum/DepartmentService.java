@@ -13,7 +13,7 @@ import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.admin.entity.uum.Department;
 import com.mycuckoo.admin.entity.uum.DepartmentExtend;
 import com.mycuckoo.admin.repository.uum.DepartmentMapper;
-import com.mycuckoo.admin.entity.dto.platform.DeptDtos;
+import com.mycuckoo.admin.entity.dto.platform.DeptDTOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -111,9 +111,9 @@ public class DepartmentService {
         querier.setPageSize(0);
         Page<Department> page = departmentMapper.findByPage(querier.getQ(), querier);
 
-        List<DeptDtos.Tree> all = Lists.newArrayList();
+        List<DeptDTOS.Tree> all = Lists.newArrayList();
         for (Department entity : page) {
-            DeptDtos.Tree tree = new DeptDtos.Tree();
+            DeptDTOS.Tree tree = new DeptDTOS.Tree();
             tree.setId(entity.getDeptId() + "");
             tree.setParentId(entity.getParentId() + "");
             tree.setText(entity.getName());

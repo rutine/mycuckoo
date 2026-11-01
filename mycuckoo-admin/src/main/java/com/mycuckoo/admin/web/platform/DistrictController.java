@@ -7,7 +7,7 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.admin.entity.platform.District;
 import com.mycuckoo.admin.service.platform.DistrictService;
-import com.mycuckoo.admin.entity.dto.platform.DistrictDto;
+import com.mycuckoo.admin.entity.dto.platform.DistrictDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,8 @@ public class DistrictController {
      * @time Jul 2, 2013 11:12:40 AM
      */
     @GetMapping
-    public AjaxResponse<Page<DistrictDto>> list(@RequestParam(value = "treeId", required = false) String treeId, Querier querier) {
-        Page<DistrictDto> page = districtService.findByPage(treeId, querier);
+    public AjaxResponse<Page<DistrictDTO>> list(@RequestParam(value = "treeId", required = false) String treeId, Querier querier) {
+        Page<DistrictDTO> page = districtService.findByPage(treeId, querier);
 
         return AjaxResponse.create(page);
     }
@@ -81,10 +81,10 @@ public class DistrictController {
 
 
     @GetMapping("/{id}")
-    public AjaxResponse<DistrictDto> get(@PathVariable long id) {
-        DistrictDto district = districtService.get(id);
+    public AjaxResponse<DistrictDTO> get(@PathVariable long id) {
+        DistrictDTO district = districtService.get(id);
         if (district.getParentCode() != null) {
-            DistrictDto parentDistrict = districtService.getByCode(district.getParentCode());
+            DistrictDTO parentDistrict = districtService.getByCode(district.getParentCode());
             district.setParentName(parentDistrict.getName());
         }
 

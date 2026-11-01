@@ -9,16 +9,16 @@ import java.util.List;
  * @version 3.0.0
  * @time Jul 2, 2017 6:32:38 PM
  */
-public class AssignDto<O, T> {
+public class AssignDTO<O, T> {
     private List<O> source;
     private List<T> assign;
     private String privilegeScope;
 
-    public AssignDto(List<O> source, List<T> assign) {
+    public AssignDTO(List<O> source, List<T> assign) {
         this(source, assign, null);
     }
 
-    public AssignDto(List<O> source, List<T> assign, String privilegeScope) {
+    public AssignDTO(List<O> source, List<T> assign, String privilegeScope) {
         this.source = source;
         this.assign = assign;
         this.privilegeScope = privilegeScope;

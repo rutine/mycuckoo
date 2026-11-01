@@ -7,7 +7,7 @@ package com.mycuckoo.admin.entity.vo;
  * @version 4.1.0
  * @time 2024/5/20 21:00
  */
-public class UserVos {
+public class UserVOS {
 
     public static class URole {
         private Long userId;

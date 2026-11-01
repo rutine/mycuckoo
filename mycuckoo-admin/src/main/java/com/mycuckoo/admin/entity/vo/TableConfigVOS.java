@@ -9,7 +9,7 @@ import java.util.List;
  * @version 4.1.0
  * @time 2024/6/2 6:31
  */
-public abstract class TableConfigVos {
+public abstract class TableConfigVOS {
 
     public static class Create {
         private Long moduleId;

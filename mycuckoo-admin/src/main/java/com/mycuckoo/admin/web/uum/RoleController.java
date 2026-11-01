@@ -11,8 +11,8 @@ import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.admin.entity.uum.Role;
 import com.mycuckoo.admin.service.uum.PrivilegeService;
 import com.mycuckoo.admin.service.uum.RoleService;
-import com.mycuckoo.admin.entity.dto.RolePrivilegeDto;
-import com.mycuckoo.admin.entity.dto.uum.AssignDto;
+import com.mycuckoo.admin.entity.dto.RolePrivilegeDTO;
+import com.mycuckoo.admin.entity.dto.uum.AssignDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +56,11 @@ public class RoleController {
      * @time Jul 14, 2013 4:27:11 PM
      */
     @GetMapping(value = "/{id}/role-privilege")
-    public AjaxResponse<RolePrivilegeDto> listRolePrivilege(@PathVariable long id) {
+    public AjaxResponse<RolePrivilegeDTO> listRolePrivilege(@PathVariable long id) {
         //todo
-        AssignDto<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
+        AssignDTO<CheckboxTree, String> baseVo = privilegeService.findModResByOwnIdAOwnTypeWithCheck(id, OwnerType.ROLE);
 
-        RolePrivilegeDto vo = new RolePrivilegeDto(
+        RolePrivilegeDTO vo = new RolePrivilegeDTO(
                 baseVo.getPrivilegeScope(),
                 privilegeService.findRowPrivilegeByRoleId(id),
                 baseVo.getSource(),

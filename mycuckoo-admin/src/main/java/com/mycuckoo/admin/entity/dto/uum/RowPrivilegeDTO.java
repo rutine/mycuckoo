@@ -9,13 +9,13 @@ import java.util.List;
  * @version 3.0.0
  * @time 2017-09-09 09:43
  */
-public class RowPrivilegeDto {
+public class RowPrivilegeDTO {
     private String privilegeScope;
     private List<RowVo> privileges;
 
-    public RowPrivilegeDto() {}
+    public RowPrivilegeDTO() {}
 
-    public RowPrivilegeDto(String privilegeScope, List<RowVo> privileges) {
+    public RowPrivilegeDTO(String privilegeScope, List<RowVo> privileges) {
         this.privilegeScope = privilegeScope;
         this.privileges = privileges;
     }

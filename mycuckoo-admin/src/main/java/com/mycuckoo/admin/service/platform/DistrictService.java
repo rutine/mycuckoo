@@ -13,7 +13,7 @@ import com.mycuckoo.admin.entity.platform.District;
 import com.mycuckoo.admin.repository.platform.DistrictMapper;
 import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.core.util.web.SessionContextHolder;
-import com.mycuckoo.admin.entity.dto.platform.DistrictDto;
+import com.mycuckoo.admin.entity.dto.platform.DistrictDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -56,7 +56,7 @@ public class DistrictService {
         return false;
     }
 
-    public Page<DistrictDto> findByPage(String treeId, Querier querier) {
+    public Page<DistrictDTO> findByPage(String treeId, Querier querier) {
         List<String> codeList = new ArrayList<>();
         if (Objects.nonNull(treeId)) {
             codeList = findChildCodes(treeId, 0); // 过滤出所有下级
@@ -68,14 +68,14 @@ public class DistrictService {
         Map<String, String> dictMap = dicts.stream()
                 .collect(Collectors.toMap(k -> k.getCode().toLowerCase(), DictionaryItem::getName));
 
-        List<DistrictDto> vos = Lists.newArrayList();
+        List<DistrictDTO> vos = Lists.newArrayList();
         for (District entity : pageResult.getContent()) {
             String type = entity.getType().toLowerCase();
             if (dictMap.containsKey(type)) {
                 entity.setType(dictMap.get(type));
             }
 
-            DistrictDto vo = new DistrictDto();
+            DistrictDTO vo = new DistrictDTO();
             BeanUtils.copyProperties(entity, vo);
             vos.add(vo);
         }
@@ -83,7 +83,7 @@ public class DistrictService {
         return new PageImpl<>(vos, querier, pageResult.getTotalElements());
     }
 
-    public DistrictDto get(Long districtId) {
+    public DistrictDTO get(Long districtId) {
         if (districtId == null) {
             return null;
         }
@@ -93,17 +93,17 @@ public class DistrictService {
             return null;
         }
 
-        DistrictDto vo = new DistrictDto();
+        DistrictDTO vo = new DistrictDTO();
         BeanUtils.copyProperties(district, vo);
 
         return vo;
     }
 
-    public DistrictDto getByCode(String code) {
+    public DistrictDTO getByCode(String code) {
         Assert.hasLength(code, "编码不能为空");
 
         District district = districtMapper.getByCode(code.trim());
-        DistrictDto vo = new DistrictDto();
+        DistrictDTO vo = new DistrictDTO();
         BeanUtils.copyProperties(district, vo);
 
         return vo;

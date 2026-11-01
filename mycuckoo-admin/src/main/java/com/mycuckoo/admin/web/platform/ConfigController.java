@@ -2,7 +2,7 @@ package com.mycuckoo.admin.web.platform;
 
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.admin.service.platform.TableConfigService;
-import com.mycuckoo.admin.entity.dto.TableConfigDtos;
+import com.mycuckoo.admin.entity.dto.TableConfigDTOS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +26,8 @@ public class ConfigController {
 
 
     @PostMapping("/list-table-config")
-    public AjaxResponse<List<TableConfigDtos.Config>> listByTableCode(String tableCode) {
-        List<TableConfigDtos.Config> list = tableConfigService.findByTableCode(tableCode);
+    public AjaxResponse<List<TableConfigDTOS.Config>> listByTableCode(String tableCode) {
+        List<TableConfigDTOS.Config> list = tableConfigService.findByTableCode(tableCode);
 
         return AjaxResponse.create(list);
     }

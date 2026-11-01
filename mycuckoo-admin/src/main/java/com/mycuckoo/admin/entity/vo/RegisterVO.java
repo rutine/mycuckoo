@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
  * @version 4.1.0
  * @time 2024/7/6 10:54
  */
-public class RegisterVo {
+public class RegisterVO {
     @NotBlank(message = "公司不能为空")
     private String orgName;
     @NotBlank(message = "用户名称不能为空")

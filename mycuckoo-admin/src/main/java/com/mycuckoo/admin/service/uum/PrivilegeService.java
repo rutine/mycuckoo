@@ -22,11 +22,11 @@ import com.mycuckoo.admin.entity.uum.User;
 import com.mycuckoo.admin.repository.uum.PrivilegeMapper;
 import com.mycuckoo.admin.service.facade.PlatformServiceFacade;
 import com.mycuckoo.admin.service.facade.UumServiceFacade;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
-import com.mycuckoo.admin.entity.dto.platform.ModuleResourceDto;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDto;
-import com.mycuckoo.admin.entity.dto.uum.AssignDto;
-import com.mycuckoo.admin.entity.dto.uum.RowPrivilegeDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
+import com.mycuckoo.admin.entity.dto.platform.ModuleResourceDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTO;
+import com.mycuckoo.admin.entity.dto.uum.AssignDTO;
+import com.mycuckoo.admin.entity.dto.uum.RowPrivilegeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +93,7 @@ public class PrivilegeService {
         return resourceId;
     }
 
-    public AssignDto<CheckboxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
+    public AssignDTO<CheckboxTree, String> findModResByOwnIdAOwnTypeWithCheck(long ownerId, OwnerType ownerType) {
         // 查找已经分配的权限
         Long[] roleIds = { ownerId };
         String[] ownerTypes = { ownerType.code };
@@ -117,7 +117,7 @@ public class PrivilegeService {
 
         // 查找所有模块资源关系
         List<String> myRes = SessionContextHolder.getResources();
-        List<ResourceDto> resources = platformServiceFacade.findAllModResRefs();
+        List<ResourceDTO> resources = platformServiceFacade.findAllModResRefs();
         resources = resources.stream().filter(o -> myRes.contains(o.getId().toString())).collect(Collectors.toList());
 
         List<String> checkedOperations = resourceIdList.parallelStream()
@@ -130,10 +130,10 @@ public class PrivilegeService {
         List<? extends SimpleTree> trees = platformServiceFacade.buildTree(allModMenuList, checkedOperations, true);
 
         //将已分配和未分配的模块操作放入
-        return new AssignDto(trees, checkedOperations, privilegeScope);
+        return new AssignDTO(trees, checkedOperations, privilegeScope);
     }
 
-    public RowPrivilegeDto findRowPrivilegeByUserId(long userId) {
+    public RowPrivilegeDTO findRowPrivilegeByUserId(long userId) {
         // 查找已经分配的权限
         Long[] userIds = { userId };
         String[] ownerTypes = { OwnerType.USR.code };
@@ -151,11 +151,11 @@ public class PrivilegeService {
         }
 
         Long[] resourceIdArray = resourceIdList.toArray(new Long[resourceIdList.size()]);
-        final List<RowPrivilegeDto.RowVo> rowVos = new ArrayList();
+        final List<RowPrivilegeDTO.RowVo> rowVos = new ArrayList();
         if (PrivilegeScope.USER == privilegeScope) {
             List<User> userList = uumServiceFacade.findByUserIds(resourceIdArray);
             userList.forEach(item -> {
-                RowPrivilegeDto.RowVo vo = new RowPrivilegeDto.RowVo();
+                RowPrivilegeDTO.RowVo vo = new RowPrivilegeDTO.RowVo();
                 vo.setId(item.getUserId());
                 vo.setName(item.getName());
                 rowVos.add(vo);
@@ -166,7 +166,7 @@ public class PrivilegeService {
             deptList.forEach(item -> {
                 String deptName = item.getName();
                 String roleName = item.getRoleName();
-                RowPrivilegeDto.RowVo vo = new RowPrivilegeDto.RowVo();
+                RowPrivilegeDTO.RowVo vo = new RowPrivilegeDTO.RowVo();
                 vo.setId(item.getRoleId());
                 vo.setName(deptName + "-" + roleName);
                 rowVos.add(vo);
@@ -175,14 +175,14 @@ public class PrivilegeService {
         else {
             List<DepartmentExtend> deptList = uumServiceFacade.findByDeptIds(resourceIdArray);
             deptList.forEach(item -> {
-                RowPrivilegeDto.RowVo vo = new RowPrivilegeDto.RowVo();
+                RowPrivilegeDTO.RowVo vo = new RowPrivilegeDTO.RowVo();
                 vo.setId(item.getDeptId());
                 vo.setName(item.getName());
                 rowVos.add(vo);
             });
         }
 
-        return new RowPrivilegeDto(privilegeScope == null ? "" : privilegeScope.scope, rowVos);
+        return new RowPrivilegeDTO(privilegeScope == null ? "" : privilegeScope.scope, rowVos);
     }
 
     public boolean existsSpecialPrivilegeByUserId(long userId) {
@@ -191,21 +191,21 @@ public class PrivilegeService {
         return count > 0;
     }
 
-    public HierarchyModuleDto findPrivilegesForAdminLoginNew() {
-        List<ResourceDto> resourceVos = platformServiceFacade.findAllModResRefs(); // 所有资源
+    public HierarchyModuleDTO findPrivilegesForAdminLoginNew() {
+        List<ResourceDTO> resourceVos = platformServiceFacade.findAllModResRefs(); // 所有资源
         // 四级模块操作
-        Map<Long, List<ResourceDto>> resMap = resourceVos.stream()
-                .collect(Collectors.groupingBy(ResourceDto::getParentId,
+        Map<Long, List<ResourceDTO>> resMap = resourceVos.stream()
+                .collect(Collectors.groupingBy(ResourceDTO::getParentId,
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(ResourceDto::getOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(ResourceDTO::getOrder)).collect(Collectors.toList()))));
         List<ModuleMenu> allModuleMenus = platformServiceFacade.findAllModule();// 所有模块菜单
-        HierarchyModuleDto hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
+        HierarchyModuleDTO hierarchyModuleVo = platformServiceFacade.filterModule(allModuleMenus); // 过滤模块
         hierarchyModuleVo.setFourth(resMap);
 
         return hierarchyModuleVo;
     }
 
-    public HierarchyModuleDto findPrivilegesForUserLogin(long userId, long roleId, long organId) {
+    public HierarchyModuleDTO findPrivilegesForUserLogin(long userId, long roleId, long organId) {
         // 查找用户相关所有权限
         Long[] ownerIds = { userId, roleId }; // 拥有者数组
         String[] ownerTypes =  { OwnerType.USR.code, OwnerType.ROLE.code }; // 拥有者类型数组
@@ -255,16 +255,16 @@ public class PrivilegeService {
             }
         }
 
-        List<ResourceDto> resources = Lists.newArrayList();
+        List<ResourceDTO> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-            List<ResourceDto> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            List<ResourceDTO> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> !resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
             resources = platformServiceFacade.findAllModResRefs(); // 所有资源
         } else {
-            List<ResourceDto> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            List<ResourceDTO> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
@@ -276,12 +276,12 @@ public class PrivilegeService {
 
 
         // 过滤所有的模块操作
-        ModuleResourceDto moduleResourceVo = this.filterModOpt(resources, false);
+        ModuleResourceDTO moduleResourceVo = this.filterModOpt(resources, false);
         List<ModuleMenu> moduleMenuList = moduleResourceVo.getMenu();
-        Map<Long, List<ResourceDto>> modOptMap = moduleResourceVo.getResource();
+        Map<Long, List<ResourceDTO>> modOptMap = moduleResourceVo.getResource();
 
         // 1,2,3 级菜单分类
-        HierarchyModuleDto hierarchyModuleVo = platformServiceFacade.filterModule(moduleMenuList);
+        HierarchyModuleDTO hierarchyModuleVo = platformServiceFacade.filterModule(moduleMenuList);
         hierarchyModuleVo.setFourth(modOptMap);
 
         // 3 ====== 行权限 ======
@@ -405,10 +405,10 @@ public class PrivilegeService {
 
 
     // --------------------------- 私有方法 -------------------------------
-    private ModuleResourceDto filterModOpt(List<ResourceDto> resources, boolean isTreeFlag) {
+    private ModuleResourceDTO filterModOpt(List<ResourceDTO> resources, boolean isTreeFlag) {
         List<ModuleMenu> modOptList = Lists.newArrayList(); // 四级模块操作
         List<ModuleMenu> moduleMenuList = Lists.newArrayList(); // 模块菜单list
-        for (ResourceDto resource : resources) {
+        for (ResourceDTO resource : resources) {
             // 第三级菜单
             ModuleMenu vo3 = platformServiceFacade.getModule(resource.getParentId());;
             if (isTreeFlag) {
@@ -442,7 +442,7 @@ public class PrivilegeService {
         }
 
         // 四级模块操作
-        Map<Long, List<ResourceDto>> modResMap = Maps.newHashMap();
+        Map<Long, List<ResourceDTO>> modResMap = Maps.newHashMap();
         if (isTreeFlag) {
             // 如果为树则加入模块list
             moduleMenuList.addAll(modOptList);
@@ -450,15 +450,15 @@ public class PrivilegeService {
         else {
             // 不为树则维护操作按钮map
             modResMap = resources.stream()
-                    .collect(Collectors.groupingBy(ResourceDto::getParentId,
+                    .collect(Collectors.groupingBy(ResourceDTO::getParentId,
                             Collectors.collectingAndThen(Collectors.toList(),
-                                    sub -> sub.stream().sorted(Comparator.comparing(ResourceDto::getOrder)).collect(Collectors.toList()))));
+                                    sub -> sub.stream().sorted(Comparator.comparing(ResourceDTO::getOrder)).collect(Collectors.toList()))));
         }
         Collections.sort(moduleMenuList, new ModuleMenu());
 
 
 
-        return new ModuleResourceDto(moduleMenuList, modResMap);
+        return new ModuleResourceDTO(moduleMenuList, modResMap);
     }
 
     /**
@@ -491,16 +491,16 @@ public class PrivilegeService {
             }
         }
 
-        List<ResourceDto> resources = Lists.newArrayList();
+        List<ResourceDTO> resources = Lists.newArrayList();
         if (PrivilegeScope.EXCLUDE == privilegeScope) {
-            List<ResourceDto> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            List<ResourceDTO> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> !resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());
         } else if (PrivilegeScope.ALL == privilegeScope) {
             resources = platformServiceFacade.findAllModResRefs(); // 所有资源
         } else {
-            List<ResourceDto> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
+            List<ResourceDTO> allResources = platformServiceFacade.findAllModResRefs(); // 所有资源
             resources = allResources.stream()
                     .filter(r -> resourceIds.contains(r.getId()))
                     .collect(Collectors.toList());

@@ -2,8 +2,8 @@ package com.mycuckoo.admin.web.login;
 
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.admin.service.login.CaptchaService;
-import com.mycuckoo.admin.entity.vo.CaptchaVos;
-import com.mycuckoo.admin.entity.dto.platform.CaptchaDtos;
+import com.mycuckoo.admin.entity.vo.CaptchaVOS;
+import com.mycuckoo.admin.entity.dto.platform.CaptchaDTOS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,17 +27,17 @@ public class CaptchaController {
 
 
     @PostMapping("/image")
-    public AjaxResponse<CaptchaDtos.Captcha> image() {
+    public AjaxResponse<CaptchaDTOS.Captcha> image() {
         return AjaxResponse.create(captchaService.send());
     }
 
     @PostMapping("/code")
-    public AjaxResponse<CaptchaDtos.Captcha> code(@RequestBody CaptchaVos.GetCode vo) {
+    public AjaxResponse<CaptchaDTOS.Captcha> code(@RequestBody CaptchaVOS.GetCode vo) {
         return AjaxResponse.create(captchaService.send(vo.getCaptchaId(), vo.getPhone(), vo.getEmail()));
     }
 
     @PostMapping("/check")
-    public AjaxResponse<CaptchaDtos.Captcha> check(@RequestBody CaptchaDtos.Captcha vo) {
+    public AjaxResponse<CaptchaDTOS.Captcha> check(@RequestBody CaptchaDTOS.Captcha vo) {
         try {
             captchaService.validate(vo.getId(), vo.getCode());
         } catch (IllegalStateException e) {

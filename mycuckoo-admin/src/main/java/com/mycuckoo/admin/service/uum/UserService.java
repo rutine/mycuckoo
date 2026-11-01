@@ -19,8 +19,8 @@ import com.mycuckoo.admin.entity.uum.User;
 import com.mycuckoo.admin.entity.uum.UserExtend;
 import com.mycuckoo.admin.repository.uum.UserMapper;
 import com.mycuckoo.admin.service.platform.AttachmentService;
-import com.mycuckoo.admin.entity.dto.uum.UserDto;
-import com.mycuckoo.admin.entity.dto.uum.UserDtos;
+import com.mycuckoo.admin.entity.dto.uum.UserDTO;
+import com.mycuckoo.admin.entity.dto.uum.UserDTOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -89,13 +89,13 @@ public class UserService {
         return true;
     }
 
-    public List<UserDtos.Profile> findByName(String userName) {
+    public List<UserDTOS.Profile> findByName(String userName) {
         userName = "%" + userName + "%";
         List<User> list = userMapper.findByName(userName);
 
-        List<UserDtos.Profile> vos = Lists.newArrayList();
+        List<UserDTOS.Profile> vos = Lists.newArrayList();
         list.forEach(entity -> {
-            UserDtos.Profile vo = new UserDtos.Profile();
+            UserDTOS.Profile vo = new UserDTOS.Profile();
             vo.setUserId(entity.getUserId());
             vo.setName(entity.getName());
             vos.add(vo);
@@ -124,9 +124,9 @@ public class UserService {
         return userMapper.getByAccountIdAndUserId(accountId, userId);
     }
 
-    public UserDto getByUserId(long userId) {
+    public UserDTO getByUserId(long userId) {
         User user = userMapper.get(userId);
-        UserDto vo = new UserDto();
+        UserDTO vo = new UserDTO();
         BeanUtils.copyProperties(user, vo);
 
         if (user.getRoleId() != null) {
@@ -149,7 +149,7 @@ public class UserService {
     }
 
     @Transactional
-    public void update(UserDto user) {
+    public void update(UserDTO user) {
         user.setTenantId(null);
         user.setAccountId(null);
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
@@ -196,7 +196,7 @@ public class UserService {
     }
 
     @Transactional
-    public void save(UserDto user) {
+    public void save(UserDTO user) {
         user.setTenantId(SessionContextHolder.getTenantId());
         user.setPinyin(StrUtils.getFirstLetters(user.getName()));
         user.setStatus(ENABLE);

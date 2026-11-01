@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
  * @version 4.1.0
  * @time 2024/7/6 10:11
  */
-public abstract class CaptchaVos {
+public abstract class CaptchaVOS {
 
     public static class GetCode {
         @NotBlank(message = "请通过图片验证码校验才能获取验证码")

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @version 4.1.0
  * @time 2024/6/1 6:38
  */
-public abstract class ResourceDtos {
+public abstract class ResourceDTOS {
     public static class Tree extends OrderTree {
         private Boolean isParent;
         private Integer level;

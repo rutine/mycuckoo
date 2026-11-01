@@ -7,7 +7,7 @@ package com.mycuckoo.admin.entity.dto.platform;
  * @version 4.1.0
  * @time 2024/7/6 10:10
  */
-public abstract class CaptchaDtos {
+public abstract class CaptchaDTOS {
 
     public static class Captcha {
         private String id;

@@ -9,8 +9,8 @@ import com.mycuckoo.admin.entity.platform.DictionaryItem;
 import com.mycuckoo.admin.entity.platform.ModuleMenu;
 import com.mycuckoo.admin.entity.platform.TableConfig;
 import com.mycuckoo.admin.repository.platform.TableConfigMapper;
-import com.mycuckoo.admin.entity.vo.TableConfigVos;
-import com.mycuckoo.admin.entity.dto.TableConfigDtos;
+import com.mycuckoo.admin.entity.vo.TableConfigVOS;
+import com.mycuckoo.admin.entity.dto.TableConfigDTOS;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class TableConfigService {
 
 
     @Transactional
-    public int save(TableConfigVos.Create vo) {
+    public int save(TableConfigVOS.Create vo) {
         ModuleMenu menu = moduleService.get(vo.getModuleId());
         Assert.notNull(menu, "所属模块不存在");
         Assert.state(menu.getLevel().equals(ModuleLevel.THREE.code), "所属模块应该是三级模块");
@@ -54,7 +54,7 @@ public class TableConfigService {
         String user = SessionContextHolder.getUserId().toString();
         int i = 0;
         List<TableConfig> configs = Lists.newArrayList();
-        for (TableConfigVos.CreateConfig config : vo.getConfigs()) {
+        for (TableConfigVOS.CreateConfig config : vo.getConfigs()) {
             Assert.notNull(FilterType.of(config.getFilterType()), "过滤类型不正确");
             oldIds.remove(config.getTableId());
 
@@ -86,17 +86,17 @@ public class TableConfigService {
         return configs.size();
     }
 
-    public List<TableConfigDtos.Detail> findByModuleId(Long moduleId) {
+    public List<TableConfigDTOS.Detail> findByModuleId(Long moduleId) {
         List<TableConfig> list = tableConfigMapper.findByModuleId(moduleId);
 
         return list.stream().sorted(Comparator.comparing(TableConfig::getOrder)).map(s -> {
-            TableConfigDtos.Detail t = new TableConfigDtos.Detail();
+            TableConfigDTOS.Detail t = new TableConfigDTOS.Detail();
             BeanUtils.copyProperties(s, t);
             return t;
         }).collect(Collectors.toList());
     }
 
-    public List<TableConfigDtos.Config> findByTableCode(String tableCode) {
+    public List<TableConfigDTOS.Config> findByTableCode(String tableCode) {
         List<TableConfig> list = tableConfigMapper.findByTableCode(tableCode);
 
         List<String> dictCodes = list.stream()
@@ -106,7 +106,7 @@ public class TableConfigService {
         Map<String, List<DictionaryItem>> dictMap = dictionaryService.findItemMapByDictCodes(dictCodes);
 
         return list.stream().sorted(Comparator.comparing(TableConfig::getOrder)).map(s -> {
-            TableConfigDtos.Config t = new TableConfigDtos.Config();
+            TableConfigDTOS.Config t = new TableConfigDTOS.Config();
             BeanUtils.copyProperties(s, t);
             t.setDict(dictMap.get(t.getExtra()));
             return t;

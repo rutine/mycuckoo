@@ -14,7 +14,7 @@ import com.mycuckoo.core.util.TreeHelper;
 import com.mycuckoo.core.util.web.SessionContextHolder;
 import com.mycuckoo.admin.entity.uum.Organ;
 import com.mycuckoo.admin.repository.uum.OrganMapper;
-import com.mycuckoo.admin.entity.dto.uum.OrganDtos;
+import com.mycuckoo.admin.entity.dto.uum.OrganDTOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -105,14 +105,14 @@ public class OrganService {
         return treeVoList;
     }
 
-    public Page<OrganDtos.ListVo> findByPage(Querier querier) {
+    public Page<OrganDTOS.ListVo> findByPage(Querier querier) {
         String treeId = SessionContextHolder.getTenantId() + ""; //最顶级机构
         querier.putQ("treeId", treeId);
         Page<Organ> entityPage = organMapper.findByPage(querier.getQ(), querier);
 
-        List<OrganDtos.ListVo> vos = Lists.newArrayList();
+        List<OrganDTOS.ListVo> vos = Lists.newArrayList();
         for (Organ entity : entityPage.getContent()) {
-            OrganDtos.ListVo vo = new OrganDtos.ListVo();
+            OrganDTOS.ListVo vo = new OrganDTOS.ListVo();
             BeanUtils.copyProperties(entity, vo);
             vo.setRoleName(entity.getMemo());
             vos.add(vo);
@@ -121,14 +121,14 @@ public class OrganService {
         return new PageImpl<>(vos, querier, entityPage.getTotalElements());
     }
 
-    public OrganDtos.Detail get(Long organId) {
+    public OrganDTOS.Detail get(Long organId) {
         if (organId == null) {
             return null;
         }
 
         Organ organ = organMapper.get(organId);
         Organ parentOrgan = organMapper.get(organ.getParentId());
-        OrganDtos.Detail vo = new OrganDtos.Detail();
+        OrganDTOS.Detail vo = new OrganDTOS.Detail();
         BeanUtils.copyProperties(organ, vo);
         vo.setParentName(parentOrgan == null ? null: parentOrgan.getSimpleName());
 

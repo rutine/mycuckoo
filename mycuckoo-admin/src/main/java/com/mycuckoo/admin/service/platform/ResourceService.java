@@ -15,7 +15,7 @@ import com.mycuckoo.admin.entity.platform.ModuleMenu;
 import com.mycuckoo.admin.entity.platform.Operate;
 import com.mycuckoo.admin.entity.platform.Resource;
 import com.mycuckoo.admin.repository.platform.ResourceMapper;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDtos;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,15 +69,15 @@ public class ResourceService {
         return true;
     }
 
-    public List<ResourceDtos.Tree> findAll() {
+    public List<ResourceDTOS.Tree> findAll() {
         List<ModuleMenu> menus = moduleService.findAll();
         List<Operate> operates = operateService.findAll();
         Map<Long, String> menuMap = menus.stream().collect(Collectors.toMap(ModuleMenu::getModuleId, ModuleMenu::getCode));
         Map<Long, String> operateMap = operates.stream().collect(Collectors.toMap(Operate::getOperateId, Operate::getCode));
 
-        List<ResourceDtos.Tree> all = Lists.newArrayList();
+        List<ResourceDTOS.Tree> all = Lists.newArrayList();
         for (ModuleMenu menu : menus) {
-            ResourceDtos.Tree tree = new ResourceDtos.Tree();
+            ResourceDTOS.Tree tree = new ResourceDTOS.Tree();
             tree.setId(menu.getId());
             tree.setParentId(menu.getParentId() + "");
             tree.setIsParent(true);
@@ -91,7 +91,7 @@ public class ResourceService {
 
         List<Resource> resources = resourceMapper.findByPage(null, Querier.EMPTY).getContent();
         resources.forEach(o -> {
-            ResourceDtos.Tree tree = new ResourceDtos.Tree();
+            ResourceDTOS.Tree tree = new ResourceDTOS.Tree();
             tree.setId(ID_LEAF + o.getResourceId());
             tree.setParentId(o.getModuleId() + "");
             tree.setIsParent(false);

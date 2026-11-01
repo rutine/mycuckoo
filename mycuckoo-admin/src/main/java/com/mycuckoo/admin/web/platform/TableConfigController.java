@@ -2,8 +2,8 @@ package com.mycuckoo.admin.web.platform;
 
 import com.mycuckoo.core.AjaxResponse;
 import com.mycuckoo.admin.service.platform.TableConfigService;
-import com.mycuckoo.admin.entity.vo.TableConfigVos;
-import com.mycuckoo.admin.entity.dto.TableConfigDtos;
+import com.mycuckoo.admin.entity.vo.TableConfigVOS;
+import com.mycuckoo.admin.entity.dto.TableConfigDTOS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,14 +29,14 @@ public class TableConfigController {
      *
      */
     @PostMapping
-    public AjaxResponse<String> create(@RequestBody TableConfigVos.Create vo) {
+    public AjaxResponse<String> create(@RequestBody TableConfigVOS.Create vo) {
         tableConfigService.save(vo);
 
         return AjaxResponse.success("保存成功");
     }
 
     @GetMapping("/{moduleId}/list")
-    public AjaxResponse<List<TableConfigDtos.Detail>> listByModuleId(@PathVariable long moduleId) {
+    public AjaxResponse<List<TableConfigDTOS.Detail>> listByModuleId(@PathVariable long moduleId) {
         return AjaxResponse.create(tableConfigService.findByModuleId(moduleId));
     }
 }

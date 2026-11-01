@@ -1,6 +1,6 @@
 package com.mycuckoo.admin.entity.dto.uum;
 
-public class UserDtos {
+public class UserDTOS {
 
     public static class Profile {
         private Long userId;

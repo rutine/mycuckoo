@@ -20,11 +20,11 @@ import com.mycuckoo.admin.entity.platform.Resource;
 import com.mycuckoo.admin.repository.platform.ModResRefMapper;
 import com.mycuckoo.admin.repository.platform.ModuleMenuMapper;
 import com.mycuckoo.admin.service.facade.UumServiceFacade;
-import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDto;
-import com.mycuckoo.admin.entity.dto.platform.ModuleMenuDtos;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDto;
-import com.mycuckoo.admin.entity.dto.platform.ResourceDtos;
-import com.mycuckoo.admin.entity.dto.uum.AssignDto;
+import com.mycuckoo.admin.entity.dto.platform.HierarchyModuleDTO;
+import com.mycuckoo.admin.entity.dto.platform.ModuleMenuDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTO;
+import com.mycuckoo.admin.entity.dto.platform.ResourceDTOS;
+import com.mycuckoo.admin.entity.dto.uum.AssignDTO;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -139,10 +139,10 @@ public class ModuleService {
         return true;
     }
 
-    public HierarchyModuleDto filterModule(List<ModuleMenu> list) {
-        List<HierarchyModuleDto.Menu> firstList = Lists.newArrayList();
-        List<HierarchyModuleDto.Menu> secondList = Lists.newArrayList();
-        List<HierarchyModuleDto.Menu> thirdList = Lists.newArrayList();
+    public HierarchyModuleDTO filterModule(List<ModuleMenu> list) {
+        List<HierarchyModuleDTO.Menu> firstList = Lists.newArrayList();
+        List<HierarchyModuleDTO.Menu> secondList = Lists.newArrayList();
+        List<HierarchyModuleDTO.Menu> thirdList = Lists.newArrayList();
 
         // 过滤分类一级、二级、三级菜单
         for (ModuleMenu menu : list) {
@@ -151,32 +151,32 @@ public class ModuleService {
 
             switch (level) {
                 case ONE:
-                    firstList.add(new HierarchyModuleDto.Menu(menu));
+                    firstList.add(new HierarchyModuleDTO.Menu(menu));
                     break;
                 case TWO:
-                    secondList.add(new HierarchyModuleDto.Menu(menu));
+                    secondList.add(new HierarchyModuleDTO.Menu(menu));
                     break;
                 case THREE:
-                    thirdList.add(new HierarchyModuleDto.Menu(menu));
+                    thirdList.add(new HierarchyModuleDTO.Menu(menu));
                     break;
             }
         }
 
         // 第一级
-        firstList.sort(Comparator.comparingLong(HierarchyModuleDto.Menu::getOrder));
+        firstList.sort(Comparator.comparingLong(HierarchyModuleDTO.Menu::getOrder));
 
         // 第二级
-        Map<String, List<HierarchyModuleDto.Menu>> secondMap = secondList.stream()
+        Map<String, List<HierarchyModuleDTO.Menu>> secondMap = secondList.stream()
                 .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(HierarchyModuleDto.Menu::getOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(HierarchyModuleDTO.Menu::getOrder)).collect(Collectors.toList()))));
         // 第三级
-        Map<String, List<HierarchyModuleDto.Menu>> thirdMap = thirdList.stream()
+        Map<String, List<HierarchyModuleDTO.Menu>> thirdMap = thirdList.stream()
                 .collect(Collectors.groupingBy(o -> o.getParentId().toString(),
                         Collectors.collectingAndThen(Collectors.toList(),
-                                sub -> sub.stream().sorted(Comparator.comparing(HierarchyModuleDto.Menu::getOrder)).collect(Collectors.toList()))));
+                                sub -> sub.stream().sorted(Comparator.comparing(HierarchyModuleDTO.Menu::getOrder)).collect(Collectors.toList()))));
 
-        return new HierarchyModuleDto(firstList, secondMap, thirdMap);
+        return new HierarchyModuleDTO(firstList, secondMap, thirdMap);
     }
 
     public List<? extends SimpleTree> findChildNodes(long modId) {
@@ -192,21 +192,21 @@ public class ModuleService {
         return list;
     }
 
-    public List<ResourceDto> findAllModResRefs() {
+    public List<ResourceDTO> findAllModResRefs() {
         List<ModResRef> refs = modResRefMapper.findByPage(null, Querier.EMPTY).getContent();
         Map<Long, Operate> operateMap = operateService.findAll().stream()
                 .collect(Collectors.toMap(Operate::getOperateId, Function.identity()));
         Map<Long, ModuleMenu> menuMap = this.findAll().stream()
                 .collect(Collectors.toMap(ModuleMenu::getModuleId, Function.identity()));
 
-        List<ResourceDto> result = refs.stream().map(ref -> {
+        List<ResourceDTO> result = refs.stream().map(ref -> {
             Operate operate = operateMap.get(ref.getResource().getOperateId());
             ModuleMenu menu = menuMap.get(ref.getResource().getModuleId());
             if (menu == null) {
                 menu = menuMap.get(ref.getModuleId());
             }
 
-            ResourceDto vo = new ResourceDto();
+            ResourceDTO vo = new ResourceDTO();
             vo.setId(ref.getModResId());
             vo.setParentId(ref.getModuleId()); // 将第三级菜单设置为父
             vo.setCode(String.format("res:%s:%s", menu.getCode(), operate == null ? ref.getResource().getIdentifier() : operate.getCode()));
@@ -226,8 +226,8 @@ public class ModuleService {
         return result;
     }
 
-    public AssignDto<SimpleTree, String> findResourceTreeByModId(long moduleId) {
-        List<ResourceDtos.Tree> all = resourceService.findAll();
+    public AssignDTO<SimpleTree, String> findResourceTreeByModId(long moduleId) {
+        List<ResourceDTOS.Tree> all = resourceService.findAll();
         List<ModResRef> modResRefs = modResRefMapper.findByModuleId(moduleId); //已经分配的操作
         Map<String, ModResRef> modResMap = modResRefs.stream()
                 .collect(Collectors.toMap(o -> ID_LEAF + o.getResource().getResourceId(), Function.identity()));
@@ -246,7 +246,7 @@ public class ModuleService {
         List<? extends SimpleTree> trees = TreeHelper.buildTree(all, "0");
         this.removeIfAbsenceLeaf(trees);
 
-        return new AssignDto(trees, resIds);
+        return new AssignDTO(trees, resIds);
     }
     //如果没有资源子节点, 递归移除上级
     private boolean removeIfAbsenceLeaf(List<? extends SimpleTree> trees) {
@@ -271,11 +271,11 @@ public class ModuleService {
         return result;
     }
 
-    public List<ModuleMenuDtos.Tree> findByPage(Querier querier) {
+    public List<ModuleMenuDTO.Tree> findByPage(Querier querier) {
         Page<ModuleMenu> page = moduleMenuMapper.findByPage(querier.getQ(), querier);
-        List<ModuleMenuDtos.Tree> vos = Lists.newArrayList();
+        List<ModuleMenuDTO.Tree> vos = Lists.newArrayList();
         for (ModuleMenu entity : page.getContent()) {
-            ModuleMenuDtos.Tree vo = new ModuleMenuDtos.Tree();
+            ModuleMenuDTO.Tree vo = new ModuleMenuDTO.Tree();
             BeanUtils.copyProperties(entity, vo);
             vo.setId(entity.getModuleId() + "");
             vo.setParentId(entity.getParentId() + "");

@@ -12,7 +12,7 @@ import java.util.Date;
  * @version 4.1.0
  * @time 2024/5/31 21:09
  */
-public class ModuleMenuDtos {
+public class ModuleMenuDTO {
 
     public static class Tree extends OrderTree {
         private Boolean isParent;

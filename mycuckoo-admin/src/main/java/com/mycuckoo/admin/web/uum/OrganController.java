@@ -6,7 +6,7 @@ import com.mycuckoo.core.SimpleTree;
 import com.mycuckoo.core.repository.Page;
 import com.mycuckoo.admin.entity.uum.Organ;
 import com.mycuckoo.admin.service.uum.OrganService;
-import com.mycuckoo.admin.entity.dto.uum.OrganDtos;
+import com.mycuckoo.admin.entity.dto.uum.OrganDTOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +39,8 @@ public class OrganController {
      * @time Jul 2, 2013 3:31:22 PM
      */
     @GetMapping
-    public AjaxResponse<Page<OrganDtos.ListVo>> list(Querier querier) {
-        Page<OrganDtos.ListVo> page = organService.findByPage(querier);
+    public AjaxResponse<Page<OrganDTOS.ListVo>> list(Querier querier) {
+        Page<OrganDTOS.ListVo> page = organService.findByPage(querier);
 
         return AjaxResponse.create(page);
     }
@@ -76,8 +76,8 @@ public class OrganController {
     }
 
     @GetMapping("/{id}")
-    public AjaxResponse<OrganDtos.Detail> get(@PathVariable long id) {
-        OrganDtos.Detail detail = organService.get(id);
+    public AjaxResponse<OrganDTOS.Detail> get(@PathVariable long id) {
+        OrganDTOS.Detail detail = organService.get(id);
 
         return AjaxResponse.create(detail);
     }

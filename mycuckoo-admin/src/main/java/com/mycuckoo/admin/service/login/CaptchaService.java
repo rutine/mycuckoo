@@ -4,7 +4,7 @@ import com.mycuckoo.core.util.StrUtils;
 import com.mycuckoo.core.util.IdGenerator;
 import com.mycuckoo.admin.entity.uum.Captcha;
 import com.mycuckoo.admin.repository.uum.CaptchaMapper;
-import com.mycuckoo.admin.entity.dto.platform.CaptchaDtos;
+import com.mycuckoo.admin.entity.dto.platform.CaptchaDTOS;
 import com.ramostear.captcha.support.CaptchaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class CaptchaService {
     private CaptchaMapper captchaMapper;
 
 
-    public CaptchaDtos.Captcha send() {
+    public CaptchaDTOS.Captcha send() {
         com.ramostear.captcha.core.Captcha captcha = new com.ramostear.captcha.core.Captcha();
         captcha.setType(CaptchaType.values()[random.nextInt(CaptchaType.values().length)]);
         captcha.setWidth(160);
@@ -51,10 +51,10 @@ public class CaptchaService {
         entity.setCreateTime(LocalDateTime.now());
         captchaMapper.save(entity);
 
-        return  new CaptchaDtos.Captcha(captchaId, img);
+        return  new CaptchaDTOS.Captcha(captchaId, img);
     }
 
-    public CaptchaDtos.Captcha send(String imgCaptchaId, String phone, String email) {
+    public CaptchaDTOS.Captcha send(String imgCaptchaId, String phone, String email) {
         Assert.state(StrUtils.isNotBlank(imgCaptchaId), "参数有误!");
         Assert.state(StrUtils.isNotBlank(phone) || StrUtils.isNotBlank(email), "手机或邮箱不能为空");
 
@@ -82,7 +82,7 @@ public class CaptchaService {
         entity.setCreateTime(LocalDateTime.now());
         captchaMapper.save(entity);
 
-        return new CaptchaDtos.Captcha(captchaId, entity.getCode());
+        return new CaptchaDTOS.Captcha(captchaId, entity.getCode());
     }
 
     public void validate(String captchaId, String code) {
