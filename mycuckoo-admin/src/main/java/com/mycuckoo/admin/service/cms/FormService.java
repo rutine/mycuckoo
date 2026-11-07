@@ -2,18 +2,18 @@ package com.mycuckoo.admin.service.cms;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mycuckoo.admin.constant.enums.FieldType;
-import com.mycuckoo.admin.entity.cms.CmsForm;
-import com.mycuckoo.admin.entity.cms.CmsFormData;
-import com.mycuckoo.admin.entity.cms.CmsFormField;
-import com.mycuckoo.admin.entity.cms.CmsFormVersion;
+import com.mycuckoo.admin.entity.cms.Form;
+import com.mycuckoo.admin.entity.cms.FormData;
+import com.mycuckoo.admin.entity.cms.FormField;
+import com.mycuckoo.admin.entity.cms.FormVersion;
 import com.mycuckoo.admin.entity.dto.cms.FieldConfig;
 import com.mycuckoo.admin.entity.dto.cms.FormDTOs;
 import com.mycuckoo.admin.entity.vo.cms.FormBusinessVO;
 import com.mycuckoo.admin.entity.vo.cms.FormDataVO;
 import com.mycuckoo.admin.entity.vo.cms.FormVO;
-import com.mycuckoo.admin.repository.cms.CmsFormDataMapper;
-import com.mycuckoo.admin.repository.cms.CmsFormMapper;
-import com.mycuckoo.admin.repository.cms.CmsFormVersionMapper;
+import com.mycuckoo.admin.repository.cms.FormDataMapper;
+import com.mycuckoo.admin.repository.cms.FormMapper;
+import com.mycuckoo.admin.repository.cms.FormVersionMapper;
 import com.mycuckoo.admin.service.cms.processor.FieldContext;
 import com.mycuckoo.admin.service.cms.processor.FieldProcessor;
 import com.mycuckoo.admin.service.cms.processor.FieldProcessorFactory;
@@ -37,11 +37,11 @@ import java.util.regex.Pattern;
 public class FormService {
 
     @Autowired
-    private CmsFormMapper formMapper;
+    private FormMapper formMapper;
     @Autowired
-    private CmsFormVersionMapper versionMapper;
+    private FormVersionMapper versionMapper;
     @Autowired
-    private CmsFormDataMapper dataMapper;
+    private FormDataMapper dataMapper;
     @Autowired
     private FieldProcessorFactory processorFactory;
 
@@ -55,20 +55,20 @@ public class FormService {
         // 1. 校验字段名唯一
         validateFieldNames(dto.getConfigs());
 
-        CmsForm form = new CmsForm();
+        Form form = new Form();
         form.setId(dto.getId());
-        form.setCode(dto.getCode());
-        form.setName(dto.getName());
         form.setBizType(dto.getBizType());
+        form.setCode(dto.getBizType());
+        form.setName(dto.getName());
         form.setConfig(JsonUtils.toJson(dto.getConfigs()));
         form.setMemo(dto.getMemo());
         form.setUpdater(userId + "");
         form.setUpdateTime(LocalDateTime.now());
 
         if (dto.getId() == null) {
-            CmsForm old = formMapper.getByCode(dto.getCode());
-            if (old != null && !old.getBizType().equals(dto.getBizType())) throw new RuntimeException("表单编码已存在");
+            Form old = formMapper.getByBizType(dto.getBizType());
             if (old == null) {
+                form.setTenantId(SessionContextHolder.getTenantId());
                 form.setVersion(1);
                 form.setStatus(1);
                 form.setCreator(userId + "");
@@ -79,13 +79,13 @@ public class FormService {
                 formMapper.update(form);
             }
         } else {
-            CmsForm old = formMapper.get(dto.getId());
+            Form old = formMapper.get(dto.getId());
             Assert.notNull(old, "表单不存在");
             form.setVersion(old.getVersion() + 1);
             formMapper.update(form);
         }
 
-        CmsFormVersion version = new CmsFormVersion();
+        FormVersion version = new FormVersion();
         version.setFormId(form.getId());
         version.setVersion(form.getVersion());
         version.setConfig(form.getConfig());
@@ -98,7 +98,7 @@ public class FormService {
      * 按表单编码查表单
      */
     public FormVO get(Long id) {
-        CmsForm form = formMapper.get(id);
+        Form form = formMapper.get(id);
         if (form == null) return null;
 
         FormVO vo = new FormVO();
@@ -110,8 +110,8 @@ public class FormService {
     /**
      * 按表单编码查表单
      */
-    public FormVO get(String code) {
-        CmsForm form = formMapper.getByCode(code);
+    public FormVO get(String bizType) {
+        Form form = formMapper.getByBizType(bizType);
         if (form == null) return null;
 
         FormVO vo = new FormVO();
@@ -124,9 +124,9 @@ public class FormService {
      * 按模块编码查表单
      */
     public Page<FormVO> findByPage(Querier querier) {
-        Page<CmsForm> page = formMapper.findByPage(querier.getQ(), querier);
+        Page<Form> page = formMapper.findByPage(querier.getQ(), querier);
         List<FormVO> result = new ArrayList<>();
-        for (CmsForm form : page) {
+        for (Form form : page) {
             FormVO vo = new FormVO();
             BeanUtils.copyProperties(form, vo);
             result.add(vo);
@@ -138,8 +138,8 @@ public class FormService {
      * 按业务编码和业务ID查表单配置和数据
      * 有 bizId 时查数据，没有时只返回配置
      */
-    public FormBusinessVO getData(String formCode, String bizId) {
-        CmsForm form = formMapper.getByCode(formCode);
+    public FormBusinessVO getData(String bizType, String bizId) {
+        Form form = formMapper.getByBizType(bizType);
         if (form == null) return null;
 
         FormBusinessVO vo = new FormBusinessVO();
@@ -157,13 +157,13 @@ public class FormService {
         }
 
         if (bizId != null && !bizId.isEmpty()) {
-            CmsFormData entity = dataMapper.getByBizId(form.getCode(), bizId);
+            FormData entity = dataMapper.getByBizId(form.getCode(), bizId);
             if (entity != null) {
                 vo.setDataId(entity.getId());
                 vo.setBizId(entity.getBizId());
 
                 configJson = getConfigByVersion(entity.getFormId(), entity.getFormVersion());
-                List<CmsFormField> fields = parseFields(entity.getFormId(), entity.getFormCode(), configJson);
+                List<FormField> fields = parseFields(entity.getFormId(), entity.getFormCode(), configJson);
 
                 Map<String, Object> data = JsonUtils.fromJson(entity.getData(), Map.class);
                 Map<String, Object> processed = processorFactory.afterLoad(fields, data);
@@ -190,16 +190,16 @@ public class FormService {
      */
     @Transactional
     public Long saveData(FormDTOs.DataSaveDTO dto) {
-        CmsForm form = formMapper.getByCode(dto.getFormCode());
-        if (form == null) throw new RuntimeException("表单不存在");
+        Form form = formMapper.getByBizType(dto.getBizType());
+        Assert.notNull(form, "表单不存在");
 
-        List<CmsFormField> fields = parseFields(form.getId(), form.getCode(), form.getConfig());
+        List<FormField> fields = parseFields(form.getId(), form.getCode(), form.getConfig());
         validate(fields, dto.getData());
         Map<String, Object> processed = processorFactory.beforeSave(fields, dto.getData());
 
         Long userId = SessionContextHolder.getUserId();
 
-        CmsFormData entity = new CmsFormData();
+        FormData entity = new FormData();
         entity.setFormId(form.getId());
         entity.setFormCode(form.getCode());
         entity.setFormVersion(form.getVersion());
@@ -219,12 +219,12 @@ public class FormService {
      * 分页查表单数据
      */
     public List<FormDataVO> findDataByPage(String formCode, String bizId) {
-        List<CmsFormData> list = dataMapper.findByPage(formCode, bizId);
-        Map<Integer, List<CmsFormField>> fieldCache = new HashMap<>();
+        List<FormData> list = dataMapper.findByPage(formCode, bizId);
+        Map<Integer, List<FormField>> fieldCache = new HashMap<>();
 
         List<FormDataVO> result = new ArrayList<>();
-        for (CmsFormData entity : list) {
-            List<CmsFormField> fields = fieldCache.computeIfAbsent(
+        for (FormData entity : list) {
+            List<FormField> fields = fieldCache.computeIfAbsent(
                     entity.getFormVersion(),
                     v -> parseFields(entity.getFormId(), entity.getFormCode(),
                             getConfigByVersion(entity.getFormId(), v))
@@ -254,13 +254,13 @@ public class FormService {
      */
     @Transactional
     public void updateFieldValue(Long dataId, String field, Object value, String operator) {
-        CmsFormData entity = dataMapper.get(dataId);
-        if (entity == null) throw new RuntimeException("数据不存在");
+        FormData entity = dataMapper.get(dataId);
+        Assert.notNull(entity, "数据不存在");
 
         String configJson = getConfigByVersion(entity.getFormId(), entity.getFormVersion());
-        List<CmsFormField> fields = parseFields(entity.getFormId(), entity.getFormCode(), configJson);
+        List<FormField> fields = parseFields(entity.getFormId(), entity.getFormCode(), configJson);
 
-        CmsFormField fieldMeta = fields.stream()
+        FormField fieldMeta = fields.stream()
                 .filter(f -> f.getField().equals(field))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("字段不存在"));
@@ -286,28 +286,28 @@ public class FormService {
      * 批量重跑某字段的处理器
      */
     @Transactional
-    public int reprocessField(String formCode, String field, String operator) {
-        CmsForm form = formMapper.getByCode(formCode);
-        if (form == null) throw new RuntimeException("表单不存在");
+    public int reprocessField(String bizType, String field, String operator) {
+        Form form = formMapper.getByBizType(bizType);
+        Assert.notNull(form, "表单不存在");
 
-        List<CmsFormField> fields = parseFields(form.getId(), form.getCode(), form.getConfig());
-        CmsFormField target = fields.stream()
+        List<FormField> fields = parseFields(form.getId(), form.getCode(), form.getConfig());
+        FormField target = fields.stream()
                 .filter(f -> f.getField().equals(field))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("字段不存在"));
 
         FieldProcessor processor = processorFactory.get(target.getProcessor());
-        if (processor == null) throw new RuntimeException("字段没有处理器");
+        Assert.notNull(processor, "字段没有处理器");
 
         int pageSize = 500;
         long lastId = 0;
         int total = 0;
 
         while (true) {
-            List<CmsFormData> list = dataMapper.listByCursor(formCode, lastId, pageSize);
+            List<FormData> list = dataMapper.listByCursor(form.getCode(), lastId, pageSize);
             if (list.isEmpty()) break;
 
-            for (CmsFormData item : list) {
+            for (FormData item : list) {
                 Map<String, Object> data = JsonUtils.fromJson(item.getData(), Map.class);
                 Object oldValue = data.get(field);
                 Object newValue = processor.beforeSave(new FieldContext(target, form, null), oldValue);
@@ -316,7 +316,7 @@ public class FormService {
 
                 data.put(field, newValue);
 
-                CmsFormData update = new CmsFormData();
+                FormData update = new FormData();
                 update.setId(item.getId());
                 update.setData(JsonUtils.toJson(data));
                 update.setUpdater(operator);
@@ -347,9 +347,9 @@ public class FormService {
     /**
      * 从 config 解析字段列表
      */
-    private List<CmsFormField> parseFields(Long formId, String formCode, String configJson) {
+    private List<FormField> parseFields(Long formId, String formCode, String configJson) {
         List<FieldConfig> configs = parseConfigs(configJson);
-        List<CmsFormField> fields = new ArrayList<>();
+        List<FormField> fields = new ArrayList<>();
         flatten(configs, fields, formId, formCode, null, null);
         for (int i = 0; i < fields.size(); i++) {
             fields.get(i).setSort(i);
@@ -361,26 +361,26 @@ public class FormService {
      * 按版本获取配置
      */
     private String getConfigByVersion(Long formId, Integer version) {
-        CmsForm form = formMapper.get(formId);
+        Form form = formMapper.get(formId);
         if (form == null) return null;
         if (version == null || version.equals(form.getVersion())) {
             return form.getConfig();
         }
-        CmsFormVersion v = versionMapper.getByVersion(formId, version);
+        FormVersion v = versionMapper.getByVersion(formId, version);
         return v != null ? v.getConfig() : form.getConfig();
     }
 
     /**
      * 递归拍平字段
      */
-    private void flatten(List<FieldConfig> configs, List<CmsFormField> result,
+    private void flatten(List<FieldConfig> configs, List<FormField> result,
                          Long formId, String formCode, String groupId, String groupTitle) {
         if (configs == null) return;
         for (FieldConfig c : configs) {
             if (FieldType.isGroup(c.getType())) {
                 flatten(c.getChildren(), result, formId, formCode, c.getId(), c.getTitle());
             } else {
-                CmsFormField f = new CmsFormField();
+                FormField f = new FormField();
                 f.setFormId(formId);
                 f.setFormCode(formCode);
                 f.setField(c.getField());
@@ -438,8 +438,8 @@ public class FormService {
     /**
      * 校验
      */
-    private void validate(List<CmsFormField> fields, Map<String, Object> data) {
-        for (CmsFormField f : fields) {
+    private void validate(List<FormField> fields, Map<String, Object> data) {
+        for (FormField f : fields) {
             Object val = data.get(f.getField());
             boolean empty = val == null || "".equals(val.toString());
 

@@ -2,7 +2,7 @@ package com.mycuckoo.admin.entity.cms;
 
 import java.math.BigDecimal;
 
-public class CmsFormField {
+public class FormField {
 
     // ========== 基础属性 ==========
     private Long id;
@@ -41,7 +41,7 @@ public class CmsFormField {
     // ========== 排序 ==========
     private Integer sort;
 
-    public CmsFormField() {}
+    public FormField() {}
 
     // ========== getter / setter ==========
 

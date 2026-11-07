@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mycuckoo.admin.repository.cms.CmsFormVersionMapper">
-    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.cms.CmsFormVersion">
+<mapper namespace="com.mycuckoo.admin.repository.cms.FormVersionMapper">
+    <resultMap id="baseMap" type="com.mycuckoo.admin.entity.cms.FormVersion">
         <id property="id" column="id" />
         <result property="formId" column="form_id" />
         <result property="version" column="version" />
@@ -20,7 +20,7 @@
         cms_form_version
     </sql>
 
-    <insert id="save" parameterType="com.mycuckoo.admin.entity.cms.CmsFormVersion"
+    <insert id="save" parameterType="com.mycuckoo.admin.entity.cms.FormVersion"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into <include refid="table" />
         (form_id, version, config, creator, create_time)

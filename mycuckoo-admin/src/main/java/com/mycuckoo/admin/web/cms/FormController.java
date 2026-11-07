@@ -47,9 +47,9 @@ public class FormController {
     /**
      * 按编码查表单定义
      */
-    @GetMapping("/code/{code}")
-    public AjaxResponse<FormVO> get(@PathVariable String code) {
-        return AjaxResponse.create(cmsFormService.get(code));
+    @GetMapping("/biz-type/{bizType}")
+    public AjaxResponse<FormVO> get(@PathVariable String bizType) {
+        return AjaxResponse.create(cmsFormService.get(bizType));
     }
 
     /**
@@ -72,10 +72,10 @@ public class FormController {
     /**
      * 按业务编码和业务ID查表单配置和数据
      */
-    @GetMapping("/data/{formCode}")
-    public AjaxResponse<FormBusinessVO> getData(@PathVariable String formCode,
+    @GetMapping("/data/{bizType}")
+    public AjaxResponse<FormBusinessVO> getData(@PathVariable String bizType,
                                                 @RequestParam(required = false) String bizId) {
-        return AjaxResponse.create(cmsFormService.getData(formCode, bizId));
+        return AjaxResponse.create(cmsFormService.getData(bizType, bizId));
     }
 
     /**
@@ -92,6 +92,6 @@ public class FormController {
      */
     @PostMapping("/data/reprocess")
     public AjaxResponse<Integer> reprocessField(@RequestBody FormDTOs.ReprocessDTO dto) {
-        return AjaxResponse.create(cmsFormService.reprocessField(dto.getFormCode(), dto.getField(), dto.getOperator()));
+        return AjaxResponse.create(cmsFormService.reprocessField(dto.getBizType(), dto.getField(), dto.getOperator()));
     }
 }

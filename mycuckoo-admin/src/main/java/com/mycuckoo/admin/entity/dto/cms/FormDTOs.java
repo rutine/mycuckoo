@@ -1,5 +1,8 @@
 package com.mycuckoo.admin.entity.dto.cms;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,23 +10,22 @@ public abstract class FormDTOs {
 
     public static class SaveDTO {
         private Long id;
-        private String code;
-        private String name;
+        @NotBlank(message = "业务类型不能为空")
         private String bizType;
+        @NotBlank(message = "表单名称不能为空")
+        private String name;
         private String memo;
+        @NotEmpty(message = "表单配置不能为空")
         private List<FieldConfig> configs;
 
         public Long getId() { return id; }
         public void setId(Long id) { this.id = id; }
 
-        public String getCode() { return code; }
-        public void setCode(String code) { this.code = code; }
+        public String getBizType() { return bizType; }
+        public void setBizType(String bizType) { this.bizType = bizType; }
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
-
-        public String getBizType() { return bizType; }
-        public void setBizType(String bizType) { this.bizType = bizType; }
 
         public String getMemo() { return memo; }
         public void setMemo(String memo) { this.memo = memo; }
@@ -34,7 +36,7 @@ public abstract class FormDTOs {
 
     public static class DataSaveDTO {
         private Integer id;
-        private String formCode;
+        private String bizType;
         private String bizId;
         private Map<String, Object> data;
         // getter / setter 略
@@ -43,11 +45,11 @@ public abstract class FormDTOs {
         public Integer getId() { return id; }
         public void setId(Integer id) { this.id = id; }
 
-        public String getFormCode() {
-            return formCode;
+        public String getBizType() {
+            return bizType;
         }
-        public void setFormCode(String formCode) {
-            this.formCode = formCode;
+        public void setBizType(String bizType) {
+            this.bizType = bizType;
         }
 
         public String getBizId() {
@@ -66,12 +68,16 @@ public abstract class FormDTOs {
     }
 
     public static class ReprocessDTO {
-        private String formCode;
+        private String bizType;
         private String field;
         private String operator;
 
-        public String getFormCode() { return formCode; }
-        public void setFormCode(String formCode) { this.formCode = formCode; }
+        public String getBizType() {
+            return bizType;
+        }
+        public void setBizType(String bizType) {
+            this.bizType = bizType;
+        }
 
         public String getField() { return field; }
         public void setField(String field) { this.field = field; }

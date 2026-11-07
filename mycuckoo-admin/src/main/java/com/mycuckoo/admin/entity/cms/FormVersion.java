@@ -4,7 +4,7 @@ import com.mycuckoo.admin.entity.BasicEntity;
 
 import java.time.LocalDateTime;
 
-public class CmsFormVersion extends BasicEntity<Long> {
+public class FormVersion extends BasicEntity<Long> {
     private Long id;
     private Long formId;
     private Integer version;

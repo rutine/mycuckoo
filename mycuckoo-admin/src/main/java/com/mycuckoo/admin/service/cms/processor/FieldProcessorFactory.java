@@ -1,6 +1,6 @@
 package com.mycuckoo.admin.service.cms.processor;
 
-import com.mycuckoo.admin.entity.cms.CmsFormField;
+import com.mycuckoo.admin.entity.cms.FormField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +27,9 @@ public class FieldProcessorFactory {
         return processors.get(name);
     }
 
-    public Map<String, Object> beforeSave(List<CmsFormField> fields, Map<String, Object> data) {
+    public Map<String, Object> beforeSave(List<FormField> fields, Map<String, Object> data) {
         Map<String, Object> result = new HashMap<>(data);
-        for (CmsFormField f : fields) {
+        for (FormField f : fields) {
             if (f.getProcessor() == null || f.getProcessor().isEmpty()) continue;
             FieldProcessor p = get(f.getProcessor());
             if (p == null) continue;
@@ -39,9 +39,9 @@ public class FieldProcessorFactory {
         return result;
     }
 
-    public Map<String, Object> afterLoad(List<CmsFormField> fields, Map<String, Object> data) {
+    public Map<String, Object> afterLoad(List<FormField> fields, Map<String, Object> data) {
         Map<String, Object> result = new HashMap<>(data);
-        for (CmsFormField f : fields) {
+        for (FormField f : fields) {
             if (f.getProcessor() == null || f.getProcessor().isEmpty()) continue;
             FieldProcessor p = get(f.getProcessor());
             if (p == null) continue;

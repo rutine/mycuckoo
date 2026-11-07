@@ -555,9 +555,10 @@ INSERT INTO `uum_user` VALUES (1,1,1,NULL,1,'管理员','gly','13828000001',NULL
 DROP TABLE IF EXISTS `cms_form`;
 CREATE TABLE `cms_form` (
     `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `tenant_id`     BIGINT       NOT NULL COMMENT '租户ID',
+    `biz_type`      VARCHAR(60)  NOT NULL COMMENT '业务类型',
     `code`          VARCHAR(60)  NOT NULL COMMENT '表单编码',
     `name`          VARCHAR(100) NOT NULL COMMENT '表单名称',
-    `biz_type`      VARCHAR(60)  DEFAULT NULL COMMENT '业务类型',
     `config`        CLOB         DEFAULT NULL COMMENT '字段配置',
     `version`       INT          NOT NULL DEFAULT 1 COMMENT '版本号',
     `status`        TINYINT      NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
@@ -567,8 +568,7 @@ CREATE TABLE `cms_form` (
     `updater`       VARCHAR(64)  DEFAULT NULL COMMENT '更新人',
     `update_time`   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_form_code` (`code`),
-    KEY `idx_biz_type` (`biz_type`)
+    UNIQUE KEY `uk_biz_type` (`biz_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='表单定义表';
 
 
